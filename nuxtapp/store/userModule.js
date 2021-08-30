@@ -15,7 +15,7 @@ import {
   SET_INIT_USER_MODULE_STATE,
   SET_INIT_AUTHENTICATED_USER_MODULE_STATE,
   SET_USER_SIGNUP_STATE,
-  SET_CURRENT_USER_STATE, COOKIE_KEY_SESSION_TOKEN, A_SET_SESSION_TOKEN, A_SIGN_OUT
+  SET_CURRENT_USER_STATE, COOKIE_KEY_SESSION_TOKEN, A_SET_SESSION_TOKEN, A_SIGN_OUT, A_LOGIN
 } from '@/shared/constants'
 import { asyncObjectConstructor } from '@/shared/utility'
 import { removeCookieByKey, setCookieByKey } from '@/shared/cookie-utilities'
