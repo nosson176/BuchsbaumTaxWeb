@@ -1,12 +1,17 @@
 <template>
-  <input
-    :id="id"
-    v-model="computedValue"
-    :type="type"
-    :placeholder="placeholder"
-    :disabled="disabled"
-    @blur="onBlur"
-  >
+  <div>
+    <label :for="name" class="sr-only">{{ label }}</label>
+    <input
+      :id="id"
+      :name="name"
+      :type="type"
+      :autocomplete="autocomplete"
+      :required="required"
+      :placeholder="placeholder"
+      class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+      :class="classObj"
+    >
+  </div>
 </template>
 
 <script>
@@ -24,19 +29,43 @@ export default {
       type: String,
       default: ''
     },
+    name: {
+      type: String,
+      default: ''
+    },
     type: {
       type: String,
       default: 'text'
     },
+    autocomplete: {
+      type: String,
+      default: ''
+    },
     placeholder: {
       type: String,
       default: ''
+    },
+    required: {
+      type: Boolean,
+      default: true
     },
     valid: {
       type: Boolean,
       default: true
     },
     disabled: {
+      type: Boolean,
+      default: false
+    },
+    label: {
+      type: String,
+      default: ''
+    },
+    first: {
+      type: Boolean,
+      default: false
+    },
+    last: {
       type: Boolean,
       default: false
     }
@@ -61,9 +90,9 @@ export default {
     },
     classObj () {
       const invalid = this.shouldShowValidation
-      return {
-        invalid
-      }
+      const first = this.first
+      const last = this.last
+      return { invalid, first, last }
     }
 
   },
@@ -76,11 +105,15 @@ export default {
 </script>
 
 <style scoped>
-  input {
-    @apply inline-block outline-none;
-  }
-
   input.invalid {
     @apply border-2 border-red-500;
+  }
+
+  input.first {
+    @apply rounded-t-md;
+  }
+
+  input.last {
+    @apply rounded-b-md;
   }
 </style>
