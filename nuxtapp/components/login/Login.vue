@@ -49,16 +49,7 @@
       <div>
         <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+            <LockIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" />
           </span>
           Sign in
         </button>
@@ -68,7 +59,124 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import {
+  A_CLIENT_SET_NOTIFICATION,
+  A_INIT_AUTHENTICATED_USER_MODULE,
+  A_SET_SESSION_TOKEN, GET_BACKEND_URL,
+  LOADING_COMPLETED_FAILURE,
+  LOADING_COMPLETED_SUCCESS,
+  LOADING_STARTED,
+  NOTIFICATION_TYPE_ALERT,
+  ROUTE_RESET_PASSWORD
+} from '~/shared/constants'
+import { asyncObjectConstructor } from '@/shared/utility'
+import { isEmailValid, isPasswordValid } from '@/shared/domain-utilities'
+import { notificationConstructor } from '@/shared/constructors'
+
+const loginFormConstructor = () => {
+  return {
+    email: { input: '', isValid: true },
+    password: { input: '', isValid: true },
+    rememberMe: false
+  }
+}
 export default {
-  name: 'Login'
+  name: 'Login',
+  data () {
+    return {
+      formModel: null,
+      loginState: asyncObjectConstructor()
+    }
+  },
+  computed: {
+    ...mapGetters([GET_BACKEND_URL]),
+    backendUrl () {
+      return `${this[GET_BACKEND_URL]}/api/sessions`
+    },
+    resetPasswordRouteObj () {
+      return { name: ROUTE_RESET_PASSWORD }
+    },
+    loginPayload () {
+      return {
+        email: this.formModel.email.input,
+        password: this.formModel.password.input
+      }
+    },
+    isSubmitButtonDisabled () {
+      return !this.isFormValid || this.isLoading
+    },
+    isFormValid () {
+      return this.isPasswordValid && this.isEmailValid
+    },
+    isEmailValid () {
+      return isEmailValid(this.formModel.email.input)
+    },
+    isPasswordValid () {
+      return isPasswordValid(this.formModel.password.input)
+    },
+    isLoading () {
+      return this.loginState.loadingState === LOADING_STARTED
+    }
+  },
+  created () {
+    this.formModel = loginFormConstructor()
+  },
+  methods: {
+    async handleSubmit () {
+      if (!this.isSubmitButtonDisabled) {
+        await this.login()
+        if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
+          const token = this.loginState.data.token
+          const rememberMe = this.formModel.rememberMe || true
+          await this.setSession({ token, rememberMe })
+          await this.$store.dispatch(A_INIT_AUTHENTICATED_USER_MODULE)
+        }
+        this.redirect()
+      } else {
+        this.setErrorsOnLabels()
+      }
+    },
+    async login () {
+      this.loginState.loadingState = LOADING_STARTED
+      try {
+        const loginResponse = await this.$axios.post(this.backendUrl, this.loginPayload)
+        if (loginResponse.data.token) {
+          this.loginState.loadingState = LOADING_COMPLETED_SUCCESS
+          this.loginState.data = loginResponse.data
+        } else {
+          this.loginState.loadingState = LOADING_COMPLETED_FAILURE
+          this.notifyFailure()
+        }
+      } catch (e) {
+        this.loginState.loadingState = LOADING_COMPLETED_FAILURE
+        this.loginState.error = e
+        this.notifyFailure()
+      }
+    },
+    async setSession ({ token, rememberMe }) {
+      await this.$store.dispatch(A_SET_SESSION_TOKEN, { token, rememberMe })
+    },
+    redirect () {
+      if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
+        this.$router.replace(this.routeObj)
+      }
+    },
+    notifyFailure () {
+      const notification = notificationConstructor()
+      notification.time = 5000
+      notification.type = NOTIFICATION_TYPE_ALERT
+      notification.message = 'Failed to login'
+      this.$store.dispatch(A_CLIENT_SET_NOTIFICATION, { notification })
+    },
+    setErrorsOnLabels () {
+      if (!this.isEmailValid) {
+        this.formModel.email.isValid = false
+      }
+      if (!this.isPasswordValid) {
+        this.formModel.password.isValid = false
+      }
+    }
+  }
 }
 </script>

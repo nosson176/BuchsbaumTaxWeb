@@ -12,6 +12,7 @@ export const GET_LATEST_ROUTE = 'getLatestRoute'
 export const GET_PREVIOUS_ROUTE = 'getPreviousRoute'
 export const GET_DOES_USER_HAVE_SESSION = 'getDoesUserHaveSession'
 export const GET_CURRENT_USER = 'getCurrentUser'
+export const GET_NOTIFICATIONS_STATE = 'getNotificationsState'
 
 // Mutations
 export const SET_SESSION_TOKEN = 'setSessionToken'
@@ -29,6 +30,8 @@ export const PUSH_TO_SESSION_HISTORY = 'pushToSessionHistory'
 export const SET_SCROLL_STATE_BY_KEY = 'setWindowScrollEvent'
 export const SET_CLIENT_SIDE_INIT_STATE = 'setAppClientSideInitState'
 export const SET_INIT_ADMIN_MODULE_STATE = 'setInitAdminModuleState'
+export const SET_NOTIFICATIONS_STATE = 'setNotificationsState'
+export const SET_CURRENT_NOTIFICATION = 'setCurrentNotification'
 
 // Actions
 export const A_ON_APP_CREATED = 'actionOnAppCreated'
@@ -45,12 +48,13 @@ export const A_ON_DOCUMENT_SCROLL = 'actionOnDocumentScroll'
 export const A_SET_DOCUMENT_SCROLL = 'actionSetDocumentScroll'
 export const A_SIGN_UP = 'actionSignUp'
 export const A_SIGN_OUT = 'actionSignOut'
-export const A_LOGIN = 'actionLogin'
 export const A_CHANGE_PASSWORD = 'actionChangePassword'
 export const A_REQUEST_PASSWORD_RESET_EMAIL = 'actionRequestResetPasswordEmail'
 export const A_RESET_PASSWORD_SET_NEW_PASSWORD = 'actionRequestSetNewPassword'
 export const LOAD_USER = 'loadUser'
 export const A_INIT_ADMIN_MODULE = 'actionInitAdminModule'
+export const A_CLIENT_SET_NOTIFICATION = 'actionClientSetNotification'
+export const A_CLIENT_RESET_NOTIFICATION = 'actionClientResetNotification'
 
 // Loading States
 export const LOADING_PRISTINE = 0
@@ -66,6 +70,7 @@ export const ROUTE_SIGNUP = 'signup'
 export const ROUTE_TERMS = 'terms'
 export const ROUTE_PRIVACY = 'privacy'
 export const ROUTE_ADMIN = 'admin'
+export const ROUTE_RESET_PASSWORD = 'reset-password'
 
 // Meta Tags
 export const META_HID_DESCRIPTION = 'description'
@@ -100,3 +105,6 @@ export const GET_IS_SCREEN_SIZE_TABLET = 'getIsScreenSizeTablet'
 export const GET_IS_SCREEN_SIZE_MOBILE = 'getIsScreenSizeMobile'
 
 export const SET_APP_WIDTH = 'setAppWidth'
+
+// Notification Types
+export const NOTIFICATION_TYPE_ALERT = 'alert'
