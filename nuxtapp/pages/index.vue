@@ -1,13 +1,13 @@
 <template>
-  <div class="my-0 mx-auto min-h-screen">
-    <div class="flex justify-center pt-8">
-      <ExampleForm />
-    </div>
-  </div>
+  <div />
 </template>
 
 <script>
+import { ROUTE_HOME } from '~/shared/constants'
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+  middleware ({ redirect }) {
+    return redirect({ name: ROUTE_HOME })
+  }
 }
 </script>
