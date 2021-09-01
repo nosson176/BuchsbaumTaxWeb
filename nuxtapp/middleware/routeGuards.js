@@ -9,9 +9,11 @@ const unguardedRoutesHash = {
 
 export default function ({ route, redirect, store }) {
   const isAuthenticated = store.getters[GET_DOES_USER_HAVE_SESSION]
-  if (!isAuthenticated) {
-    if (!unguardedRoutesHash[route.name]) {
-      redirect({ name: ROUTE_LOGIN })
+  if (route.name) {
+    if (!isAuthenticated) {
+      if (!unguardedRoutesHash[route.name]) {
+        redirect({ name: ROUTE_LOGIN })
+      }
     }
   }
 }

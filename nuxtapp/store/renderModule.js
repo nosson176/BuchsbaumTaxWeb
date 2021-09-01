@@ -31,4 +31,3 @@ const mutations = {
 const actions = {}
 
 export { namespaced, state, getters, mutations, actions }
-

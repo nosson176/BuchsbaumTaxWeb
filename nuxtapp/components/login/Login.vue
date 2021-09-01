@@ -70,7 +70,8 @@ import {
   LOADING_COMPLETED_SUCCESS,
   LOADING_STARTED,
   NOTIFICATION_TYPE_ALERT,
-  ROUTE_RESET_PASSWORD
+  ROUTE_RESET_PASSWORD,
+  ROUTE_ROOT
 } from '~/shared/constants'
 import { asyncObjectConstructor } from '@/shared/utility'
 import { isNameValid, isPasswordValid } from '@/shared/domain-utilities'
@@ -105,6 +106,9 @@ export default {
         password: this.formModel.password.input
       }
     },
+    routeObj () {
+      return { name: ROUTE_ROOT }
+    },
     isSubmitButtonDisabled () {
       return !this.isFormValid || this.isLoading
     },
@@ -128,14 +132,13 @@ export default {
     async handleSubmit () {
       if (!this.isSubmitButtonDisabled) {
         await this.login()
-        console.log(this.loginState)
         if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
           const token = this.loginState.data.token
           const rememberMe = this.formModel.rememberMe || true
           await this.setSession({ token, rememberMe })
           await this.$store.dispatch(A_INIT_AUTHENTICATED_USER_MODULE)
         }
-        // this.redirect()
+        this.redirect()
       } else {
         this.setErrorsOnLabels()
       }
@@ -143,7 +146,6 @@ export default {
     async login () {
       this.loginState.loadingState = LOADING_STARTED
       try {
-        console.log(this.backendUrl)
         const loginResponse = await this.$axios.post(this.backendUrl, this.loginPayload)
         if (loginResponse.data.token) {
           this.loginState.loadingState = LOADING_COMPLETED_SUCCESS
