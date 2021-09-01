@@ -19,6 +19,9 @@ export default {
       { rel: 'stylesheet', href: 'https://rsms.me/inter/inter.css' }
     ]
   },
+  router: {
+    middleware: ['routeGuards']
+  },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
