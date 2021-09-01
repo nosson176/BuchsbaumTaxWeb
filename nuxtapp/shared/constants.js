@@ -82,7 +82,7 @@ export const META_OG_IMAGE = 'og:image'
 export const META_HID_OG_DESCRIPTION = 'og-description'
 export const META_OG_DESCRIPTION = 'og:description'
 
-export const COOKIE_KEY_SESSION_TOKEN = 'template-session-token'
+export const COOKIE_KEY_SESSION_TOKEN = 'btax-session-token'
 
 export const BACKEND_MAX_INTEGER = 2147483647
 
