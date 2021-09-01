@@ -4,7 +4,7 @@
       <div class="flex justify-between">
         <div class="flex items-center">
           <div class="h-5 w-5 m-5 ml-8 text-indigo-900">
-            <NotificationAlertIcon v-if="isNotificationTypeAlert" />
+            <AlertIcon v-if="isNotificationTypeAlert" />
           </div>
           <span class="text-size-12-px text-indigo-900">
             <slot />

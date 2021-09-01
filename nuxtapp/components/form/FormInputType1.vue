@@ -3,12 +3,13 @@
     <label :for="name" class="sr-only">{{ label }}</label>
     <input
       :id="id"
+      v-model="computedValue"
       :name="name"
       :type="type"
       :autocomplete="autocomplete"
       :required="required"
       :placeholder="placeholder"
-      class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+      class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
       :class="classObj"
     >
   </div>
