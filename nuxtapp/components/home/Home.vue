@@ -1,22 +1,34 @@
 <template>
-  <div class="grid min-h-screen grid-cols-12 grid-rows-9 gap-4">
-    <div class="col-span-2 row-span-6 border border-red-500 bg-red-100">
-      client list
+  <div class="flex flex-col min-h-screen">
+    <div class="bg-black text-white w-full">
+      HEADER
     </div>
-    <div class="col-span-8 row-span-4 border border-blue-500 bg-blue-100">
-      client/tax years
+    <div class="flex flex-col flex-grow">
+      <div class="flex h-full">
+        <div class="border border-red-500 bg-red-100 small-column">
+          client list
+        </div>
+        <div class="border border-blue-500 bg-blue-100 flex-grow">
+          client/tax years
+        </div>
+        <div class="border border-green-500 bg-green-100 small-column">
+          fees/checklists
+        </div>
+      </div>
+      <div class="flex">
+        <div class="border border-yellow-500 bg-yellow-100 small-column">
+          smartviews
+        </div>
+        <div class="border border-gray-500 bg-gray-100 flex-grow">
+          logs/income/fbar
+        </div>
+        <div class="border border-purple-500 bg-purple-100 small-column">
+          personal/contact
+        </div>
+      </div>
     </div>
-    <div class="col-span-2 row-span-4 border border-green-500 bg-green-100">
-      logs/income/fbar
-    </div>
-    <div class="col-span-2 row-span-3 row-start-7 border border-yellow-500 bg-yellow-100">
-      smartviews
-    </div>
-    <div class="col-span-5 row-span-5 row-start-5 border border-gray-500 bg-gray-100">
-      fees/checklists
-    </div>
-    <div class="col-span-5 row-span-5 row-start-5 border border-purple-500 bg-purple-100">
-      personal/contact
+    <div class="bg-black text-white">
+      FOOTER
     </div>
   </div>
 </template>
@@ -28,4 +40,7 @@ export default {
 </script>
 
 <style scoped>
+.small-column {
+  @apply w-112 md:w-80;
+}
 </style>

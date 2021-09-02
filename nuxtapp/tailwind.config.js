@@ -10,6 +10,9 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   theme: {
     extend: {
+      width: {
+        112: '28rem'
+      },
       screens: {
         print: { raw: 'print' }
       },
