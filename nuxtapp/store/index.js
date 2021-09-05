@@ -12,7 +12,10 @@ import {
   A_BEFORE_EACH_ROUTE,
   GET_S3_URL,
   GET_PREVIOUS_ROUTE,
-  GET_BASE_URL, COOKIE_KEY_SESSION_TOKEN, SET_SESSION_TOKEN
+  GET_BASE_URL,
+  COOKIE_KEY_SESSION_TOKEN,
+  SET_SESSION_TOKEN,
+  A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER
 } from '@/shared/constants'
 import { asyncObjectConstructor } from '@/shared/utility'
 import { getCookieByKey } from '@/shared/cookie-utilities'
@@ -72,10 +75,7 @@ const actions = {
     commit(SET_CLIENT_SIDE_INIT_STATE, newStateObj0)
     try {
       const proms = []
-      const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
-      if (token) {
-        commit(SET_SESSION_TOKEN, token)
-      }
+      proms.push(dispatch(A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER))
       await Promise.all(proms)
 
       const newStateObj1 = asyncObjectConstructor()
@@ -86,6 +86,12 @@ const actions = {
       newStateObj2.loadingState = LOADING_COMPLETED_FAILURE
       newStateObj2.error = e
       commit(SET_CLIENT_SIDE_INIT_STATE, newStateObj2)
+    }
+  },
+  [A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER] ({ commit }) {
+    const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
+    if (token) {
+      commit(SET_SESSION_TOKEN, token)
     }
   },
   async [A_BEFORE_EACH_ROUTE] ({ commit, dispatch }, { to, from }) {
