@@ -12,9 +12,10 @@ import {
   A_BEFORE_EACH_ROUTE,
   GET_S3_URL,
   GET_PREVIOUS_ROUTE,
-  GET_BASE_URL, GET_DOES_USER_HAVE_SESSION
+  GET_BASE_URL, COOKIE_KEY_SESSION_TOKEN, SET_SESSION_TOKEN
 } from '@/shared/constants'
 import { asyncObjectConstructor } from '@/shared/utility'
+import { getCookieByKey } from '@/shared/cookie-utilities'
 
 const namespaced = false
 
@@ -71,7 +72,9 @@ const actions = {
     commit(SET_CLIENT_SIDE_INIT_STATE, newStateObj0)
     try {
       const proms = []
-      if (getters[GET_DOES_USER_HAVE_SESSION]) {
+      const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
+      if (token) {
+        commit(SET_SESSION_TOKEN, token)
       }
       await Promise.all(proms)
 
