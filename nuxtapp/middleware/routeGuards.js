@@ -1,9 +1,7 @@
-import {
-  ROUTE_LOGIN
-} from '@/shared/constants'
+import { routes } from '~/shared/constants'
 
 const unguardedRoutesHash = {
-  [ROUTE_LOGIN]: true
+  [routes.login]: true
 }
 
 export default function ({ route, redirect, store }) {
@@ -11,7 +9,7 @@ export default function ({ route, redirect, store }) {
   if (route.name) {
     if (!isAuthenticated) {
       if (!unguardedRoutesHash[route.name]) {
-        redirect({ name: ROUTE_LOGIN })
+        redirect({ name: routes.login })
       }
     }
   }

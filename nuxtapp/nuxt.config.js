@@ -1,3 +1,5 @@
+import qs from 'qs'
+
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -33,6 +35,8 @@ export default {
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     '@/plugins/init.js',
+    '@/plugins/axios.js',
+    '@/plugins/api.js',
     '@/plugins/breakpoints-mixin.js'
   ],
 
@@ -62,7 +66,17 @@ export default {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    baseURL: process.env.BASE_URL,
+    withCredentials: false,
+    responseType: 'json',
+
+    // Override the default serializer to switch params from becoming []id=a&[]id=b ...
+    // in GET and DELETE requests to id=a&id=b.
+    paramsSerializer: (params) => {
+      qs.stringify(params, { arrayFormat: 'repeat' })
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

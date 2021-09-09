@@ -61,11 +61,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import {
-  ROUTE_RESET_PASSWORD,
-  ROUTE_ROOT
-} from '~/shared/constants'
+import { routes } from '~/shared/constants'
 import { isNameValid, isPasswordValid } from '@/shared/domain-utilities'
 
 const loginFormConstructor = () => {
@@ -84,18 +80,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([]),
-    resetPasswordRouteObj () {
-      return { name: ROUTE_RESET_PASSWORD }
-    },
     loginPayload () {
       return {
         username: this.formModel.username.input,
         password: this.formModel.password.input
       }
-    },
-    routeObj () {
-      return { name: ROUTE_ROOT }
     },
     isSubmitButtonDisabled () {
       return !this.isFormValid || this.isLoading
@@ -114,17 +103,24 @@ export default {
     this.formModel = loginFormConstructor()
   },
   methods: {
-    async handleSubmit () {
+    handleSubmit () {
+      this.$api.login().then(data => console.log(data))
     },
-    async login () {
-    },
-    async setSession ({ token, rememberMe }) {
+    login () {
+      console.log()
     },
     redirect () {
+      this.$router.replace({ name: routes.root })
     },
     notifyFailure () {
     },
     setErrorsOnLabels () {
+      if (!this.isNameValid) {
+        this.formModel.username.isValid = false
+      }
+      if (!this.isPasswordValid) {
+        this.formModel.password.isValid = false
+      }
     }
   }
 }
