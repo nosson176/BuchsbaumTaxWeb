@@ -1,3 +1,4 @@
+// Store State Models
 export const models = Object.freeze({
   token: 'token',
   toast: 'toast',
@@ -5,16 +6,19 @@ export const models = Object.freeze({
 })
 
 export const setModelResponse = 'setModelResponse'
+export const setLoading = 'setLoading'
 
 // Route names
-export const ROUTE_ROOT = 'index'
-export const ROUTE_HOME = 'home'
-export const ROUTE_LOGIN = 'login'
-export const ROUTE_SIGNUP = 'signup'
-export const ROUTE_TERMS = 'terms'
-export const ROUTE_PRIVACY = 'privacy'
-export const ROUTE_ADMIN = 'admin'
-export const ROUTE_RESET_PASSWORD = 'reset-password'
+export const routes = Object.freeze({
+  root: 'index',
+  home: 'home',
+  login: 'login',
+  signup: 'signup',
+  terms: 'terms',
+  privacy: 'privacy',
+  admin: 'admin',
+  resetPassword: 'reset-password'
+})
 
 // Meta Tags
 export const META_HID_DESCRIPTION = 'description'
@@ -34,6 +38,7 @@ export const ERROR_MESSAGE_AXIOS_401 = 'Request failed with status code 401'
 export const ERROR_MESSAGE_EMAIL_ALREADY_EXISTS = 'Email already exists'
 export const ERROR_MESSAGE_GENERIC_SIGNUP_ERROR = 'Generic signup error'
 
+// Events
 export const events = Object.freeze({
   hide: 'hide',
   click: 'click',
