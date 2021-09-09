@@ -2,7 +2,6 @@ import { setLoading, setModelResponse } from '~/shared/constants'
 
 export default function ({ $axios, store }) {
   $axios.onRequest((config) => {
-    console.log('config: ', config)
     if ('loading' in config) {
       store.commit(setLoading, { model: config.loading, status: true })
     }
@@ -14,7 +13,6 @@ export default function ({ $axios, store }) {
   })
 
   $axios.onResponse((resp) => {
-    console.log('resp: ', resp)
     // Clear the loading state for a model.
     if ('loading' in resp.config) {
       store.commit(setLoading, { model: resp.config.loading, status: false })
@@ -36,7 +34,6 @@ export default function ({ $axios, store }) {
   })
 
   $axios.onResponseError((err) => {
-    console.log('err: ', err, 'store', this.$store)
     // Clear the loading state for a model.
     if ('loading' in err.config) {
       store.commit(setLoading, { model: err.config.loading, status: false })
