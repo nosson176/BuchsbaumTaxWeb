@@ -63,19 +63,10 @@
 <script>
 import { mapGetters } from 'vuex'
 import {
-  A_CLIENT_SET_NOTIFICATION,
-  A_INIT_AUTHENTICATED_USER_MODULE,
-  A_SET_SESSION_TOKEN, GET_BACKEND_URL,
-  LOADING_COMPLETED_FAILURE,
-  LOADING_COMPLETED_SUCCESS,
-  LOADING_STARTED,
-  NOTIFICATION_TYPE_ALERT,
   ROUTE_RESET_PASSWORD,
   ROUTE_ROOT
 } from '~/shared/constants'
-import { asyncObjectConstructor } from '@/shared/utility'
 import { isNameValid, isPasswordValid } from '@/shared/domain-utilities'
-import { notificationConstructor } from '@/shared/constructors'
 
 const loginFormConstructor = () => {
   return {
@@ -89,14 +80,11 @@ export default {
   data () {
     return {
       formModel: null,
-      loginState: asyncObjectConstructor()
+      loginState: null
     }
   },
   computed: {
-    ...mapGetters([GET_BACKEND_URL]),
-    backendUrl () {
-      return `${this[GET_BACKEND_URL]}/api/sessions`
-    },
+    ...mapGetters([]),
     resetPasswordRouteObj () {
       return { name: ROUTE_RESET_PASSWORD }
     },
@@ -120,9 +108,6 @@ export default {
     },
     isPasswordValid () {
       return isPasswordValid(this.formModel.password.input)
-    },
-    isLoading () {
-      return this.loginState.loadingState === LOADING_STARTED
     }
   },
   created () {
@@ -130,58 +115,16 @@ export default {
   },
   methods: {
     async handleSubmit () {
-      if (!this.isSubmitButtonDisabled) {
-        await this.login()
-        if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
-          const token = this.loginState.data.token
-          const rememberMe = this.formModel.rememberMe || true
-          await this.setSession({ token, rememberMe })
-          await this.$store.dispatch(A_INIT_AUTHENTICATED_USER_MODULE)
-        }
-        this.redirect()
-      } else {
-        this.setErrorsOnLabels()
-      }
     },
     async login () {
-      this.loginState.loadingState = LOADING_STARTED
-      try {
-        const loginResponse = await this.$axios.post(this.backendUrl, this.loginPayload)
-        if (loginResponse.data.token) {
-          this.loginState.loadingState = LOADING_COMPLETED_SUCCESS
-          this.loginState.data = loginResponse.data
-        } else {
-          this.loginState.loadingState = LOADING_COMPLETED_FAILURE
-          this.notifyFailure()
-        }
-      } catch (e) {
-        this.loginState.loadingState = LOADING_COMPLETED_FAILURE
-        this.loginState.error = e
-        this.notifyFailure()
-      }
     },
     async setSession ({ token, rememberMe }) {
-      await this.$store.dispatch(A_SET_SESSION_TOKEN, { token, rememberMe })
     },
     redirect () {
-      if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
-        this.$router.replace(this.routeObj)
-      }
     },
     notifyFailure () {
-      const notification = notificationConstructor()
-      notification.time = 5000
-      notification.type = NOTIFICATION_TYPE_ALERT
-      notification.message = 'Failed to login'
-      this.$store.dispatch(A_CLIENT_SET_NOTIFICATION, { notification })
     },
     setErrorsOnLabels () {
-      if (!this.isNameValid) {
-        this.formModel.username.isValid = false
-      }
-      if (!this.isPasswordValid) {
-        this.formModel.password.isValid = false
-      }
     }
   }
 }

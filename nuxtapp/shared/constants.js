@@ -1,66 +1,7 @@
-// Getters
-export const GET_LOGIN_ENDPOINT = 'getLoginEndpoint'
-export const GET_USER_ENDPOINT = 'getUserEndpoint'
-export const GET_IS_LOGGED_IN = 'getIsLoggedIn'
-export const GET_LOGOUT_ENDPOINT = 'getLogoutEndpoint'
-export const GET_URL_FACTORY = 'getUrlFactory'
-export const GET_HTTP_CONFIG = 'getHttpConfig'
-export const GET_BACKEND_URL = 'getBackendUrl'
-export const GET_BASE_URL = 'getBaseUrl'
-export const GET_S3_URL = 'getS3Url'
-export const GET_LATEST_ROUTE = 'getLatestRoute'
-export const GET_PREVIOUS_ROUTE = 'getPreviousRoute'
-export const GET_DOES_USER_HAVE_SESSION = 'getDoesUserHaveSession'
-export const GET_CURRENT_USER = 'getCurrentUser'
-export const GET_NOTIFICATIONS_STATE = 'getNotificationsState'
-
-// Mutations
-export const SET_SESSION_TOKEN = 'setSessionToken'
-export const LOAD_SESSION_FROM_COOKIE = 'loadSessionFromCookie'
-export const SET_APP_INITIALIZATION_STATE = 'setAppInitializationState'
-export const SET_DID_SESSION_VALIDATION_FAIL = 'setDidSessionValidationFail'
-export const SET_LOAD_USER_STATE = 'setLoadUserState'
-export const SET_INIT_USER_MODULE_STATE = 'setInitUserModuleState'
-export const SET_INIT_AUTHENTICATED_USER_MODULE_STATE = 'setInitAuthenticatedUserModuleState'
-export const SET_USER_SIGNUP_STATE = 'setUserSignUpState'
-export const SET_LOGIN_STATE = 'setLoginState'
-export const SET_CURRENT_USER_STATE = 'setCurrentUserState'
-export const SET_CHANGE_PASSWORD_STATE = 'setChangePasswordState'
-export const PUSH_TO_SESSION_HISTORY = 'pushToSessionHistory'
-export const SET_SCROLL_STATE_BY_KEY = 'setWindowScrollEvent'
-export const SET_CLIENT_SIDE_INIT_STATE = 'setAppClientSideInitState'
-export const SET_INIT_ADMIN_MODULE_STATE = 'setInitAdminModuleState'
-export const SET_NOTIFICATIONS_STATE = 'setNotificationsState'
-export const SET_CURRENT_NOTIFICATION = 'setCurrentNotification'
-
-// Actions
-export const A_ON_APP_CREATED = 'actionOnAppCreated'
-export const A_INIT_USER_MODULE = 'actionInitUserModule'
-export const A_INIT_AUTHENTICATED_USER_MODULE = 'actionInitAuthenticatedUserModule'
-export const A_LOAD_CURRENT_USER = 'actionLoadCurrentUser'
-export const A_SET_SESSION_TOKEN_COOKIE_FROM_REQUEST = 'actionSetSessionTokenCookieFromRequest'
-export const A_SET_SESSION_TOKEN = 'actionSetSessionToken'
-export const A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER = 'actionLoadSessionTokenCookieFromBrowser'
-export const APP_CLIENT_SIDE_INIT = 'appClientSideInit'
-export const A_AFTER_EACH_ROUTE = 'actionAfterEachRoute'
-export const A_BEFORE_EACH_ROUTE = 'actionBeforeEachRoute'
-export const A_ON_DOCUMENT_SCROLL = 'actionOnDocumentScroll'
-export const A_SET_DOCUMENT_SCROLL = 'actionSetDocumentScroll'
-export const A_SIGN_UP = 'actionSignUp'
-export const A_SIGN_OUT = 'actionSignOut'
-export const A_CHANGE_PASSWORD = 'actionChangePassword'
-export const A_REQUEST_PASSWORD_RESET_EMAIL = 'actionRequestResetPasswordEmail'
-export const A_RESET_PASSWORD_SET_NEW_PASSWORD = 'actionRequestSetNewPassword'
-export const LOAD_USER = 'loadUser'
-export const A_INIT_ADMIN_MODULE = 'actionInitAdminModule'
-export const A_CLIENT_SET_NOTIFICATION = 'actionClientSetNotification'
-export const A_CLIENT_RESET_NOTIFICATION = 'actionClientResetNotification'
-
-// Loading States
-export const LOADING_PRISTINE = 0
-export const LOADING_STARTED = 1
-export const LOADING_COMPLETED_SUCCESS = 2
-export const LOADING_COMPLETED_FAILURE = 3
+export const models = Object.freeze({
+  token: 'token',
+  toast: 'toast'
+})
 
 // Route names
 export const ROUTE_ROOT = 'index'

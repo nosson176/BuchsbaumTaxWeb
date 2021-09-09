@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { A_CLIENT_RESET_NOTIFICATION } from '~/shared/constants'
+import { models } from '~/shared/constants'
 export default {
   name: 'Notifier',
   data () {
@@ -16,18 +16,18 @@ export default {
     }
   },
   computed: {
-    notification () {
-      return this.$store.state.notificationModule.currentNotification
-    },
+    // notification () {
+    //   return this[models.toast].currentNotification
+    // },
     message () {
       return this.notification.message
     },
     type () {
       return this.notification.type
-    },
-    currentNotification () {
-      return this.$store.state.notificationModule.currentNotification
     }
+    // currentNotification () {
+    //   return this[models.toast].currentNotification
+    // }
   },
   watch: {
     currentNotification () {
@@ -47,7 +47,7 @@ export default {
       setTimeout(this.resetNotification, notification.time)
     },
     resetNotification () {
-      this.$store.dispatch(A_CLIENT_RESET_NOTIFICATION)
+      this.$store.commit('setModelResponse', { model: models.notifier, data: null })
       this.showNotification = false
     }
   }

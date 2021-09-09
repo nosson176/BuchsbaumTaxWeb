@@ -20,7 +20,7 @@
 
 <script>
 import {
-  A_CLIENT_RESET_NOTIFICATION,
+  models,
   NOTIFICATION_TYPE_ALERT
 } from '~/shared/constants'
 
@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     closeSelf () {
-      this.$store.dispatch(A_CLIENT_RESET_NOTIFICATION)
+      this.$store.commit('setModelResponse', { model: models.notifier, data: null })
     }
   }
 }

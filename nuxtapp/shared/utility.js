@@ -1,21 +1,3 @@
-import { LOADING_PRISTINE } from '@/shared/constants'
-
-const asyncObjectConstructor = () => {
-  return {
-    loadingState: LOADING_PRISTINE,
-    data: null,
-    error: null
-  }
-}
-
-const asyncArrayConstructor = () => {
-  return {
-    loadingState: LOADING_PRISTINE,
-    data: [],
-    error: null
-  }
-}
-
 const delayPromConstructor = (ms) => {
   return new Promise((resolve, reject) => setTimeout(() => resolve(), ms))
 }
@@ -79,8 +61,6 @@ const getOrdinalNum = (number) => {
 }
 
 export {
-  asyncArrayConstructor,
-  asyncObjectConstructor,
   delayPromConstructor,
   getAppUniqueId,
   formatAsUSCurrency,

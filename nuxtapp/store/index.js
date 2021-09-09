@@ -1,108 +1,45 @@
-import {
-  LOADING_STARTED,
-  LOADING_COMPLETED_SUCCESS,
-  LOADING_COMPLETED_FAILURE,
-  GET_BACKEND_URL,
-  GET_LATEST_ROUTE,
-  PUSH_TO_SESSION_HISTORY,
-  SET_SCROLL_STATE_BY_KEY,
-  SET_CLIENT_SIDE_INIT_STATE,
-  A_AFTER_EACH_ROUTE,
-  APP_CLIENT_SIDE_INIT,
-  A_BEFORE_EACH_ROUTE,
-  GET_S3_URL,
-  GET_PREVIOUS_ROUTE,
-  GET_BASE_URL,
-  COOKIE_KEY_SESSION_TOKEN,
-  SET_SESSION_TOKEN,
-  A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER
-} from '@/shared/constants'
-import { asyncObjectConstructor } from '@/shared/utility'
-import { getCookieByKey } from '@/shared/cookie-utilities'
+import { models } from '~/shared/constants'
 
 const namespaced = false
 
 const state = () => {
   return {
-    sessionHistory: []
+    // Data from API responses for different models, eg: lists, campaigns.
+    // The API responses are stored in this map as-is. This is invoked by
+    // API requests in `http`. This initialises lists: {}, campaigns: {}
+    // etc. on state.
+    ...Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: [] }), {}),
+
+    // Map of loading status (true, false) indicators for different model keys
+    // like lists, campaigns etc. loading: {lists: true, campaigns: true ...}.
+    // The Axios API global request interceptor marks a model as loading=true
+    // and the response interceptor marks it as false. The model keys are being
+    // pre-initialised here to fix "reactivity" issues on first loads.
+    loading: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: false }), {})
   }
 }
 
 const getters = {
-  [GET_BASE_URL] () {
-    return process.env.BASE_URL
-  },
-  [GET_BACKEND_URL] () {
-    return process.env.BACKEND_URL
-  },
-  [GET_S3_URL] () {
-    return process.env.S3_URL
-  },
-  [GET_LATEST_ROUTE] (state) {
-    const arr = state.sessionHistory
-    return arr[arr.length - 1]
-  },
-  [GET_PREVIOUS_ROUTE] (state) {
-    const arr = state.sessionHistory
-    let route = null
-    if (arr.length >= 2) {
-      route = arr[arr.length - 2]
-    }
-    return route
-  }
+
 }
 
 const mutations = {
-  [PUSH_TO_SESSION_HISTORY]: (state, newRoute) => {
-    state.sessionHistory.push(newRoute)
+  // Set data from API responses. `model` is 'lists', 'campaigns' etc.
+  setModelResponse (state, { model, data }) {
+    state[model] = data
   },
-  [SET_SCROLL_STATE_BY_KEY]: (state, payload) => {
-    state.scrollStateHash = Object.assign({}, state.scrollStateHash, payload)
-  },
-  [SET_CLIENT_SIDE_INIT_STATE]: (state, newState) => {
-    state.clientSideInitState = newState
+
+  // Set the loading status for a model globally. When a request starts,
+  // status is set to true which is used by the UI to show loaders and block
+  // forms. When a response is received, the status is set to false. This is
+  // invoked by API requests in `http`.
+  setLoading (state, { model, status }) {
+    state.loading[model] = status
   }
 }
 
 const actions = {
-  async nuxtServerInit ({ dispatch }, { req }) {
-    const proms = []
-    await Promise.all(proms)
-  },
-  async [APP_CLIENT_SIDE_INIT] ({ commit, dispatch, getters }, payload) {
-    const newStateObj0 = asyncObjectConstructor()
-    newStateObj0.loadingState = LOADING_STARTED
-    commit(SET_CLIENT_SIDE_INIT_STATE, newStateObj0)
-    try {
-      const proms = []
-      proms.push(dispatch(A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER))
-      await Promise.all(proms)
 
-      const newStateObj1 = asyncObjectConstructor()
-      newStateObj1.loadingState = LOADING_COMPLETED_SUCCESS
-      commit(SET_CLIENT_SIDE_INIT_STATE, newStateObj1)
-    } catch (e) {
-      const newStateObj2 = asyncObjectConstructor()
-      newStateObj2.loadingState = LOADING_COMPLETED_FAILURE
-      newStateObj2.error = e
-      commit(SET_CLIENT_SIDE_INIT_STATE, newStateObj2)
-    }
-  },
-  [A_LOAD_SESSION_TOKEN_COOKIE_FROM_BROWSER] ({ commit }) {
-    const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
-    if (token) {
-      commit(SET_SESSION_TOKEN, token)
-    }
-  },
-  async [A_BEFORE_EACH_ROUTE] ({ commit, dispatch }, { to, from }) {
-    const proms = []
-    await Promise.all(proms)
-  },
-  async [A_AFTER_EACH_ROUTE] ({ commit, dispatch }, { to, from }) {
-    commit(PUSH_TO_SESSION_HISTORY, to)
-    const proms = []
-    await Promise.all(proms)
-  }
 }
 
 export { namespaced, state, getters, mutations, actions }
