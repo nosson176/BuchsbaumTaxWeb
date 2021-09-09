@@ -1,6 +1,7 @@
 import qs from 'qs'
 import humps from 'humps'
 import store from '@/store'
+import { setModelResponse } from '~/shared/constants'
 
 const http = this.$axios.create({
   baseURL: process.env.BASE_URL,
@@ -40,7 +41,7 @@ http.interceptors.response.use((resp) => {
 
   // Store the API response for a model.
   if ('store' in resp.config) {
-    store.commit('setModelResponse', { model: resp.config.store, data })
+    store.commit(setModelResponse, { model: resp.config.store, data })
   }
 
   return data

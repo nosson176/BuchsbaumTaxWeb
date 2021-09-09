@@ -1,7 +1,10 @@
 export const models = Object.freeze({
   token: 'token',
-  toast: 'toast'
+  toast: 'toast',
+  appWidth: 'appWidth'
 })
+
+export const setModelResponse = 'setModelResponse'
 
 // Route names
 export const ROUTE_ROOT = 'index'
@@ -31,12 +34,14 @@ export const ERROR_MESSAGE_AXIOS_401 = 'Request failed with status code 401'
 export const ERROR_MESSAGE_EMAIL_ALREADY_EXISTS = 'Email already exists'
 export const ERROR_MESSAGE_GENERIC_SIGNUP_ERROR = 'Generic signup error'
 
-export const EVENT_NAME_HIDE = 'hide'
-export const EVENT_NAME_CLICK = 'click'
-export const EVENT_NAME_CHANGE = 'change'
-export const EVENT_NAME_INPUT = 'input'
-export const EVENT_NAME_SUBMIT = 'submit'
-export const EVENT_NAME_RESIZE = 'resize'
+export const events = Object.freeze({
+  hide: 'hide',
+  click: 'click',
+  change: 'change',
+  input: 'input',
+  submit: 'submit',
+  resize: 'resize'
+})
 
 export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'
 

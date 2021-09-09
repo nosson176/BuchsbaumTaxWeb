@@ -21,6 +21,7 @@
 <script>
 import {
   models,
+  setModelResponse,
   NOTIFICATION_TYPE_ALERT
 } from '~/shared/constants'
 
@@ -46,7 +47,7 @@ export default {
   },
   methods: {
     closeSelf () {
-      this.$store.commit('setModelResponse', { model: models.notifier, data: null })
+      this.$store.commit(setModelResponse, { model: models.notifier, data: null })
     }
   }
 }

@@ -22,7 +22,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { EVENT_NAME_INPUT } from '~/shared/constants'
+import { events } from '~/shared/constants'
 
 export default {
   name: 'ExampleFormFields',
@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     emitInput (payload) {
-      this.$emit(EVENT_NAME_INPUT, payload)
+      this.$emit(events.input, payload)
     }
   }
 }
