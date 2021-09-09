@@ -23,7 +23,15 @@ const createStore = () => {
     },
 
     getters: {
-
+      getHttpConfig (state) {
+        const headers = {}
+        if (state[models.token]) {
+          headers.Authorization = `Bearer ${state[models.token]}`
+        }
+        return {
+          headers
+        }
+      }
     },
 
     mutations: {

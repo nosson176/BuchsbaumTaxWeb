@@ -104,10 +104,9 @@ export default {
   },
   methods: {
     handleSubmit () {
-      this.$api.login().then(data => console.log(data))
-    },
-    login () {
-      console.log()
+      this.$api.login().then(
+        () => this.redirect()
+      )
     },
     redirect () {
       this.$router.replace({ name: routes.root })
