@@ -3,9 +3,10 @@
     <div class="bg-black text-white w-full flex">
       HEADER
     </div>
-    <div class="grid flex-grow overflow-hidden">
-      <div class="border border-red-500 bg-red-100 client-list overflow-auto">
-        <ClientList />
+    <div class="grid flex-grow overflow-hidden p-2">
+      <div class="bg-gray-100 border-2 border-gray-500 rounded client-list overflow-auto">
+        <ClientListHeader @change="toggleShowArchivedClients" />
+        <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="border border-blue-500 bg-blue-100 client-tax-years">
         client/tax years
@@ -32,14 +33,22 @@
 <script>
 export default {
   name: 'Home',
-  created () {
-
+  data () {
+    return {
+      showArchivedClients: false
+    }
+  },
+  methods: {
+    toggleShowArchivedClients () {
+      this.showArchivedClients = !this.showArchivedClients
+    }
   }
 }
 </script>
 
 <style scoped>
 .grid {
+  gap: 0.5rem;
   grid-template-rows: repeat(4, minmax(0, 1fr));
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
