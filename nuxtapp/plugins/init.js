@@ -11,7 +11,7 @@ function extend (app, mixin) {
 function loadTokenFromCookie (store) {
   const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
   if (token) {
-    store.commit(mutations.setModelResponse, { model: models.token, data: token })
+    store.commit(mutations.setModelResponse, { model: models.token, data: { token } })
   }
 }
 

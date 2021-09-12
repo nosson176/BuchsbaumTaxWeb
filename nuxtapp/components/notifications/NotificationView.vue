@@ -22,7 +22,7 @@
 import {
   models,
   mutations,
-  NOTIFICATION_TYPE_ALERT
+  notification
 } from '~/shared/constants'
 
 export default {
@@ -35,7 +35,7 @@ export default {
   },
   computed: {
     isNotificationTypeAlert () {
-      return this.type === NOTIFICATION_TYPE_ALERT
+      return this.type === notification.alert
     },
     notificationBackground () {
       if (this.isNotificationTypeAlert) {

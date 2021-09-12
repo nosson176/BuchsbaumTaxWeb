@@ -10,11 +10,12 @@ const getHttpConfig = () => {
   return headers
 }
 
-export default ({ $axios, store }, inject) => {
+export default ({ $axios }, inject) => {
   const headers = getHttpConfig()
+
   const login = data => $axios.post('/api/sessions', data, { loading: models.token, store: models.token })
 
-  const getClientList = () => $axios.get('/api/clients', { headers, loading: models.clients })
+  const getClientList = () => $axios.get('/api/clients', { headers, loading: models.clients, store: models.clients })
 
   const api = {
     login,

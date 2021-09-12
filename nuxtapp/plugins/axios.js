@@ -19,10 +19,10 @@ export default function ({ $axios, store }) {
     }
 
     let data = {}
-    if (typeof resp.data[resp.config.store] === 'object') {
-      data = { ...resp.data[resp.config.store] }
+    if (typeof resp.data === 'object') {
+      data = { ...resp.data }
     } else {
-      data = resp.data[resp.config.store]
+      data = resp.data
     }
 
     // Store the API response for a model.

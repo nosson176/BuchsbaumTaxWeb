@@ -13,11 +13,6 @@ export const mutations = Object.freeze({
   setLoading: 'setLoading'
 })
 
-// Store Getters
-export const getters = Object.freeze({
-  getHttpConfig: 'getHttpConfig'
-})
-
 // Route names
 export const routes = Object.freeze({
   root: 'index',
@@ -31,14 +26,16 @@ export const routes = Object.freeze({
 })
 
 // Meta Tags
-export const META_HID_DESCRIPTION = 'description'
-export const META_DESCRIPTION = 'description'
-export const META_OG_TITLE = 'og:title'
-export const META_HID_OG_TITLE = 'og-title'
-export const META_HID_OG_IMAGE = 'og-image'
-export const META_OG_IMAGE = 'og:image'
-export const META_HID_OG_DESCRIPTION = 'og-description'
-export const META_OG_DESCRIPTION = 'og:description'
+export const meta = Object.freeze({
+  hid_description: 'description',
+  description: 'description',
+  og_title: 'og:title',
+  hid_og_title: 'og-title',
+  og_image: 'og:image',
+  hid_og_image: 'og-image',
+  og_description: 'og:description',
+  hid_og_description: 'og-description'
+})
 
 export const COOKIE_KEY_SESSION_TOKEN = 'btax-session-token'
 
@@ -66,4 +63,6 @@ export const GET_IS_SCREEN_SIZE_TABLET = 'getIsScreenSizeTablet'
 export const GET_IS_SCREEN_SIZE_MOBILE = 'getIsScreenSizeMobile'
 
 // Notification Types
-export const NOTIFICATION_TYPE_ALERT = 'alert'
+export const notification = Object.freeze({
+  alert: 'alert'
+})
