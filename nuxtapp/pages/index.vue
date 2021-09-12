@@ -9,7 +9,6 @@ export default {
   name: 'IndexPage',
   created () {
     this.$api.getClientList()
-      .then(data => console.log(data))
   }
 }
 </script>

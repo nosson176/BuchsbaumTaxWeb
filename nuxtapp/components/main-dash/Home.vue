@@ -1,33 +1,29 @@
 <template>
-  <div class="flex flex-col min-h-screen">
-    <div class="bg-black text-white w-full">
+  <div class="flex flex-col max-h-screen overflow-auto">
+    <div class="bg-black text-white w-full flex">
       HEADER
     </div>
-    <div class="flex flex-col flex-grow">
-      <div class="flex h-full">
-        <div class="border border-red-500 bg-red-100 small-column">
-          client list
-        </div>
-        <div class="border border-blue-500 bg-blue-100 flex-grow">
-          client/tax years
-        </div>
-        <div class="border border-green-500 bg-green-100 small-column">
-          fees/checklists
-        </div>
+    <div class="grid flex-grow overflow-hidden">
+      <div class="border border-red-500 bg-red-100 client-list overflow-auto">
+        <ClientList />
       </div>
-      <div class="flex">
-        <div class="border border-yellow-500 bg-yellow-100 small-column">
-          smartviews
-        </div>
-        <div class="border border-gray-500 bg-gray-100 flex-grow">
-          logs/income/fbar
-        </div>
-        <div class="border border-purple-500 bg-purple-100 small-column">
-          personal/contact
-        </div>
+      <div class="border border-blue-500 bg-blue-100 client-tax-years">
+        client/tax years
+      </div>
+      <div class="border border-green-500 bg-green-100 fees-checklists">
+        fees/checklists
+      </div>
+      <div class="border border-yellow-500 bg-yellow-100 smart-views">
+        smartviews
+      </div>
+      <div class="border border-gray-500 bg-gray-100 logs-income-fbar">
+        logs/income/fbar
+      </div>
+      <div class="border border-purple-500 bg-purple-100 personal-contact">
+        personal/contact
       </div>
     </div>
-    <div class="bg-black text-white">
+    <div class="bg-black text-white flex">
       FOOTER
     </div>
   </div>
@@ -43,7 +39,32 @@ export default {
 </script>
 
 <style scoped>
-.small-column {
-  @apply w-112 md:w-80;
+.grid {
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.client-list {
+  @apply row-start-1 col-start-1 row-span-3;
+}
+
+.fees-checklists {
+  @apply row-start-1 row-span-2 col-start-7;
+}
+
+.client-tax-years {
+  @apply row-start-1 row-span-2 col-start-2 col-span-5;
+}
+
+.smart-views {
+  @apply row-start-4 col-start-1;
+}
+
+.logs-income-fbar {
+  @apply row-start-3 row-span-2 col-start-2 col-span-3;
+}
+
+.personal-contact {
+  @apply row-start-3 row-span-2 col-start-5 col-span-3;
 }
 </style>
