@@ -5,7 +5,7 @@ const unguardedRoutesHash = {
 }
 
 export default function ({ route, redirect, store }) {
-  const isAuthenticated = Object.entries(store.state[models.token]).length > 0
+  const isAuthenticated = store.state[models.token].length > 0
   if (route.name) {
     if (!isAuthenticated) {
       if (!unguardedRoutesHash[route.name]) {

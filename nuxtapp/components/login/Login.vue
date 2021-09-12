@@ -112,7 +112,7 @@ export default {
             this.routeToMainDash()
           })
     },
-    setSessionKey ({ token }) {
+    setSessionKey (token) {
       if (this.rememberMe) {
         setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: 365 })
       } else {

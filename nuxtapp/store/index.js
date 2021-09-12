@@ -20,16 +20,7 @@ const state = () => {
 }
 
 const getters = {
-  getHttpConfig (state) {
-    const headers = {}
-    console.log(state, state.token)
-    if (Object.entries(state[models.token]).length > 0) {
-      headers.Authorization = `Bearer ${state[models.token].token}`
-    }
-    return {
-      headers
-    }
-  }
+
 }
 
 const mutations = {

@@ -37,7 +37,7 @@
 export default {
   name: 'Home',
   created () {
-    this.$api.getClientList().then(data => console.log(data))
+
   }
 }
 </script>
