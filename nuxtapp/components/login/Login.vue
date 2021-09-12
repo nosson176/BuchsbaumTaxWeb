@@ -48,6 +48,10 @@
         </div>
       </div>
 
+      <div v-if="loginError" class="text-red-500 text-xs">
+        Incorrect username or password, please try again
+      </div>
+
       <div>
         <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
@@ -77,7 +81,7 @@ export default {
   data () {
     return {
       formModel: null,
-      loginState: null
+      loginError: false
     }
   },
   computed: {
@@ -106,13 +110,15 @@ export default {
   methods: {
     handleSubmit () {
       this.$api.login(this.loginPayload)
-        .then(
-          (data) => {
-            this.setSessionKey(data)
-            this.routeToMainDash()
-          })
+        .then((data) => {
+          this.setSessionKey(data)
+          this.routeToMainDash()
+        })
+        .catch((e) => {
+          this.loginError = true
+        })
     },
-    setSessionKey (token) {
+    setSessionKey ({ token }) {
       if (this.rememberMe) {
         setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: 365 })
       } else {
