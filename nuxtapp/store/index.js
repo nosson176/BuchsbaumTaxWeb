@@ -22,8 +22,9 @@ const state = () => {
 const getters = {
   getHttpConfig (state) {
     const headers = {}
-    if (state[models.token]) {
-      headers.Authorization = `Bearer ${state[models.token]}`
+    console.log(state, state.token)
+    if (Object.entries(state[models.token]).length > 0) {
+      headers.Authorization = `Bearer ${state[models.token].token}`
     }
     return {
       headers

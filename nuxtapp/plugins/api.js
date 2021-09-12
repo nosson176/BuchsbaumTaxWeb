@@ -1,10 +1,15 @@
-import { models } from '~/shared/constants'
+import { models, getters } from '~/shared/constants'
 
-export default function ({ $axios }, inject) {
-  const login = () => $axios.get('/api/sessions', { loading: models.token })
+export default ({ $axios, store }, inject) => {
+  const httpConfig = store.getters[getters.getHttpConfig]
+  console.log(httpConfig)
+  const login = data => $axios.post('/api/sessions', data, { loading: models.token, store: models.token })
+
+  const getClientList = () => $axios.get('/api/clients', { httpConfig, loading: models.clients })
 
   const api = {
-    login
+    login,
+    getClientList
   }
   // Inject to context as $api
   inject('api', api)

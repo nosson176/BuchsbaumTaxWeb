@@ -35,7 +35,10 @@
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  created () {
+    this.$api.getClientList().then(data => console.log(data))
+  }
 }
 </script>
 

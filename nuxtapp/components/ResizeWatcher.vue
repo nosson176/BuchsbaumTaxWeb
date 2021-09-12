@@ -4,7 +4,7 @@
 
 <script>
 import debounce from 'lodash/debounce'
-import { models, setModelResponse, events } from '~/shared/constants'
+import { models, mutations, events } from '~/shared/constants'
 
 export default {
   name: 'ResizeWatcher',
@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     initialize () {
-      this.$store.commit(setModelResponse, { model: models.notifier, data: window.innerWidth })
+      this.$store.commit(mutations.setModelResponse, { model: models.notifier, data: window.innerWidth })
       this.bindEventListeners()
     },
     bindEventListeners () {
@@ -31,7 +31,7 @@ export default {
       window.removeEventListener(events.resize, this.debouncedHandleResize)
     },
     handleResize (evt) {
-      this.$store.commit(setModelResponse, { model: models.notifier, data: evt.target.innerWidth })
+      this.$store.commit(mutations.setModelResponse, { model: models.notifier, data: evt.target.innerWidth })
     }
   }
 }

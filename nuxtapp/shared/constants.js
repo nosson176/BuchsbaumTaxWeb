@@ -1,12 +1,22 @@
 // Store State Models
 export const models = Object.freeze({
+  loading: 'loading',
   token: 'token',
   toast: 'toast',
-  appWidth: 'appWidth'
+  appWidth: 'appWidth',
+  clients: 'clients'
 })
 
-export const setModelResponse = 'setModelResponse'
-export const setLoading = 'setLoading'
+// Store Mutations
+export const mutations = Object.freeze({
+  setModelResponse: 'setModelResponse',
+  setLoading: 'setLoading'
+})
+
+// Store Getters
+export const getters = Object.freeze({
+  getHttpConfig: 'getHttpConfig'
+})
 
 // Route names
 export const routes = Object.freeze({
@@ -54,8 +64,6 @@ export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'
 export const GET_IS_SCREEN_SIZE_DESKTOP = 'getIsScreenSizeDesktop'
 export const GET_IS_SCREEN_SIZE_TABLET = 'getIsScreenSizeTablet'
 export const GET_IS_SCREEN_SIZE_MOBILE = 'getIsScreenSizeMobile'
-
-export const SET_APP_WIDTH = 'setAppWidth'
 
 // Notification Types
 export const NOTIFICATION_TYPE_ALERT = 'alert'

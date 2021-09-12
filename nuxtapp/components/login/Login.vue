@@ -61,8 +61,9 @@
 </template>
 
 <script>
-import { routes } from '~/shared/constants'
+import { COOKIE_KEY_SESSION_TOKEN, routes } from '~/shared/constants'
 import { isNameValid, isPasswordValid } from '@/shared/domain-utilities'
+import { setCookieByKey } from '@/shared/cookie-utilities'
 
 const loginFormConstructor = () => {
   return {
@@ -104,11 +105,21 @@ export default {
   },
   methods: {
     handleSubmit () {
-      this.$api.login().then(
-        () => this.redirect()
-      )
+      this.$api.login(this.loginPayload)
+        .then(
+          (data) => {
+            this.setSessionKey(data)
+            this.routeToMainDash()
+          })
     },
-    redirect () {
+    setSessionKey ({ token }) {
+      if (this.rememberMe) {
+        setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: 365 })
+      } else {
+        setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: null })
+      }
+    },
+    routeToMainDash () {
       this.$router.replace({ name: routes.root })
     },
     notifyFailure () {

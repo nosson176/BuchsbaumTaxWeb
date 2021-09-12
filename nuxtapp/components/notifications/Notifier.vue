@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { models, setModelResponse } from '~/shared/constants'
+import { models, mutations } from '~/shared/constants'
 export default {
   name: 'Notifier',
   data () {
@@ -47,7 +47,7 @@ export default {
       setTimeout(this.resetNotification, notification.time)
     },
     resetNotification () {
-      this.$store.commit(setModelResponse, { model: models.notifier, data: null })
+      this.$store.commit(mutations.setModelResponse, { model: models.notifier, data: null })
       this.showNotification = false
     }
   }
