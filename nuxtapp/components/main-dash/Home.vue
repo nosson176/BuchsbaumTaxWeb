@@ -4,7 +4,7 @@
       HEADER
     </div>
     <div class="grid flex-grow overflow-hidden p-2">
-      <div class="bg-gray-100 border-2 border-gray-500 rounded client-list overflow-auto">
+      <div class="bg-gray-100 border-2 border-gray-500 rounded flex flex-col client-list">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>

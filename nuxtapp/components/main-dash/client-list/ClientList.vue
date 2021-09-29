@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex-grow overflow-auto">
     <div v-for="client in displayedClients" :key="client.id" class="text-gray-900 text-sm p-1 client cursor-pointer">
       <span class="font-bold">{{ client.lastName }}</span> {{ client.displayName }}
     </div>
