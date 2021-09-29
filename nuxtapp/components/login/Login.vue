@@ -48,6 +48,10 @@
         </div>
       </div>
 
+      <div v-if="loginError" class="text-red-500 text-xs">
+        Incorrect username or password, please try again
+      </div>
+
       <div>
         <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
@@ -61,21 +65,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import {
-  A_CLIENT_SET_NOTIFICATION,
-  A_INIT_AUTHENTICATED_USER_MODULE,
-  A_SET_SESSION_TOKEN, GET_BACKEND_URL,
-  LOADING_COMPLETED_FAILURE,
-  LOADING_COMPLETED_SUCCESS,
-  LOADING_STARTED,
-  NOTIFICATION_TYPE_ALERT,
-  ROUTE_RESET_PASSWORD,
-  ROUTE_ROOT
-} from '~/shared/constants'
-import { asyncObjectConstructor } from '@/shared/utility'
+import { COOKIE_KEY_SESSION_TOKEN, routes } from '~/shared/constants'
 import { isNameValid, isPasswordValid } from '@/shared/domain-utilities'
-import { notificationConstructor } from '@/shared/constructors'
+import { setCookieByKey } from '@/shared/cookie-utilities'
 
 const loginFormConstructor = () => {
   return {
@@ -89,25 +81,15 @@ export default {
   data () {
     return {
       formModel: null,
-      loginState: asyncObjectConstructor()
+      loginError: false
     }
   },
   computed: {
-    ...mapGetters([GET_BACKEND_URL]),
-    backendUrl () {
-      return `${this[GET_BACKEND_URL]}/api/sessions`
-    },
-    resetPasswordRouteObj () {
-      return { name: ROUTE_RESET_PASSWORD }
-    },
     loginPayload () {
       return {
         username: this.formModel.username.input,
         password: this.formModel.password.input
       }
-    },
-    routeObj () {
-      return { name: ROUTE_ROOT }
     },
     isSubmitButtonDisabled () {
       return !this.isFormValid || this.isLoading
@@ -120,60 +102,33 @@ export default {
     },
     isPasswordValid () {
       return isPasswordValid(this.formModel.password.input)
-    },
-    isLoading () {
-      return this.loginState.loadingState === LOADING_STARTED
     }
   },
   created () {
     this.formModel = loginFormConstructor()
   },
   methods: {
-    async handleSubmit () {
-      if (!this.isSubmitButtonDisabled) {
-        await this.login()
-        if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
-          const token = this.loginState.data.token
-          const rememberMe = this.formModel.rememberMe || true
-          await this.setSession({ token, rememberMe })
-          await this.$store.dispatch(A_INIT_AUTHENTICATED_USER_MODULE)
-        }
-        this.redirect()
+    handleSubmit () {
+      this.$api.login(this.loginPayload)
+        .then((data) => {
+          this.setSessionKey(data)
+          this.routeToMainDash()
+        })
+        .catch((e) => {
+          this.loginError = true
+        })
+    },
+    setSessionKey ({ token }) {
+      if (this.rememberMe) {
+        setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: 365 })
       } else {
-        this.setErrorsOnLabels()
+        setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: null })
       }
     },
-    async login () {
-      this.loginState.loadingState = LOADING_STARTED
-      try {
-        const loginResponse = await this.$axios.post(this.backendUrl, this.loginPayload)
-        if (loginResponse.data.token) {
-          this.loginState.loadingState = LOADING_COMPLETED_SUCCESS
-          this.loginState.data = loginResponse.data
-        } else {
-          this.loginState.loadingState = LOADING_COMPLETED_FAILURE
-          this.notifyFailure()
-        }
-      } catch (e) {
-        this.loginState.loadingState = LOADING_COMPLETED_FAILURE
-        this.loginState.error = e
-        this.notifyFailure()
-      }
-    },
-    async setSession ({ token, rememberMe }) {
-      await this.$store.dispatch(A_SET_SESSION_TOKEN, { token, rememberMe })
-    },
-    redirect () {
-      if (this.loginState.loadingState === LOADING_COMPLETED_SUCCESS) {
-        this.$router.replace(this.routeObj)
-      }
+    routeToMainDash () {
+      this.$router.replace({ name: routes.root })
     },
     notifyFailure () {
-      const notification = notificationConstructor()
-      notification.time = 5000
-      notification.type = NOTIFICATION_TYPE_ALERT
-      notification.message = 'Failed to login'
-      this.$store.dispatch(A_CLIENT_SET_NOTIFICATION, { notification })
     },
     setErrorsOnLabels () {
       if (!this.isNameValid) {

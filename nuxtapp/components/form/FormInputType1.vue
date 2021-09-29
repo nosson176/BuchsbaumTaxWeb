@@ -17,7 +17,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { EVENT_NAME_INPUT } from '~/shared/constants'
+import { events } from '~/shared/constants'
 
 export default {
   name: 'FormInputType1',
@@ -83,7 +83,7 @@ export default {
         return this.value
       },
       set (newValue) {
-        this.$emit(EVENT_NAME_INPUT, newValue)
+        this.$emit(events.input, newValue)
       }
     },
     shouldShowValidation () {

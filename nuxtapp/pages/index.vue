@@ -6,6 +6,9 @@
 
 <script>
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+  created () {
+    this.$api.getClientList()
+  }
 }
 </script>

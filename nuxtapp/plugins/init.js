@@ -1,7 +1,5 @@
-import {
-  A_AFTER_EACH_ROUTE,
-  APP_CLIENT_SIDE_INIT
-} from '@/shared/constants'
+import { getCookieByKey } from '@/shared/cookie-utilities'
+import { models, mutations, COOKIE_KEY_SESSION_TOKEN } from '@/shared/constants'
 
 function extend (app, mixin) {
   if (!app.mixins) {
@@ -10,13 +8,17 @@ function extend (app, mixin) {
   app.mixins.push(mixin)
 }
 
+function loadTokenFromCookie (store) {
+  const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
+  if (token) {
+    store.commit(mutations.setModelResponse, { model: models.token, data: { token } })
+  }
+}
+
 export default function ({ app, store }) {
-  app.router.afterEach((to, from) => {
-    store.dispatch(A_AFTER_EACH_ROUTE, { to, from })
-  })
   extend(app, {
     created () {
-      store.dispatch(APP_CLIENT_SIDE_INIT)
+      loadTokenFromCookie(store)
     }
   })
 }

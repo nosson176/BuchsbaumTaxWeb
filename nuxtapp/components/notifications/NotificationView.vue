@@ -20,8 +20,9 @@
 
 <script>
 import {
-  A_CLIENT_RESET_NOTIFICATION,
-  NOTIFICATION_TYPE_ALERT
+  models,
+  mutations,
+  notification
 } from '~/shared/constants'
 
 export default {
@@ -34,7 +35,7 @@ export default {
   },
   computed: {
     isNotificationTypeAlert () {
-      return this.type === NOTIFICATION_TYPE_ALERT
+      return this.type === notification.alert
     },
     notificationBackground () {
       if (this.isNotificationTypeAlert) {
@@ -46,7 +47,7 @@ export default {
   },
   methods: {
     closeSelf () {
-      this.$store.dispatch(A_CLIENT_RESET_NOTIFICATION)
+      this.$store.commit(mutations.setModelResponse, { model: models.notifier, data: null })
     }
   }
 }
