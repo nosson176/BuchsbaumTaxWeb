@@ -40,10 +40,12 @@ export const meta = Object.freeze({
 export const COOKIE_KEY_SESSION_TOKEN = 'btax-session-token'
 
 export const BACKEND_MAX_INTEGER = 2147483647
-
-export const ERROR_MESSAGE_AXIOS_401 = 'Request failed with status code 401'
-export const ERROR_MESSAGE_EMAIL_ALREADY_EXISTS = 'Email already exists'
-export const ERROR_MESSAGE_GENERIC_SIGNUP_ERROR = 'Generic signup error'
+// errors
+export const error = Object.freeze({
+  axios_401: 'Request failed with status code 401',
+  email_already_exists: 'Email already exists',
+  generic_signup_error: 'Generic signup error'
+})
 
 // Events
 export const events = Object.freeze({
@@ -56,11 +58,6 @@ export const events = Object.freeze({
 })
 
 export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'
-
-// Render Store Module
-export const GET_IS_SCREEN_SIZE_DESKTOP = 'getIsScreenSizeDesktop'
-export const GET_IS_SCREEN_SIZE_TABLET = 'getIsScreenSizeTablet'
-export const GET_IS_SCREEN_SIZE_MOBILE = 'getIsScreenSizeMobile'
 
 // Notification Types
 export const notification = Object.freeze({

@@ -20,7 +20,7 @@ const state = () => {
 }
 
 const getters = {
-
+  [models.appWidth]: state => state[models.appWidth]
 }
 
 const mutations = {

@@ -2,6 +2,7 @@
   <div>
     <Nuxt />
     <Notifier class="w-full fixed top-0 z-10" />
+    <ResizeWatcher />
   </div>
 </template>
 
