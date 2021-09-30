@@ -16,10 +16,14 @@ export default ({ $axios }, inject) => {
   const login = data => $axios.post('/api/sessions', data, { loading: models.token, store: models.token })
 
   const getClientList = () => $axios.get('/api/clients', { headers, loading: models.clients, store: models.clients })
+  const getClientData = id => $axios.get(
+    '/api/client/' + id + '/data', { headers, loading: models.selectedClient, store: models.selectedClient }
+  )
 
   const api = {
     login,
-    getClientList
+    getClientList,
+    getClientData
   }
 
   // Inject to context as $api
