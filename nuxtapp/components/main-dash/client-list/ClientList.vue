@@ -1,6 +1,12 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <div v-for="client in displayedClients" :key="client.id" class="text-gray-900 text-sm p-1 client cursor-pointer">
+    <div
+      v-for="client in displayedClients"
+      :key="client.id"
+      class="text-gray-900 text-sm p-1 client cursor-pointer"
+      :class="client.id === selectedClientId ? 'selected' : ''"
+      @click="selectClient(client)"
+    >
       <span class="font-bold">{{ client.lastName }}</span> {{ client.displayName }}
     </div>
   </div>
@@ -18,6 +24,9 @@ export default {
       default: false
     }
   },
+  data () {
+    return { selectedClientId: NaN }
+  },
   computed: {
     ...mapState([models.clients]),
     displayedClients () {
@@ -28,6 +37,12 @@ export default {
         return this.clients
       }
     }
+  },
+  methods: {
+    selectClient ({ id }) {
+      this.selectedClientId = id
+      this.$api.getClientData(id)
+    }
   }
 }
 </script>
@@ -35,5 +50,9 @@ export default {
 <style scoped>
 .client:nth-child(even) {
   @apply bg-gray-300;
+}
+
+.client.selected {
+  @apply bg-gray-700 text-white;
 }
 </style>

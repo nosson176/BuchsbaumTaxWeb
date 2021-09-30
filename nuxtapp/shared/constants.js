@@ -4,7 +4,8 @@ export const models = Object.freeze({
   token: 'token',
   toast: 'toast',
   appWidth: 'appWidth',
-  clients: 'clients'
+  clients: 'clients',
+  selectedClient: 'selectedClient'
 })
 
 // Store Mutations

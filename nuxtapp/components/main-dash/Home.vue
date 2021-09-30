@@ -8,8 +8,9 @@
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
-      <div class="border border-blue-500 bg-blue-100 client-tax-years">
-        client/tax years
+      <div class="bg-gray-100 border-2 border-gray-500 rounded flex flex-col client-tax-years">
+        <ClientTaxYearsHeader />
+        <ClientTaxYears />
       </div>
       <div class="border border-green-500 bg-green-100 fees-checklists">
         fees/checklists
