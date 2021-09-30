@@ -17,7 +17,7 @@ export default ({ $axios }, inject) => {
 
   const getClientList = () => $axios.get('/api/clients', { headers, loading: models.clients, store: models.clients })
   const getClientData = id => $axios.get(
-    '/api/client/' + id + '/data', { headers, loading: models.selectedClient, store: models.selectedClient }
+    '/api/clients/' + id + '/data', { headers, loading: models.selectedClient, store: models.selectedClient }
   )
 
   const api = {
