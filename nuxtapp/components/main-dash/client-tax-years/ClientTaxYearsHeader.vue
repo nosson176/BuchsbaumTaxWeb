@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-700 text-white rounded-t-sm px-3 h-6">
+  <div class="bg-gray-700 text-white rounded-t-sm px-3 h-8 py-1">
     <div class="grid grid-cols-7 grid-rows-1">
       <div class=" col-start-1">
         {{ selectedClient.lastName || '' }}

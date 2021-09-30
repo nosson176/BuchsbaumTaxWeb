@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-blue-200 p-1">
+  <div class="flex bg-blue-200 p-1 rounded-t-sm">
     <input id="archived" type="checkbox" class="mr-1" @change="emitChange">
     <label for="archived" class="text-sm">View Archived</label>
   </div>
