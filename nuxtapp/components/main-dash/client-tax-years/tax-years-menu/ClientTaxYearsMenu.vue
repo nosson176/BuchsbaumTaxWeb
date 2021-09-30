@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex-grow overflow-auto">
     <div v-for="taxYear in displayedTaxYearData" :key="taxYear.id" class="px-3 tax-year">
       <span class="font-bold">{{ taxYear.yearName }}</span>
     </div>
@@ -21,7 +21,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient]),
     displayedTaxYearData () {
-      if (this.selectedClient.length) {
+      if (this.selectedClient.length || Object.entries(this.selectedClient).length) {
         if (!this.showArchived) {
           return Object.fromEntries(Object.entries(this.selectedClient.taxYearData)
             .filter(([key, taxYear]) => taxYear.archived === false))

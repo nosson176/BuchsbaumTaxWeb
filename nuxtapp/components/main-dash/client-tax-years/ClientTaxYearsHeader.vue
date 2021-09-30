@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-700 text-white rounded-t-sm px-3 h-16">
+  <div class="header">
     <div class="h-full grid grid-cols-7 grid-rows-1 items-center">
       <div class="col-start-1 font-bold text-lg">
         {{ selectedClient.lastName }}
@@ -24,5 +24,9 @@ export default {
 </script>
 
 <style scoped>
+  .header {
+    @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center;
 
+    min-height: 4rem;
+  }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex w-full bg-blue-200 px-3 items-center">
-    <input id="archived" type="checkbox" class="mr-1" @change="emitChange">
-    <label for="archived" class="text-sm">View Archived</label>
+  <div class="header">
+    <input id="archived-tax-years" type="checkbox" class="mr-1" @change="emitChange">
+    <label for="archived-tax-years" class="text-sm">View Archived</label>
   </div>
 </template>
 
@@ -19,5 +19,9 @@ export default {
 </script>
 
 <style scoped>
+.header {
+  @apply flex w-full bg-blue-200 px-3 items-center;
 
+  min-height: 2rem;
+}
 </style>
