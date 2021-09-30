@@ -11,7 +11,7 @@ export default {
   name: 'ClientListHeader',
   methods: {
     emitChange () {
-      this.$emit(events.change, this.showArchived)
+      this.$emit(events.change)
     }
   }
 }
