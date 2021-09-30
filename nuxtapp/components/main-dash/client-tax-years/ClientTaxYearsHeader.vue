@@ -1,11 +1,11 @@
 <template>
   <div class="bg-gray-700 text-white rounded-t-sm px-3 h-16">
-    <div class="h-full grid grid-cols-7 grid-rows-1 items-center text-lg">
-      <div class="col-start-1 font-bold">
-        {{ selectedClient.lastName || '' }}
+    <div class="h-full grid grid-cols-7 grid-rows-1 items-center">
+      <div class="col-start-1 font-bold text-lg">
+        {{ selectedClient.lastName }}
       </div>
       <div class="col-start-3 font-semibold text-gray-100">
-        {{ selectedClient.currentStatus || '' }}
+        {{ selectedClient.currentStatus }}
       </div>
     </div>
   </div>
