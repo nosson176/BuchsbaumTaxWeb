@@ -21,16 +21,29 @@ export default {
   computed: {
     ...mapState([models.selectedClient]),
     displayedTaxYearData () {
-      if (this.selectedClient.length || Object.entries(this.selectedClient).length) {
+      if (this.isClientSelected) {
         if (!this.showArchived) {
-          return Object.fromEntries(Object.entries(this.selectedClient.taxYearData)
-            .filter(([key, taxYear]) => taxYear.archived === false))
+          return Object.assign(
+            Object.values(this.selectedClient.taxYearData)
+              .filter((taxYear) => {
+                return taxYear.archived === false
+              })
+              .sort((a, b) => {
+                return a.yearName - b.yearName
+              })
+          )
         } else {
-          return this.selectedClient.taxYearData
+          return Object.assign(
+            Object.values(this.selectedClient.taxYearData)
+              .sort((a, b) => a.yearName - b.yearName)
+          )
         }
       } else {
         return null
       }
+    },
+    isClientSelected () {
+      return this.selectedClient.length || Object.entries(this.selectedClient).length
     }
   }
 }
