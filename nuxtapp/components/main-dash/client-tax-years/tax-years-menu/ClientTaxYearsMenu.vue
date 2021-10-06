@@ -1,0 +1,56 @@
+<template>
+  <div class="flex-grow overflow-auto">
+    <div v-for="taxYear in displayedTaxYearData" :key="taxYear.id" class="px-3 tax-year">
+      <span class="font-bold">{{ taxYear.yearName }}</span>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import { models } from '~/shared/constants'
+
+export default {
+  name: 'ClientTaxYearsMenu',
+  props: {
+    showArchived: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    ...mapState([models.selectedClient]),
+    displayedTaxYearData () {
+      if (this.isClientSelected) {
+        if (!this.showArchived) {
+          return Object.assign(
+            Object.values(this.selectedClient.taxYearData)
+              .filter((taxYear) => {
+                return taxYear.archived === false
+              })
+              .sort((a, b) => {
+                return a.yearName - b.yearName
+              })
+          )
+        } else {
+          return Object.assign(
+            Object.values(this.selectedClient.taxYearData)
+              .sort((a, b) => a.yearName - b.yearName)
+          )
+        }
+      } else {
+        return null
+      }
+    },
+    isClientSelected () {
+      return this.selectedClient.length || Object.entries(this.selectedClient).length
+    }
+  }
+}
+</script>
+
+<style scoped>
+.tax-year:nth-child(even) {
+  @apply bg-gray-300;
+}
+</style>
