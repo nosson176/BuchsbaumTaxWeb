@@ -37,9 +37,7 @@ export default {
     notArchived () {
       return Object.assign(
         Object.values(this.selectedClient.taxYearData)
-          .filter((taxYear) => {
-            return taxYear.archived === false
-          })
+          .filter(taxYear => !taxYear.archived)
           .sort((a, b) => {
             return a.yearName < b.yearName ? 1 : -1
           })

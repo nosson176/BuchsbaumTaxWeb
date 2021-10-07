@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow overflow-auto">
-    {{ selectedClient.taxPersonals }}
+    {{ displayedPersonals }}
   </div>
 </template>
 
@@ -26,11 +26,11 @@ export default {
       }
     },
     notArchived () {
-      return Object.fromEntries(Object.entries(this.selectedClient)
-        .filter(([key, person]) => person.archived === false))
+      return this.selectedClient.taxPersonals
+        .filter(person => !person.archived)
     },
     archived () {
-      return this.selectedClient
+      return this.selectedClient.taxPersonals
     }
   }
 }
