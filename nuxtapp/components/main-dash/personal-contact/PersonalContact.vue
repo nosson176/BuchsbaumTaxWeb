@@ -1,5 +1,7 @@
 <template>
-  <div />
+  <div class="flex-grow overflow-auto">
+    {{ selectedClient.taxPersonals }}
+  </div>
 </template>
 
 <script>
@@ -8,11 +10,28 @@ import { models } from '~/shared/constants'
 
 export default {
   name: 'PersonalContact',
-  computed: {
-    ...mapState([models.selectedClient])
+  props: {
+    showArchived: {
+      type: Boolean,
+      default: false
+    }
   },
-  created () {
-    console.log(this.selectedClient)
+  computed: {
+    ...mapState([models.selectedClient]),
+    displayedPersonals () {
+      if (!this.showArchived) {
+        return this.notArchived
+      } else {
+        return this.archived
+      }
+    },
+    notArchived () {
+      return Object.fromEntries(Object.entries(this.selectedClient)
+        .filter(([key, person]) => person.archived === false))
+    },
+    archived () {
+      return this.selectedClient
+    }
   }
 }
 </script>
