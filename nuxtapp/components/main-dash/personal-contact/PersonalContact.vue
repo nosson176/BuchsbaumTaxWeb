@@ -1,6 +1,13 @@
 <template>
   <div class="flex-grow overflow-auto">
-    {{ displayedPersonals }}
+    <div
+      v-for="(personal, idx) in displayedPersonals"
+      :key="personal.id"
+      class="bg-gray-100"
+      :class=" idx % 2 === 0 ? 'even': ''"
+    >
+      {{ personal }}
+    </div>
   </div>
 </template>
 
@@ -27,7 +34,7 @@ export default {
     },
     notArchived () {
       return this.selectedClient.taxPersonals
-        .filter(person => !person.archived)
+        .filter(personal => !personal.archived)
     },
     archived () {
       return this.selectedClient.taxPersonals
@@ -37,5 +44,7 @@ export default {
 </script>
 
 <style scoped>
-
+.even {
+  @apply bg-gray-300;
+}
 </style>
