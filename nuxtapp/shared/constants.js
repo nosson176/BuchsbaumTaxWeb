@@ -64,3 +64,9 @@ export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'
 export const notification = Object.freeze({
   alert: 'alert'
 })
+
+// Tabs
+export const tabs = Object.freeze({
+  tax_personals: 'tax-personals',
+  contact: 'contact'
+})

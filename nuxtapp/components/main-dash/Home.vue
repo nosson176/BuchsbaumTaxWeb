@@ -22,8 +22,8 @@
         logs/income/fbar
       </div>
       <div class="bg-gray-100 border-2 border-gray-500 rounded flex flex-col personal-contact">
-        <PersonalContactHeader />
-        <PersonalContact />
+        <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
+        <PersonalContact :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
     </div>
     <div class="bg-black text-white flex">
@@ -33,16 +33,25 @@
 </template>
 
 <script>
+import { tabs } from '~/shared/constants'
 export default {
   name: 'Home',
   data () {
     return {
-      showArchivedClients: false
+      showArchivedClients: false,
+      showArchivedPersonals: false,
+      currentPersonalsTab: tabs.tax_personals
     }
   },
   methods: {
     toggleShowArchivedClients () {
       this.showArchivedClients = !this.showArchivedClients
+    },
+    toggleShowArchivedPersonals () {
+      this.showArchivedPersonals = !this.showArchivedPersonals
+    },
+    switchPersonalsTab (tab) {
+      this.currentPersonalsTab = tab
     }
   }
 }

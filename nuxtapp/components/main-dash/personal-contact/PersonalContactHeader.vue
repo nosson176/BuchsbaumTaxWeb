@@ -1,5 +1,8 @@
 <template>
-  <ViewArchivedHeader @change="emitChange" />
+  <div class="flex flex-col">
+    <PersonalContactTabs @click="emitTabClick" />
+    <ViewArchivedHeader @change="emitChange" />
+  </div>
 </template>
 
 <script>
@@ -9,6 +12,9 @@ export default {
   methods: {
     emitChange () {
       this.$emit(events.change)
+    },
+    emitTabClick (tab) {
+      this.$emit(events.click, tab)
     }
   }
 }
