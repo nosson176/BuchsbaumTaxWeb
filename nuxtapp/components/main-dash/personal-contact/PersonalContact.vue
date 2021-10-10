@@ -12,28 +12,30 @@
           <div class="w-1/12">
             {{ personal.category }}
           </div>
-          <div class="w-2/12">
+          <div class="w-1/5">
             {{ personal.firstName }}
           </div>
           <div class="w-1/12">
-            {{ personal.middleInitial || '' }}
+            {{ personal.middleInitial }}
           </div>
-          <div class="w-2/12">
+          <div class="w-1/5">
             {{ personal.lastName }}
           </div>
-          <div class="w-2/12">
+          <div class="w-1/5">
             {{ personal.dateOfBirth }}
           </div>
-          <div class="w-2/12">
+          <div class="w-1/5">
             {{ personal.ssn }}
           </div>
-          <div class="w-2/12">
+          <div class="w-1/5">
             {{ personal.informal }}
           </div>
           <div class="w-1/12">
             {{ personal.relation }}
           </div>
-          <div>{{ personal.language }}</div>
+          <div class="w-1/12">
+            {{ personal.language }}
+          </div>
         </TableRow>
       </TableHeader>
     </div>
