@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex bg-blue-300">
     <slot />
   </div>
 </template>
