@@ -21,8 +21,8 @@
           <div class="w-1/5">
             {{ personal.lastName }}
           </div>
-          <div class="w-1/5">
-            {{ personal.dateOfBirth }}
+          <div class="w-2/12">
+            {{ formatDate(personal.dateOfBirth) }}
           </div>
           <div class="w-1/5">
             {{ personal.ssn }}
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { format, parseISO } from 'date-fns'
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
 const categories = {
@@ -50,6 +51,7 @@ const categories = {
   secondary: 'SEC.',
   dependant: 'DEP.'
 }
+const dateFormat = 'M/d/yy'
 
 export default {
   name: 'PersonalContact',
@@ -109,6 +111,9 @@ export default {
       } else {
         return 0
       }
+    },
+    formatDate (date) {
+      return format(parseISO(date), dateFormat)
     }
   }
 }
