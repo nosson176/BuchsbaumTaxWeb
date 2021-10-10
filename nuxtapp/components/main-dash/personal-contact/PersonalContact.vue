@@ -48,7 +48,7 @@ import { models } from '~/shared/constants'
 const categories = {
   primary: 'PRI.',
   secondary: 'SEC.',
-  dependant: 'DEP. '
+  dependant: 'DEP.'
 }
 
 export default {
