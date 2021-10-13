@@ -3,7 +3,7 @@
     <div
       v-for="client in displayedClients"
       :key="client.id"
-      class="text-gray-900 text-sm p-1 client cursor-pointer"
+      class="text-gray-900 bg-gray-50 text-sm px-6 py-4 whitespace-nowrap text-sm client cursor-pointer"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
@@ -56,7 +56,7 @@ export default {
 
 <style scoped>
 .client:nth-child(even) {
-  @apply bg-gray-300;
+  @apply bg-white;
 }
 
 .client.selected {
