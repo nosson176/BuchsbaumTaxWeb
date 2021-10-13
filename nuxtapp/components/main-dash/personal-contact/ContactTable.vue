@@ -40,19 +40,19 @@
                 aria-describedby="comments-description"
                 name="comments"
                 type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded pointer-events-none"
+                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
               >
             </div>
           </td>
           <td class="row-cell">
             <div class="flex items-center h-5">
               <input
-                id="comments"
-                :checked="true"
-                aria-describedby="comments-description"
-                name="comments"
+                id="disabled"
+                :checked="!contact.disabled"
+                aria-describedby="contact-disabled"
+                name="disabled"
                 type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded pointer-events-none"
+                class="focus:ring-indigo-500 h-3 w-3 text-indigo-600 border-gray-300 rounded pointer-events-none"
               >
             </div>
           </td>
