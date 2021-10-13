@@ -44,7 +44,7 @@
               >
             </div>
           </td>
-          <td class="row-cell">
+          <td>
             <div class="flex items-center h-5">
               <input
                 id="disabled"
@@ -53,6 +53,7 @@
                 name="disabled"
                 type="checkbox"
                 class="focus:ring-indigo-500 h-3 w-3 text-indigo-600 border-gray-300 rounded pointer-events-none"
+                disabled
               >
             </div>
           </td>
