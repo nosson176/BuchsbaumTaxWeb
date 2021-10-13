@@ -1,5 +1,5 @@
 <template>
-  <div class="w-40 p-1 cursor-pointer  bg-gray-400 text-white text-center" @click="emitClick">
+  <div class="w-40 p-1 cursor-pointer rounded-t bg-gray-400 text-white text-center" @click="emitClick">
     <slot />
   </div>
 </template>

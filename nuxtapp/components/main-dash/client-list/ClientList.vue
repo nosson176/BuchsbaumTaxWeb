@@ -3,11 +3,11 @@
     <div
       v-for="client in displayedClients"
       :key="client.id"
-      class="text-gray-900 bg-gray-50 text-sm px-6 py-4 whitespace-nowrap text-sm client cursor-pointer"
+      class="text-gray-500 bg-gray-50 px-2 py-4 text-sm client cursor-pointer"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
-      <span class="font-bold">{{ client.lastName }}</span> {{ client.displayName }}
+      <span class="font-medium text-gray-900">{{ client.lastName }}</span> {{ client.displayName }}
     </div>
   </div>
 </template>
@@ -60,6 +60,10 @@ export default {
 }
 
 .client.selected {
-  @apply bg-gray-700 text-white;
+  @apply bg-gray-700 text-gray-100;
+}
+
+.client.selected span {
+  @apply text-white;
 }
 </style>

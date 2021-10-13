@@ -4,11 +4,11 @@
       HEADER
     </div>
     <div class="grid flex-grow overflow-hidden p-2">
-      <div class="bg-gray-100 border-2 border-gray-500 rounded flex flex-col client-list">
+      <div class=" shadow rounded flex flex-col client-list">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
-      <div class="bg-gray-100 border-2 border-gray-500 rounded flex flex-col client-tax-years">
+      <div class="bg-gray-100 border border-gray-500 shadow-md rounded flex flex-col client-tax-years">
         <ClientTaxYearsHeader />
         <ClientTaxYears />
       </div>
@@ -21,7 +21,7 @@
       <div class="border border-gray-500 bg-gray-100 logs-income-fbar">
         logs/income/fbar
       </div>
-      <div class="bg-gray-100 border-2 border-gray-500 rounded flex flex-col personal-contact">
+      <div class=" shadow rounded flex flex-col personal-contact">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
         <PersonalContact :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
