@@ -86,9 +86,6 @@
           </td>
         </TableRow>
       </template>
-    </table>
-  </div>
-</template>
     </Table>
   </div>
 </template>
