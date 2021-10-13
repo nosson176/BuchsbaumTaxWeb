@@ -1,5 +1,5 @@
 <template>
-  <div class="flex  space-x-5">
+  <div class="flex  space-x-3">
     <Tab @click="setTabTaxPersonals">
       Tax Personals
     </Tab>

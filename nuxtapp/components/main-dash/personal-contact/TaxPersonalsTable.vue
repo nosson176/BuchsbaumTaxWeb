@@ -3,35 +3,35 @@
     <Table>
       <template #header>
         <TableHeader>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" />
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell" />
+          <th scope="col" class="header-cell">
             Cat
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             First
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             M
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             Last
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             DOB
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             SSN
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             Informal
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             Relation
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <th scope="col" class="header-cell">
             Lang
           </th>
-          <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" />
+          <th scope="col" class="header-cell" />
         </TableHeader>
       </template>
       <template #body>
@@ -40,48 +40,48 @@
           :key="personal.id"
           :idx="idx"
         >
-          <td class="px-2 py-4 text-sm text-gray-500">
+          <td class="row-cell">
             <div class="flex items-center h-5">
               <input
-                id="comments"
+                id="include"
                 :checked="personal.include"
-                aria-describedby="comments-description"
-                name="comments"
+                aria-describedby="personal-include"
+                name="include"
                 type="checkbox"
                 class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded pointer-events-none"
               >
             </div>
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+          <td class="main-row-cell">
             {{ personal.category }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.firstName }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.middleInitial }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.lastName }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ formatDate(personal.dateOfBirth) }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.ssn }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.informal }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.relation }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+          <td class="row-cell">
             {{ personal.language }}
           </td>
-          <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500 font-medium flex items-center justify-center">
+          <td class="row-cell font-medium flex items-center justify-center">
             <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
-              x
+              <CloseIcon class="w-2 h-2" />
             </div>
           </td>
         </TableRow>
@@ -165,47 +165,15 @@ export default {
 </script>
 
 <style scoped>
-.column-1 {
-  @apply w-1/12;
+.header-cell {
+  @apply px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
 }
 
-.column-2 {
-  @apply w-1/12;
+.row-cell {
+  @apply px-2 py-4 text-sm whitespace-nowrap text-gray-500;
 }
 
-.column-3 {
-  @apply w-1/5;
-}
-
-.column-4 {
-  @apply w-1/12;
-}
-
-.column-5 {
-  @apply w-1/5;
-}
-
-.column-6 {
-  @apply w-2/12;
-}
-
-.column-7 {
-  @apply w-3/12;
-}
-
-.column-8 {
-  @apply w-2/12;
-}
-
-.column-9 {
-  @apply w-2/12;
-}
-
-.column-10 {
-  @apply w-1/12;
-}
-
-.column-11 {
-  @apply w-1/12;
+.main-row-cell {
+  @apply px-2 py-4 whitespace-nowrap text-sm font-medium text-gray-900;
 }
 </style>
