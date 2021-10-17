@@ -88,6 +88,12 @@ import { models } from '~/shared/constants'
 
 export default {
   name: 'ContactTable',
+  props: {
+    showArchived: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     ...mapState([models.selectedClient]),
     displayedContacts () {
