@@ -2,35 +2,35 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="w-1/12 table-header" />
-        <div class="w-1/12 table-header">
+        <div class="xs table-header" />
+        <div class="xs table-header">
           Cat
         </div>
-        <div class="w-1/5 table-header">
+        <div class="normal table-header">
           First
         </div>
-        <div class="w-1/12 table-header">
+        <div class="xs table-header">
           M
         </div>
-        <div class="w-1/5 table-header">
+        <div class="normal table-header">
           Last
         </div>
-        <div class="w-2/12 table-header">
+        <div class="sm table-header">
           DOB
         </div>
-        <div class="w-3/12 table-header">
+        <div class="lg table-header">
           SSN
         </div>
-        <div class="w-2/12 table-header">
+        <div class="sm table-header">
           Informal
         </div>
-        <div class="w-2/12 table-header">
+        <div class="sm table-header">
           Relation
         </div>
-        <div class="w-1/12 table-header">
+        <div class="xs table-header">
           Lang
         </div>
-        <div class="w-1/12 table-header" />
+        <div class="xs table-header" />
       </TableHeader>
     </template>
     <template #body>
@@ -39,7 +39,7 @@
         :key="personal.id"
         :idx="idx"
       >
-        <div class="w-1/12 table-col">
+        <div class="xs table-col">
           <div class="flex items-center h-5">
             <input
               id="include"
@@ -50,34 +50,34 @@
             >
           </div>
         </div>
-        <div class="w-1/12 table-primary-table-col">
+        <div class="xs table-col-primary">
           {{ personal.category }}
         </div>
-        <div class="w-1/5 table-col">
+        <div class="normal table-col">
           {{ personal.firstName }}
         </div>
-        <div class="w-1/12 table-col">
+        <div class="xs table-col">
           {{ personal.middleInitial }}
         </div>
-        <div class="w-1/5 table-col">
+        <div class="normal table-col">
           {{ personal.lastName }}
         </div>
-        <div class="w-2/12 table-col">
+        <div class="sm table-col">
           {{ formadivate(personal.dateOfBirth) }}
         </div>
-        <div class="w-3/12 table-col">
+        <div class="lg table-col">
           {{ personal.ssn }}
         </div>
-        <div class="w-2/12 table-col">
+        <div class="sm table-col">
           {{ personal.informal }}
         </div>
-        <div class="w-2/12 table-col">
+        <div class="sm table-col">
           {{ personal.relation }}
         </div>
-        <div class="w-1/12 table-col">
+        <div class="xs table-col">
           {{ personal.language }}
         </div>
-        <div class="w-1/12 table-col flex items-center justify-center">
+        <div class="xs table-col flex items-center justify-center">
           <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
             <CloseIcon class="w-2 h-2" />
           </div>

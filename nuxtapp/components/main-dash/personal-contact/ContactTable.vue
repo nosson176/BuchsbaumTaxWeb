@@ -2,27 +2,27 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="table-header w-1/12" />
-        <div class="table-header w-1/12" />
-        <div class="table-header w-2/12">
+        <div class="table-header xs" />
+        <div class="table-header xs" />
+        <div class="table-header sm">
           Type
         </div>
-        <div class="table-header w-2/12">
+        <div class="table-header sm">
           Memo
         </div>
-        <div class="table-header w-4/12">
+        <div class="table-header xl">
           Address / Phone / Routing
         </div>
-        <div class="table-header w-1/5">
+        <div class="table-header normal">
           City / Account
         </div>
-        <div class="table-header w-1/12">
+        <div class="table-header xs">
           St
         </div>
-        <div class="table-header w-1/12">
+        <div class="table-header xs">
           Zip
         </div>
-        <div class="table-header w-1/12" />
+        <div class="table-header xs" />
       </TableHeader>
     </template>
     <template #body>
@@ -31,7 +31,7 @@
         :key="contact.id"
         :idx="idx"
       >
-        <div class="table-col w-1/12">
+        <div class="table-col xs">
           <div class="flex items-center h-5">
             <input
               id="comments"
@@ -42,7 +42,7 @@
             >
           </div>
         </div>
-        <div class="table-col w-1/12">
+        <div class="table-col xs">
           <div class="flex items-center h-5">
             <input
               id="disabled"
@@ -54,25 +54,25 @@
             >
           </div>
         </div>
-        <div class="table-primary-col w-2/12">
+        <div class="table-col-primary normal">
           {{ contact.contactType }}
         </div>
-        <div class="table-col w-1/5">
+        <div class="table-col normal">
           {{ contact.memo }}
         </div>
-        <div class="table-col w-4/12">
+        <div class="table-col xl">
           {{ contact.mainDetail }}
         </div>
-        <div class="table-col w-1/5">
+        <div class="table-col normal">
           {{ contact.secondaryDetail }}
         </div>
-        <div class="table-col w-1/12">
+        <div class="table-col xs">
           {{ contact.state }}
         </div>
-        <div class="table-col w-1/12">
+        <div class="table-col xs">
           {{ contact.zip || '' }}
         </div>
-        <div class="table-col w-1/12 flex items-center justify-center">
+        <div class="table-col xs flex items-center justify-center">
           <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
             <CloseIcon class="w-2 h-2" />
           </div>
