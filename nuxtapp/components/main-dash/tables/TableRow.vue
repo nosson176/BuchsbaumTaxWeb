@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between items-center bg-white" :class="idx % 2 === 0 ? 'even': ''">
+  <div class="flex justify-between items-center bg-gray-50" :class="idx % 2 === 0 ? 'even': ''">
     <slot />
   </div>
 </template>
@@ -18,6 +18,6 @@ export default {
 
 <style scoped>
 .even {
-  @apply bg-gray-50;
+  @apply bg-white;
 }
 </style>

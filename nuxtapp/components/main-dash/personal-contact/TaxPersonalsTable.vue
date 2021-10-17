@@ -3,35 +3,35 @@
     <Table>
       <template #header>
         <TableHeader>
-          <th scope="col" class="header-cell" />
-          <th scope="col" class="header-cell">
+          <div class="w-1/12 header" />
+          <div class="w-1/12 header">
             Cat
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-1/5 header">
             First
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-1/12 header">
             M
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-1/5 header">
             Last
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-2/12 header">
             DOB
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-3/12 header">
             SSN
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-2/12 header">
             Informal
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-2/12 header">
             Relation
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="w-1/12 header">
             Lang
-          </th>
-          <th scope="col" class="header-cell" />
+          </div>
+          <div class="w-1/12 header" />
         </TableHeader>
       </template>
       <template #body>
@@ -40,50 +40,49 @@
           :key="personal.id"
           :idx="idx"
         >
-          <td class="row-cell">
+          <div class="w-1/12 col">
             <div class="flex items-center h-5">
               <input
                 id="include"
                 :checked="personal.include"
-                aria-describedby="personal-include"
                 name="include"
                 type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded pointer-events-none"
+                class="h-4 w-4 pointer-events-none"
               >
             </div>
-          </td>
-          <td class="main-row-cell">
+          </div>
+          <div class="w-1/12 primary-col">
             {{ personal.category }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-1/5 col">
             {{ personal.firstName }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-1/12 col">
             {{ personal.middleInitial }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-1/5 col">
             {{ personal.lastName }}
-          </td>
-          <td class="row-cell">
-            {{ formatDate(personal.dateOfBirth) }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-2/12 col">
+            {{ formadivate(personal.dateOfBirth) }}
+          </div>
+          <div class="w-3/12 col">
             {{ personal.ssn }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-2/12 col">
             {{ personal.informal }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-2/12 col">
             {{ personal.relation }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="w-1/12 col">
             {{ personal.language }}
-          </td>
-          <td class="row-cell font-medium flex items-center justify-center">
+          </div>
+          <div class="w-1/12 col flex items-center justify-center">
             <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
               <CloseIcon class="w-2 h-2" />
             </div>
-          </td>
+          </div>
         </TableRow>
       </template>
     </Table>
@@ -153,7 +152,7 @@ export default {
         return 0
       }
     },
-    formatDate (date) {
+    formadivate (date) {
       if (date) {
         return format(parseISO(date), dateFormat)
       } else {
@@ -165,15 +164,15 @@ export default {
 </script>
 
 <style scoped>
-.header-cell {
-  @apply px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+.header {
+  @apply px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
 }
 
-.row-cell {
-  @apply px-2 py-4 text-sm whitespace-nowrap text-gray-500;
+.col {
+  @apply px-1 py-1 whitespace-nowrap text-sm text-gray-500;
 }
 
-.main-row-cell {
-  @apply px-2 py-4 whitespace-nowrap text-sm font-medium text-gray-900;
+.primary-col {
+  @apply px-1 py-1 whitespace-nowrap text-sm font-medium text-gray-900;
 }
 </style>
