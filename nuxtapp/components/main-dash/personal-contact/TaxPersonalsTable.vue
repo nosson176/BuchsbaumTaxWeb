@@ -1,77 +1,90 @@
 <template>
-  <div>
-    <TableHeader>
-      <div class="column-1" />
-      <div class="column-2">
-        Cat
-      </div>
-      <div class="column-3">
-        First
-      </div>
-      <div class="column-4">
-        M
-      </div>
-      <div class="column-5">
-        Last
-      </div>
-      <div class="column-6">
-        DOB
-      </div>
-      <div class="column-7">
-        SSN
-      </div>
-      <div class="column-8">
-        Informal
-      </div>
-      <div class="column-9">
-        Relation
-      </div>
-      <div class="column-10">
-        Lang
-      </div>
-      <div class="column-11" />
-    </TableHeader>
-    <div
-      v-for="(personal, idx) in displayedPersonals"
-      :key="personal.id"
-    >
-      <TableRow :idx="idx">
-        <div class="column-1">
-          {{ personal.include }}
+  <Table>
+    <template #header>
+      <TableHeader>
+        <div class="xs table-header" />
+        <div class="xs table-header">
+          Cat
         </div>
-        <div class="column-2">
+        <div class="normal table-header">
+          First
+        </div>
+        <div class="xs table-header">
+          M
+        </div>
+        <div class="normal table-header">
+          Last
+        </div>
+        <div class="sm table-header">
+          DOB
+        </div>
+        <div class="lg table-header">
+          SSN
+        </div>
+        <div class="sm table-header">
+          Informal
+        </div>
+        <div class="sm table-header">
+          Relation
+        </div>
+        <div class="xs table-header">
+          Lang
+        </div>
+        <div class="xs table-header" />
+      </TableHeader>
+    </template>
+    <template #body>
+      <TableRow
+        v-for="(personal, idx) in displayedPersonals"
+        :key="personal.id"
+        :idx="idx"
+      >
+        <div class="xs table-col">
+          <div class="flex items-center h-5">
+            <input
+              id="include"
+              :checked="personal.include"
+              name="include"
+              type="checkbox"
+              class="h-4 w-4 pointer-events-none"
+            >
+          </div>
+        </div>
+        <div class="xs table-col-primary">
           {{ personal.category }}
         </div>
-        <div class="column-3">
+        <div class="normal table-col">
           {{ personal.firstName }}
         </div>
-        <div class="column-4">
+        <div class="xs table-col">
           {{ personal.middleInitial }}
         </div>
-        <div class="column-5">
+        <div class="normal table-col">
           {{ personal.lastName }}
         </div>
-        <div class="column-6">
-          {{ formatDate(personal.dateOfBirth) }}
+        <div class="sm table-col">
+          {{ formadivate(personal.dateOfBirth) }}
         </div>
-        <div class="column-7">
+        <div class="lg table-col">
           {{ personal.ssn }}
         </div>
-        <div class="column-8">
+        <div class="sm table-col">
           {{ personal.informal }}
         </div>
-        <div class="column-9">
+        <div class="sm table-col">
           {{ personal.relation }}
         </div>
-        <div class="column-10">
+        <div class="xs table-col">
           {{ personal.language }}
         </div>
-        <div class="column-11">
-          x
+        <div class="xs table-col flex items-center justify-center">
+          <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
+            <CloseIcon class="w-2 h-2" />
+          </div>
         </div>
       </TableRow>
-    </div>
-  </div>
+    </template>
+  </Table>
 </template>
 
 <script>
@@ -86,7 +99,7 @@ const categories = {
 const dateFormat = 'M/d/yy'
 
 export default {
-  name: 'TaxPersonals',
+  name: 'TaxPersonalsTable',
   props: {
     showArchived: {
       type: Boolean,
@@ -137,7 +150,7 @@ export default {
         return 0
       }
     },
-    formatDate (date) {
+    formadivate (date) {
       if (date) {
         return format(parseISO(date), dateFormat)
       } else {
@@ -149,47 +162,15 @@ export default {
 </script>
 
 <style scoped>
-.column-1 {
-  @apply w-1/12;
+.header {
+  @apply px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
 }
 
-.column-2 {
-  @apply w-1/12;
+.table-col {
+  @apply px-1 py-1 whitespace-nowrap text-sm text-gray-500;
 }
 
-.column-3 {
-  @apply w-1/5;
-}
-
-.column-4 {
-  @apply w-1/12;
-}
-
-.column-5 {
-  @apply w-1/5;
-}
-
-.column-6 {
-  @apply w-2/12;
-}
-
-.column-7 {
-  @apply w-3/12;
-}
-
-.column-8 {
-  @apply w-2/12;
-}
-
-.column-9 {
-  @apply w-2/12;
-}
-
-.column-10 {
-  @apply w-1/12;
-}
-
-.column-11 {
-  @apply w-1/12;
+.table-primary-table-col {
+  @apply px-1 py-1 whitespace-nowrap text-sm font-medium text-gray-900;
 }
 </style>

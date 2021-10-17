@@ -1,6 +1,7 @@
 <template>
-  <div class="flex-grow overflow-auto">
-    <TaxPersonals v-if="showTaxPersonals" show-archived />
+  <div class="flex flex-grow overflow-hidden">
+    <TaxPersonalsTable v-if="showTaxPersonals" show-archived />
+    <ContactTable v-else-if="showContacts" show-archived />
   </div>
 </template>
 
@@ -21,6 +22,9 @@ export default {
   computed: {
     showTaxPersonals () {
       return this.currentTab === tabs.tax_personals
+    },
+    showContacts () {
+      return this.currentTab === tabs.contact
     }
   }
 }

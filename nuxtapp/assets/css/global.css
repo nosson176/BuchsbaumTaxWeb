@@ -1,0 +1,51 @@
+.table-header {
+  @apply px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.table-col {
+  @apply px-1 py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm text-gray-500;
+}
+
+.table-col-primary {
+  @apply px-1 py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm font-medium text-gray-900;
+}
+
+.table-col.xs,
+.table-header.xs,
+.table-col-primary.xs {
+  @apply w-1/12;
+
+  min-width: 1.5rem;
+}
+
+.table-col.sm,
+.table-header.sm,
+.table-col-primary.sm {
+  @apply w-2/12;
+
+  min-width: 2rem;
+}
+
+.table-col.normal,
+.table-header.normal,
+.table-col-primary.normal {
+  @apply w-1/5;
+
+  min-width: 3rem;
+}
+
+.table-col.lg,
+.table-header.lg,
+.table-col-primary.lg {
+  @apply w-3/12;
+
+  min-width: 4rem;
+}
+
+.table-col.xl,
+.table-header.xl,
+.table-col-primary.lg {
+  @apply w-4/12;
+
+  min-width: 5rem;
+}
