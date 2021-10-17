@@ -8,7 +8,7 @@
 <script>
 import { tabs } from '~/shared/constants'
 export default {
-  name: 'PersonalContact',
+  name: 'PersonalContactBody',
   props: {
     showArchived: {
       type: Boolean,
