@@ -19,7 +19,7 @@
         <div class="table-header xs">
           St
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Zip
         </div>
         <div class="table-header xs" />
@@ -69,7 +69,7 @@
         <div class="table-col xs">
           {{ contact.state }}
         </div>
-        <div class="table-col xs">
+        <div class="table-col sm">
           {{ contact.zip || '' }}
         </div>
         <div class="table-col xs">

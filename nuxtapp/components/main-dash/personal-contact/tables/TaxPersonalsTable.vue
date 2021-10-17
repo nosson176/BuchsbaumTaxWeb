@@ -3,7 +3,7 @@
     <template #header>
       <TableHeader>
         <div class="xs table-header" />
-        <div class="xs table-header">
+        <div class="sm table-header">
           Cat
         </div>
         <div class="normal table-header">
@@ -18,7 +18,7 @@
         <div class="sm table-header">
           DOB
         </div>
-        <div class="lg table-header">
+        <div class="normal table-header">
           SSN
         </div>
         <div class="sm table-header">
@@ -27,7 +27,7 @@
         <div class="sm table-header">
           Relation
         </div>
-        <div class="xs table-header">
+        <div class="sm table-header">
           Lang
         </div>
         <div class="xs table-header" />
@@ -50,7 +50,7 @@
             >
           </div>
         </div>
-        <div class="xs table-col-primary">
+        <div class="sm table-col-primary">
           {{ personal.category }}
         </div>
         <div class="normal table-col">
@@ -65,7 +65,7 @@
         <div class="sm table-col">
           {{ formadivate(personal.dateOfBirth) }}
         </div>
-        <div class="lg table-col">
+        <div class="normal table-col">
           {{ personal.ssn }}
         </div>
         <div class="sm table-col">
@@ -74,7 +74,7 @@
         <div class="sm table-col">
           {{ personal.relation }}
         </div>
-        <div class="xs table-col">
+        <div class="sm table-col">
           {{ personal.language }}
         </div>
         <div class="table-col xs">
