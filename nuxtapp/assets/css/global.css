@@ -3,11 +3,11 @@
 }
 
 .table-col {
-  @apply px-1 py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm text-gray-500;
+  @apply px-1 py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-xs text-gray-500;
 }
 
 .table-col-primary {
-  @apply px-1 py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm font-medium text-gray-900;
+  @apply px-1 py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-xs font-medium text-gray-900;
 }
 
 .table-col.xs,
@@ -15,7 +15,7 @@
 .table-col-primary.xs {
   @apply w-1/12;
 
-  min-width: 1.5rem;
+  min-width: .5rem;
 }
 
 .table-col.sm,
@@ -23,7 +23,7 @@
 .table-col-primary.sm {
   @apply w-2/12;
 
-  min-width: 2rem;
+  min-width: 1rem;
 }
 
 .table-col.normal,
@@ -31,7 +31,7 @@
 .table-col-primary.normal {
   @apply w-1/5;
 
-  min-width: 3rem;
+  min-width: 2rem;
 }
 
 .table-col.lg,
@@ -39,7 +39,7 @@
 .table-col-primary.lg {
   @apply w-3/12;
 
-  min-width: 4rem;
+  min-width: 3rem;
 }
 
 .table-col.xl,
@@ -47,5 +47,5 @@
 .table-col-primary.lg {
   @apply w-4/12;
 
-  min-width: 5rem;
+  min-width: 4rem;
 }
