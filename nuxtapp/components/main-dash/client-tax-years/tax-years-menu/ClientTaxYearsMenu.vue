@@ -1,7 +1,7 @@
 <template>
   <div class="flex-grow overflow-auto">
     <div v-for="taxYear in displayedTaxYearData" :key="taxYear.id" class="px-3 tax-year">
-      <span class="font-bold">{{ taxYear.yearName }}</span>
+      <span class="font-bold">{{ taxYear.id }}</span>
     </div>
   </div>
 </template>
@@ -56,6 +56,6 @@ export default {
 
 <style scoped>
 .tax-year:nth-child(even) {
-  @apply bg-gray-300;
+  @apply bg-gray-50;
 }
 </style>
