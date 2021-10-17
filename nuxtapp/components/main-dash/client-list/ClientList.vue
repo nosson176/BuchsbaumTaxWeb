@@ -3,7 +3,7 @@
     <div
       v-for="client in displayedClients"
       :key="client.id"
-      class="text-gray-500 bg-gray-50 px-2 py-4 text-sm client cursor-pointer"
+      class="text-gray-500 bg-gray-50 p-2 text-sm client cursor-pointer"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
