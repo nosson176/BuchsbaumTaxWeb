@@ -68,5 +68,8 @@ export const notification = Object.freeze({
 // Tabs
 export const tabs = Object.freeze({
   tax_personals: 'tax-personals',
-  contact: 'contact'
+  contact: 'contact',
+  logs: 'logs',
+  income: 'income',
+  fbar: 'fbar'
 })

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex space-x-4">
+  <div class="flex space-x-2">
     <Tab :active="isTaxPersonalsActive" @click="setTabTaxPersonals">
       Tax Personals
     </Tab>
