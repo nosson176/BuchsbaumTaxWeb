@@ -46,6 +46,7 @@ export default {
     archived () {
       return Object.assign(
         Object.values(this.selectedClient.taxYearData)
+          .filter(taxYear => taxYear.archived)
           .sort((a, b) => a.yearName < b.yearName ? 1 : -1)
       )
     }

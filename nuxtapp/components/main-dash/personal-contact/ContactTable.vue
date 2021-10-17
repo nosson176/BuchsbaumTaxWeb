@@ -108,6 +108,7 @@ export default {
     archived () {
       if (this.selectedClient.contacts) {
         return this.selectedClient.contacts
+          .filter(contact => contact.archived)
       } else {
         return null
       }

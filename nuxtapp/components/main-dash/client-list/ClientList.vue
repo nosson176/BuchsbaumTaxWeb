@@ -41,7 +41,8 @@ export default {
         .filter(([key, client]) => !client.archived))
     },
     archived () {
-      return this.clients
+      return Object.fromEntries(Object.entries(this.clients)
+        .filter(([key, client]) => client.archived))
     }
   },
   methods: {

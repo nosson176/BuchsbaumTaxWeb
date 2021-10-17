@@ -127,6 +127,8 @@ export default {
     archived () {
       if (this.selectedClient.taxPersonals) {
         return this.selectedClient.taxPersonals
+          .filter(personal => personal.archived)
+          .sort((a, b) => this.sortByCategory(a, b))
       } else {
         return null
       }
