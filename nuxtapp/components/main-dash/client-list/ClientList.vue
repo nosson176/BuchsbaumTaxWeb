@@ -31,11 +31,17 @@ export default {
     ...mapState([models.clients]),
     displayedClients () {
       if (!this.showArchived) {
-        return Object.fromEntries(Object.entries(this.clients)
-          .filter(([key, client]) => client.archived === false))
+        return this.notArchived
       } else {
-        return this.clients
+        return this.archived
       }
+    },
+    notArchived () {
+      return Object.fromEntries(Object.entries(this.clients)
+        .filter(([key, client]) => !client.archived))
+    },
+    archived () {
+      return this.clients
     }
   },
   methods: {

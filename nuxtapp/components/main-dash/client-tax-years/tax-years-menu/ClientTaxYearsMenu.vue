@@ -23,20 +23,9 @@ export default {
     displayedTaxYearData () {
       if (this.isClientSelected) {
         if (!this.showArchived) {
-          return Object.assign(
-            Object.values(this.selectedClient.taxYearData)
-              .filter((taxYear) => {
-                return taxYear.archived === false
-              })
-              .sort((a, b) => {
-                return a.yearName - b.yearName
-              })
-          )
+          return this.notArchived
         } else {
-          return Object.assign(
-            Object.values(this.selectedClient.taxYearData)
-              .sort((a, b) => a.yearName - b.yearName)
-          )
+          return this.archived
         }
       } else {
         return null
@@ -44,6 +33,21 @@ export default {
     },
     isClientSelected () {
       return this.selectedClient.length || Object.entries(this.selectedClient).length
+    },
+    notArchived () {
+      return Object.assign(
+        Object.values(this.selectedClient.taxYearData)
+          .filter(taxYear => !taxYear.archived)
+          .sort((a, b) => {
+            return a.yearName < b.yearName ? 1 : -1
+          })
+      )
+    },
+    archived () {
+      return Object.assign(
+        Object.values(this.selectedClient.taxYearData)
+          .sort((a, b) => a.yearName < b.yearName ? 1 : -1)
+      )
     }
   }
 }
