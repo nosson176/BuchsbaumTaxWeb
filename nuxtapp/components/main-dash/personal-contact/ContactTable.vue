@@ -3,27 +3,27 @@
     <Table>
       <template #header>
         <TableHeader>
-          <th scope="col" class="header-cell" />
-          <th scope="col" class="header-cell" />
-          <th scope="col" class="header-cell">
+          <div class="table-header w-1/12" />
+          <div class="table-header w-1/12" />
+          <div class="table-header w-2/12">
             Type
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="table-header w-2/12">
             Memo
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="table-header w-4/12">
             Address / Phone / Routing
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="table-header w-1/5">
             City / Account
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="table-header w-1/12">
             St
-          </th>
-          <th scope="col" class="header-cell">
+          </div>
+          <div class="table-header w-1/12">
             Zip
-          </th>
-          <th scope="col" class="header-cell" />
+          </div>
+          <div class="table-header w-1/12" />
         </TableHeader>
       </template>
       <template #body>
@@ -32,54 +32,52 @@
           :key="contact.id"
           :idx="idx"
         >
-          <td class="row-cell">
+          <div class="table-col w-1/12">
             <div class="flex items-center h-5">
               <input
                 id="comments"
                 :checked="false"
-                aria-describedby="comments-description"
                 name="comments"
                 type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                class="h-4 w-4"
               >
             </div>
-          </td>
-          <td>
+          </div>
+          <div class="table-col w-1/12">
             <div class="flex items-center h-5">
               <input
                 id="disabled"
                 :checked="!contact.disabled"
-                aria-describedby="contact-disabled"
                 name="disabled"
                 type="checkbox"
-                class="focus:ring-indigo-500 h-3 w-3 text-indigo-600 border-gray-300 rounded pointer-events-none"
+                class="h-3 w-3 pointer-events-none"
                 disabled
               >
             </div>
-          </td>
-          <td class="main-row-cell">
+          </div>
+          <div class="table-primary-col w-2/12">
             {{ contact.contactType }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="table-col w-1/5">
             {{ contact.memo }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="table-col w-4/12">
             {{ contact.mainDetail }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="table-col w-1/5">
             {{ contact.secondaryDetail }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="table-col w-1/12">
             {{ contact.state }}
-          </td>
-          <td class="row-cell">
+          </div>
+          <div class="table-col w-1/12">
             {{ contact.zip || '' }}
-          </td>
-          <td class="row-cell font-medium flex items-center justify-center">
+          </div>
+          <div class="table-col w-1/12 flex items-center justify-center">
             <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
               <CloseIcon class="w-2 h-2" />
             </div>
-          </td>
+          </div>
         </TableRow>
       </template>
     </Table>
@@ -121,15 +119,4 @@ export default {
 </script>
 
 <style scoped>
-.header-cell {
-  @apply px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
-}
-
-.row-cell {
-  @apply px-2 py-4 text-sm whitespace-nowrap text-gray-500;
-}
-
-.main-row-cell {
-  @apply px-2 py-4 whitespace-nowrap text-sm font-medium text-gray-900;
-}
 </style>
