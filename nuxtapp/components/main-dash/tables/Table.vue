@@ -1,7 +1,9 @@
 <template>
-  <div class="flex-grow overflow-auto">
+  <div class="flex flex-col flex-grow overflow-hidden">
     <slot name="header" />
-    <slot name="body" />
+    <div class="flex-grow overflow-auto">
+      <slot name="body" />
+    </div>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow overflow-auto">
+  <div class="flex flex-grow overflow-hidden">
     <TaxPersonalsTable v-if="showTaxPersonals" show-archived />
     <ContactTable v-else-if="showContacts" show-archived />
   </div>
