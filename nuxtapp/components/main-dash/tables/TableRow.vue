@@ -1,7 +1,7 @@
 <template>
-  <tr class="bg-white" :class="idx % 2 === 0 ? 'even': ''">
+  <div class="flex justify-between items-center bg-white" :class="idx % 2 === 0 ? 'even': ''">
     <slot />
-  </tr>
+  </div>
 </template>
 
 <script>

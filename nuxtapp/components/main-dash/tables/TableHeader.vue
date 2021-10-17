@@ -1,9 +1,7 @@
 <template>
-  <thead class="bg-gray-50">
-    <tr>
-      <slot />
-    </tr>
-  </thead>
+  <div class="flex bg-gray-50">
+    <slot />
+  </div>
 </template>
 
 <script>
