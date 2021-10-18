@@ -19,7 +19,7 @@
         <div class="table-header xs">
           Time
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Employee
         </div>
         <div class="table-header xs" />
@@ -53,7 +53,9 @@
         <div class="table-col xs">
           {{ log.alarmTime }}
         </div>
-        <div class="table-col xs" />
+        <div class="table-col sm">
+          {{ log.alarmUserName }}
+        </div>
         <div class="table-col xs" />
         <div class="table-col xs" />
       </TableRow>
