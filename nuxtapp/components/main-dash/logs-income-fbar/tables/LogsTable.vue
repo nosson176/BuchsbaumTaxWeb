@@ -36,7 +36,7 @@
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
         <div class="table-col xs">
-          {{ log.years.split('U+000B')[0] }}
+          {{ splitMulti(log.years) }}
         </div>
         <div class="table-col xxl">
           {{ log.note }}
@@ -112,6 +112,9 @@ export default {
     },
     priorityColor (p) {
       return p ? priority[p] : ''
+    },
+    splitMulti (years) {
+      return years.split('\u000B')[0]
     }
   }
 }
