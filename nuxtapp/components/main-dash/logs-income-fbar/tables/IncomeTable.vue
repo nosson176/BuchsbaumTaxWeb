@@ -109,7 +109,7 @@
           {{ income.description }}
         </div>
         <div class="table-col sm">
-          Depend
+          {{ income.depend }}
         </div>
         <div class="table-col xs">
           <DeleteButton />

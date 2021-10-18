@@ -16,7 +16,6 @@
           Alarm
         </div>
         <div class="table-header xs" />
-        <div class="table-header xs" />
         <div class="table-header xs">
           Time
         </div>
@@ -33,8 +32,12 @@
         :key="log.id"
         :idx="idx"
       >
-        <div class="table-col xs" />
-        <div class="table-col xs" />
+        <div class="table-col xs">
+          {{ log.priority }}
+        </div>
+        <div class="table-col xs">
+          {{ log.years }}
+        </div>
         <div class="table-col xl">
           {{ log.note }}
         </div>
@@ -42,10 +45,10 @@
           {{ log.logDate }}
         </div>
         <div class="table-col xs">
-          {{ log.alarm }}
+          {{ log.alarmDate }}
         </div>
         <div class="table-col xs">
-          {{ log.alarmCompleted }}
+          {{ log.alarmComplete }}
         </div>
         <div class="table-col xs">
           {{ log.alarmTime }}

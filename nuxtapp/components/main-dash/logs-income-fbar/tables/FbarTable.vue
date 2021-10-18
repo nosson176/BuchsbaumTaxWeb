@@ -12,9 +12,6 @@
         <div class="table-header  normal">
           Group
         </div>
-        <div class="table-header xs">
-          Ex
-        </div>
         <div class="table-header normal">
           Type
         </div>
@@ -72,18 +69,7 @@
         <div class="table-col normal">
           {{ fbar.taxGroup }}
         </div>
-        <div class="table-col xs">
-          <div class="flex items-center h-5">
-            <input
-              id="include"
-              :checked="fbar.exclusion"
-              name="disabled"
-              type="checkbox"
-              class="h-3 w-3 pointer-events-none"
-              disabled
-            >
-          </div>
-        </div>
+
         <div class="table-col normal">
           {{ fbar.taxType }}
         </div>
@@ -109,7 +95,7 @@
           {{ fbar.description }}
         </div>
         <div class="table-col sm">
-          Depend
+          {{ fbar.depend }}
         </div>
         <div class="table-col xs">
           <DeleteButton />
