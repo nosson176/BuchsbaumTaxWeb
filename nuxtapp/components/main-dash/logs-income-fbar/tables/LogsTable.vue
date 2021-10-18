@@ -36,7 +36,7 @@
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
         <div class="table-col xs">
-          {{ log.years }}
+          {{ log.years.split('U+000B')[0] }}
         </div>
         <div class="table-col xxl">
           {{ log.note }}
@@ -57,7 +57,9 @@
           {{ log.alarmUserName }}
         </div>
         <div class="table-col xs" />
-        <div class="table-col xs" />
+        <div class="table-col xs">
+          <DeleteButton />
+        </div>
       </TableRow>
     </template>
   </Table>
