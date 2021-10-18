@@ -44,8 +44,16 @@
 
 .table-col.xl,
 .table-header.xl,
-.table-col-primary.lg {
+.table-col-primary.xl {
   @apply w-6/12;
 
   min-width: 24rem;
+}
+
+.table-col.xxl,
+.table-header.xxl,
+.table-col-primary.xxl {
+  @apply w-9/12;
+
+  min-width: 36rem;
 }

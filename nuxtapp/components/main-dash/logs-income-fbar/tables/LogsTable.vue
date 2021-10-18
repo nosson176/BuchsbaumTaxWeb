@@ -6,7 +6,7 @@
         <div class="table-header xs">
           Year
         </div>
-        <div class="table-header xl">
+        <div class="table-header xxl">
           Note
         </div>
         <div class="table-header sm">
@@ -38,7 +38,7 @@
         <div class="table-col xs">
           {{ log.years }}
         </div>
-        <div class="table-col xl">
+        <div class="table-col xxl">
           {{ log.note }}
         </div>
         <div class="table-col sm">
@@ -86,6 +86,7 @@ export default {
       if (this.selectedClient.logs) {
         return this.selectedClient.logs
           .filter(log => !log.archived)
+          .reverse()
       } else {
         return null
       }
@@ -94,6 +95,7 @@ export default {
       if (this.selectedClient.logs) {
         return this.selectedClient.logs
           .filter(log => log.archived)
+          .reverse()
       } else {
         return null
       }
