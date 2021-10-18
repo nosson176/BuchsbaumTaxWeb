@@ -32,8 +32,8 @@
         :key="log.id"
         :idx="idx"
       >
-        <div class="table-col xs">
-          {{ log.priority }}
+        <div class="table-col inline-flex justify-center xs">
+          <div class="h-4 w-4 rounded-full" :class="priorityColor(log.priority)" />
         </div>
         <div class="table-col xs">
           {{ log.years }}
@@ -63,7 +63,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, priority } from '~/shared/constants'
 import { formatDateForTable } from '~/shared/domain-utilities'
 
 export default {
@@ -105,6 +105,9 @@ export default {
   methods: {
     formatDate (date) {
       return date ? formatDateForTable(date) : ''
+    },
+    priorityColor (p) {
+      return p ? priority[p] : ''
     }
   }
 }

@@ -79,3 +79,14 @@ export const categories = {
   secondary: 'SEC.',
   dependant: 'DEP.'
 }
+
+export const priority = {
+  1: 'bg-pink-500',
+  2: 'bg-green-200',
+  3: 'bg-blue-200',
+  4: 'bg-yellow-200',
+  5: 'bg-red-500',
+  6: 'bg-yellow-500',
+  7: 'bg-pink-200',
+  8: 'bg-black'
+}
