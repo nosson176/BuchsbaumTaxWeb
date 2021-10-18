@@ -1,3 +1,7 @@
+import { format, parseISO } from 'date-fns'
+import { categories } from '~/shared/constants'
+const dateFormat = 'M/d/yy'
+
 const isNameValid = (str) => {
   return str.length > 0
 }
@@ -51,6 +55,26 @@ const isNotificationValid = (notification) => {
   return notification.time > 0 && notification.type !== '' && notification.message !== ''
 }
 
+const sortByCategory = (a, b) => {
+  if (
+    (a.category === categories.secondary && b.category === categories.primary) ||
+          (a.category === categories.dependant && b.category === categories.primary) ||
+          (a.category === categories.dependant && b.category === categories.secondary)
+  ) {
+    return 1
+  } else if (
+    (a.category === categories.primary && b.category === categories.secondary) ||
+          (a.category === categories.primary && b.category === categories.dependant) ||
+          (a.category === categories.secondary && b.category === categories.dependant)
+  ) {
+    return -1
+  } else {
+    return 0
+  }
+}
+
+const formatDateForTable = date => format(parseISO(date), dateFormat)
+
 export {
   isNameValid,
   isEmailValid,
@@ -65,5 +89,7 @@ export {
   isAddressAddressValid,
   isAddressFormValid,
   isNotificationValid,
-  isFieldEmpty
+  isFieldEmpty,
+  sortByCategory,
+  formatDateForTable
 }

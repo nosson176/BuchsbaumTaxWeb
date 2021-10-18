@@ -3,7 +3,7 @@
     <template #header>
       <TableHeader>
         <div class="xs table-header" />
-        <div class="xs table-header">
+        <div class="sm table-header">
           Cat
         </div>
         <div class="normal table-header">
@@ -18,7 +18,7 @@
         <div class="sm table-header">
           DOB
         </div>
-        <div class="lg table-header">
+        <div class="normal table-header">
           SSN
         </div>
         <div class="sm table-header">
@@ -27,7 +27,7 @@
         <div class="sm table-header">
           Relation
         </div>
-        <div class="xs table-header">
+        <div class="sm table-header">
           Lang
         </div>
         <div class="xs table-header" />
@@ -50,7 +50,7 @@
             >
           </div>
         </div>
-        <div class="xs table-col-primary">
+        <div class="sm table-col-primary">
           {{ personal.category }}
         </div>
         <div class="normal table-col">
@@ -63,9 +63,9 @@
           {{ personal.lastName }}
         </div>
         <div class="sm table-col">
-          {{ formadivate(personal.dateOfBirth) }}
+          {{ formatDate(personal.dateOfBirth) }}
         </div>
-        <div class="lg table-col">
+        <div class="normal table-col">
           {{ personal.ssn }}
         </div>
         <div class="sm table-col">
@@ -74,13 +74,11 @@
         <div class="sm table-col">
           {{ personal.relation }}
         </div>
-        <div class="xs table-col">
+        <div class="sm table-col">
           {{ personal.language }}
         </div>
-        <div class="xs table-col flex items-center justify-center">
-          <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
-            <CloseIcon class="w-2 h-2" />
-          </div>
+        <div class="table-col xs">
+          <DeleteButton />
         </div>
       </TableRow>
     </template>
@@ -89,14 +87,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { format, parseISO } from 'date-fns'
 import { models } from '~/shared/constants'
-const categories = {
-  primary: 'PRI.',
-  secondary: 'SEC.',
-  dependant: 'DEP.'
-}
-const dateFormat = 'M/d/yy'
+import { formatDateForTable, sortByCategory } from '~/shared/domain-utilities'
 
 export default {
   name: 'TaxPersonalsTable',
@@ -119,7 +111,7 @@ export default {
       if (this.selectedClient.taxPersonals) {
         return this.selectedClient.taxPersonals
           .filter(personal => !personal.archived)
-          .sort((a, b) => this.sortByCategory(a, b))
+          .sort((a, b) => sortByCategory(a, b))
       } else {
         return null
       }
@@ -127,35 +119,16 @@ export default {
     archived () {
       if (this.selectedClient.taxPersonals) {
         return this.selectedClient.taxPersonals
+          .filter(personal => personal.archived)
+          .sort((a, b) => sortByCategory(a, b))
       } else {
         return null
       }
     }
   },
   methods: {
-    sortByCategory (a, b) {
-      if (
-        (a.category === categories.secondary && b.category === categories.primary) ||
-              (a.category === categories.dependant && b.category === categories.primary) ||
-              (a.category === categories.dependant && b.category === categories.secondary)
-      ) {
-        return 1
-      } else if (
-        (a.category === categories.primary && b.category === categories.secondary) ||
-              (a.category === categories.primary && b.category === categories.dependant) ||
-              (a.category === categories.secondary && b.category === categories.dependant)
-      ) {
-        return -1
-      } else {
-        return 0
-      }
-    },
-    formadivate (date) {
-      if (date) {
-        return format(parseISO(date), dateFormat)
-      } else {
-        return ''
-      }
+    formatDate (date) {
+      return date ? formatDateForTable(date) : ''
     }
   }
 }
