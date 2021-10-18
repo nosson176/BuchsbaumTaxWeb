@@ -70,7 +70,7 @@ export default {
 .grid {
   gap: 0.5rem;
   grid-template-rows: repeat(4, minmax(0, 1fr));
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
 }
 
 .client-list {
@@ -78,11 +78,11 @@ export default {
 }
 
 .fees-checklists {
-  @apply row-start-1 row-span-2 col-start-7;
+  @apply row-start-1 row-span-2 col-start-9;
 }
 
 .client-tax-years {
-  @apply row-start-1 row-span-2 col-start-2 col-span-5;
+  @apply row-start-1 row-span-2 col-start-2 col-span-7;
 }
 
 .smart-views {
@@ -90,10 +90,10 @@ export default {
 }
 
 .logs-income-fbar {
-  @apply row-start-3 row-span-2 col-start-2 col-span-3;
+  @apply row-start-3 row-span-2 col-start-2 col-span-5;
 }
 
 .personal-contact {
-  @apply row-start-3 row-span-2 col-start-5 col-span-3;
+  @apply row-start-3 row-span-2 col-start-7 col-span-3;
 }
 </style>
