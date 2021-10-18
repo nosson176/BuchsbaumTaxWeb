@@ -16,6 +16,7 @@
           Alarm
         </div>
         <div class="table-header xs" />
+        <div class="table-header xs" />
         <div class="table-header xs">
           Time
         </div>
@@ -28,7 +29,7 @@
     </template>
     <template #body>
       <TableRow
-        v-for="(log, idx) in selectedClient.logs"
+        v-for="(log, idx) in displayedLogs"
         :key="log.id"
         :idx="idx"
       >
@@ -44,9 +45,11 @@
           {{ log.alarm }}
         </div>
         <div class="table-col xs">
-          {{ log.timeSpent }}
+          {{ log.alarmCompleted }}
         </div>
-        <div class="table-col xs" />
+        <div class="table-col xs">
+          {{ log.alarmTime }}
+        </div>
         <div class="table-col xs" />
         <div class="table-col xs" />
         <div class="table-col xs" />
@@ -68,7 +71,30 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient])
+    ...mapState([models.selectedClient]),
+    displayedLogs () {
+      if (!this.showArchived) {
+        return this.notArchived
+      } else {
+        return this.archived
+      }
+    },
+    notArchived () {
+      if (this.selectedClient.logs) {
+        return this.selectedClient.logs
+          .filter(log => !log.archived)
+      } else {
+        return null
+      }
+    },
+    archived () {
+      if (this.selectedClient.logs) {
+        return this.selectedClient.logs
+          .filter(log => log.archived)
+      } else {
+        return null
+      }
+    }
   }
 }
 </script>

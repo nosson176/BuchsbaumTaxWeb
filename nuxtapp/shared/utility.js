@@ -16,6 +16,10 @@ const formatAsILCurrency = (s) => {
   }).format(s)
 }
 
+const formatAsNumber = (s) => {
+  return s.toLocaleString('en-US')
+}
+
 let uuid = 1
 const getAppUniqueId = () => {
   const n = uuid
@@ -72,6 +76,7 @@ export {
   getAppUniqueId,
   formatAsUSCurrency,
   formatAsILCurrency,
+  formatAsNumber,
   downloadFile,
   getOrdinalNum
 }
