@@ -4,7 +4,7 @@
       HEADER
     </div>
     <div class="grid flex-grow overflow-hidden p-2">
-      <div class=" shadow rounded flex flex-col client-list">
+      <div class="shadow rounded flex flex-col client-list">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
@@ -18,12 +18,13 @@
       <div class="border border-yellow-500 bg-yellow-100 smart-views">
         smartviews
       </div>
-      <div class="border border-gray-500 bg-gray-100 logs-income-fbar">
-        logs/income/fbar
+      <div class="shadow rounded flex flex-col logs-income-fbar">
+        <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
       </div>
-      <div class=" shadow rounded flex flex-col personal-contact">
+      <div class="shadow rounded flex flex-col personal-contact">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContact :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
     </div>
     <div class="bg-black text-white flex">
@@ -40,7 +41,9 @@ export default {
     return {
       showArchivedClients: false,
       showArchivedPersonals: false,
-      currentPersonalsTab: tabs.tax_personals
+      currentPersonalsTab: tabs.tax_personals,
+      showArchivedLogsIncomeFbar: false,
+      currentLogsIncomeFbarTab: tabs.logs
     }
   },
   methods: {
@@ -52,6 +55,12 @@ export default {
     },
     switchPersonalsTab (tab) {
       this.currentPersonalsTab = tab
+    },
+    toggleShowArchivedLogsIncomeFbar () {
+      this.showArchivedLogsIncomeFbar = !this.showArchivedLogsIncomeFbar
+    },
+    switchLogsIncomeFbarTab (tab) {
+      this.currentLogsIncomeFbarTab = tab
     }
   }
 }
@@ -61,7 +70,7 @@ export default {
 .grid {
   gap: 0.5rem;
   grid-template-rows: repeat(4, minmax(0, 1fr));
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
 }
 
 .client-list {
@@ -69,11 +78,11 @@ export default {
 }
 
 .fees-checklists {
-  @apply row-start-1 row-span-2 col-start-7;
+  @apply row-start-1 row-span-2 col-start-9;
 }
 
 .client-tax-years {
-  @apply row-start-1 row-span-2 col-start-2 col-span-5;
+  @apply row-start-1 row-span-2 col-start-2 col-span-7;
 }
 
 .smart-views {
@@ -81,10 +90,10 @@ export default {
 }
 
 .logs-income-fbar {
-  @apply row-start-3 row-span-2 col-start-2 col-span-3;
+  @apply row-start-3 row-span-2 col-start-2 col-span-5;
 }
 
 .personal-contact {
-  @apply row-start-3 row-span-2 col-start-5 col-span-3;
+  @apply row-start-3 row-span-2 col-start-7 col-span-3;
 }
 </style>

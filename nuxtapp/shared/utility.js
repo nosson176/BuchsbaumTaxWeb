@@ -9,6 +9,17 @@ const formatAsUSCurrency = (s) => {
   }).format(s)
 }
 
+const formatAsILCurrency = (s) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'ILS'
+  }).format(s)
+}
+
+const formatAsNumber = (s) => {
+  return s.toLocaleString('en-US')
+}
+
 let uuid = 1
 const getAppUniqueId = () => {
   const n = uuid
@@ -64,6 +75,8 @@ export {
   delayPromConstructor,
   getAppUniqueId,
   formatAsUSCurrency,
+  formatAsILCurrency,
+  formatAsNumber,
   downloadFile,
   getOrdinalNum
 }

@@ -1,14 +1,14 @@
 <template>
   <div class="flex flex-grow overflow-hidden">
-    <TaxPersonalsTable v-if="showTaxPersonals" show-archived />
-    <ContactTable v-else-if="showContacts" show-archived />
+    <TaxPersonalsTable v-if="showTaxPersonals" :show-archived="showArchived" />
+    <ContactTable v-else-if="showContacts" :show-archived="showArchived" />
   </div>
 </template>
 
 <script>
 import { tabs } from '~/shared/constants'
 export default {
-  name: 'PersonalContact',
+  name: 'PersonalContactBody',
   props: {
     showArchived: {
       type: Boolean,

@@ -4,22 +4,22 @@
       <TableHeader>
         <div class="table-header xs" />
         <div class="table-header xs" />
-        <div class="table-header sm">
+        <div class="table-header normal">
           Type
         </div>
-        <div class="table-header sm">
+        <div class="table-header normal">
           Memo
         </div>
-        <div class="table-header xl">
+        <div class="table-header lg">
           Address / Phone / Routing
         </div>
-        <div class="table-header normal">
+        <div class="table-header lg">
           City / Account
         </div>
         <div class="table-header xs">
           St
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Zip
         </div>
         <div class="table-header xs" />
@@ -60,22 +60,20 @@
         <div class="table-col normal">
           {{ contact.memo }}
         </div>
-        <div class="table-col xl">
+        <div class="table-col lg">
           {{ contact.mainDetail }}
         </div>
-        <div class="table-col normal">
+        <div class="table-col lg">
           {{ contact.secondaryDetail }}
         </div>
         <div class="table-col xs">
           {{ contact.state }}
         </div>
-        <div class="table-col xs">
+        <div class="table-col sm">
           {{ contact.zip || '' }}
         </div>
-        <div class="table-col xs flex items-center justify-center">
-          <div class="rounded-full cursor-pointer bg-gray-200 w-5 h-5 leading-tight text-center">
-            <CloseIcon class="w-2 h-2" />
-          </div>
+        <div class="table-col xs">
+          <DeleteButton />
         </div>
       </TableRow>
     </template>
@@ -88,6 +86,12 @@ import { models } from '~/shared/constants'
 
 export default {
   name: 'ContactTable',
+  props: {
+    showArchived: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     ...mapState([models.selectedClient]),
     displayedContacts () {
@@ -108,6 +112,7 @@ export default {
     archived () {
       if (this.selectedClient.contacts) {
         return this.selectedClient.contacts
+          .filter(contact => contact.archived)
       } else {
         return null
       }

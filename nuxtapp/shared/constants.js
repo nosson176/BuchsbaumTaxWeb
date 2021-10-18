@@ -68,5 +68,25 @@ export const notification = Object.freeze({
 // Tabs
 export const tabs = Object.freeze({
   tax_personals: 'tax-personals',
-  contact: 'contact'
+  contact: 'contact',
+  logs: 'logs',
+  income: 'income',
+  fbar: 'fbar'
 })
+
+export const categories = {
+  primary: 'PRI.',
+  secondary: 'SEC.',
+  dependant: 'DEP.'
+}
+
+export const priority = {
+  1: 'bg-pink-500',
+  2: 'bg-green-200',
+  3: 'bg-blue-200',
+  4: 'bg-yellow-200',
+  5: 'bg-red-500',
+  6: 'bg-yellow-500',
+  7: 'bg-pink-200',
+  8: 'bg-black'
+}
