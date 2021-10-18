@@ -9,7 +9,7 @@
         <div class="table-header xxl">
           Note
         </div>
-        <div class="table-header sm">
+        <div class="table-header xs">
           Date
         </div>
         <div class="table-header xs">
@@ -41,14 +41,14 @@
         <div class="table-col xxl">
           {{ log.note }}
         </div>
-        <div class="table-col sm">
-          {{ log.logDate }}
+        <div class="table-col xs">
+          {{ formatDate(log.logDate) }}
         </div>
         <div class="table-col xs">
-          {{ log.alarmDate }}
+          {{ formatDate(log.alarmDate) }}
         </div>
         <div class="table-col xs">
-          {{ log.alarmComplete }}
+          <CheckIcon v-if="log.alarmComplete" class=" text-green-500" />
         </div>
         <div class="table-col xs">
           {{ log.alarmTime }}
@@ -64,6 +64,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
+import { formatDateForTable } from '~/shared/domain-utilities'
 
 export default {
   name: 'LogsTable',
@@ -99,6 +100,11 @@ export default {
       } else {
         return null
       }
+    }
+  },
+  methods: {
+    formatDate (date) {
+      return date ? formatDateForTable(date) : ''
     }
   }
 }

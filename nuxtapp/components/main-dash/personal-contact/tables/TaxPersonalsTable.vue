@@ -87,11 +87,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { format, parseISO } from 'date-fns'
 import { models } from '~/shared/constants'
-import { sortByCategory } from '~/shared/domain-utilities'
-
-const dateFormat = 'M/d/yy'
+import { formatDateForTable, sortByCategory } from '~/shared/domain-utilities'
 
 export default {
   name: 'TaxPersonalsTable',
@@ -131,11 +128,7 @@ export default {
   },
   methods: {
     formatDate (date) {
-      if (date) {
-        return format(parseISO(date), dateFormat)
-      } else {
-        return ''
-      }
+      return date ? formatDateForTable(date) : ''
     }
   }
 }

@@ -1,4 +1,6 @@
+import { format, parseISO } from 'date-fns'
 import { categories } from '~/shared/constants'
+const dateFormat = 'M/d/yy'
 
 const isNameValid = (str) => {
   return str.length > 0
@@ -71,6 +73,8 @@ const sortByCategory = (a, b) => {
   }
 }
 
+const formatDateForTable = date => format(parseISO(date), dateFormat)
+
 export {
   isNameValid,
   isEmailValid,
@@ -86,5 +90,6 @@ export {
   isAddressFormValid,
   isNotificationValid,
   isFieldEmpty,
-  sortByCategory
+  sortByCategory,
+  formatDateForTable
 }
