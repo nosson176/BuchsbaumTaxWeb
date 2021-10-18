@@ -73,3 +73,9 @@ export const tabs = Object.freeze({
   income: 'income',
   fbar: 'fbar'
 })
+
+export const categories = {
+  primary: 'PRI.',
+  secondary: 'SEC.',
+  dependant: 'DEP.'
+}

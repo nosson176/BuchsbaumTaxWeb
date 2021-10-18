@@ -63,7 +63,7 @@
           {{ personal.lastName }}
         </div>
         <div class="sm table-col">
-          {{ formadivate(personal.dateOfBirth) }}
+          {{ formatDate(personal.dateOfBirth) }}
         </div>
         <div class="normal table-col">
           {{ personal.ssn }}
@@ -89,11 +89,8 @@
 import { mapState } from 'vuex'
 import { format, parseISO } from 'date-fns'
 import { models } from '~/shared/constants'
-const categories = {
-  primary: 'PRI.',
-  secondary: 'SEC.',
-  dependant: 'DEP.'
-}
+import { sortByCategory } from '~/shared/domain-utilities'
+
 const dateFormat = 'M/d/yy'
 
 export default {
@@ -117,7 +114,7 @@ export default {
       if (this.selectedClient.taxPersonals) {
         return this.selectedClient.taxPersonals
           .filter(personal => !personal.archived)
-          .sort((a, b) => this.sortByCategory(a, b))
+          .sort((a, b) => sortByCategory(a, b))
       } else {
         return null
       }
@@ -126,31 +123,14 @@ export default {
       if (this.selectedClient.taxPersonals) {
         return this.selectedClient.taxPersonals
           .filter(personal => personal.archived)
-          .sort((a, b) => this.sortByCategory(a, b))
+          .sort((a, b) => sortByCategory(a, b))
       } else {
         return null
       }
     }
   },
   methods: {
-    sortByCategory (a, b) {
-      if (
-        (a.category === categories.secondary && b.category === categories.primary) ||
-              (a.category === categories.dependant && b.category === categories.primary) ||
-              (a.category === categories.dependant && b.category === categories.secondary)
-      ) {
-        return 1
-      } else if (
-        (a.category === categories.primary && b.category === categories.secondary) ||
-              (a.category === categories.primary && b.category === categories.dependant) ||
-              (a.category === categories.secondary && b.category === categories.dependant)
-      ) {
-        return -1
-      } else {
-        return 0
-      }
-    },
-    formadivate (date) {
+    formatDate (date) {
       if (date) {
         return format(parseISO(date), dateFormat)
       } else {

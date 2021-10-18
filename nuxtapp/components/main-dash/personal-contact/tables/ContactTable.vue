@@ -4,16 +4,16 @@
       <TableHeader>
         <div class="table-header xs" />
         <div class="table-header xs" />
-        <div class="table-header sm">
+        <div class="table-header normal">
           Type
         </div>
-        <div class="table-header sm">
+        <div class="table-header normal">
           Memo
         </div>
-        <div class="table-header xl">
+        <div class="table-header lg">
           Address / Phone / Routing
         </div>
-        <div class="table-header normal">
+        <div class="table-header lg">
           City / Account
         </div>
         <div class="table-header xs">
@@ -60,10 +60,10 @@
         <div class="table-col normal">
           {{ contact.memo }}
         </div>
-        <div class="table-col xl">
+        <div class="table-col lg">
           {{ contact.mainDetail }}
         </div>
-        <div class="table-col normal">
+        <div class="table-col lg">
           {{ contact.secondaryDetail }}
         </div>
         <div class="table-col xs">
