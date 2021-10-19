@@ -114,7 +114,7 @@ export default {
       return p ? priority[p] : ''
     },
     splitMulti (years) {
-      return years.split('\u000B')[0]
+      return years ? years.split('\u000B')[0] : ''
     }
   }
 }

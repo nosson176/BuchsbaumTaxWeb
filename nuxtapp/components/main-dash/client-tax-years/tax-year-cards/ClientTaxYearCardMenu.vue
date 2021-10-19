@@ -1,8 +1,6 @@
 <template>
-  <div class="flex-grow overflow-auto">
-    <div v-for="taxYear in displayedTaxYearData" :key="taxYear.id" class="px-3 tax-year">
-      <span class="font-bold">{{ taxYear.id }}</span>
-    </div>
+  <div class="flex overflow-x-auto overflow-y-hidden space-x-4 px-4">
+    <ClientTaxYearCard v-for="yearData in displayedTaxYearData" :key="yearData.id" :year-data="yearData" />
   </div>
 </template>
 
@@ -11,7 +9,7 @@ import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
 
 export default {
-  name: 'ClientTaxYearsMenu',
+  name: 'ClientTaxYearCardMenu',
   props: {
     showArchived: {
       type: Boolean,
@@ -39,7 +37,7 @@ export default {
         Object.values(this.selectedClient.taxYearData)
           .filter(taxYear => !taxYear.archived)
           .sort((a, b) => {
-            return a.yearName < b.yearName ? 1 : -1
+            return a.year < b.year ? 1 : -1
           })
       )
     },
@@ -47,7 +45,7 @@ export default {
       return Object.assign(
         Object.values(this.selectedClient.taxYearData)
           .filter(taxYear => taxYear.archived)
-          .sort((a, b) => a.yearName < b.yearName ? 1 : -1)
+          .sort((a, b) => a.year < b.year ? 1 : -1)
       )
     }
   }
@@ -55,7 +53,5 @@ export default {
 </script>
 
 <style scoped>
-.tax-year:nth-child(even) {
-  @apply bg-gray-50;
-}
+
 </style>
