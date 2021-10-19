@@ -90,3 +90,10 @@ export const priority = {
   7: 'bg-pink-200',
   8: 'bg-black'
 }
+
+export const filingTypes = {
+  federal: 'federal',
+  state: 'state',
+  fbar: 'fbar',
+  ext: 'ext'
+}
