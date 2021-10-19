@@ -9,7 +9,7 @@
 import { events } from '~/shared/constants'
 
 export default {
-  name: 'ClientTaxYearsMenuHeader',
+  name: 'ClientTaxYearsListHeader',
   methods: {
     emitChange () {
       this.$emit(events.change)

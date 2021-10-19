@@ -1,7 +1,7 @@
 <template>
   <div class="flex-grow overflow-auto">
     <div v-for="taxYear in displayedTaxYearData" :key="taxYear.id" class="px-3 tax-year">
-      <span class="font-bold">{{ taxYear.years }}</span>
+      <span class="font-bold">{{ taxYear.year }}</span>
     </div>
   </div>
 </template>
@@ -11,7 +11,7 @@ import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
 
 export default {
-  name: 'ClientTaxYearsMenu',
+  name: 'ClientTaxYearsList',
   props: {
     showArchived: {
       type: Boolean,
