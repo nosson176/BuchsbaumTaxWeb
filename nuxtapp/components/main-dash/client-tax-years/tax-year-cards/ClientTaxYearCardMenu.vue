@@ -1,5 +1,5 @@
 <template>
-  <div class="flex overflow-auto">
+  <div class="flex overflow-x-auto overflow-y-hidden space-x-4 px-4">
     <ClientTaxYearCard v-for="yearData in displayedTaxYearData" :key="yearData.id" :year-data="yearData" />
   </div>
 </template>

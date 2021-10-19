@@ -1,12 +1,13 @@
 <template>
-  <div>
-    <div class="bg-white shadow overflow-hidden w-64">
-      <div class="p-2 divide-y divide-gray-200">
+  <div class="flex-grow flex">
+    <div class="bg-white shadow w-64 flex flex-col overflow-hidden">
+      <div class="p-2 divide-y divide-gray-200 flex">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           {{ year }}
         </h3>
       </div>
       <ClientTaxYearCardTabs :filings="filings" :active-filing-type="activeFilingType" @click="setActiveFilingType" />
+      <div class="flex mt-2" />
       <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" />
     </div>
   </div>
@@ -35,7 +36,7 @@ export default {
       return this.yearData.filings
     },
     displayedFilingInfo () {
-      return this.filings.filter(filing => filing.filingType === this.activeFilingType)
+      return this.filings.filter(filing => filing.filingType === this.activeFilingType)[0]
     }
   },
   methods: {
