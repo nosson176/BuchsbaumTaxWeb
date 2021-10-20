@@ -22,12 +22,14 @@ export default ({ $axios, store }, inject) => {
   const getClientData = (id, headers) => $axios.get(
     '/api/clients/' + id + '/data', { headers, loading: models.selectedClient, store: models.selectedClient }
   )
+  const getValueTypes = headers => $axios.get('/api/values', { headers, loading: models.valueTypes, store: models.valueTypes })
 
   const api = {
     login,
     signout,
     getClientList,
     getClientData,
+    getValueTypes,
     getHttpConfig
   }
 

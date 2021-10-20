@@ -12,7 +12,7 @@ export default {
   created () {
     const headers = this.$api.getHttpConfig()
     this.$api.getClientList(headers)
-      .then()
+      .then(_ => this.$api.getValueTypes(headers))
       .catch((e) => {
         if (e.message === error.axios_401) {
           this.$api.signout()
