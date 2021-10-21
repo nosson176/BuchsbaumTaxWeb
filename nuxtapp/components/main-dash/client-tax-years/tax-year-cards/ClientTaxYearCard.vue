@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-64 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-80 flex flex-col overflow-hidden">
       <div class="p-2 divide-y divide-gray-200 flex">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           {{ year }}

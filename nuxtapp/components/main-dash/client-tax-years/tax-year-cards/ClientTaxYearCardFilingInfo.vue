@@ -1,46 +1,51 @@
 <template>
-  <div class="p-0 overflow-auto flex flex-grow">
-    <dl class="divide-y divide-gray-200">
+  <div class="p-2 overflow-auto flex flex-grow">
+    <dl class="w-full grid grid-cols-1 gap-x-1 gap-y-4 sm:grid-cols-2">
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="taxForm" #value>
+          {{ taxForm }}
+        </template>
+        <template v-else #label>
           Tax Form
         </template>
-        <template #value>
-          {{ filing.taxForm }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="status" #value>
+          {{ status }}
+        </template>
+        <template v-else #label>
           Status
         </template>
-        <template #value>
-          {{ filing.status }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="statusDetail" #value>
+          {{ statusDetail }}
+        </template>
+        <template v-else #label>
           Detail
         </template>
-        <template #value>
-          {{ filing.statusDetail }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="statusDate" #value>
+          {{ formattedStatusDate }}
+        </template>
+        <template v-else #label>
           Date
         </template>
-        <template #value>
-          {{ formatDate(filing.statusDate) }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="memo" #value>
+          {{ memo }}
+        </template>
+        <template v-else #label>
           Memo
         </template>
-        <template #value>
-          {{ filing.memo }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
+      <!-- spacing -->
+      <div />
+      <div />
+      <div />
+      <!-- end of spacing -->
       <ClientTaxYearCardFilingInfoItem>
         <template #label>
           <div class="flex items-center h-5 mr-1">
@@ -55,8 +60,8 @@
           </div>
           Owes/Paid
         </template>
-        <template #value>
-          {{ formatAsILCurrency(filing.owes) }}/{{ formatAsILCurrency(filing.paid) }}
+        <template v-if="hasOwesOrPaid" #value>
+          <span v-if="hasOwes"> {{ formattedOwes }}</span>/<span v-if="hasPaid">{{ formattedPaid }}</span>
         </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
@@ -73,64 +78,67 @@
           </div>
           FC/Insur
         </template>
-        <template #value>
-          {{ formatAsILCurrency(filing.owesFee) }}/{{ formatAsILCurrency(filing.paidFee) }}
+        <template v-if="hasOwesFeeOrPaidFee" #value>
+          <span v-if="hasOwesFee"> {{ formatTedOwesFee }}</span>/<span v-if="hasPaidFee">{{ formattedPaidFee }}</span>
         </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="fileType" #value>
+          {{ fileType }}
+        </template>
+        <template v-else #label>
           File Type
         </template>
-        <template #value>
-          {{ filing.fileType }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="refund" #value>
+          {{ formattedRefund }}
+        </template>
+        <template v-else #label>
           Refund
         </template>
-        <template #value>
-          {{ formatAsUSCurrency(filing.refund) }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="rebate" #value>
+          {{ formattedRebate }}
+        </template>
+        <template v-else #label>
           Rebate
         </template>
-        <template #value>
-          {{ formatAsUSCurrency(filing.rebate) }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
+      <!-- spacing -->
+      <div />
+      <!-- end of spacing -->
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="hasSum" #value>
+          {{ formattedSum }}
+        </template>
+        <template v-else #label>
           Sum
         </template>
-        <template #value>
-          {{ formatAsUSCurrency(filing.refund-filing.rebate) }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="deliveryContact" #value>
+          {{ deliveryContact }}
+        </template>
+        <template v-else #label>
           Delivery 1
         </template>
-        <template #value>
-          {{ filing.deliveryContact }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
+        <template v-if="secondDeliveryContact" #value>
+          {{ secondDeliveryContact }}
+        </template>
+        <template v-else #label>
           Delivery 2
         </template>
-        <template #value>
-          {{ filing.secondDeliveryContact }}
-        </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
-        <template #label>
-          Date Filed
+        <template v-if="dateFiled" #value>
+          {{ formattedDateFiled }}
         </template>
-        <template #value>
-          {{ formatDate(filing.dateFiled) }}
+        <template v-else #label>
+          Date Filed
         </template>
       </ClientTaxYearCardFilingInfoItem>
     </dl>
@@ -147,6 +155,104 @@ export default {
     filing: {
       type: Object,
       default: () => null
+    }
+  },
+  computed: {
+    taxForm () {
+      return this.filing.taxForm
+    },
+    status () {
+      return this.filing.status
+    },
+    statusDetail () {
+      return this.filing.statusDetail
+    },
+    statusDate () {
+      return this.filing.statusDate
+    },
+    formattedStatusDate () {
+      return this.formatDate(this.statusDate)
+    },
+    memo () {
+      return this.filing.memo
+    },
+    owes () {
+      return this.filing.owes
+    },
+    formattedOwes () {
+      return this.formatAsILCurrency(this.owes)
+    },
+    paid () {
+      return this.filing.paid
+    },
+    formattedPaid () {
+      return this.formatAsILCurrency(this.paid)
+    },
+    hasOwes () {
+      return this.owes
+    },
+    hasPaid () {
+      return this.paid
+    },
+    hasOwesOrPaid () {
+      return this.hasOwes || this.hasPaid
+    },
+    owesFee () {
+      return this.filing.owesFee
+    },
+    formattedOwesFee () {
+      return this.formatAsILCurrency(this.owesFee)
+    },
+    paidFee () {
+      return this.filing.paidFee
+    },
+    formattedPaidFee () {
+      return this.formatAsILCurrency(this.paidFee)
+    },
+    hasOwesFee () {
+      return this.owesFee
+    },
+    hasPaidFee () {
+      return this.paidFee
+    },
+    hasOwesFeeOrPaidFee () {
+      return this.hasOwesFee || this.hasPaidFee
+    },
+    fileType () {
+      return this.filing.fileType
+    },
+    refund () {
+      return this.filing.refund
+    },
+    formattedRefund () {
+      return formatAsUSCurrency(this.refund)
+    },
+    rebate () {
+      return this.filing.rebate
+    },
+    formattedRebate () {
+      return formatAsUSCurrency(this.rebate)
+    },
+    hasSum () {
+      return this.refund || this.rebate
+    },
+    sum () {
+      return this.refund - this.rebate
+    },
+    formattedSum () {
+      return formatAsUSCurrency(this.sum)
+    },
+    deliveryContact () {
+      return this.filing.deliveryContact
+    },
+    secondDeliveryContact () {
+      return this.filing.secondDeliveryContact
+    },
+    dateFiled () {
+      return this.filing.dateFiled
+    },
+    formattedDateFiled () {
+      return this.formatDate(this.dateFiled)
     }
   },
   methods: {
