@@ -39,6 +39,7 @@ export default {
           .sort((a, b) => {
             return a.year < b.year ? 1 : -1
           })
+          .slice(0, 4)
       )
     },
     archived () {
@@ -46,6 +47,7 @@ export default {
         Object.values(this.selectedClient.taxYearData)
           .filter(taxYear => taxYear.archived)
           .sort((a, b) => a.year < b.year ? 1 : -1)
+          .slice(0, 4)
       )
     }
   }
