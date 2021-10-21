@@ -1,6 +1,6 @@
 <template>
   <div v-if="personal" class="flex w-full justify-end">
-    <span class="mr-auto">{{ category }}</span><span>{{ firstName }}</span> (<span>{{ relationFirstLetter }}</span> <span>,{{ lang }}</span>)
+    <span class="mr-auto">{{ category }}</span><span>{{ firstName }}</span>&nbsp;(<span>{{ relationFirstLetter }}</span> <span v-if="showComma">,</span><span>{{ lang }}</span>)
   </div>
 </template>
 
@@ -25,6 +25,9 @@ export default {
     },
     lang () {
       return this.personal.language
+    },
+    showComma () {
+      return this.relationFirstLetter && this.lang
     }
   }
 }
