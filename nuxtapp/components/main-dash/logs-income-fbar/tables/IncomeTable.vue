@@ -52,16 +52,12 @@
         :idx="idx"
       >
         <div class="table-col xs">
-          <div class="flex items-center h-5">
-            <input
-              id="include"
-              :checked="income.include"
-              name="disabled"
-              type="checkbox"
-              class="h-3 w-3 pointer-events-none"
-              disabled
-            >
-          </div>
+          <CheckBoxToDisplayTrueFalse
+            id="include"
+            :checked="income.include"
+            name="disabled"
+            disabled
+          />
         </div>
         <div class="table-col-primary sm">
           {{ income.years }}
@@ -73,16 +69,12 @@
           {{ income.taxGroup }}
         </div>
         <div class="table-col xs">
-          <div class="flex items-center h-5">
-            <input
-              id="include"
-              :checked="income.exclusion"
-              name="disabled"
-              type="checkbox"
-              class="h-3 w-3 pointer-events-none"
-              disabled
-            >
-          </div>
+          <CheckBoxToDisplayTrueFalse
+            id="exclusion"
+            :checked="income.exclusion"
+            name="disabled"
+            disabled
+          />
         </div>
         <div class="table-col normal">
           {{ income.taxType }}

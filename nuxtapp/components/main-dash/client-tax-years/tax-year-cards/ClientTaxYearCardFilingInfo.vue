@@ -48,16 +48,7 @@
       <!-- end of spacing -->
       <ClientTaxYearCardFilingInfoItem>
         <template #label>
-          <div class="flex items-center h-5 mr-1">
-            <input
-              id="includeRefund"
-              :checked="filing.includeInRefund"
-              name="disabled"
-              type="checkbox"
-              class="h-3 w-3 pointer-events-none"
-              disabled
-            >
-          </div>
+          <CheckBoxToDisplayTrueFalse id="includeInRefund" name="includeInRefund" disabled :checked="includeInRefund" />
           Owes/Paid
         </template>
         <template v-if="hasOwesOrPaid" #value>
@@ -66,16 +57,7 @@
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
         <template #label>
-          <div class="flex items-center h-5 mr-1">
-            <input
-              id="includeFee"
-              :checked="filing.includeFee"
-              name="disabled"
-              type="checkbox"
-              class="h-3 w-3 pointer-events-none"
-              disabled
-            >
-          </div>
+          <CheckBoxToDisplayTrueFalse id="includeFee" name="includeFee" disabled :checked="includeFee" />
           FC/Insur
         </template>
         <template v-if="hasOwesFeeOrPaidFee" #value>
@@ -176,6 +158,9 @@ export default {
     memo () {
       return this.filing.memo
     },
+    includeInRefund () {
+      return this.filing.includeInRefund
+    },
     owes () {
       return this.filing.owes
     },
@@ -196,6 +181,9 @@ export default {
     },
     hasOwesOrPaid () {
       return this.hasOwes || this.hasPaid
+    },
+    includeFee () {
+      return this.filing.includeFee
     },
     owesFee () {
       return this.filing.owesFee
