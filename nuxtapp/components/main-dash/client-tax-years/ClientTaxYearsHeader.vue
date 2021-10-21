@@ -1,10 +1,14 @@
 <template>
   <div class="header">
-    <div class="h-full grid grid-cols-7 grid-rows-1 items-center">
+    <div v-if="selectedClient" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
       <div class="col-start-1 font-bold text-lg">
         {{ selectedClient.lastName }}
       </div>
-      <div class="col-start-3 font-semibold text-gray-100">
+      <div class="col-start-2">
+        <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
+        <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
+      </div>
+      <div class="col-start-3 font-semibold text-gray-100 flex justify-center">
         {{ selectedClient.currentStatus }}
       </div>
     </div>
@@ -13,12 +17,18 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { categories, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearsHeader',
   computed: {
-    ...mapState([models.selectedClient])
+    ...mapState([models.selectedClient]),
+    primaryPersonal () {
+      return this.selectedClient?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
+    },
+    secondaryPersonal () {
+      return this.selectedClient?.taxPersonals?.filter(personal => personal.category === categories.secondary)[0]
+    }
   }
 }
 </script>
