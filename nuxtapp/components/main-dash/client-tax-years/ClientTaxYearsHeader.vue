@@ -11,6 +11,12 @@
       <div class="col-start-3 font-semibold text-gray-100 flex justify-center">
         {{ selectedClient.currentStatus }}
       </div>
+      <div class="col-start-4">
+        {{ selectedClient.periodical }}
+      </div>
+      <div class="col-start-5">
+        {{ formattedCreatedDate }}
+      </div>
     </div>
   </div>
 </template>
@@ -18,6 +24,7 @@
 <script>
 import { mapState } from 'vuex'
 import { categories, models } from '~/shared/constants'
+import { formatDateForTable } from '~/shared/domain-utilities'
 
 export default {
   name: 'ClientTaxYearsHeader',
@@ -28,6 +35,13 @@ export default {
     },
     secondaryPersonal () {
       return this.selectedClient?.taxPersonals?.filter(personal => personal.category === categories.secondary)[0]
+    },
+    formattedCreatedDate () {
+      if (this.selectedClient.created) {
+        return formatDateForTable(this.selectedClient.created)
+      } else {
+        return ''
+      }
     }
   }
 }
