@@ -1,14 +1,12 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <div v-for="taxYear in displayedTaxYearData" :key="taxYear.id" class="px-3 tax-year">
-      <span class="font-bold">{{ taxYear.year }}</span>
-    </div>
+    <ClientTaxYearsListItem v-for="(taxYear, idx) in displayedTaxYearData" :key="taxYear.id" :idx="idx" :tax-year="taxYear" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { filingTypes, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearsList',
@@ -39,7 +37,7 @@ export default {
         Object.values(this.selectedClient.taxYearData)
           .filter(taxYear => !taxYear.archived)
           .sort((a, b) => {
-            return a.year < b.year ? 1 : -1
+            return a.year > b.year ? 1 : -1
           })
       )
     },
@@ -47,15 +45,16 @@ export default {
       return Object.assign(
         Object.values(this.selectedClient.taxYearData)
           .filter(taxYear => taxYear.archived)
-          .sort((a, b) => a.year < b.year ? 1 : -1)
+          .sort((a, b) => a.year > b.year ? 1 : -1)
       )
+    },
+    federalFilingInfo () {
+      return this.filings.filter(filing => filing.filingType === filingTypes.federal)[0]
     }
   }
 }
 </script>
 
 <style scoped>
-.tax-year:nth-child(even) {
-  @apply bg-gray-50;
-}
+
 </style>
