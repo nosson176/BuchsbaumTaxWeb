@@ -11,18 +11,21 @@ export default ({ $axios, store }, inject) => {
     return headers
   }
 
-  const login = data => $axios.post('/api/sessions', data, { loading: models.token, store: models.token })
+  const login = data => $axios.post('/sessions', data, { loading: models.token, store: models.token })
   const signout = () => {
     const token = ''
     setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: 365 })
     store.commit(mutations.setModelResponse, { model: models.token, data: { token } })
   }
 
-  const getClientList = headers => $axios.get('/api/clients', { headers, loading: models.clients, store: models.clients })
+  const getClientList = headers => $axios.get('/clients', { headers, loading: models.clients, store: models.clients })
   const getClientData = (id, headers) => $axios.get(
-    '/api/clients/' + id + '/data', { headers, loading: models.selectedClient, store: models.selectedClient }
+    `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
   )
-  const getValueTypes = headers => $axios.get('/api/values', { headers, loading: models.valueTypes, store: models.valueTypes })
+  const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })
+  const updateLog = (headers, { clientId, logId }, log) => $axios.put(
+    `/clients/${clientId}/logs/${logId}`, log, { headers }
+  )
 
   const api = {
     login,
@@ -30,7 +33,8 @@ export default ({ $axios, store }, inject) => {
     getClientList,
     getClientData,
     getValueTypes,
-    getHttpConfig
+    getHttpConfig,
+    updateLog
   }
 
   // Inject to context as $api

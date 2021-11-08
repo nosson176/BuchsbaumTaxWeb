@@ -115,7 +115,7 @@ export default {
       }
     },
     debounceUpdate () {
-      return debounce(this.handleSubmit, 500)
+      return debounce(this.handleUpdate, 500)
     }
   },
   methods: {
@@ -137,8 +137,12 @@ export default {
     isEditable (id) {
       return this.editableId === id
     },
-    handleSubmit () {
-      console.log(this.editableId, this.editableLogId)
+    handleUpdate () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const logId = this.editableLogId
+      const log = this.displayedLogs.find(log => log.id === logId)
+      this.$api.updateLog(headers, { clientId, logId }, log)
     }
   }
 }
