@@ -43,16 +43,12 @@
           </div>
         </div>
         <div class="table-col xs">
-          <div class="flex items-center h-5">
-            <input
-              id="disabled"
-              :checked="!contact.disabled"
-              name="disabled"
-              type="checkbox"
-              class="h-3 w-3 pointer-events-none"
-              disabled
-            >
-          </div>
+          <CheckBoxToDisplayTrueFalse
+            id="disabled"
+            :checked="!contact.disabled"
+            name="disabled"
+            disabled
+          />
         </div>
         <div class="table-col-primary normal">
           {{ contact.contactType }}
