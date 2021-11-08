@@ -138,7 +138,6 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      console.log('test')
       const headers = this.$api.getHttpConfig()
       const clientId = this.selectedClient.id
       const logId = this.editableLogId
