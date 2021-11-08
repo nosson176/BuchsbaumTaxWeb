@@ -39,8 +39,7 @@
           {{ splitMulti(log.years) }}
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <textarea v-if="isEditable(`${idx}-note`)" :value="log.note" class="w-full" @input="debounceUpdate" />
-          <span v-else>{{ log.note }}</span>
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs">
           {{ formatDate(log.logDate) }}
@@ -89,11 +88,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient]),
     displayedLogs () {
+      let logs = []
       if (!this.showArchived) {
-        return this.notArchived
+        logs = JSON.parse(JSON.stringify(this.notArchived))
       } else {
-        return this.archived
+        logs = JSON.parse(JSON.stringify(this.archived))
       }
+      return logs
     },
     notArchived () {
       if (this.selectedClient.logs) {
