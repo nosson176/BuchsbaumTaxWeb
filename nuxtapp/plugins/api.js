@@ -29,6 +29,9 @@ export default ({ $axios, store }, inject) => {
   const updatePersonal = (headers, { clientId, personalId }, personal) => $axios.put(
     `/clients/${clientId}/personals/${personalId}`, personal, { headers }
   )
+  const updateContact = (headers, { clientId, contactId }, contact) => $axios.put(
+    `/clients/${clientId}/contacts/${contactId}`, contact, { headers }
+  )
 
   const api = {
     login,
@@ -38,7 +41,8 @@ export default ({ $axios, store }, inject) => {
     getValueTypes,
     getHttpConfig,
     updateLog,
-    updatePersonal
+    updatePersonal,
+    updateContact
   }
 
   // Inject to context as $api

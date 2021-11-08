@@ -31,18 +31,16 @@
         :key="contact.id"
         :idx="idx"
       >
-        <div class="table-col xs">
+        <div :id="`${idx}`" class="table-col xs">
           <div class="flex items-center h-5">
             <input
-              id="comments"
               :checked="false"
-              name="comments"
               type="checkbox"
               class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
             >
           </div>
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-disabled`" class="table-col xs">
           <CheckBoxToDisplayTrueFalse
             id="disabled"
             :checked="!contact.disabled"
@@ -50,25 +48,25 @@
             disabled
           />
         </div>
-        <div class="table-col-primary normal">
-          {{ contact.contactType }}
+        <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
+          <EditableInputCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col normal">
-          {{ contact.memo }}
+        <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
+          <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col lg">
-          {{ contact.mainDetail }}
+        <div :id="`${idx}-mainDetail`" class="table-col lg" @click="toggleEditable(`${idx}-mainDetail`, contact.id)">
+          <EditableInputCell v-model="contact.mainDetail" :is-editable="isEditable(`${idx}-mainDetail`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col lg">
-          {{ contact.secondaryDetail }}
+        <div :id="`${idx}-secondaryDetail`" class="table-col lg" @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)">
+          <EditableInputCell v-model="contact.secondaryDetail" :is-editable="isEditable(`${idx}-secondaryDetail`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col xs">
-          {{ contact.state }}
+        <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
+          <EditableInputCell v-model="contact.state" :is-editable="isEditable(`${idx}-state`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col sm">
-          {{ contact.zip || '' }}
+        <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id)">
+          <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
         </div>
       </TableRow>
@@ -77,6 +75,7 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
 
@@ -88,14 +87,22 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      editableId: '',
+      editableContactId: ''
+    }
+  },
   computed: {
     ...mapState([models.selectedClient]),
     displayedContacts () {
+      let contacts = []
       if (!this.showArchived) {
-        return this.notArchived
+        contacts = this.notArchived
       } else {
-        return this.archived
+        contacts = this.archived
       }
+      return JSON.parse(JSON.stringify(contacts))
     },
     notArchived () {
       if (this.selectedClient.contacts) {
@@ -112,6 +119,27 @@ export default {
       } else {
         return null
       }
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    }
+  },
+  methods: {
+    toggleEditable (id, contactId) {
+      this.editableContactId = contactId
+      if (!(this.editableId === id)) {
+        this.editableId = id
+      }
+    },
+    isEditable (id) {
+      return this.editableId === id
+    },
+    handleUpdate () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const contactId = this.editableContactId
+      const contact = this.displayedContacts.find(contact => contact.id === contactId)
+      this.$api.updateContact(headers, { clientId, contactId }, contact)
     }
   }
 }

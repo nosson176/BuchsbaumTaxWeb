@@ -39,7 +39,7 @@
         :key="personal.id"
         :idx="idx"
       >
-        <div class="xs table-col">
+        <div :id="`${idx}-include`" class="xs table-col">
           <div class="flex items-center h-5">
             <input
               id="include"
@@ -65,8 +65,8 @@
         <div :id="`${idx}-dateOfBirth`" class="sm table-col">
           {{ formatDate(personal.dateOfBirth) }}
         </div>
-        <div :id="`${idx}-ssn`" class="normal table-col">
-          {{ personal.ssn }}
+        <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
+          <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
           <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" />
@@ -102,7 +102,7 @@ export default {
   data () {
     return {
       editableId: '',
-      editableLogId: ''
+      editablePersonalId: ''
     }
   },
   computed: {
@@ -143,7 +143,7 @@ export default {
       return date ? formatDateForTable(date) : ''
     },
     toggleEditable (id, personalId) {
-      this.editableLogId = personalId
+      this.editablePersonalId = personalId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
@@ -154,7 +154,7 @@ export default {
     handleUpdate () {
       const headers = this.$api.getHttpConfig()
       const clientId = this.selectedClient.id
-      const personalId = this.editableLogId
+      const personalId = this.editablePersonalId
       const personal = this.displayedPersonals.find(personal => personal.id === personalId)
       this.$api.updatePersonal(headers, { clientId, personalId }, personal)
     }
