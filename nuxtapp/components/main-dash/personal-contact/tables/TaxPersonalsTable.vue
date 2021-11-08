@@ -71,11 +71,11 @@
         <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
           <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-relation`" class="sm table-col">
-          {{ personal.relation }}
+        <div :id="`${idx}-relation`" class="sm table-col" @click="toggleEditable(`${idx}-relation`, personal.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-relation`)" :selected-option="personal.relation" :options="relations" @change="debounceUpdate" />
         </div>
-        <div :id="`${idx}-language`" class="sm table-col">
-          {{ personal.language }}
+        <div :id="`${idx}-language`" class="sm table-col" @click="toggleEditable(`${idx}-language`, personal.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languages" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
@@ -139,6 +139,12 @@ export default {
     },
     categories () {
       return this.valueTypes.category
+    },
+    languages () {
+      return this.valueTypes.language
+    },
+    relations () {
+      return this.valueTypes.relation
     }
   },
   methods: {
