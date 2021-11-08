@@ -49,7 +49,7 @@
           />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
-          <EditableInputCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" @input="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-contactType`)" :selected-option="contact.contactType" :options="contactTypeOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
           <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @input="debounceUpdate" />
@@ -94,7 +94,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes]),
     displayedContacts () {
       let contacts = []
       if (!this.showArchived) {
@@ -122,6 +122,9 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    contactTypeOptions () {
+      return this.valueTypes.contact_type.filter(type => type.show)
     }
   },
   methods: {

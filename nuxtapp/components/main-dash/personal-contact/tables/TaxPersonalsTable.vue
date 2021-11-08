@@ -138,13 +138,13 @@ export default {
       return debounce(this.handleUpdate, 500)
     },
     categories () {
-      return this.valueTypes.category
+      return this.valueTypes.category.filter(category => category.show)
     },
     languages () {
-      return this.valueTypes.language
+      return this.valueTypes.language.filter(language => language.show)
     },
     relations () {
-      return this.valueTypes.relation
+      return this.valueTypes.relation.filter(relation => relation.show)
     }
   },
   methods: {
