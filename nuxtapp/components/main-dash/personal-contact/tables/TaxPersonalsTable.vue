@@ -50,8 +50,8 @@
             >
           </div>
         </div>
-        <div :id="`${idx}-category`" class="sm table-col-primary">
-          {{ personal.category }}
+        <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="personal.category" :options="categories" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-firstName`" class="normal table-col" @click="toggleEditable(`${idx}-firstName`, personal.id)">
           <EditableInputCell v-model="personal.firstName" :is-editable="isEditable(`${idx}-firstName`)" @input="debounceUpdate" />
@@ -106,7 +106,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes]),
     displayedPersonals () {
       let personals = []
       if (!this.showArchived) {
@@ -136,6 +136,9 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    categories () {
+      return this.valueTypes.category
     }
   },
   methods: {
