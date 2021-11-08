@@ -62,8 +62,8 @@
         <div :id="`${idx}-lastName`" class="normal table-col" @click="toggleEditable(`${idx}-lastName`, personal.id)">
           <EditableInputCell v-model="personal.lastName" :is-editable="isEditable(`${idx}-lastName`)" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-dateOfBirth`" class="sm table-col">
-          {{ formatDate(personal.dateOfBirth) }}
+        <div :id="`${idx}-dateOfBirth`" class="table-col sm" @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)">
+          <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
           <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" />
@@ -89,7 +89,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
-import { formatDateForTable, sortByCategory } from '~/shared/domain-utilities'
+import { sortByCategory } from '~/shared/domain-utilities'
 
 export default {
   name: 'TaxPersonalsTable',
@@ -148,9 +148,6 @@ export default {
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForTable(date) : ''
-    },
     toggleEditable (id, personalId) {
       this.editablePersonalId = personalId
       if (!(this.editableId === id)) {

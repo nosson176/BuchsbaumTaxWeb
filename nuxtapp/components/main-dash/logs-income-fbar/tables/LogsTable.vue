@@ -41,11 +41,11 @@
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
           <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-logDate`" class="table-col xs">
-          {{ formatDate(log.logDate) }}
+        <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id)">
+          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-alarmDate`" class="table-col xs">
-          {{ formatDate(log.alarmDate) }}
+        <div :id="`${idx}-alarmDate`" class="table-col xs" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
+          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">
           <CheckIcon v-if="log.alarmComplete" class=" text-green-500" />
@@ -69,7 +69,6 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { models, priority } from '~/shared/constants'
-import { formatDateForTable } from '~/shared/domain-utilities'
 
 export default {
   name: 'LogsTable',
@@ -119,9 +118,6 @@ export default {
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForTable(date) : ''
-    },
     priorityColor (p) {
       return p ? priority[p] : ''
     },
