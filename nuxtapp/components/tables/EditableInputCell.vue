@@ -1,6 +1,6 @@
 <template>
   <div>
-    <textarea v-if="isEditable" v-model="computedValue" class="w-full" />
+    <input v-if="isEditable" v-model="computedValue" type="text">
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
@@ -9,7 +9,7 @@
 import { events } from '~/shared/constants'
 
 export default {
-  name: 'EditableTextAreaCell',
+  name: 'EditableInputCell',
   props: {
     value: {
       type: String,
@@ -34,9 +34,7 @@ export default {
 </script>
 
 <style scoped>
-textarea {
-  @apply text-xs shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded;
-
-  resize: none;
+input {
+  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-1;
 }
 </style>

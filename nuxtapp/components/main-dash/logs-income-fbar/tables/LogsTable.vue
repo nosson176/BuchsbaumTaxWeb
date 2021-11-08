@@ -90,11 +90,11 @@ export default {
     displayedLogs () {
       let logs = []
       if (!this.showArchived) {
-        logs = JSON.parse(JSON.stringify(this.notArchived))
+        logs = this.notArchived
       } else {
-        logs = JSON.parse(JSON.stringify(this.archived))
+        logs = this.archived
       }
-      return logs
+      return JSON.parse(JSON.stringify(logs))
     },
     notArchived () {
       if (this.selectedClient.logs) {
@@ -138,6 +138,7 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
+      console.log('test')
       const headers = this.$api.getHttpConfig()
       const clientId = this.selectedClient.id
       const logId = this.editableLogId
