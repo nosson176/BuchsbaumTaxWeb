@@ -1,6 +1,6 @@
 <template>
   <div>
-    <textarea v-if="isEditable" v-model="computedValue" class="w-full" />
+    <textarea v-if="isEditable" ref="input" v-model="computedValue" class="w-full" />
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
@@ -28,6 +28,11 @@ export default {
       set (newVal) {
         this.$emit(events.input, newVal)
       }
+    }
+  },
+  updated () {
+    if (this.isEditable) {
+      this.$refs.input.focus()
     }
   }
 }

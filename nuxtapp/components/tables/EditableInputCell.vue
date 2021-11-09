@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input v-if="isEditable" v-model="computedValue" type="text">
+    <input v-if="isEditable" ref="input" v-model="computedValue" autofocus type="text">
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
@@ -28,6 +28,11 @@ export default {
       set (newVal) {
         this.$emit(events.input, newVal)
       }
+    }
+  },
+  updated () {
+    if (this.isEditable) {
+      this.$refs.input.focus()
     }
   }
 }

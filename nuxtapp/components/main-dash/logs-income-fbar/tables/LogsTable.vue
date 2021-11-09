@@ -35,8 +35,8 @@
         <div :id="`${idx}-priority`" class="table-col inline-flex justify-center items-center xs">
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
-        <div :id="`${idx}-years`" class="table-col xs">
-          {{ splitMulti(log.years) }}
+        <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="log.years" :options="yearOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
           <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
@@ -48,7 +48,7 @@
           <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">
-          <CheckIcon v-if="log.alarmComplete" class=" text-green-500" />
+          <CheckIcon v-if="log.alarmComplete" class="text-green-500" />
         </div>
         <div :id="`${idx}-alarmTime`" class="table-col xs">
           {{ log.alarmTime }}
@@ -85,7 +85,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes]),
     displayedLogs () {
       let logs = []
       if (!this.showArchived) {
@@ -115,14 +115,14 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    yearOptions () {
+      return this.valueTypes.year_name.filter(year => year.show)
     }
   },
   methods: {
     priorityColor (p) {
       return p ? priority[p] : ''
-    },
-    splitMulti (years) {
-      return years ? years.split('\u000B')[0] : ''
     },
     toggleEditable (id, logId) {
       this.editableLogId = logId
