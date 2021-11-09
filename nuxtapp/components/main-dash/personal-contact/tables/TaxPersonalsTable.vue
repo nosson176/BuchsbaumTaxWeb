@@ -51,7 +51,7 @@
           </div>
         </div>
         <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="personal.category" :options="categories" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="personal.category" :options="categoryOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-firstName`" class="normal table-col" @click="toggleEditable(`${idx}-firstName`, personal.id)">
           <EditableInputCell v-model="personal.firstName" :is-editable="isEditable(`${idx}-firstName`)" @input="debounceUpdate" />
@@ -72,10 +72,10 @@
           <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-relation`" class="sm table-col" @click="toggleEditable(`${idx}-relation`, personal.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-relation`)" :selected-option="personal.relation" :options="relations" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-relation`)" :selected-option="personal.relation" :options="relationOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-language`" class="sm table-col" @click="toggleEditable(`${idx}-language`, personal.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languages" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languageOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
@@ -137,13 +137,13 @@ export default {
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
     },
-    categories () {
+    categoryOptions () {
       return this.valueTypes.category.filter(category => category.show)
     },
-    languages () {
+    languageOptions () {
       return this.valueTypes.language.filter(language => language.show)
     },
-    relations () {
+    relationOptions () {
       return this.valueTypes.relation.filter(relation => relation.show)
     }
   },

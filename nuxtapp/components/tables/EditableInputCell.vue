@@ -7,6 +7,7 @@
 
 <script>
 import { events } from '~/shared/constants'
+import { formatAsNumber } from '~/shared/utility'
 
 export default {
   name: 'EditableInputCell',
@@ -18,11 +19,18 @@ export default {
     isEditable: {
       type: Boolean,
       required: true
+    },
+    isCurrency: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     computedValue: {
       get () {
+        if (this.isCurrency) {
+          return formatAsNumber(this.value)
+        }
         return this.value
       },
       set (newVal) {
@@ -33,6 +41,11 @@ export default {
   updated () {
     if (this.isEditable) {
       this.$refs.input.focus()
+    }
+  },
+  methods: {
+    formatAsCurrency (amount) {
+      return formatAsNumber(amount)
     }
   }
 }
