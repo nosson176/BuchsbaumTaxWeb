@@ -36,6 +36,9 @@ export default ({ $axios, store }, inject) => {
   const updateIncome = (headers, { clientId, incomeId }, income) => $axios.put(
     `/clients/${clientId}/income/${incomeId}`, income, { headers }
   )
+  const updateFbar = (headers, { clientId, fbarId }, fbar) => $axios.put(
+    `/clients/${clientId}/fbar/${fbarId}`, fbar, { headers }
+  )
 
   const api = {
     login,
@@ -48,7 +51,8 @@ export default ({ $axios, store }, inject) => {
     updateLog,
     updatePersonal,
     updateContact,
-    updateIncome
+    updateIncome,
+    updateFbar
   }
 
   // Inject to context as $api

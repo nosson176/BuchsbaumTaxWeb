@@ -13,7 +13,7 @@ export default {
   name: 'EditableInputCell',
   props: {
     value: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     isEditable: {
