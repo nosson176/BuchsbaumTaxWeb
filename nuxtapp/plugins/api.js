@@ -23,6 +23,7 @@ export default ({ $axios, store }, inject) => {
     `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
   )
   const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })
+  const getValueTaxGroups = headers => $axios.get('values/tax-groups', { headers, loading: models.valueTaxGroups, store: models.valueTaxGroups })
   const updateLog = (headers, { clientId, logId }, log) => $axios.put(
     `/clients/${clientId}/logs/${logId}`, log, { headers }
   )
@@ -32,6 +33,9 @@ export default ({ $axios, store }, inject) => {
   const updateContact = (headers, { clientId, contactId }, contact) => $axios.put(
     `/clients/${clientId}/contacts/${contactId}`, contact, { headers }
   )
+  const updateIncome = (headers, { clientId, incomeId }, income) => $axios.put(
+    `/clients/${clientId}/income/${incomeId}`, income, { headers }
+  )
 
   const api = {
     login,
@@ -39,10 +43,12 @@ export default ({ $axios, store }, inject) => {
     getClientList,
     getClientData,
     getValueTypes,
+    getValueTaxGroups,
     getHttpConfig,
     updateLog,
     updatePersonal,
-    updateContact
+    updateContact,
+    updateIncome
   }
 
   // Inject to context as $api

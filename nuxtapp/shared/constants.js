@@ -6,7 +6,8 @@ export const models = Object.freeze({
   appWidth: 'appWidth',
   clients: 'clients',
   selectedClient: 'selectedClient',
-  valueTypes: 'valueTypes'
+  valueTypes: 'valueTypes',
+  valueTaxGroups: 'valueTaxGroups'
 })
 
 // Store Mutations
