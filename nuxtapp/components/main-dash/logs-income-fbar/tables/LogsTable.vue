@@ -9,10 +9,10 @@
         <div class="table-header xxl">
           Note
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Date
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Alarm
         </div>
         <div class="table-header xs" />
@@ -41,10 +41,10 @@
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
           <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id)">
+        <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-alarmDate`" class="table-col xs" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
+        <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
           <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">

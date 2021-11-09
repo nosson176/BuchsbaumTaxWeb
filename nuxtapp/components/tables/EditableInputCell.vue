@@ -35,6 +35,6 @@ export default {
 
 <style scoped>
 input {
-  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0.5;
+  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0;
 }
 </style>
