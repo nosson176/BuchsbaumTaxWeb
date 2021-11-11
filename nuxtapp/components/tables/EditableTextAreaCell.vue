@@ -1,6 +1,6 @@
 <template>
   <div>
-    <textarea v-if="isEditable" ref="input" v-model="computedValue" class="w-full" />
+    <textarea v-if="isEditable" ref="input" v-model="computedValue" />
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
