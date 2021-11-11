@@ -12,7 +12,7 @@
         {{ option.value }}
       </option>
     </select>
-    <span v-else class="cursor-pointer">{{ selectedOption }}</span>
+    <span v-else class="cursor-pointer">{{ shownValue }}</span>
   </div>
 </template>
 
@@ -32,10 +32,30 @@ export default {
     options: {
       type: Array,
       required: true
+    }
+  },
+  computed: {
+    selected () {
+      if (this.multiple) {
+        const selected = this.splitOptions.slice(1)
+        console.log(selected)
+        return selected
+      } else {
+        return this.selectedOption
+      }
     },
-    multiple: {
-      type: Boolean,
-      default: false
+    multiple () {
+      return this.splitOptions.length > 1
+    },
+    splitOptions () {
+      return this.selectedOption.split('\u000B')
+    },
+    shownValue () {
+      if (this.multiple) {
+        return this.splitOptions[0]
+      } else {
+        return this.selectedOption
+      }
     }
   },
   updated () {
@@ -49,17 +69,15 @@ export default {
       this.$emit(events.change, value)
     },
     isSelected ({ value }) {
-      return value === this.selectedOption
+      if (this.multiple) {
+        return this.selected.includes(value)
+      } else {
+        return this.selected === value
+      }
+    },
+    splitMulti (value) {
+      return value ? value.split('\u000B')[0] : []
     }
-    // splitMulti () {
-    //   return value ? value.split('\u000B')[0] : []
-    // },
-    // selectedOptionsMulti () {
-    //   const options = value ? value.split('\u000B')[1] : []
-    //   options.shift()
-    //   console.log(options)
-    //   return options
-    // }
   }
 }
 </script>
