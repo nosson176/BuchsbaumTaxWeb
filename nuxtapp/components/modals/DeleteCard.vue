@@ -49,9 +49,22 @@ export default {
     isTypeLog () {
       return this.type === tabs.logs
     },
+    isTypeIncome () {
+      return this.type === tabs.income
+    },
+    isTypeFbar () {
+      return this.type === tabs.fbar
+    },
     logs () {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
+    },
+    incomes () {
+      return JSON.parse(JSON.stringify(this.selectedClient.incomeBreakdowns))
+    },
+    fbars () {
+      return JSON.parse(JSON.stringify(this.selectedClient.fbarBreakdowns))
     }
+
   },
   methods: {
     handleDelete () {
@@ -69,6 +82,26 @@ export default {
       const log = this.logs.find(log => log.id === logId)
       log.archived = true
       this.$api.updateLog(headers, { clientId, logId }, log)
+      this.$api.getClientData(headers, clientId)
+      this.emitHide()
+    },
+    updateIncome () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const incomeId = this.id
+      const income = this.incomes.find(income => income.id === incomeId)
+      income.archived = true
+      this.$api.updateIncome(headers, { clientId, incomeId }, income)
+      this.$api.getClientData(headers, clientId)
+      this.emitHide()
+    },
+    updateFbar () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const fbarId = this.id
+      const fbar = this.fbars.find(fbar => fbar.id === fbarId)
+      fbar.archived = true
+      this.$api.updateFbar(headers, { clientId, fbarId }, fbar)
       this.$api.getClientData(headers, clientId)
       this.emitHide()
     }

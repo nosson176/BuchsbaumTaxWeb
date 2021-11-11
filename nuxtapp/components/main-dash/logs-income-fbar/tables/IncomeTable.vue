@@ -104,7 +104,7 @@
           {{ income.depend }}
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(income.id)" />
         </div>
       </TableRow>
     </template>
@@ -114,7 +114,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 
 export default {
   name: 'IncomeTable',
@@ -197,6 +197,9 @@ export default {
       const incomeId = this.editableIncomeId
       const income = this.displayedIncomes.find(income => income.id === incomeId)
       this.$api.updateIncome(headers, { clientId, incomeId }, income)
+    },
+    onDeleteClick (incomeId) {
+      this.$emit(events.delete, { id: incomeId, type: tabs.income })
     }
   }
 }

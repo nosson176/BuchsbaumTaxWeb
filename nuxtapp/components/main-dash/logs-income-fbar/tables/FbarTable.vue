@@ -93,7 +93,7 @@
           {{ fbar.depend }}
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(fbar.id)" />
         </div>
       </TableRow>
     </template>
@@ -103,7 +103,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 
 export default {
   name: 'FbarTable',
@@ -186,6 +186,9 @@ export default {
       const fbarId = this.editableFbarId
       const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
       this.$api.updateFbar(headers, { clientId, fbarId }, fbar)
+    },
+    onDeleteClick (fbarId) {
+      this.$emit(events.delete, { id: fbarId, type: tabs.fbar })
     }
   }
 }
