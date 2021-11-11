@@ -69,6 +69,8 @@ export default {
       const log = this.logs.find(log => log.id === logId)
       log.archived = true
       this.$api.updateLog(headers, { clientId, logId }, log)
+      this.$api.getClientData(headers, clientId)
+      this.emitHide()
     }
   }
 }

@@ -19,7 +19,7 @@ export default ({ $axios, store }, inject) => {
   }
 
   const getClientList = headers => $axios.get('/clients', { headers, loading: models.clients, store: models.clients })
-  const getClientData = (id, headers) => $axios.get(
+  const getClientData = (headers, id) => $axios.get(
     `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
   )
   const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })

@@ -49,7 +49,7 @@ export default {
     selectClient ({ id }) {
       this.selectedClientId = id
       const headers = this.$api.getHttpConfig()
-      this.$api.getClientData(id, headers)
+      this.$api.getClientData(headers, id)
     }
   }
 }
