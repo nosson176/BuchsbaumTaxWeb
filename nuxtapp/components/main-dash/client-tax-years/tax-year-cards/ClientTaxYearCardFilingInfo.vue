@@ -61,7 +61,7 @@
           FC/Insur
         </template>
         <template v-if="hasOwesFeeOrPaidFee" #value>
-          <span v-if="hasOwesFee"> {{ formatTedOwesFee }}</span>/<span v-if="hasPaidFee">{{ formattedPaidFee }}</span>
+          <span v-if="hasOwesFee"> {{ formattedOwesFee }}</span>/<span v-if="hasPaidFee">{{ formattedPaidFee }}</span>
         </template>
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>

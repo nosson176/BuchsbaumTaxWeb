@@ -39,45 +39,45 @@
         :key="personal.id"
         :idx="idx"
       >
-        <div class="xs table-col">
+        <div :id="`${idx}-include`" class="xs table-col">
           <div class="flex items-center h-5">
             <input
               id="include"
               :checked="personal.include"
               name="include"
               type="checkbox"
-              class="h-4 w-4 pointer-events-none"
+              class="pointer-events-none focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
             >
           </div>
         </div>
-        <div class="sm table-col-primary">
-          {{ personal.category }}
+        <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="personal.category" :options="categoryOptions" @change="debounceUpdate" />
         </div>
-        <div class="normal table-col">
-          {{ personal.firstName }}
+        <div :id="`${idx}-firstName`" class="normal table-col" @click="toggleEditable(`${idx}-firstName`, personal.id)">
+          <EditableInputCell v-model="personal.firstName" :is-editable="isEditable(`${idx}-firstName`)" @input="debounceUpdate" />
         </div>
-        <div class="xs table-col">
-          {{ personal.middleInitial }}
+        <div :id="`${idx}-middleInitial`" class="xs table-col" @click="toggleEditable(`${idx}-middleInitial`, personal.id)">
+          <EditableInputCell v-model="personal.middleInitial" :is-editable="isEditable(`${idx}-middleInitial`)" @input="debounceUpdate" />
         </div>
-        <div class="normal table-col">
-          {{ personal.lastName }}
+        <div :id="`${idx}-lastName`" class="normal table-col" @click="toggleEditable(`${idx}-lastName`, personal.id)">
+          <EditableInputCell v-model="personal.lastName" :is-editable="isEditable(`${idx}-lastName`)" @input="debounceUpdate" />
         </div>
-        <div class="sm table-col">
-          {{ formatDate(personal.dateOfBirth) }}
+        <div :id="`${idx}-dateOfBirth`" class="table-col sm" @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)">
+          <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)" @input="debounceUpdate" />
         </div>
-        <div class="normal table-col">
-          {{ personal.ssn }}
+        <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
+          <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" />
         </div>
-        <div class="sm table-col">
-          {{ personal.informal }}
+        <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
+          <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" />
         </div>
-        <div class="sm table-col">
-          {{ personal.relation }}
+        <div :id="`${idx}-relation`" class="sm table-col" @click="toggleEditable(`${idx}-relation`, personal.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-relation`)" :selected-option="personal.relation" :options="relationOptions" @change="debounceUpdate" />
         </div>
-        <div class="sm table-col">
-          {{ personal.language }}
+        <div :id="`${idx}-language`" class="sm table-col" @click="toggleEditable(`${idx}-language`, personal.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languageOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
         </div>
       </TableRow>
@@ -86,9 +86,10 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
-import { formatDateForTable, sortByCategory } from '~/shared/domain-utilities'
+import { sortByCategory } from '~/shared/domain-utilities'
 
 export default {
   name: 'TaxPersonalsTable',
@@ -98,14 +99,22 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      editableId: '',
+      editablePersonalId: ''
+    }
+  },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes]),
     displayedPersonals () {
+      let personals = []
       if (!this.showArchived) {
-        return this.notArchived
+        personals = this.notArchived
       } else {
-        return this.archived
+        personals = this.archived
       }
+      return JSON.parse(JSON.stringify(personals))
     },
     notArchived () {
       if (this.selectedClient.taxPersonals) {
@@ -124,11 +133,36 @@ export default {
       } else {
         return null
       }
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    },
+    categoryOptions () {
+      return this.valueTypes.category.filter(category => category.show)
+    },
+    languageOptions () {
+      return this.valueTypes.language.filter(language => language.show)
+    },
+    relationOptions () {
+      return this.valueTypes.relation.filter(relation => relation.show)
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForTable(date) : ''
+    toggleEditable (id, personalId) {
+      this.editablePersonalId = personalId
+      if (!(this.editableId === id)) {
+        this.editableId = id
+      }
+    },
+    isEditable (id) {
+      return this.editableId === id
+    },
+    handleUpdate () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const personalId = this.editablePersonalId
+      const personal = this.displayedPersonals.find(personal => personal.id === personalId)
+      this.$api.updatePersonal(headers, { clientId, personalId }, personal)
     }
   }
 }

@@ -6,7 +6,8 @@ export const models = Object.freeze({
   appWidth: 'appWidth',
   clients: 'clients',
   selectedClient: 'selectedClient',
-  valueTypes: 'valueTypes'
+  valueTypes: 'valueTypes',
+  valueTaxGroups: 'valueTaxGroups'
 })
 
 // Store Mutations
@@ -76,13 +77,13 @@ export const tabs = Object.freeze({
   fbar: 'fbar'
 })
 
-export const categories = {
+export const categories = Object.freeze({
   primary: 'PRI.',
   secondary: 'SEC.',
   dependant: 'DEP.'
-}
+})
 
-export const priority = {
+export const priority = Object.freeze({
   1: 'bg-pink-500',
   2: 'bg-green-200',
   3: 'bg-blue-200',
@@ -91,11 +92,11 @@ export const priority = {
   6: 'bg-yellow-500',
   7: 'bg-pink-200',
   8: 'bg-black'
-}
+})
 
-export const filingTypes = {
+export const filingTypes = Object.freeze({
   federal: 'federal',
   state: 'state',
   fbar: 'fbar',
   ext: 'ext'
-}
+})

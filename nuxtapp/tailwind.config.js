@@ -8,6 +8,12 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
+  purge: [
+    'components/**/*.vue',
+    'layouts/**/*.vue',
+    'pages/**/*.vue',
+    'plugins/**/*.js'
+  ],
   theme: {
     extend: {
       width: {
@@ -17,15 +23,22 @@ module.exports = {
         '7/10': '70%',
         '9/10': '90%'
       },
-      screens: {
-        print: { raw: 'print' }
-      },
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans]
-      },
-      plugins: [
-        require('@tailwindcss/forms')
-      ]
+      }
     }
-  }
+  },
+  variants: {
+    extend: {
+      opacity: ['disabled'],
+      cursor: ['disabled'],
+      screens: {
+        print: { raw: 'print' }
+      }
+
+    }
+  },
+  plugins: [
+    require('@tailwindcss/forms')
+  ]
 }

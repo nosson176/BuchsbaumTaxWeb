@@ -3,11 +3,11 @@
 }
 
 .table-col {
-  @apply px-px py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-xs text-gray-500;
+  @apply px-px py-1 whitespace-nowrap text-xs text-gray-500;
 }
 
 .table-col-primary {
-  @apply px-px py-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-xs font-medium text-gray-900;
+  @apply px-px py-1 whitespace-nowrap text-xs font-medium text-gray-900;
 }
 
 .table-col.xs,
