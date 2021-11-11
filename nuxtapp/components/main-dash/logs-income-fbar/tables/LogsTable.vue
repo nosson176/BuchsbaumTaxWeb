@@ -58,7 +58,7 @@
         </div>
         <div class="table-col xs" />
         <div class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(log.id)" />
         </div>
       </TableRow>
     </template>
@@ -67,7 +67,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, priority } from '~/shared/constants'
+import { events, models, priority, tabs } from '~/shared/constants'
 import { formatDateForTable } from '~/shared/domain-utilities'
 
 export default {
@@ -115,6 +115,9 @@ export default {
     },
     splitMulti (years) {
       return years ? years.split('\u000B')[0] : ''
+    },
+    onDeleteClick (logId) {
+      this.$emit(events.delete, { id: logId, type: tabs.logs })
     }
   }
 }
