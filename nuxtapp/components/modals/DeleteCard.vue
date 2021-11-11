@@ -68,37 +68,35 @@ export default {
   },
   methods: {
     handleDelete () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const itemId = this.id
       if (this.isTypeLog) {
-        this.updateLog()
+        this.updateLog(headers, clientId, itemId)
+      } else if (this.isTypeIncome) {
+        this.updateIncome(headers, clientId, itemId)
+      } else if (this.isTypeFbar) {
+        this.updateFbar(headers, clientId, itemId)
       }
     },
     emitHide () {
       this.$emit(events.hide)
     },
-    updateLog () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const logId = this.id
+    updateLog (headers, clientId, logId) {
       const log = this.logs.find(log => log.id === logId)
       log.archived = true
       this.$api.updateLog(headers, { clientId, logId }, log)
       this.$api.getClientData(headers, clientId)
       this.emitHide()
     },
-    updateIncome () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const incomeId = this.id
+    updateIncome (headers, clientId, incomeId) {
       const income = this.incomes.find(income => income.id === incomeId)
       income.archived = true
       this.$api.updateIncome(headers, { clientId, incomeId }, income)
       this.$api.getClientData(headers, clientId)
       this.emitHide()
     },
-    updateFbar () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const fbarId = this.id
+    updateFbar (headers, clientId, fbarId) {
       const fbar = this.fbars.find(fbar => fbar.id === fbarId)
       fbar.archived = true
       this.$api.updateFbar(headers, { clientId, fbarId }, fbar)
