@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
     <select
       v-if="isEditable"
       ref="select"
       name="category"
-      class="mt-1 block w-full p-0 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded"
+      class="mt-1 block w-full p-0 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded absolute top-0"
       :multiple="multiple"
       @change="emitChange"
     >

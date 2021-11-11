@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
     <textarea v-if="isEditable" ref="input" v-model="computedValue" />
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
@@ -40,7 +40,7 @@ export default {
 
 <style scoped>
 textarea {
-  @apply text-xs shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded;
+  @apply text-xs shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded absolute top-0;
 
   resize: none;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
     <input v-if="isEditable" ref="input" v-model="computedValue" autofocus type="text">
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
@@ -53,6 +53,6 @@ export default {
 
 <style scoped>
 input {
-  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0;
+  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
 }
 </style>
