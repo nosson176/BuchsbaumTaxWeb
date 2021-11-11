@@ -38,7 +38,6 @@ export default {
     selected () {
       if (this.multiple) {
         const selected = this.splitOptions.slice(1)
-        console.log(selected)
         return selected
       } else {
         return this.selectedOption
