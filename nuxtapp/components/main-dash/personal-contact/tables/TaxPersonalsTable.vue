@@ -3,7 +3,7 @@
     <template #header>
       <TableHeader>
         <div class="xs table-header">
-          <AddRowButton />
+          <AddRowButton @click="onAddRowClick" />
         </div>
         <div class="sm table-header">
           Cat
@@ -93,6 +93,21 @@ import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
 
+const taxPersonalConstructor = {
+  clientId: NaN,
+  category: '',
+  include: true,
+  language: '',
+  relation: '',
+  firstName: '',
+  middleInitial: '',
+  lastName: '',
+  dateOfBirth: '',
+  ssn: '000-000-000',
+  informal: '',
+  archived: false
+}
+
 export default {
   name: 'TaxPersonalsTable',
   props: {
@@ -165,6 +180,21 @@ export default {
       const personalId = this.editablePersonalId
       const personal = this.displayedPersonals.find(personal => personal.id === personalId)
       this.$api.updatePersonal(headers, { clientId, personalId }, personal)
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        category: this.categoryOptions[2].value,
+        language: this.languageOptions[0].value,
+        relation: this.relationOptions[0].value,
+        dateOfBirth: new Date(),
+        archived: this.showArchived
+      }
+      const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
+      this.$api.createPersonal(headers, { clientId, personal })
+        .then(_ => this.$api.getClientData(headers, { clientId }))
     }
   }
 }
