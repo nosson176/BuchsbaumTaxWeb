@@ -22,8 +22,8 @@
         </span>
       </span>
     </button>
-    <span id="view-active" class="ml-3">
-      <span class="text-sm font-medium text-gray-900">{{ viewActive ? 'View Archived' : 'View Active' }} </span>
+    <span id="view-active" class="ml-1">
+      <span class="text-xs tracking-tighter font-medium text-gray-700">{{ viewActive ? 'View Archived' : 'View Active' }} </span>
     </span>
   </div>
 </template>
