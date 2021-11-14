@@ -2,7 +2,9 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton />
+        </div>
         <div class="table-header sm">
           Year
         </div>

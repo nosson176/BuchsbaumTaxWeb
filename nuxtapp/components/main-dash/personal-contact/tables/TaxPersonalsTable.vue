@@ -2,7 +2,9 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="xs table-header" />
+        <div class="xs table-header">
+          <AddRowButton />
+        </div>
         <div class="sm table-header">
           Cat
         </div>
