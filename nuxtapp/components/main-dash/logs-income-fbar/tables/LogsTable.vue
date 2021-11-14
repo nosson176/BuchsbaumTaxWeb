@@ -147,12 +147,12 @@ export default {
       if (this.showArchived) {
         const log = this.displayedLogs.find(log => log.id === logId)
         log.archived = false
-        this.$api.updateTaxLog(this.headers, { clientId: this.clientId, logId }, log)
+        this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
           .then(() => {
             this.reloadClient()
           })
       } else {
-        this.$emit(events.delete, { id: logId, type: tabs.tax_logs })
+        this.$emit(events.delete, { id: logId, type: tabs.logs })
       }
     },
     reloadClient () {

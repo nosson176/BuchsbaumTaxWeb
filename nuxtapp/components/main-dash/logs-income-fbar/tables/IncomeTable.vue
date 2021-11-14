@@ -205,12 +205,12 @@ export default {
       if (this.showArchived) {
         const income = this.displayedIncomes.find(income => income.id === incomeId)
         income.archived = false
-        this.$api.updateTaxIncome(this.headers, { clientId: this.clientId, incomeId }, income)
+        this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
           .then(() => {
             this.reloadClient()
           })
       } else {
-        this.$emit(events.delete, { id: incomeId, type: tabs.tax_incomes })
+        this.$emit(events.delete, { id: incomeId, type: tabs.income })
       }
     },
     reloadClient () {

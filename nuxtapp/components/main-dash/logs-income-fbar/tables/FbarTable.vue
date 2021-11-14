@@ -194,12 +194,12 @@ export default {
       if (this.showArchived) {
         const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
-        this.$api.updateTaxFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
+        this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
           .then(() => {
             this.reloadClient()
           })
       } else {
-        this.$emit(events.delete, { id: fbarId, type: tabs.tax_fbars })
+        this.$emit(events.delete, { id: fbarId, type: tabs.fbar })
       }
     },
     reloadClient () {

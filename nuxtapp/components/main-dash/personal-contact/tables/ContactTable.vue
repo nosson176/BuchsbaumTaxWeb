@@ -151,12 +151,12 @@ export default {
       if (this.showArchived) {
         const contact = this.displayedContacts.find(contact => contact.id === contactId)
         contact.archived = false
-        this.$api.updateTaxContact(this.headers, { clientId: this.clientId, contactId }, contact)
+        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId }, contact)
           .then(() => {
             this.reloadClient()
           })
       } else {
-        this.$emit(events.delete, { id: contactId, type: tabs.tax_contacts })
+        this.$emit(events.delete, { id: contactId, type: tabs.contact })
       }
     },
     reloadClient () {
