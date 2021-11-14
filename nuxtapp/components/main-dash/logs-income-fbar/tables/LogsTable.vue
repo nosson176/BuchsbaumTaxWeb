@@ -118,14 +118,17 @@ export default {
     },
     yearOptions () {
       return this.valueTypes.year_name.filter(year => year.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
     priorityColor (p) {
       return p ? priority[p] : ''
-    },
-    onDeleteClick (logId) {
-      this.$emit(events.delete, { id: logId, type: tabs.logs })
     },
     toggleEditable (id, logId) {
       this.editableLogId = logId
@@ -137,11 +140,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const logId = this.editableLogId
-      const log = this.displayedLogs.find(log => log.id === logId)
-      this.$api.updateLog(headers, { clientId, logId }, log)
+      const log = this.displayedLogs.find(log => log.id === this.editableLogId)
+      this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
+    },
+    onDeleteClick (logId) {
+      if (this.showArchived) {
+        const log = this.displayedLogs.find(log => log.id === logId)
+        log.archived = false
+        this.$api.updateTaxLog(this.headers, { clientId: this.clientId, logId }, log)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: logId, type: tabs.tax_logs })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }

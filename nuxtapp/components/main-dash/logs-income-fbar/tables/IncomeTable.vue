@@ -179,6 +179,12 @@ export default {
     },
     taxGroupOptions () {
       return Object.values(this.valueTaxGroups).filter(taxGroup => taxGroup.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -192,14 +198,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const incomeId = this.editableIncomeId
-      const income = this.displayedIncomes.find(income => income.id === incomeId)
-      this.$api.updateIncome(headers, { clientId, incomeId }, income)
+      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
+      this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
     onDeleteClick (incomeId) {
-      this.$emit(events.delete, { id: incomeId, type: tabs.income })
+      if (this.showArchived) {
+        const income = this.displayedIncomes.find(income => income.id === incomeId)
+        income.archived = false
+        this.$api.updateTaxIncome(this.headers, { clientId: this.clientId, incomeId }, income)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: incomeId, type: tabs.tax_incomes })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }

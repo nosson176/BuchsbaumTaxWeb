@@ -145,6 +145,12 @@ export default {
     },
     relationOptions () {
       return this.valueTypes.relation.filter(relation => relation.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -158,14 +164,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const personalId = this.editablePersonalId
-      const personal = this.displayedPersonals.find(personal => personal.id === personalId)
-      this.$api.updateTaxPersonal(headers, { clientId, personalId }, personal)
+      const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
+      this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
     },
     onDeleteClick (personalId) {
-      this.$emit(events.delete, { id: personalId, type: tabs.tax_personals })
+      if (this.showArchived) {
+        const personal = this.displayedPersonals.find(personal => personal.id === personalId)
+        personal.archived = false
+        this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: personalId, type: tabs.tax_personals })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }

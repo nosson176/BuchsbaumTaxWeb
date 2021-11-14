@@ -11,7 +11,7 @@
           </h3>
           <div class="mt-2">
             <p class="text-sm text-gray-500">
-              Are you sure you want to {{ updateToValue }} this item?
+              Are you sure you want to <span class="capitalize">{{ updateToValue }}</span> item?
             </p>
           </div>
         </div>
@@ -20,7 +20,7 @@
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
       <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" @click="handleDelete">
         <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed" />
-        <span v-else>{{ updateToValue }}</span>
+        <span class="capitalize" v-else>{{ updateToValue }}</span>
       </button>
       <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="emitHide">
         Cancel
@@ -152,23 +152,33 @@ export default {
     },
     updateLog () {
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
-      this.reloadClient()
+        .then(() => {
+          this.reloadClient()
+        })
     },
     updateIncome () {
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
-      this.reloadClient()
+        .then(() => {
+          this.reloadClient()
+        })
     },
     updateFbar () {
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
-      this.reloadClient()
+        .then(() => {
+          this.reloadClient()
+        })
     },
     updateContact () {
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
-      this.reloadClient()
+        .then(() => {
+          this.reloadClient()
+        })
     },
     updateTaxPersonal () {
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
-      this.reloadClient()
+        .then(() => {
+          this.reloadClient()
+        })
     },
     reloadClient () {
       this.$api.getClientData(this.headers, this.clientId)

@@ -168,6 +168,12 @@ export default {
     },
     taxGroupOptions () {
       return Object.values(this.valueTaxGroups).filter(taxGroup => taxGroup.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -181,14 +187,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const fbarId = this.editableFbarId
-      const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
-      this.$api.updateFbar(headers, { clientId, fbarId }, fbar)
+      const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
+      this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
     },
     onDeleteClick (fbarId) {
-      this.$emit(events.delete, { id: fbarId, type: tabs.fbar })
+      if (this.showArchived) {
+        const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
+        fbar.archived = false
+        this.$api.updateTaxFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: fbarId, type: tabs.tax_fbars })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }

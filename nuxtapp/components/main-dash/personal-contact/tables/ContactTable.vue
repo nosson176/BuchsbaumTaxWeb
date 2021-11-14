@@ -125,6 +125,12 @@ export default {
     },
     contactTypeOptions () {
       return this.valueTypes.contact_type.filter(type => type.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -138,14 +144,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const contactId = this.editableContactId
-      const contact = this.displayedContacts.find(contact => contact.id === contactId)
-      this.$api.updateContact(headers, { clientId, contactId }, contact)
+      const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
+      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
     },
     onDeleteClick (contactId) {
-      this.$emit(events.delete, { id: contactId, type: tabs.contact })
+      if (this.showArchived) {
+        const contact = this.displayedContacts.find(contact => contact.id === contactId)
+        contact.archived = false
+        this.$api.updateTaxContact(this.headers, { clientId: this.clientId, contactId }, contact)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: contactId, type: tabs.tax_contacts })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }
