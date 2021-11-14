@@ -20,12 +20,15 @@
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar">
         <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
-        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" @delete="openDeleteModal" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" @delete="openDeleteModal" />
       </div>
+      <Modal :showing="showDeleteModal">
+        <DeleteCard :id="deleteId" :type="deleteType" @hide="closeDeleteModal" />
+      </Modal>
     </div>
     <div class="bg-black text-white flex">
       FOOTER
@@ -43,7 +46,10 @@ export default {
       showArchivedPersonals: false,
       currentPersonalsTab: tabs.tax_personals,
       showArchivedLogsIncomeFbar: false,
-      currentLogsIncomeFbarTab: tabs.logs
+      currentLogsIncomeFbarTab: tabs.logs,
+      showDeleteModal: false,
+      deleteId: '',
+      deleteType: ''
     }
   },
   methods: {
@@ -61,6 +67,14 @@ export default {
     },
     switchLogsIncomeFbarTab (tab) {
       this.currentLogsIncomeFbarTab = tab
+    },
+    openDeleteModal ({ id, type }) {
+      this.showDeleteModal = true
+      this.deleteId = id
+      this.deleteType = type
+    },
+    closeDeleteModal () {
+      this.showDeleteModal = false
     }
   }
 }

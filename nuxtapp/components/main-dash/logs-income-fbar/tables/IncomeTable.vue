@@ -104,7 +104,7 @@
           {{ income.depend }}
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(income.id)" />
         </div>
       </TableRow>
     </template>
@@ -114,7 +114,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 
 export default {
   name: 'IncomeTable',
@@ -179,6 +179,12 @@ export default {
     },
     taxGroupOptions () {
       return Object.values(this.valueTaxGroups).filter(taxGroup => taxGroup.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -192,11 +198,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const incomeId = this.editableIncomeId
-      const income = this.displayedIncomes.find(income => income.id === incomeId)
-      this.$api.updateIncome(headers, { clientId, incomeId }, income)
+      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
+      this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
+    },
+    onDeleteClick (incomeId) {
+      if (this.showArchived) {
+        const income = this.displayedIncomes.find(income => income.id === incomeId)
+        income.archived = false
+        this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: incomeId, type: tabs.income })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }

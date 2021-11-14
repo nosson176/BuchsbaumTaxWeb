@@ -67,7 +67,7 @@
           <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(contact.id)" />
         </div>
       </TableRow>
     </template>
@@ -77,7 +77,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 
 export default {
   name: 'ContactTable',
@@ -125,6 +125,12 @@ export default {
     },
     contactTypeOptions () {
       return this.valueTypes.contact_type.filter(type => type.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -138,11 +144,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const contactId = this.editableContactId
-      const contact = this.displayedContacts.find(contact => contact.id === contactId)
-      this.$api.updateContact(headers, { clientId, contactId }, contact)
+      const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
+      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+    },
+    onDeleteClick (contactId) {
+      if (this.showArchived) {
+        const contact = this.displayedContacts.find(contact => contact.id === contactId)
+        contact.archived = false
+        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId }, contact)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: contactId, type: tabs.contact })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }
