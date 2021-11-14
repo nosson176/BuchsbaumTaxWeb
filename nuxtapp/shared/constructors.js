@@ -1,24 +1,20 @@
 import { NOTIFICATION_TYPE_ALERT } from '@/shared/constants'
 
-const createAddressConstructor = () => {
+const logConstructor = () => {
   return {
-    name: { input: '', isValid: true },
-    address: { input: '', isValid: true },
-    addressTwo: { input: '', isValid: true },
-    city: { input: '', isValid: true },
-    state: { input: '', isValid: true },
-    postalCode: { input: '', isValid: true },
-    country: { input: '', isValid: true },
-    phone: { input: '', isValid: true }
-  }
-}
-
-const createParcelItemConstructor = () => {
-  return {
-    description: { input: '', isValid: true },
-    value: { input: '', isValid: true },
-    quantity: { input: '', isValid: true },
-    weight: { input: '', isValid: true }
+    clientId: '',
+    years: '',
+    alarmUserId: NaN,
+    alert: false,
+    alarmComplete: false,
+    alarmDate: '',
+    alarmTime: '',
+    logDate: '',
+    priority: NaN,
+    note: '',
+    secondsSpent: NaN,
+    archived: false,
+    alerted: false
   }
 }
 
@@ -38,11 +34,8 @@ const errorNotificationConstructor = () => {
   }
 }
 
-const storeInfoConstructor = () => {
-  return {
-    index: NaN,
-    text: ''
-  }
+export {
+  logConstructor,
+  notificationConstructor,
+  errorNotificationConstructor
 }
-
-export { createAddressConstructor, notificationConstructor, errorNotificationConstructor, createParcelItemConstructor, storeInfoConstructor }

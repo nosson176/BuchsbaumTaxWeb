@@ -48,7 +48,7 @@
         :key="fbar.id"
         :idx="idx"
       >
-        <div class="table-col xs">
+        <div :id="`${idx}-include`" class="table-col xs">
           <CheckBoxToDisplayTrueFalse
             id="include"
             :checked="fbar.include"
@@ -56,44 +56,43 @@
             disabled
           />
         </div>
-        <div class="table-col-primary sm">
-          {{ fbar.years }}
+        <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, fbar.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="fbar.years" :options="yearNameOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xs">
-          {{ fbar.category }}
+        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="fbar.category" :options="categoryOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col normal">
-          {{ fbar.taxGroup }}
+        <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-taxGroup`)" :selected-option="fbar.taxGroup" :options="taxGroupOptions" @change="debounceUpdate" />
         </div>
-
-        <div class="table-col normal">
-          {{ fbar.taxType }}
+        <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-taxType`)" :selected-option="fbar.taxType" :options="taxTypeOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col sm">
-          {{ fbar.job }}
+        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-job`)" :selected-option="fbar.job" :options="jobOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col normal">
-          {{ formatAsCurrency(fbar.amount) }}
+        <div :id="`${idx}-amount`" class="normal table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
+          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @input="debounceUpdate" />
         </div>
-        <div class="table-col sm">
-          {{ fbar.currency }}
+        <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, fbar.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-currency`)" :selected-option="fbar.currency" :options="currencyOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-frequency`" class="table-col xs">
           {{ fbar.frequency || '' }}
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-$`" class="table-col xs">
           $
         </div>
-        <div class="table-col sm">
+        <div :id="`${idx}-documents`" class="table-col sm">
           {{ fbar.documents }}
         </div>
-        <div class="table-col lg">
+        <div :id="`${idx}-description`" class="table-col lg">
           {{ fbar.description }}
         </div>
-        <div class="table-col sm">
+        <div :id="`${idx}-depend`" class="table-col sm">
           {{ fbar.depend }}
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
         </div>
       </TableRow>
@@ -102,9 +101,9 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
-import { formatAsNumber } from '~/shared/utility'
 
 export default {
   name: 'FbarTable',
@@ -114,14 +113,22 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      editableId: '',
+      editablePersonalId: ''
+    }
+  },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
     displayedFbar () {
+      let fbar = []
       if (!this.showArchived) {
-        return this.notArchived
+        fbar = this.notArchived
       } else {
-        return this.archived
+        fbar = this.archived
       }
+      return JSON.parse(JSON.stringify(fbar))
     },
     notArchived () {
       if (this.selectedClient.fbarBreakdowns) {
@@ -140,11 +147,45 @@ export default {
       } else {
         return null
       }
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    },
+    categoryOptions () {
+      return this.valueTypes.category.filter(category => category.show)
+    },
+    yearNameOptions () {
+      return this.valueTypes.year_name.filter(yearName => yearName.show)
+    },
+    taxTypeOptions () {
+      return this.valueTypes.tax_type.filter(taxType => taxType.show)
+    },
+    jobOptions () {
+      return this.valueTypes.job.filter(job => job.show)
+    },
+    currencyOptions () {
+      return this.valueTypes.currency.filter(currency => currency.show)
+    },
+    taxGroupOptions () {
+      return Object.values(this.valueTaxGroups).filter(taxGroup => taxGroup.show)
     }
   },
   methods: {
-    formatAsCurrency (amount) {
-      return formatAsNumber(amount)
+    toggleEditable (id, fbarId) {
+      this.editableFbarId = fbarId
+      if (!(this.editableId === id)) {
+        this.editableId = id
+      }
+    },
+    isEditable (id) {
+      return this.editableId === id
+    },
+    handleUpdate () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const fbarId = this.editableFbarId
+      const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
+      this.$api.updateFbar(headers, { clientId, fbarId }, fbar)
     }
   }
 }

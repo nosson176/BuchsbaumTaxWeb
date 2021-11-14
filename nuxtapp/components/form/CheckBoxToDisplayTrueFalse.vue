@@ -5,7 +5,7 @@
       :checked="checked"
       :name="name"
       type="checkbox"
-      class="h-3 w-3 pointer-events-none"
+      class="h-3 w-3 pointer-events-none focus:ring-indigo-500 text-indigo-600 border-gray-300 rounded"
       :disabled="disabled"
     >
     <label :for="id" class="" />

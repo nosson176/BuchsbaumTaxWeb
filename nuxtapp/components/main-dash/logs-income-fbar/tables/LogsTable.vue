@@ -9,10 +9,10 @@
         <div class="table-header xxl">
           Note
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Date
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           Alarm
         </div>
         <div class="table-header xs" />
@@ -32,32 +32,32 @@
         :key="log.id"
         :idx="idx"
       >
-        <div class="table-col inline-flex justify-center items-center xs">
+        <div :id="`${idx}-priority`" class="table-col inline-flex justify-center items-center xs">
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
-        <div class="table-col xs">
-          {{ splitMulti(log.years) }}
+        <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="log.years" :options="yearOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xxl">
-          {{ log.note }}
+        <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col xs">
-          {{ formatDate(log.logDate) }}
+        <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
+          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col xs">
-          {{ formatDate(log.alarmDate) }}
+        <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
+          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" />
         </div>
-        <div class="table-col xs">
-          <CheckIcon v-if="log.alarmComplete" class=" text-green-500" />
+        <div :id="`${idx}-alarmComplete`" class="table-col xs">
+          <CheckIcon v-if="log.alarmComplete" class="text-green-500" />
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-alarmTime`" class="table-col xs">
           {{ log.alarmTime }}
         </div>
-        <div class="table-col sm">
+        <div :id="`${idx}-alarmUserName`" class="table-col sm">
           {{ log.alarmUserName }}
         </div>
         <div class="table-col xs" />
-        <div class="table-col xs">
+        <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
         </div>
       </TableRow>
@@ -67,8 +67,8 @@
 
 <script>
 import { mapState } from 'vuex'
+import { debounce } from 'lodash'
 import { models, priority } from '~/shared/constants'
-import { formatDateForTable } from '~/shared/domain-utilities'
 
 export default {
   name: 'LogsTable',
@@ -78,14 +78,22 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      editableId: '',
+      editableLogId: ''
+    }
+  },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes]),
     displayedLogs () {
+      let logs = []
       if (!this.showArchived) {
-        return this.notArchived
+        logs = this.notArchived
       } else {
-        return this.archived
+        logs = this.archived
       }
+      return JSON.parse(JSON.stringify(logs))
     },
     notArchived () {
       if (this.selectedClient.logs) {
@@ -104,17 +112,33 @@ export default {
       } else {
         return null
       }
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    },
+    yearOptions () {
+      return this.valueTypes.year_name.filter(year => year.show)
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForTable(date) : ''
-    },
     priorityColor (p) {
       return p ? priority[p] : ''
     },
-    splitMulti (years) {
-      return years ? years.split('\u000B')[0] : ''
+    toggleEditable (id, logId) {
+      this.editableLogId = logId
+      if (!(this.editableId === id)) {
+        this.editableId = id
+      }
+    },
+    isEditable (id) {
+      return this.editableId === id
+    },
+    handleUpdate () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const logId = this.editableLogId
+      const log = this.displayedLogs.find(log => log.id === logId)
+      this.$api.updateLog(headers, { clientId, logId }, log)
     }
   }
 }

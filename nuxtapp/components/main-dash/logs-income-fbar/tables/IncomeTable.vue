@@ -51,7 +51,7 @@
         :key="income.id"
         :idx="idx"
       >
-        <div class="table-col xs">
+        <div :id="`${idx}-include`" class="table-col xs">
           <CheckBoxToDisplayTrueFalse
             id="include"
             :checked="income.include"
@@ -59,16 +59,16 @@
             disabled
           />
         </div>
-        <div class="table-col-primary sm">
-          {{ income.years }}
+        <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, income.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="income.years" :options="yearNameOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xs">
-          {{ income.category }}
+        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, income.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="income.category" :options="categoryOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col normal">
-          {{ income.taxGroup }}
+        <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-taxGroup`)" :selected-option="income.taxGroup" :options="taxGroupOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-exclusion`" class="table-col xs">
           <CheckBoxToDisplayTrueFalse
             id="exclusion"
             :checked="income.exclusion"
@@ -76,34 +76,34 @@
             disabled
           />
         </div>
-        <div class="table-col normal">
-          {{ income.taxType }}
+        <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, income.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-taxType`)" :selected-option="income.taxType" :options="taxTypeOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col sm">
-          {{ income.job }}
+        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, income.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-job`)" :selected-option="income.job" :options="jobOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col normal">
-          {{ formatAsCurrency(income.amount) }}
+        <div :id="`${idx}-amount`" class="normal table-col" @click="toggleEditable(`${idx}-amount`, income.id)">
+          <EditableInputCell v-model="income.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @input="debounceUpdate" />
         </div>
-        <div class="table-col sm">
-          {{ income.currency }}
+        <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, income.id)">
+          <EditableSelectCell :is-editable="isEditable(`${idx}-currency`)" :selected-option="income.currency" :options="currencyOptions" @change="debounceUpdate" />
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-frequency`" class="table-col xs">
           {{ income.frequency || '' }}
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-$`" class="table-col xs">
           $
         </div>
-        <div class="table-col sm">
+        <div :id="`${idx}-documents`" class="table-col sm">
           {{ income.documents }}
         </div>
-        <div class="table-col lg">
+        <div :id="`${idx}-description`" class="table-col lg">
           {{ income.description }}
         </div>
-        <div class="table-col sm">
+        <div :id="`${idx}-depend`" class="table-col sm">
           {{ income.depend }}
         </div>
-        <div class="table-col xs">
+        <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton />
         </div>
       </TableRow>
@@ -112,9 +112,9 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
-import { formatAsNumber } from '~/shared/utility'
 
 export default {
   name: 'IncomeTable',
@@ -124,14 +124,22 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      editableId: '',
+      editablePersonalId: ''
+    }
+  },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
     displayedIncome () {
+      let income = []
       if (!this.showArchived) {
-        return this.notArchived
+        income = this.notArchived
       } else {
-        return this.archived
+        income = this.archived
       }
+      return JSON.parse(JSON.stringify(income))
     },
     notArchived () {
       if (this.selectedClient.incomeBreakdowns) {
@@ -150,11 +158,45 @@ export default {
       } else {
         return null
       }
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    },
+    categoryOptions () {
+      return this.valueTypes.category.filter(category => category.show)
+    },
+    yearNameOptions () {
+      return this.valueTypes.year_name.filter(yearName => yearName.show)
+    },
+    taxTypeOptions () {
+      return this.valueTypes.tax_type.filter(taxType => taxType.show)
+    },
+    jobOptions () {
+      return this.valueTypes.job.filter(job => job.show)
+    },
+    currencyOptions () {
+      return this.valueTypes.currency.filter(currency => currency.show)
+    },
+    taxGroupOptions () {
+      return Object.values(this.valueTaxGroups).filter(taxGroup => taxGroup.show)
     }
   },
   methods: {
-    formatAsCurrency (amount) {
-      return formatAsNumber(amount)
+    toggleEditable (id, incomeId) {
+      this.editableIncomeId = incomeId
+      if (!(this.editableId === id)) {
+        this.editableId = id
+      }
+    },
+    isEditable (id) {
+      return this.editableId === id
+    },
+    handleUpdate () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const incomeId = this.editableIncomeId
+      const income = this.displayedIncomes.find(income => income.id === incomeId)
+      this.$api.updateIncome(headers, { clientId, incomeId }, income)
     }
   }
 }
