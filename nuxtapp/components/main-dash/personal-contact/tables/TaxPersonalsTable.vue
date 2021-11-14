@@ -78,7 +78,7 @@
           <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languageOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(personal.id)" />
         </div>
       </TableRow>
     </template>
@@ -88,7 +88,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
 
 export default {
@@ -162,7 +162,10 @@ export default {
       const clientId = this.selectedClient.id
       const personalId = this.editablePersonalId
       const personal = this.displayedPersonals.find(personal => personal.id === personalId)
-      this.$api.updatePersonal(headers, { clientId, personalId }, personal)
+      this.$api.updateTaxPersonal(headers, { clientId, personalId }, personal)
+    },
+    onDeleteClick (personalId) {
+      this.$emit(events.delete, { id: personalId, type: tabs.tax_personals })
     }
   }
 }

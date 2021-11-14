@@ -70,6 +70,12 @@ export default {
     isTypeFbar () {
       return this.type === tabs.fbar
     },
+    isTypeContact () {
+      return this.type === tabs.contact
+    },
+    isTypeTaxPersonals () {
+      return this.type === tabs.tax_personals
+    },
     logs () {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
@@ -78,6 +84,12 @@ export default {
     },
     fbars () {
       return JSON.parse(JSON.stringify(this.selectedClient.fbarBreakdowns))
+    },
+    contacts () {
+      return JSON.parse(JSON.stringify(this.selectedClient.contacts))
+    },
+    taxPersonals () {
+      return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
     },
     updatedLog () {
       const log = this.logs.find(log => log.id === this.id)
@@ -94,6 +106,16 @@ export default {
       fbar.archived = !fbar.archived
       return fbar
     },
+    updatedContact () {
+      const contact = this.contacts.find(contact => contact.id === this.id)
+      contact.archived = !contact.archived
+      return contact
+    },
+    updatedTaxPersonal () {
+      const taxPersonal = this.taxPersonals.find(taxPersonal => taxPersonal.id === this.id)
+      taxPersonal.archived = !taxPersonal.archived
+      return taxPersonal
+    },
     updatedItem () {
       let item = null
       if (this.isTypeLog) {
@@ -102,6 +124,10 @@ export default {
         item = this.updatedIncome
       } else if (this.isTypeFbar) {
         item = this.updatedFbar
+      } else if (this.isTypeContact) {
+        item = this.updatedContact
+      } else if (this.isTypeTaxPersonals) {
+        item = this.updatedTaxPersonal
       }
       return item
     }
@@ -115,6 +141,10 @@ export default {
         this.updateIncome()
       } else if (this.isTypeFbar) {
         this.updateFbar()
+      } else if (this.isTypeContact) {
+        this.updateContact()
+      } else if (this.isTypeTaxPersonals) {
+        this.updateTaxPersonal()
       }
     },
     emitHide () {
@@ -130,6 +160,14 @@ export default {
     },
     updateFbar () {
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
+      this.reloadClient()
+    },
+    updateContact () {
+      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
+      this.reloadClient()
+    },
+    updateTaxPersonal () {
+      this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, taxPersonalId: this.id }, this.updatedItem)
       this.reloadClient()
     },
     reloadClient () {

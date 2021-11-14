@@ -1,12 +1,12 @@
 <template>
   <div class="flex flex-grow overflow-hidden">
-    <TaxPersonalsTable v-if="showTaxPersonals" :show-archived="showArchived" />
-    <ContactTable v-else-if="showContacts" :show-archived="showArchived" />
+    <TaxPersonalsTable v-if="showTaxPersonals" :show-archived="showArchived" @delete="emitDelete" />
+    <ContactTable v-else-if="showContacts" :show-archived="showArchived" @delete="emitDelete" />
   </div>
 </template>
 
 <script>
-import { tabs } from '~/shared/constants'
+import { events, tabs } from '~/shared/constants'
 export default {
   name: 'PersonalContactBody',
   props: {
@@ -25,6 +25,11 @@ export default {
     },
     showContacts () {
       return this.currentTab === tabs.contact
+    }
+  },
+  methods: {
+    emitDelete (deleteObj) {
+      this.$emit(events.delete, deleteObj)
     }
   }
 }

@@ -67,7 +67,7 @@
           <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(contact.id)" />
         </div>
       </TableRow>
     </template>
@@ -77,7 +77,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 
 export default {
   name: 'ContactTable',
@@ -143,6 +143,9 @@ export default {
       const contactId = this.editableContactId
       const contact = this.displayedContacts.find(contact => contact.id === contactId)
       this.$api.updateContact(headers, { clientId, contactId }, contact)
+    },
+    onDeleteClick (contactId) {
+      this.$emit(events.delete, { id: contactId, type: tabs.contact })
     }
   }
 }

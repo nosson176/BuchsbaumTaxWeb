@@ -27,7 +27,7 @@ export default ({ $axios, store }, inject) => {
   const updateLog = (headers, { clientId, logId }, log) => $axios.put(
     `/clients/${clientId}/logs/${logId}`, log, { headers }
   )
-  const updatePersonal = (headers, { clientId, personalId }, personal) => $axios.put(
+  const updateTaxPersonal = (headers, { clientId, personalId }, personal) => $axios.put(
     `/clients/${clientId}/personals/${personalId}`, personal, { headers }
   )
   const updateContact = (headers, { clientId, contactId }, contact) => $axios.put(
@@ -49,7 +49,7 @@ export default ({ $axios, store }, inject) => {
     getValueTaxGroups,
     getHttpConfig,
     updateLog,
-    updatePersonal,
+    updateTaxPersonal,
     updateContact,
     updateIncome,
     updateFbar
