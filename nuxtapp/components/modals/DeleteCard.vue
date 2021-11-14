@@ -37,7 +37,7 @@ export default {
   name: 'DeleteCard',
   props: {
     id: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     type: {
@@ -167,7 +167,7 @@ export default {
       this.reloadClient()
     },
     updateTaxPersonal () {
-      this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, taxPersonalId: this.id }, this.updatedItem)
+      this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
       this.reloadClient()
     },
     reloadClient () {

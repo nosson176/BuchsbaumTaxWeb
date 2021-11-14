@@ -24,7 +24,7 @@
       </div>
       <div class="shadow rounded flex flex-col personal-contact">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" @delete="openDeleteModal" />
       </div>
       <Modal :showing="showDeleteModal">
         <DeleteCard :id="deleteId" :type="deleteType" @hide="closeDeleteModal" />
