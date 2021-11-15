@@ -30,10 +30,10 @@ export default ({ $axios, store }, inject) => {
   const updateLog = (headers, { clientId, logId }, log) => $axios.put(
     `/clients/${clientId}/logs/${logId}`, log, { headers }
   )
-  const createPersonal = (headers, { clientId, personal }) => $axios.post(
+  const createTaxPersonal = (headers, { clientId, personal }) => $axios.post(
     `/clients/${clientId}/personals`, personal, { headers }
   )
-  const updatePersonal = (headers, { clientId, personalId }, personal) => $axios.put(
+  const updateTaxPersonal = (headers, { clientId, personalId }, personal) => $axios.put(
     `/clients/${clientId}/personals/${personalId}`, personal, { headers }
   )
   const createContact = (headers, { clientId, contact }) => $axios.post(
@@ -65,8 +65,8 @@ export default ({ $axios, store }, inject) => {
     getHttpConfig,
     createLog,
     updateLog,
-    createPersonal,
-    updatePersonal,
+    createTaxPersonal,
+    updateTaxPersonal,
     createContact,
     updateContact,
     createIncome,

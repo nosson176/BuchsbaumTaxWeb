@@ -80,7 +80,7 @@
           <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languageOptions" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(personal.id)" />
         </div>
       </TableRow>
     </template>
@@ -90,7 +90,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
 
 const taxPersonalConstructor = {
@@ -162,6 +162,12 @@ export default {
     },
     relationOptions () {
       return this.valueTypes.relation.filter(relation => relation.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -175,11 +181,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const personalId = this.editablePersonalId
-      const personal = this.displayedPersonals.find(personal => personal.id === personalId)
-      this.$api.updatePersonal(headers, { clientId, personalId }, personal)
+      const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
+      this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
+    },
+    onDeleteClick (personalId) {
+      if (this.showArchived) {
+        const personal = this.displayedPersonals.find(personal => personal.id === personalId)
+        personal.archived = false
+        this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: personalId, type: tabs.tax_personals })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     },
     onAddRowClick () {
       const headers = this.$api.getHttpConfig()

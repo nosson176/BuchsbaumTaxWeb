@@ -60,7 +60,7 @@
         </div>
         <div class="table-col xs" />
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(log.id)" />
         </div>
       </TableRow>
     </template>
@@ -70,7 +70,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { models, priority } from '~/shared/constants'
+import { events, models, priority, tabs } from '~/shared/constants'
 
 export default {
   name: 'LogsTable',
@@ -120,6 +120,12 @@ export default {
     },
     yearOptions () {
       return this.valueTypes.year_name.filter(year => year.show)
+    },
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    clientId () {
+      return this.selectedClient.id
     }
   },
   methods: {
@@ -136,11 +142,23 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const headers = this.$api.getHttpConfig()
-      const clientId = this.selectedClient.id
-      const logId = this.editableLogId
-      const log = this.displayedLogs.find(log => log.id === logId)
-      this.$api.updateLog(headers, { clientId, logId }, log)
+      const log = this.displayedLogs.find(log => log.id === this.editableLogId)
+      this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
+    },
+    onDeleteClick (logId) {
+      if (this.showArchived) {
+        const log = this.displayedLogs.find(log => log.id === logId)
+        log.archived = false
+        this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
+          .then(() => {
+            this.reloadClient()
+          })
+      } else {
+        this.$emit(events.delete, { id: logId, type: tabs.logs })
+      }
+    },
+    reloadClient () {
+      this.$api.getClientData(this.headers, this.clientId)
     }
   }
 }
