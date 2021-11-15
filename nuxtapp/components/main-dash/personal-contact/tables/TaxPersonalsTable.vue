@@ -88,7 +88,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { events, models, tabs } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
 
 export default {
@@ -114,11 +114,11 @@ export default {
       } else {
         personals = this.archived
       }
-      return JSON.parse(JSON.stringify(personals))
+      return personals
     },
     notArchived () {
-      if (this.selectedClient.taxPersonals) {
-        return this.selectedClient.taxPersonals
+      if (this.taxPersonals) {
+        return this.taxPersonals
           .filter(personal => !personal.archived)
           .sort((a, b) => sortByCategory(a, b))
       } else {
@@ -126,8 +126,8 @@ export default {
       }
     },
     archived () {
-      if (this.selectedClient.taxPersonals) {
-        return this.selectedClient.taxPersonals
+      if (this.taxPersonals) {
+        return this.taxPersonals
           .filter(personal => personal.archived)
           .sort((a, b) => sortByCategory(a, b))
       } else {
@@ -151,6 +151,13 @@ export default {
     },
     clientId () {
       return this.selectedClient.id
+    },
+    taxPersonals () {
+      if (this.selectedClient.taxPersonals) {
+        return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -173,14 +180,20 @@ export default {
         personal.archived = false
         this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
           .then(() => {
-            this.reloadClient()
+            this.updateClient(personalId, personal)
           })
       } else {
-        this.$emit(events.delete, { id: personalId, type: tabs.tax_personals })
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: personalId, type: tabs.tax_personals } } } }
+        )
       }
     },
-    reloadClient () {
-      this.$api.getClientData(this.headers, this.clientId)
+    updateClient (personalId, personal) {
+      const taxPersonalIndex = this.taxPersonals.findIndex(taxPersonal => taxPersonal.id === personalId)
+      this.taxPersonals[taxPersonalIndex] = personal
+      const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }

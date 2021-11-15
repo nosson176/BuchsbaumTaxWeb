@@ -103,7 +103,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { events, models, tabs } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'FbarTable',
@@ -128,11 +128,11 @@ export default {
       } else {
         fbar = this.archived
       }
-      return JSON.parse(JSON.stringify(fbar))
+      return fbar
     },
     notArchived () {
-      if (this.selectedClient.fbarBreakdowns) {
-        return this.selectedClient.fbarBreakdowns
+      if (this.fbarBreakdowns) {
+        return this.fbarBreakdowns
           .filter(fbar => !fbar.archived)
           .sort((a, b) => b.years - a.years)
       } else {
@@ -140,8 +140,8 @@ export default {
       }
     },
     archived () {
-      if (this.selectedClient.fbarBreakdowns) {
-        return this.selectedClient.fbarBreakdowns
+      if (this.fbarBreakdowns) {
+        return this.fbarBreakdowns
           .filter(fbar => fbar.archived)
           .sort((a, b) => b.years - a.years)
       } else {
@@ -174,6 +174,13 @@ export default {
     },
     clientId () {
       return this.selectedClient.id
+    },
+    fbarBreakdowns () {
+      if (this.selectedClient.fbarBreakdowns) {
+        return JSON.parse(JSON.stringify(this.selectedClient.fbarBreakdowns))
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -187,23 +194,29 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
+      const fbar = this.displayedFbar.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
-        const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
+        const fbar = this.displayedFbar.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
           .then(() => {
-            this.reloadClient()
+            this.updateClient(fbarId, fbar)
           })
       } else {
-        this.$emit(events.delete, { id: fbarId, type: tabs.fbar })
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: fbarId, type: tabs.fbar } } } }
+        )
       }
     },
-    reloadClient () {
-      this.$api.getClientData(this.headers, this.clientId)
+    updateClient (fbarId, fbar) {
+      const fbarIndex = this.fbarBreakdowns.findIndex(fbar => fbar.id === fbarId)
+      this.fbarBreakdowns[fbarIndex] = fbar
+      const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbarBreakdowns })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }

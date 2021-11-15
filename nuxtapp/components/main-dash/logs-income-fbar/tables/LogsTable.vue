@@ -68,7 +68,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { events, models, priority, tabs } from '~/shared/constants'
+import { models, mutations, priority, tabs } from '~/shared/constants'
 
 export default {
   name: 'LogsTable',
@@ -93,11 +93,11 @@ export default {
       } else {
         logs = this.archived
       }
-      return JSON.parse(JSON.stringify(logs))
+      return logs
     },
     notArchived () {
-      if (this.selectedClient.logs) {
-        return this.selectedClient.logs
+      if (this.logs) {
+        return this.logs
           .filter(log => !log.archived)
           .reverse()
       } else {
@@ -105,8 +105,8 @@ export default {
       }
     },
     archived () {
-      if (this.selectedClient.logs) {
-        return this.selectedClient.logs
+      if (this.logs) {
+        return this.logs
           .filter(log => log.archived)
           .reverse()
       } else {
@@ -124,6 +124,13 @@ export default {
     },
     clientId () {
       return this.selectedClient.id
+    },
+    logs () {
+      if (this.selectedClient.logs) {
+        return JSON.parse(JSON.stringify(this.selectedClient.logs))
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -149,14 +156,20 @@ export default {
         log.archived = false
         this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
           .then(() => {
-            this.reloadClient()
+            this.updateClient(logId, log)
           })
       } else {
-        this.$emit(events.delete, { id: logId, type: tabs.logs })
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: logId, type: tabs.logs } } } }
+        )
       }
     },
-    reloadClient () {
-      this.$api.getClientData(this.headers, this.clientId)
+    updateClient (logId, log) {
+      const logIndex = this.logs.findIndex(log => log.id === logId)
+      this.logs[logIndex] = log
+      const data = Object.assign({}, this.selectedClient, { logs: this.logs })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }
