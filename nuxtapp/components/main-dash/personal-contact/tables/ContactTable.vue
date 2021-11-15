@@ -77,7 +77,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { events, models, tabs } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'ContactTable',
@@ -102,19 +102,19 @@ export default {
       } else {
         contacts = this.archived
       }
-      return JSON.parse(JSON.stringify(contacts))
+      return contacts
     },
     notArchived () {
-      if (this.selectedClient.contacts) {
-        return this.selectedClient.contacts
+      if (this.contacts) {
+        return this.contacts
           .filter(contact => !contact.archived)
       } else {
         return null
       }
     },
     archived () {
-      if (this.selectedClient.contacts) {
-        return this.selectedClient.contacts
+      if (this.contacts) {
+        return this.contacts
           .filter(contact => contact.archived)
       } else {
         return null
@@ -131,6 +131,13 @@ export default {
     },
     clientId () {
       return this.selectedClient.id
+    },
+    contacts () {
+      if (this.selectedClient.contacts) {
+        return JSON.parse(JSON.stringify(this.selectedClient.contacts))
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -153,14 +160,20 @@ export default {
         contact.archived = false
         this.$api.updateContact(this.headers, { clientId: this.clientId, contactId }, contact)
           .then(() => {
-            this.reloadClient()
+            this.updateClient(contactId, contact)
           })
       } else {
-        this.$emit(events.delete, { id: contactId, type: tabs.contact })
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: contactId, type: tabs.contact } } } }
+        )
       }
     },
-    reloadClient () {
-      this.$api.getClientData(this.headers, this.clientId)
+    updateClient (contactId, contact) {
+      const contactIndex = this.contacts.findIndex(contact => contact.id === contactId)
+      this.contacts[contactIndex] = contact
+      const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }

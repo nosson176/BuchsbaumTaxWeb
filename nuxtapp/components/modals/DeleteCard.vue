@@ -31,29 +31,28 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, tabs } from '~/shared/constants'
+import { events, models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'DeleteCard',
-  props: {
-    id: {
-      type: [String, Number],
-      required: true
-    },
-    type: {
-      type: String,
-      required: true
-    }
-  },
   data () {
     return {
       isLoading: false
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.modals]),
     clientId () {
       return this.selectedClient.id
+    },
+    modalData () {
+      return this.modals.delete.data
+    },
+    id () {
+      return this.modalData.id
+    },
+    type () {
+      return this.modalData.type
     },
     headers () {
       return this.$api.getHttpConfig()
@@ -153,39 +152,52 @@ export default {
     updateLog () {
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
         .then(() => {
-          this.reloadClient()
+          const logIndex = this.logs.findIndex(log => log.id === this.id)
+          this.logs[logIndex] = this.updatedItem
+          const data = Object.assign({}, this.selectedClient, { logs: this.logs })
+          this.updateClient(data)
         })
     },
     updateIncome () {
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
         .then(() => {
-          this.reloadClient()
+          const incomeIndex = this.incomes.findIndex(log => log.id === this.id)
+          this.incomes[incomeIndex] = this.updatedItem
+          const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomes })
+          this.updateClient(data)
         })
     },
     updateFbar () {
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
         .then(() => {
-          this.reloadClient()
+          const fbarIndex = this.fbars.findIndex(log => log.id === this.id)
+          this.fbars[fbarIndex] = this.updatedItem
+          const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbars })
+          this.updateClient(data)
         })
     },
     updateContact () {
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
         .then(() => {
-          this.reloadClient()
+          const contactIndex = this.contacts.findIndex(log => log.id === this.id)
+          this.contacts[contactIndex] = this.updatedItem
+          const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
+          this.updateClient(data)
         })
     },
     updateTaxPersonal () {
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
         .then(() => {
-          this.reloadClient()
+          const taxPersonalIndex = this.taxPersonals.findIndex(log => log.id === this.id)
+          this.taxPersonals[taxPersonalIndex] = this.updatedItem
+          const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
+          this.updateClient(data)
         })
     },
-    reloadClient () {
-      this.$api.getClientData(this.headers, this.clientId)
-        .then(() => {
-          this.isLoading = false
-          this.emitHide()
-        })
+    async updateClient (data) {
+      await this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+      this.isLoading = false
+      this.emitHide()
     }
   }
 }
