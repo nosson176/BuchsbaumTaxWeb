@@ -57,25 +57,25 @@
           />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="fbar.years" :options="yearNameOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="fbar.years" :options="yearNameOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="fbar.category" :options="categoryOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="fbar.category" :options="categoryOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-taxGroup`)" :selected-option="fbar.taxGroup" :options="taxGroupOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-taxGroup`)" :selected-option="fbar.taxGroup" :options="taxGroupOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-taxType`)" :selected-option="fbar.taxType" :options="taxTypeOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-taxType`)" :selected-option="fbar.taxType" :options="taxTypeOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-job`)" :selected-option="fbar.job" :options="jobOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-job`)" :selected-option="fbar.job" :options="jobOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-amount`" class="normal table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
-          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @input="debounceUpdate" />
+          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-currency`)" :selected-option="fbar.currency" :options="currencyOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-currency`)" :selected-option="fbar.currency" :options="currencyOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs">
           {{ fbar.frequency || '' }}
@@ -217,6 +217,9 @@ export default {
       this.fbarBreakdowns[fbarIndex] = fbar
       const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbarBreakdowns })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }

@@ -194,6 +194,9 @@ export default {
       this.taxPersonals[taxPersonalIndex] = personal
       const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }
@@ -210,5 +213,13 @@ export default {
 
 .table-primary-table-col {
   @apply px-1 py-1 whitespace-nowrap text-sm font-medium text-gray-900;
+}
+
+.edit-mode {
+  @apply relative z-10 overflow-visible -mt-3.5;
+}
+
+.read-mode {
+  @apply overflow-hidden overflow-ellipsis;
 }
 </style>

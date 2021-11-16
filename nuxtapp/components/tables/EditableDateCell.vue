@@ -1,6 +1,12 @@
 <template>
-  <div :class="isEditable ? 'relative z-10 overflow-visible w-auto' : 'overflow-hidden overflow-ellipsis'">
-    <input v-if="isEditable" ref="input" v-model="computedValue" type="date">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <input
+      v-if="isEditable"
+      ref="input"
+      v-model="computedValue"
+      type="date"
+      @blur="onBlur"
+    >
     <span v-else class="cursor-pointer">{{ formatDate(computedValue) }}</span>
   </div>
 </template>
@@ -39,6 +45,9 @@ export default {
   methods: {
     formatDate (date) {
       return date ? formatDateForTable(date) : ''
+    },
+    onBlur () {
+      this.$emit(events.blur)
     }
   }
 }
@@ -47,5 +56,13 @@ export default {
 <style scoped>
 input {
   @apply w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
+}
+
+.edit-mode {
+  @apply relative z-10 overflow-visible -mt-2;
+}
+
+.read-mode {
+  @apply overflow-hidden overflow-ellipsis;
 }
 </style>

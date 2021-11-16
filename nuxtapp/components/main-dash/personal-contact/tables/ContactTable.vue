@@ -49,22 +49,22 @@
           />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-contactType`)" :selected-option="contact.contactType" :options="contactTypeOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-contactType`)" :selected-option="contact.contactType" :options="contactTypeOptions" @blur="onBlur" @change="debounceUpdate" />
         </div>
         <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
-          <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-mainDetail`" class="table-col lg" @click="toggleEditable(`${idx}-mainDetail`, contact.id)">
-          <EditableInputCell v-model="contact.mainDetail" :is-editable="isEditable(`${idx}-mainDetail`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.mainDetail" :is-editable="isEditable(`${idx}-mainDetail`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-secondaryDetail`" class="table-col lg" @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)">
-          <EditableInputCell v-model="contact.secondaryDetail" :is-editable="isEditable(`${idx}-secondaryDetail`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.secondaryDetail" :is-editable="isEditable(`${idx}-secondaryDetail`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
-          <EditableInputCell v-model="contact.state" :is-editable="isEditable(`${idx}-state`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.state" :is-editable="isEditable(`${idx}-state`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id)">
-          <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(contact.id)" />
@@ -174,10 +174,14 @@ export default {
       this.contacts[contactIndex] = contact
       const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }
 </script>
 
 <style scoped>
+
 </style>

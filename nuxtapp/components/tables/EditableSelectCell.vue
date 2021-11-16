@@ -1,11 +1,12 @@
 <template>
-  <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
     <select
       v-if="isEditable"
       ref="select"
       name="category"
       class="mt-1 block w-full p-0 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded absolute top-0"
       :multiple="multiple"
+      @blur="onBlur"
       @change="emitChange"
     >
       <option v-for="(option, idx) in options" :id="idx" :key="idx" :value="option.value" :selected="isSelected(option)">
@@ -76,11 +77,20 @@ export default {
     },
     splitMulti (value) {
       return value ? value.split('\u000B')[0] : []
+    },
+    onBlur () {
+      this.$emit(events.blur)
     }
   }
 }
 </script>
 
 <style scoped>
+.edit-mode {
+  @apply relative z-10 overflow-visible -mt-2;
+}
 
+.read-mode {
+  @apply overflow-hidden overflow-ellipsis;
+}
 </style>

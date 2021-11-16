@@ -36,16 +36,16 @@
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
         <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="log.years" :options="yearOptions" @change="debounceUpdate" />
+          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="log.years" :options="yearOptions" @change="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
-          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" />
+          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
-          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" />
+          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">
           <CheckIcon v-if="log.alarmComplete" class="text-green-500" />
@@ -170,6 +170,9 @@ export default {
       this.logs[logIndex] = log
       const data = Object.assign({}, this.selectedClient, { logs: this.logs })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }

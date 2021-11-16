@@ -1,6 +1,13 @@
 <template>
-  <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
-    <input v-if="isEditable" ref="input" v-model="computedValue" autofocus type="text">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <input
+      v-if="isEditable"
+      ref="input"
+      v-model="computedValue"
+      autofocus
+      type="text"
+      @blur="onBlur"
+    >
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
@@ -46,6 +53,9 @@ export default {
   methods: {
     formatAsCurrency (amount) {
       return formatAsNumber(amount)
+    },
+    onBlur () {
+      this.$emit(events.blur)
     }
   }
 }
@@ -54,5 +64,13 @@ export default {
 <style scoped>
 input {
   @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
+}
+
+.edit-mode {
+  @apply relative z-10 overflow-visible -mt-2;
+}
+
+.read-mode {
+  @apply overflow-hidden overflow-ellipsis;
 }
 </style>
