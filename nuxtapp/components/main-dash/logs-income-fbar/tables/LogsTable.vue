@@ -36,7 +36,7 @@
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
         <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="log.years" :options="yearOptions" @change="debounceUpdate" @blur="onBlur" />
+          <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
           <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" @blur="onBlur" />

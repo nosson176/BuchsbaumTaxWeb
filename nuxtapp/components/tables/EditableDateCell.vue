@@ -59,7 +59,7 @@ input {
 }
 
 .edit-mode {
-  @apply relative z-10 overflow-visible -mt-2;
+  @apply relative z-10 overflow-visible -mt-1;
 }
 
 .read-mode {

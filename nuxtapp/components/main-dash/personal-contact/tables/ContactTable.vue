@@ -49,7 +49,7 @@
           />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-contactType`)" :selected-option="contact.contactType" :options="contactTypeOptions" @blur="onBlur" @change="debounceUpdate" />
+          <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" :options="contactTypeOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
           <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />

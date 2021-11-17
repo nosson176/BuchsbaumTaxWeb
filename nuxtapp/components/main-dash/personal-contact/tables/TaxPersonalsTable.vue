@@ -51,31 +51,31 @@
           </div>
         </div>
         <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="personal.category" :options="categoryOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="personal.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-firstName`" class="normal table-col" @click="toggleEditable(`${idx}-firstName`, personal.id)">
-          <EditableInputCell v-model="personal.firstName" :is-editable="isEditable(`${idx}-firstName`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="personal.firstName" :is-editable="isEditable(`${idx}-firstName`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-middleInitial`" class="xs table-col" @click="toggleEditable(`${idx}-middleInitial`, personal.id)">
-          <EditableInputCell v-model="personal.middleInitial" :is-editable="isEditable(`${idx}-middleInitial`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="personal.middleInitial" :is-editable="isEditable(`${idx}-middleInitial`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-lastName`" class="normal table-col" @click="toggleEditable(`${idx}-lastName`, personal.id)">
-          <EditableInputCell v-model="personal.lastName" :is-editable="isEditable(`${idx}-lastName`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="personal.lastName" :is-editable="isEditable(`${idx}-lastName`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-dateOfBirth`" class="table-col sm" @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)">
-          <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)" @input="debounceUpdate" />
+          <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
-          <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
-          <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-relation`" class="sm table-col" @click="toggleEditable(`${idx}-relation`, personal.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-relation`)" :selected-option="personal.relation" :options="relationOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="personal.relation" :is-editable="isEditable(`${idx}-relation`)" :options="relationOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-language`" class="sm table-col" @click="toggleEditable(`${idx}-language`, personal.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-language`)" :selected-option="personal.language" :options="languageOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="personal.language" :is-editable="isEditable(`${idx}-language`)" :options="languageOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(personal.id)" />
@@ -172,6 +172,7 @@ export default {
     },
     handleUpdate () {
       const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
+      console.log('handleUpdate: ', personal)
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
     },
     onDeleteClick (personalId) {
