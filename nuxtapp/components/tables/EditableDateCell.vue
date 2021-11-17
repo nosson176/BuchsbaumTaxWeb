@@ -1,12 +1,15 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <input
+    <date-picker
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
+      :open="showPicker"
+      value-type="format"
+      format="YYYY-MM-DD"
       type="date"
       @blur="onBlur"
-    >
+    />
     <span v-else class="cursor-pointer">{{ formatDate(computedValue) }}</span>
   </div>
 </template>
@@ -26,6 +29,11 @@ export default {
       required: true
     }
   },
+  data () {
+    return {
+      showPicker: false
+    }
+  },
   computed: {
     computedValue: {
       get () {
@@ -33,21 +41,24 @@ export default {
       },
       set (newVal) {
         this.$emit(events.input, newVal)
+        this.$emit(events.blur)
       }
     }
   },
   updated () {
     if (this.isEditable) {
       this.$refs.input.focus()
-      this.$refs.input.select()
+      this.showPicker = true
     }
   },
   methods: {
     formatDate (date) {
       return date ? formatDateForTable(date) : ''
     },
-    onBlur () {
-      this.$emit(events.blur)
+    onBlur (event) {
+      if (!event.explicitOriginalTarget.data) {
+        this.$emit(events.blur)
+      }
     }
   }
 }

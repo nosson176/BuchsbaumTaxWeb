@@ -172,7 +172,6 @@ export default {
     },
     handleUpdate () {
       const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
-      console.log('handleUpdate: ', personal)
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
     },
     onDeleteClick (personalId) {
