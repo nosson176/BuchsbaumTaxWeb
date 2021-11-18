@@ -3,7 +3,7 @@
     <template #header>
       <TableHeader>
         <div class="xs table-header">
-          <AddRowButton />
+          <AddRowButton @click="onAddRowClick" />
         </div>
         <div class="table-header xs">
           Year
@@ -71,6 +71,22 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { models, mutations, priority, tabs } from '~/shared/constants'
+
+const logsConstructor = {
+  clientId: NaN,
+  years: '',
+  alarmUserId: null,
+  alert: false,
+  alarmComplete: false,
+  alarmDate: null,
+  alarmTime: null,
+  logDate: null,
+  priority: 0,
+  note: '',
+  secondsSpent: 0,
+  archived: false,
+  alerted: false
+}
 
 export default {
   name: 'LogsTable',
@@ -170,6 +186,29 @@ export default {
     updateClient (logId, log) {
       const logIndex = this.logs.findIndex(log => log.id === logId)
       this.logs[logIndex] = log
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        years: this.yearOptions[0].value
+      }
+      const log = Object.assign({}, logsConstructor, defaultValues)
+      this.$api.createLog(headers, { clientId, log })
+        .then(() => {
+          this.addRowOnClient(log)
+        })
+    },
+    addRowOnClient (log) {
+      this.logs.push(log)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable('0-years', log.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { logs: this.logs })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }

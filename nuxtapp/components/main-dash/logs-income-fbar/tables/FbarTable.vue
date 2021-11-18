@@ -3,7 +3,7 @@
     <template #header>
       <TableHeader>
         <div class="xs table-header">
-          <AddRowButton />
+          <AddRowButton @click="onAddRowClick" />
         </div>
         <div class="table-header sm">
           Year
@@ -46,7 +46,7 @@
     </template>
     <template #body>
       <TableRow
-        v-for="(fbar, idx) in displayedFbar"
+        v-for="(fbar, idx) in displayedFbars"
         :key="fbar.id"
         :idx="idx"
       >
@@ -107,6 +107,23 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 
+const fbarBreakdownsConstructor = {
+  clientId: NaN,
+  years: '',
+  category: '',
+  taxGroup: '',
+  taxType: '',
+  part: '',
+  currency: '',
+  frequency: 0,
+  documents: '',
+  description: '',
+  amount: 0,
+  depend: '',
+  include: true,
+  archived: false
+}
+
 export default {
   name: 'FbarTable',
   props: {
@@ -123,7 +140,7 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
-    displayedFbar () {
+    displayedFbars () {
       let fbar = []
       if (!this.showArchived) {
         fbar = this.notArchived
@@ -196,12 +213,12 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const fbar = this.displayedFbar.find(fbar => fbar.id === this.editableFbarId)
+      const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
-        const fbar = this.displayedFbar.find(fbar => fbar.id === fbarId)
+        const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
           .then(() => {
@@ -217,6 +234,34 @@ export default {
     updateClient (fbarId, fbar) {
       const fbarIndex = this.fbarBreakdowns.findIndex(fbar => fbar.id === fbarId)
       this.fbarBreakdowns[fbarIndex] = fbar
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        category: this.categoryOptions[2].value,
+        years: this.yearNameOptions[0].value,
+        taxType: this.taxTypeOptions[0].value,
+        taxGroup: this.taxGroupOptions[0].value,
+        job: this.jobOptions[0].value,
+        currency: this.currencyOptions[0].value
+      }
+      const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
+      this.$api.createFbar(headers, { clientId, fbar })
+        .then(() => {
+          this.addRowOnClient(fbar)
+        })
+    },
+    addRowOnClient (fbar) {
+      this.fbarBreakdowns.push(fbar)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedFbars.length - 1}-years`, fbar.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbarBreakdowns })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }

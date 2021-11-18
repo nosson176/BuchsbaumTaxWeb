@@ -88,7 +88,8 @@ const contactsConstructor = {
   mainDetail: '',
   secondaryDetail: '',
   state: '',
-  zip: 0
+  zip: 0,
+  archived: false
 }
 
 export default {
@@ -184,8 +185,7 @@ export default {
     updateClient (contactId, contact) {
       const contactIndex = this.contacts.findIndex(contact => contact.id === contactId)
       this.contacts[contactIndex] = contact
-      const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+      this.updateStoreObject()
     },
     onAddRowClick () {
       const headers = this.$api.getHttpConfig()
@@ -202,11 +202,14 @@ export default {
     },
     addRowOnClient (contact) {
       this.contacts.push(contact)
-      const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+      this.updateStoreObject()
       this.$nextTick(() => {
         this.toggleEditable(`${this.displayedContacts.length - 1}-contactType`, contact.id)
       })
+    },
+    updateStoreObject () {
+      const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }
