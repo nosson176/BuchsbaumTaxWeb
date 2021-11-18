@@ -185,8 +185,6 @@ export default {
       }
     },
     isEditable (id) {
-      console.log('id ', id)
-      console.log('editableId ', this.editableId)
       return this.editableId === id
     },
     handleUpdate () {
