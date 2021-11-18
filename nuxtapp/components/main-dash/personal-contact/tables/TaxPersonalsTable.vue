@@ -206,6 +206,12 @@ export default {
         )
       }
     },
+    updateClient (personalId, personal) {
+      const taxPersonalIndex = this.taxPersonals.findIndex(taxPersonal => taxPersonal.id === personalId)
+      this.taxPersonals[taxPersonalIndex] = personal
+      const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
     onAddRowClick () {
       const headers = this.$api.getHttpConfig()
       const clientId = this.selectedClient.id
@@ -222,12 +228,6 @@ export default {
         .then(() => {
           this.addRowOnClient(personal)
         })
-    },
-    updateClient (personalId, personal) {
-      const taxPersonalIndex = this.taxPersonals.findIndex(taxPersonal => taxPersonal.id === personalId)
-      this.taxPersonals[taxPersonalIndex] = personal
-      const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     addRowOnClient (personal) {
       this.taxPersonals.push(personal)
