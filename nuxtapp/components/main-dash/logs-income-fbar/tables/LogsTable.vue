@@ -1,5 +1,5 @@
 <template>
-  <Table>
+  <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="table-header xs" />
@@ -69,6 +69,10 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { models, mutations, priority, tabs } from '~/shared/constants'
+
+// const columns = [
+//   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
+// ]
 
 export default {
   name: 'LogsTable',
@@ -170,6 +174,10 @@ export default {
       this.logs[logIndex] = log
       const data = Object.assign({}, this.selectedClient, { logs: this.logs })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onKeyDown (evt) {
+      const id = this.editableId
+      this.toggleEditable(id, this.editableLogId)
     }
   }
 }

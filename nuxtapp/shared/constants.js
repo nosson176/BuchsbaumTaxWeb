@@ -59,7 +59,10 @@ export const events = Object.freeze({
   input: 'input',
   submit: 'submit',
   resize: 'resize',
-  delete: 'delete'
+  delete: 'delete',
+  keyup: 'keyup',
+  keypress: 'keypress',
+  keydown: 'keydown'
 })
 
 export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'

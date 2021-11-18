@@ -1,6 +1,6 @@
 <template>
   <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
-    <textarea v-if="isEditable" ref="input" v-model="computedValue" />
+    <textarea v-if="isEditable" ref="input" v-model="computedValue" @keydown.tab.prevent />
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
