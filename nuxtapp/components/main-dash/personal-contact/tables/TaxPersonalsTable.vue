@@ -220,7 +220,7 @@ export default {
       const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
       this.$api.createTaxPersonal(headers, { clientId, personal })
         .then(() => {
-          this.addOnClient(personal)
+          this.addRowOnClient(personal)
         })
     },
     updateClient (personalId, personal) {
@@ -229,7 +229,7 @@ export default {
       const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
-    addOnClient (personal) {
+    addRowOnClient (personal) {
       this.taxPersonals.push(personal)
       const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
