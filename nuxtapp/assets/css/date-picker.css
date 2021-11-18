@@ -39,6 +39,8 @@
 }
 
 .mx-btn {
+  @apply text-gray-400;
+
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     line-height: 1;
@@ -51,13 +53,11 @@
     outline: none;
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 4px;
-    color: #73879c;
     white-space: nowrap;
 }
 
 .mx-btn:hover {
-    border-color: #1284e7;
-    color: #1284e7;
+  @apply text-indigo-600 border-indigo-600;
 }
 
 .mx-btn-text {
@@ -170,7 +170,7 @@
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     width: 100%;
-    padding: 6px 30px;
+    padding: 0px 10px;
     padding-left: 10px;
     line-height: 1.4;
     color: #555;
@@ -183,7 +183,7 @@
 
 .mx-input:hover,
 .mx-input:focus {
-    border-color: #409aff;
+    @apply border-indigo-500;
 }
 
 .mx-input:disabled,
@@ -225,7 +225,7 @@
 
 .mx-datepicker-main {
     font: 14px/1.5 "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei", sans-serif;
-    color: #73879c;
+    @apply text-gray-400;
     background-color: #fff;
     border: 1px solid #e8e8e8;
 }
@@ -348,19 +348,17 @@
 }
 
 .mx-calendar-content .cell:hover {
-    color: #73879c;
-    background-color: #f3f9fe;
+  @apply text-indigo-400 bg-indigo-100;
 }
 
 .mx-calendar-content .cell.active {
-    color: #fff;
-    background-color: #1284e7;
+  @apply bg-indigo-700;
+  color: #fff;
 }
 
 .mx-calendar-content .cell.in-range,
 .mx-calendar-content .cell.hover-in-range {
-    color: #73879c;
-    background-color: #dbedfb;
+  @apply text-gray-400 bg-indigo-100;
 }
 
 .mx-calendar-content .cell.disabled {
@@ -424,7 +422,7 @@
 }
 
 .mx-table-date .today {
-    color: #2a90e9;
+    @apply text-indigo-500;
 }
 
 .mx-table-date .cell.not-current-month {
@@ -505,12 +503,12 @@
 }
 
 .mx-time-column .mx-time-item:hover {
-    color: #73879c;
+  @apply text-gray-400;
     background-color: #f3f9fe;
 }
 
 .mx-time-column .mx-time-item.active {
-    color: #1284e7;
+    @apply text-indigo-300;
     background-color: transparent;
     font-weight: 700;
 }
@@ -529,12 +527,12 @@
 }
 
 .mx-time-option:hover {
-    color: #73879c;
+    @apply text-gray-400;
     background-color: #f3f9fe;
 }
 
 .mx-time-option.active {
-    color: #1284e7;
+  @apply text-indigo-300;
     background-color: transparent;
     font-weight: 700;
 }
