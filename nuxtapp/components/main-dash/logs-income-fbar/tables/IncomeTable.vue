@@ -116,7 +116,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { events, models, tabs } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'IncomeTable',
@@ -141,11 +141,11 @@ export default {
       } else {
         income = this.archived
       }
-      return JSON.parse(JSON.stringify(income))
+      return income
     },
     notArchived () {
-      if (this.selectedClient.incomeBreakdowns) {
-        return this.selectedClient.incomeBreakdowns
+      if (this.incomeBreakdowns) {
+        return this.incomeBreakdowns
           .filter(income => !income.archived)
           .sort((a, b) => b.years - a.years)
       } else {
@@ -153,8 +153,8 @@ export default {
       }
     },
     archived () {
-      if (this.selectedClient.incomeBreakdowns) {
-        return this.selectedClient.incomeBreakdowns
+      if (this.incomeBreakdowns) {
+        return this.incomeBreakdowns
           .filter(income => income.archived)
           .sort((a, b) => b.years - a.years)
       } else {
@@ -187,6 +187,13 @@ export default {
     },
     clientId () {
       return this.selectedClient.id
+    },
+    incomeBreakdowns () {
+      if (this.selectedClient.incomeBreakdowns) {
+        return JSON.parse(JSON.stringify(this.selectedClient.incomeBreakdowns))
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -205,18 +212,24 @@ export default {
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {
-        const income = this.displayedIncomes.find(income => income.id === incomeId)
+        const income = this.displayedIncome.find(income => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
           .then(() => {
-            this.reloadClient()
+            this.updateClient(incomeId, income)
           })
       } else {
-        this.$emit(events.delete, { id: incomeId, type: tabs.income })
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: incomeId, type: tabs.income } } } }
+        )
       }
     },
-    reloadClient () {
-      this.$api.getClientData(this.headers, this.clientId)
+    updateClient (incomeId, income) {
+      const incomeIndex = this.incomeBreakdowns.findIndex(income => income.id === incomeId)
+      this.incomeBreakdowns[incomeIndex] = income
+      const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }

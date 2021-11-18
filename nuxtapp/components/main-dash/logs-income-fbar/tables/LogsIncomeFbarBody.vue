@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-grow overflow-hidden">
-    <LogsTable v-if="showLogs" :show-archived="showArchived" @delete="emitDelete" />
-    <IncomeTable v-else-if="showIncome" :show-archived="showArchived" @delete="emitDelete" />
-    <FbarTable v-else-if="showFbar" :show-archived="showArchived" @delete="emitDelete" />
+    <LogsTable v-if="showLogs" :show-archived="showArchived" />
+    <IncomeTable v-else-if="showIncome" :show-archived="showArchived" />
+    <FbarTable v-else-if="showFbar" :show-archived="showArchived" />
   </div>
 </template>
 
 <script>
-import { events, tabs } from '~/shared/constants'
+import { tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarBody',
   props: {
@@ -32,9 +32,6 @@ export default {
     }
   },
   methods: {
-    emitDelete (deleteObj) {
-      this.$emit(events.delete, deleteObj)
-    }
   }
 }
 </script>

@@ -20,14 +20,14 @@
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar">
         <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
-        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" @delete="openDeleteModal" />
+        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" @delete="openDeleteModal" />
+        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
       <Modal :showing="showDeleteModal">
-        <DeleteCard :id="deleteId" :type="deleteType" @hide="closeDeleteModal" />
+        <DeleteCard @hide="closeDeleteModal" />
       </Modal>
     </div>
     <div class="bg-black text-white flex">
@@ -37,7 +37,9 @@
 </template>
 
 <script>
-import { tabs } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { tabs, models, mutations } from '~/shared/constants'
+
 export default {
   name: 'Home',
   data () {
@@ -47,9 +49,18 @@ export default {
       currentPersonalsTab: tabs.tax_personals,
       showArchivedLogsIncomeFbar: false,
       currentLogsIncomeFbarTab: tabs.logs,
-      showDeleteModal: false,
       deleteId: '',
       deleteType: ''
+    }
+  },
+  computed: {
+    ...mapState([models.modals]),
+    showDeleteModal () {
+      let showModal = false
+      if (this.modals.delete) {
+        showModal = this.modals.delete.showing
+      }
+      return showModal
     }
   },
   methods: {
@@ -74,7 +85,7 @@ export default {
       this.deleteType = type
     },
     closeDeleteModal () {
-      this.showDeleteModal = false
+      this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { delete: { showing: false, data: {} } } })
     }
   }
 }
