@@ -1,5 +1,5 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown="onKeyPress" @keyup="onKeyUp">
     <div v-if="isEditable" class="relative mt-3.5">
       <button
         type="button"
@@ -56,6 +56,9 @@
 
 <script>
 import { events } from '~/shared/constants'
+
+const MULT = 'MULT'
+
 export default {
   name: 'EditableSelectCell',
   props: {
@@ -74,14 +77,20 @@ export default {
   },
   data () {
     return {
-      showOptions: false
+      showOptions: false,
+      shiftActive: false
     }
   },
   computed: {
     computedValue: {
       get () {
         if (this.multiple) {
-          const selected = this.splitOptions.slice(1)
+          let selected = []
+          if (this.splitOptions[0] === MULT) {
+            selected = this.splitOptions.slice(1)
+          } else {
+            selected = this.splitOptions
+          }
           return selected
         } else {
           return this.value
@@ -119,7 +128,11 @@ export default {
   },
   methods: {
     emitChange (value) {
-      this.computedValue = value
+      if (this.shiftActive) {
+        this.computedValue = this.computedValue.join('\u000B').concat('\u000B' + value)
+      } else {
+        this.computedValue = value
+      }
       this.onBlur()
     },
     isSelected ({ value }) {
@@ -129,15 +142,22 @@ export default {
         return this.computedValue === value
       }
     },
-    splitMulti (value) {
-      return value ? value.split('\u000B')[0] : []
-    },
     onBlur () {
       this.showOptions = false
       this.$emit(events.blur)
     },
     onButtonClick () {
       this.showOptions = !this.showOptions
+    },
+    onKeyPress (evt) {
+      if (evt.key === 'Shift') {
+        this.shiftActive = true
+      }
+    },
+    onKeyUp (evt) {
+      if (evt.key === 'Shift') {
+        this.shiftActive = false
+      }
     }
   }
 }
