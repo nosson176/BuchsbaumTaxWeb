@@ -185,6 +185,8 @@ export default {
       }
     },
     isEditable (id) {
+      console.log('id ', id)
+      console.log('editableId ', this.editableId)
       return this.editableId === id
     },
     handleUpdate () {
@@ -218,14 +220,24 @@ export default {
         archived: this.showArchived
       }
       const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
-      this.$api.createPersonal(headers, { clientId, personal })
-        .then(_ => this.$api.getClientData(headers, { clientId }))
+      this.$api.createTaxPersonal(headers, { clientId, personal })
+        .then(() => {
+          this.addOnClient(personal)
+        })
     },
     updateClient (personalId, personal) {
       const taxPersonalIndex = this.taxPersonals.findIndex(taxPersonal => taxPersonal.id === personalId)
       this.taxPersonals[taxPersonalIndex] = personal
       const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    addOnClient (personal) {
+      this.taxPersonals.push(personal)
+      const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedPersonals.length - 1}-category`, personal.id)
+      })
     }
   }
 }
