@@ -70,9 +70,9 @@ import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { models, mutations, priority, tabs } from '~/shared/constants'
 
-// const columns = [
-//   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
-// ]
+const columns = [
+  'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
+]
 
 export default {
   name: 'LogsTable',
@@ -176,8 +176,13 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown (evt) {
-      const id = this.editableId
-      this.toggleEditable(id, this.editableLogId)
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableLogId)
+      }
     }
   }
 }

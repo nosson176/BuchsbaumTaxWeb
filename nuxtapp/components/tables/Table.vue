@@ -13,8 +13,7 @@ export default {
   name: 'Table',
   methods: {
     emitKeyDown (e) {
-      console.log(e)
-      this.$emit(events.keyup, e)
+      this.$emit(events.keydown, e)
     }
   }
 }
