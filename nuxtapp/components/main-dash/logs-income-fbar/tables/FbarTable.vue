@@ -106,7 +106,7 @@ import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 
 const columns = [
-  'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequesncy', '$', 'documents', 'description', 'depend', 'delete'
+  'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
 
 export default {
