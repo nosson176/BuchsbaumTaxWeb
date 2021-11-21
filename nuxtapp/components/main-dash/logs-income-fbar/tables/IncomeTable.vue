@@ -2,7 +2,9 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="table-header sm">
           Year
         </div>
@@ -47,7 +49,7 @@
     </template>
     <template #body>
       <TableRow
-        v-for="(income, idx) in displayedIncome"
+        v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
       >
@@ -116,6 +118,24 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 
+const incomeBreakdownsConstructor = {
+  clientId: NaN,
+  years: '',
+  category: '',
+  taxGroup: '',
+  taxType: '',
+  part: '',
+  currency: '',
+  frequency: 0,
+  documents: '',
+  description: '',
+  amount: 0,
+  depend: '',
+  include: true,
+  archived: false,
+  exclusion: false
+}
+
 export default {
   name: 'IncomeTable',
   props: {
@@ -132,7 +152,7 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
-    displayedIncome () {
+    displayedIncomes () {
       let income = []
       if (!this.showArchived) {
         income = this.notArchived
@@ -205,12 +225,12 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
+      const income = this.displayedIncomess.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {
-        const income = this.displayedIncome.find(income => income.id === incomeId)
+        const income = this.displayedIncomes.find(income => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
           .then(() => {
@@ -226,6 +246,34 @@ export default {
     updateClient (incomeId, income) {
       const incomeIndex = this.incomeBreakdowns.findIndex(income => income.id === incomeId)
       this.incomeBreakdowns[incomeIndex] = income
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        category: this.categoryOptions[2].value,
+        years: this.yearNameOptions[0].value,
+        taxType: this.taxTypeOptions[0].value,
+        taxGroup: this.taxGroupOptions[0].value,
+        job: this.jobOptions[0].value,
+        currency: this.currencyOptions[0].value
+      }
+      const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
+      this.$api.createIncome(headers, { clientId, income })
+        .then(() => {
+          this.addRowOnClient(income)
+        })
+    },
+    addRowOnClient (income) {
+      this.incomeBreakdowns.push(income)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedIncomes.length - 1}-years`, income.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },

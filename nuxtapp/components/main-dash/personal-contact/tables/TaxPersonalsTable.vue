@@ -2,7 +2,9 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="xs table-header" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="sm table-header">
           Cat
         </div>
@@ -90,6 +92,21 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
+
+const taxPersonalConstructor = {
+  clientId: NaN,
+  category: '',
+  include: true,
+  language: '',
+  relation: '',
+  firstName: '',
+  middleInitial: '',
+  lastName: '',
+  dateOfBirth: '',
+  ssn: '000-000-000',
+  informal: '',
+  archived: false
+}
 
 export default {
   name: 'TaxPersonalsTable',
@@ -192,6 +209,33 @@ export default {
     updateClient (personalId, personal) {
       const taxPersonalIndex = this.taxPersonals.findIndex(taxPersonal => taxPersonal.id === personalId)
       this.taxPersonals[taxPersonalIndex] = personal
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        category: this.categoryOptions[2].value,
+        language: this.languageOptions[0].value,
+        relation: this.relationOptions[0].value,
+        dateOfBirth: new Date(),
+        archived: this.showArchived
+      }
+      const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
+      this.$api.createTaxPersonal(headers, { clientId, personal })
+        .then(() => {
+          this.addRowOnClient(personal)
+        })
+    },
+    addRowOnClient (personal) {
+      this.taxPersonals.push(personal)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedPersonals.length - 1}-category`, personal.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },

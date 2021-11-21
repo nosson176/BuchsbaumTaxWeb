@@ -2,7 +2,9 @@
   <Table>
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="table-header xs" />
         <div class="table-header normal">
           Type
@@ -78,6 +80,17 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
+
+const contactsConstructor = {
+  clientId: NaN,
+  contactType: '',
+  memo: '',
+  mainDetail: '',
+  secondaryDetail: '',
+  state: '',
+  zip: 0,
+  archived: false
+}
 
 export default {
   name: 'ContactTable',
@@ -172,6 +185,29 @@ export default {
     updateClient (contactId, contact) {
       const contactIndex = this.contacts.findIndex(contact => contact.id === contactId)
       this.contacts[contactIndex] = contact
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        contactType: this.contactTypeOptions[0].value
+      }
+      const contact = Object.assign({}, contactsConstructor, defaultValues)
+      this.$api.createContact(headers, { clientId, contact })
+        .then(() => {
+          this.addRowOnClient(contact)
+        })
+    },
+    addRowOnClient (contact) {
+      this.contacts.push(contact)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedContacts.length - 1}-contactType`, contact.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
