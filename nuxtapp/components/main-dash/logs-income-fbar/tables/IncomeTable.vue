@@ -1,5 +1,5 @@
 <template>
-  <Table>
+  <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="table-header xs" />
@@ -116,6 +116,10 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 
+const columns = [
+  'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequesncy', '$', 'documents', 'description', 'depend', 'delete'
+]
+
 export default {
   name: 'IncomeTable',
   props: {
@@ -127,7 +131,7 @@ export default {
   data () {
     return {
       editableId: '',
-      editablePersonalId: ''
+      editableIncomeId: ''
     }
   },
   computed: {
@@ -228,6 +232,15 @@ export default {
       this.incomeBreakdowns[incomeIndex] = income
       const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onKeyDown () {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableIncomeId)
+      }
     }
   }
 }

@@ -175,7 +175,7 @@ export default {
       const data = Object.assign({}, this.selectedClient, { logs: this.logs })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
-    onKeyDown (evt) {
+    onKeyDown () {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex(col => col === idArr[1])
