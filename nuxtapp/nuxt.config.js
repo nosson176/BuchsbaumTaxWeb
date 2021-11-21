@@ -38,7 +38,8 @@ export default {
     '@/plugins/init.js',
     '@/plugins/axios.js',
     '@/plugins/api.js',
-    '@/plugins/breakpoints-mixin.js'
+    '@/plugins/breakpoints-mixin.js',
+    '@/plugins/datePicker.client.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

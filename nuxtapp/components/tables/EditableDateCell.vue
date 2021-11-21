@@ -1,6 +1,15 @@
 <template>
-  <div :class="isEditable ? 'relative z-10 overflow-visible w-auto' : 'overflow-hidden overflow-ellipsis'">
-    <input v-if="isEditable" ref="input" v-model="computedValue" type="date">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <date-picker
+      v-if="isEditable"
+      ref="input"
+      v-model="computedValue"
+      :open="showPicker"
+      value-type="format"
+      format="YYYY-MM-DD"
+      type="date"
+      @blur="onBlur"
+    />
     <span v-else class="cursor-pointer">{{ formatDate(computedValue) }}</span>
   </div>
 </template>
@@ -20,6 +29,11 @@ export default {
       required: true
     }
   },
+  data () {
+    return {
+      showPicker: false
+    }
+  },
   computed: {
     computedValue: {
       get () {
@@ -27,18 +41,24 @@ export default {
       },
       set (newVal) {
         this.$emit(events.input, newVal)
+        this.$emit(events.blur)
       }
     }
   },
   updated () {
     if (this.isEditable) {
       this.$refs.input.focus()
-      this.$refs.input.select()
+      this.showPicker = true
     }
   },
   methods: {
     formatDate (date) {
       return date ? formatDateForTable(date) : ''
+    },
+    onBlur (event) {
+      if (!event.explicitOriginalTarget.data) {
+        this.$emit(events.blur)
+      }
     }
   }
 }
@@ -47,5 +67,13 @@ export default {
 <style scoped>
 input {
   @apply w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
+}
+
+.edit-mode {
+  @apply relative z-10 overflow-visible -mt-1;
+}
+
+.read-mode {
+  @apply overflow-hidden overflow-ellipsis;
 }
 </style>
