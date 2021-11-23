@@ -1,5 +1,5 @@
 <template>
-  <Table>
+  <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
@@ -81,6 +81,9 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 
+const columns = [
+  'diabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete'
+]
 const contactsConstructor = {
   clientId: NaN,
   contactType: '',
@@ -210,6 +213,15 @@ export default {
     updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onKeyDown () {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableContactId)
+      }
     },
     onBlur () {
       this.editableId = ''

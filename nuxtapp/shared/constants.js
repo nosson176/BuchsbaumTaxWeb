@@ -60,6 +60,9 @@ export const events = Object.freeze({
   submit: 'submit',
   resize: 'resize',
   delete: 'delete',
+  keyup: 'keyup',
+  keypress: 'keypress',
+  keydown: 'keydown',
   blur: 'blur'
 })
 

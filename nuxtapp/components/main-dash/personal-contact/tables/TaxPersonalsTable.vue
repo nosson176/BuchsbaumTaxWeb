@@ -1,5 +1,5 @@
 <template>
-  <Table>
+  <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
@@ -93,6 +93,9 @@ import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
 
+const columns = [
+  'include', 'category', 'firstName', 'middleInitial', 'lastName', 'dateOfBirth', 'ssn', 'informal', 'relation', 'language', 'delete'
+]
 const taxPersonalConstructor = {
   clientId: NaN,
   category: '',
@@ -238,6 +241,15 @@ export default {
     updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    onKeyDown () {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editablePersonalId)
+      }
     },
     onBlur () {
       this.editableId = ''
