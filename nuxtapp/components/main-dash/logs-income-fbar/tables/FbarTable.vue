@@ -2,7 +2,9 @@
   <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="table-header sm">
           Year
         </div>
@@ -44,7 +46,7 @@
     </template>
     <template #body>
       <TableRow
-        v-for="(fbar, idx) in displayedFbar"
+        v-for="(fbar, idx) in displayedFbars"
         :key="fbar.id"
         :idx="idx"
       >
@@ -57,25 +59,25 @@
           />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="fbar.years" :options="yearNameOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="fbar.category" :options="categoryOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="fbar.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-taxGroup`)" :selected-option="fbar.taxGroup" :options="taxGroupOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="fbar.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)" :options="taxGroupOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-taxType`)" :selected-option="fbar.taxType" :options="taxTypeOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="fbar.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-job`)" :selected-option="fbar.job" :options="jobOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="fbar.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-amount`" class="normal table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
-          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @input="debounceUpdate" />
+          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, fbar.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-currency`)" :selected-option="fbar.currency" :options="currencyOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="fbar.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs">
           {{ fbar.frequency || '' }}
@@ -108,6 +110,22 @@ import { models, mutations, tabs } from '~/shared/constants'
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
+const fbarBreakdownsConstructor = {
+  clientId: NaN,
+  years: '',
+  category: '',
+  taxGroup: '',
+  taxType: '',
+  part: '',
+  currency: '',
+  frequency: 0,
+  documents: '',
+  description: '',
+  amount: 0,
+  depend: '',
+  include: true,
+  archived: false
+}
 
 export default {
   name: 'FbarTable',
@@ -125,7 +143,7 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
-    displayedFbar () {
+    displayedFbars () {
       let fbar = []
       if (!this.showArchived) {
         fbar = this.notArchived
@@ -198,12 +216,12 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const fbar = this.displayedFbar.find(fbar => fbar.id === this.editableFbarId)
+      const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
-        const fbar = this.displayedFbar.find(fbar => fbar.id === fbarId)
+        const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
           .then(() => {
@@ -219,6 +237,34 @@ export default {
     updateClient (fbarId, fbar) {
       const fbarIndex = this.fbarBreakdowns.findIndex(fbar => fbar.id === fbarId)
       this.fbarBreakdowns[fbarIndex] = fbar
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        category: this.categoryOptions[2].value,
+        years: this.yearNameOptions[0].value,
+        taxType: this.taxTypeOptions[0].value,
+        taxGroup: this.taxGroupOptions[0].value,
+        job: this.jobOptions[0].value,
+        currency: this.currencyOptions[0].value
+      }
+      const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
+      this.$api.createFbar(headers, { clientId, fbar })
+        .then(() => {
+          this.addRowOnClient(fbar)
+        })
+    },
+    addRowOnClient (fbar) {
+      this.fbarBreakdowns.push(fbar)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedFbars.length - 1}-years`, fbar.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbarBreakdowns })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
@@ -230,6 +276,9 @@ export default {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableFbarId)
       }
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }

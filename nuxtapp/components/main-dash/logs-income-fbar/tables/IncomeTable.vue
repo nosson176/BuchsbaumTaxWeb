@@ -2,7 +2,9 @@
   <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="table-header sm">
           Year
         </div>
@@ -47,7 +49,7 @@
     </template>
     <template #body>
       <TableRow
-        v-for="(income, idx) in displayedIncome"
+        v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
       >
@@ -60,13 +62,13 @@
           />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, income.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="income.years" :options="yearNameOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, income.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-category`)" :selected-option="income.category" :options="categoryOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="income.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-taxGroup`)" :selected-option="income.taxGroup" :options="taxGroupOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="income.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)" :options="taxGroupOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-exclusion`" class="table-col xs">
           <CheckBoxToDisplayTrueFalse
@@ -77,16 +79,16 @@
           />
         </div>
         <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, income.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-taxType`)" :selected-option="income.taxType" :options="taxTypeOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="income.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, income.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-job`)" :selected-option="income.job" :options="jobOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="income.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-amount`" class="normal table-col" @click="toggleEditable(`${idx}-amount`, income.id)">
-          <EditableInputCell v-model="income.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @input="debounceUpdate" />
+          <EditableInputCell v-model="income.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, income.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-currency`)" :selected-option="income.currency" :options="currencyOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="income.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs">
           {{ income.frequency || '' }}
@@ -119,6 +121,23 @@ import { models, mutations, tabs } from '~/shared/constants'
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
+const incomeBreakdownsConstructor = {
+  clientId: NaN,
+  years: '',
+  category: '',
+  taxGroup: '',
+  taxType: '',
+  part: '',
+  currency: '',
+  frequency: 0,
+  documents: '',
+  description: '',
+  amount: 0,
+  depend: '',
+  include: true,
+  archived: false,
+  exclusion: false
+}
 
 export default {
   name: 'IncomeTable',
@@ -136,7 +155,7 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
-    displayedIncome () {
+    displayedIncomes () {
       let income = []
       if (!this.showArchived) {
         income = this.notArchived
@@ -209,12 +228,12 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
+      const income = this.displayedIncomess.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {
-        const income = this.displayedIncome.find(income => income.id === incomeId)
+        const income = this.displayedIncomes.find(income => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
           .then(() => {
@@ -230,6 +249,34 @@ export default {
     updateClient (incomeId, income) {
       const incomeIndex = this.incomeBreakdowns.findIndex(income => income.id === incomeId)
       this.incomeBreakdowns[incomeIndex] = income
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        category: this.categoryOptions[2].value,
+        years: this.yearNameOptions[0].value,
+        taxType: this.taxTypeOptions[0].value,
+        taxGroup: this.taxGroupOptions[0].value,
+        job: this.jobOptions[0].value,
+        currency: this.currencyOptions[0].value
+      }
+      const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
+      this.$api.createIncome(headers, { clientId, income })
+        .then(() => {
+          this.addRowOnClient(income)
+        })
+    },
+    addRowOnClient (income) {
+      this.incomeBreakdowns.push(income)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedIncomes.length - 1}-years`, income.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
@@ -241,6 +288,9 @@ export default {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableIncomeId)
       }
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }

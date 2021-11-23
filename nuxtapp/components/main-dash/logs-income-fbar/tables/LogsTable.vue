@@ -2,7 +2,9 @@
   <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="table-header xs">
           Year
         </div>
@@ -36,16 +38,16 @@
           <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
         </div>
         <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-years`)" :selected-option="log.years" :options="yearOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" />
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
-          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" />
+          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
-          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" />
+          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">
           <CheckIcon v-if="log.alarmComplete" class="text-green-500" />
@@ -73,6 +75,21 @@ import { models, mutations, priority, tabs } from '~/shared/constants'
 const columns = [
   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
 ]
+const logsConstructor = {
+  clientId: NaN,
+  years: '',
+  alarmUserId: null,
+  alert: false,
+  alarmComplete: false,
+  alarmDate: null,
+  alarmTime: null,
+  logDate: null,
+  priority: 0,
+  note: '',
+  secondsSpent: 0,
+  archived: false,
+  alerted: false
+}
 
 export default {
   name: 'LogsTable',
@@ -172,6 +189,29 @@ export default {
     updateClient (logId, log) {
       const logIndex = this.logs.findIndex(log => log.id === logId)
       this.logs[logIndex] = log
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        years: this.yearOptions[0].value
+      }
+      const log = Object.assign({}, logsConstructor, defaultValues)
+      this.$api.createLog(headers, { clientId, log })
+        .then(() => {
+          this.addRowOnClient(log)
+        })
+    },
+    addRowOnClient (log) {
+      this.logs.push(log)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable('0-years', log.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { logs: this.logs })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
@@ -183,6 +223,9 @@ export default {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }

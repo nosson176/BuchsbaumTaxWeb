@@ -24,17 +24,32 @@ export default ({ $axios, store }, inject) => {
   )
   const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })
   const getValueTaxGroups = headers => $axios.get('values/tax-groups', { headers, loading: models.valueTaxGroups, store: models.valueTaxGroups })
+  const createLog = (headers, { clientId, log }) => $axios.post(
+    `/clients/${clientId}/logs`, log, { headers }
+  )
   const updateLog = (headers, { clientId, logId }, log) => $axios.put(
     `/clients/${clientId}/logs/${logId}`, log, { headers }
+  )
+  const createTaxPersonal = (headers, { clientId, personal }) => $axios.post(
+    `/clients/${clientId}/personals`, personal, { headers }
   )
   const updateTaxPersonal = (headers, { clientId, personalId }, personal) => $axios.put(
     `/clients/${clientId}/personals/${personalId}`, personal, { headers }
   )
+  const createContact = (headers, { clientId, contact }) => $axios.post(
+    `/clients/${clientId}/contacts`, contact, { headers }
+  )
   const updateContact = (headers, { clientId, contactId }, contact) => $axios.put(
     `/clients/${clientId}/contacts/${contactId}`, contact, { headers }
   )
+  const createIncome = (headers, { clientId, income }) => $axios.post(
+    `/clients/${clientId}/income`, income, { headers }
+  )
   const updateIncome = (headers, { clientId, incomeId }, income) => $axios.put(
     `/clients/${clientId}/income/${incomeId}`, income, { headers }
+  )
+  const createFbar = (headers, { clientId, fbar }) => $axios.post(
+    `/clients/${clientId}/fbar`, fbar, { headers }
   )
   const updateFbar = (headers, { clientId, fbarId }, fbar) => $axios.put(
     `/clients/${clientId}/fbar/${fbarId}`, fbar, { headers }
@@ -48,10 +63,15 @@ export default ({ $axios, store }, inject) => {
     getValueTypes,
     getValueTaxGroups,
     getHttpConfig,
+    createLog,
     updateLog,
+    createTaxPersonal,
     updateTaxPersonal,
+    createContact,
     updateContact,
+    createIncome,
     updateIncome,
+    createFbar,
     updateFbar
   }
 

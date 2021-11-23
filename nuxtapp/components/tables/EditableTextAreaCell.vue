@@ -1,6 +1,6 @@
 <template>
-  <div :class="isEditable ? 'relative z-10 overflow-visible' : 'overflow-hidden overflow-ellipsis'">
-    <textarea v-if="isEditable" ref="input" v-model="computedValue" @keydown.tab.prevent />
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <textarea v-if="isEditable" ref="input" v-model="computedValue" @blur="onBlur" @keydown.tab.prevent />
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
@@ -34,6 +34,11 @@ export default {
     if (this.isEditable) {
       this.$refs.input.focus()
     }
+  },
+  methods: {
+    onBlur () {
+      this.$emit(events.blur)
+    }
   }
 }
 </script>
@@ -43,5 +48,13 @@ textarea {
   @apply text-xs shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded absolute top-0;
 
   resize: none;
+}
+
+.edit-mode {
+  @apply relative z-10 overflow-visible -mt-2;
+}
+
+.read-mode {
+  @apply overflow-hidden overflow-ellipsis;
 }
 </style>

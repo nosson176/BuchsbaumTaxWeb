@@ -5,7 +5,7 @@
         <ClientTaxYearsListHeader @change="toggleArchivedYears" />
         <ClientTaxYearsList :show-archived="showArchived" />
       </div>
-      <div class="flex col-start-2 col-span-8">
+      <div class="flex col-start-2 col-span-8 overflow-hidden">
         <ClientTaxYearCardMenu :show-archived="showArchived" />
       </div>
     </div>

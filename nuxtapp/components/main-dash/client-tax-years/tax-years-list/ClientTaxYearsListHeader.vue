@@ -1,7 +1,6 @@
 <template>
   <div class="header">
-    <input id="archived-tax-years" type="checkbox" class="mr-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" @change="emitChange">
-    <label for="archived-tax-years" class="text-sm">View Archived</label>
+    <ViewArchivedHeader @change="emitChange" />
   </div>
 </template>
 

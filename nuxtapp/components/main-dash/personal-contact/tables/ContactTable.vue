@@ -2,7 +2,9 @@
   <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header xs" />
+        <div class="xs table-header">
+          <AddRowButton @click="onAddRowClick" />
+        </div>
         <div class="table-header xs" />
         <div class="table-header normal">
           Type
@@ -49,22 +51,22 @@
           />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
-          <EditableSelectCell :is-editable="isEditable(`${idx}-contactType`)" :selected-option="contact.contactType" :options="contactTypeOptions" @change="debounceUpdate" />
+          <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" :options="contactTypeOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
-          <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-mainDetail`" class="table-col lg" @click="toggleEditable(`${idx}-mainDetail`, contact.id)">
-          <EditableInputCell v-model="contact.mainDetail" :is-editable="isEditable(`${idx}-mainDetail`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.mainDetail" :is-editable="isEditable(`${idx}-mainDetail`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-secondaryDetail`" class="table-col lg" @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)">
-          <EditableInputCell v-model="contact.secondaryDetail" :is-editable="isEditable(`${idx}-secondaryDetail`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.secondaryDetail" :is-editable="isEditable(`${idx}-secondaryDetail`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
-          <EditableInputCell v-model="contact.state" :is-editable="isEditable(`${idx}-state`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.state" :is-editable="isEditable(`${idx}-state`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id)">
-          <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @input="debounceUpdate" />
+          <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(contact.id)" />
@@ -82,6 +84,16 @@ import { models, mutations, tabs } from '~/shared/constants'
 const columns = [
   'diabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete'
 ]
+const contactsConstructor = {
+  clientId: NaN,
+  contactType: '',
+  memo: '',
+  mainDetail: '',
+  secondaryDetail: '',
+  state: '',
+  zip: 0,
+  archived: false
+}
 
 export default {
   name: 'ContactTable',
@@ -176,6 +188,29 @@ export default {
     updateClient (contactId, contact) {
       const contactIndex = this.contacts.findIndex(contact => contact.id === contactId)
       this.contacts[contactIndex] = contact
+      this.updateStoreObject()
+    },
+    onAddRowClick () {
+      const headers = this.$api.getHttpConfig()
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId,
+        contactType: this.contactTypeOptions[0].value
+      }
+      const contact = Object.assign({}, contactsConstructor, defaultValues)
+      this.$api.createContact(headers, { clientId, contact })
+        .then(() => {
+          this.addRowOnClient(contact)
+        })
+    },
+    addRowOnClient (contact) {
+      this.contacts.push(contact)
+      this.updateStoreObject()
+      this.$nextTick(() => {
+        this.toggleEditable(`${this.displayedContacts.length - 1}-contactType`, contact.id)
+      })
+    },
+    updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
@@ -187,10 +222,14 @@ export default {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableContactId)
       }
+    },
+    onBlur () {
+      this.editableId = ''
     }
   }
 }
 </script>
 
 <style scoped>
+
 </style>
