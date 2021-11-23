@@ -1,9 +1,16 @@
 <template>
   <div>
     <div class="mt-1 relative rounded-md shadow-sm">
-      <input :id="id" type="text" :name="name" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full py-0.5 pr-10 sm:text-sm border-gray-300 rounded-full" placeholder="Search">
-      <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-        <CloseIcon class="h-4 w-4 bg-gray-500 rounded-full text-white" />
+      <input
+        :id="id"
+        v-model="computedValue"
+        type="text"
+        :name="name"
+        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full py-0.5 pr-10 sm:text-sm border-gray-300 rounded-full"
+        placeholder="Search"
+      >
+      <div class="absolute inset-y-0 right-0 pr-2 flex items-center">
+        <CloseIcon class="h-4 w-4 bg-gray-500 rounded-full cursor-pointer text-white " @click="onClearClick" />
       </div>
     </div>
   </div>
@@ -35,6 +42,11 @@ export default {
       set (newVal) {
         this.$emit(events.input, newVal)
       }
+    }
+  },
+  methods: {
+    onClearClick () {
+      this.computedValue = ''
     }
   }
 }
