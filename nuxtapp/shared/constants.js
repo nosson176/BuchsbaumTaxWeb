@@ -67,7 +67,10 @@ export const events = Object.freeze({
   blur: 'blur'
 })
 
-export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'
+export const dateformat = Object.freeze({
+  client: 'M/d/yy',
+  server: 'yyyy-MM-dd'
+})
 
 // Notification Types
 export const notification = Object.freeze({

@@ -24,7 +24,7 @@
 <script>
 import { mapState } from 'vuex'
 import { categories, models } from '~/shared/constants'
-import { formatDateForTable } from '~/shared/domain-utilities'
+import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
   name: 'ClientTaxYearsHeader',
@@ -38,7 +38,7 @@ export default {
     },
     formattedCreatedDate () {
       if (this.selectedClient.created) {
-        return formatDateForTable(this.selectedClient.created)
+        return formatDateForClient(this.selectedClient.created)
       } else {
         return ''
       }

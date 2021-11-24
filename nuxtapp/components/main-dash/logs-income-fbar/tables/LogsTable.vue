@@ -199,9 +199,13 @@ export default {
     onAddRowClick () {
       const headers = this.$api.getHttpConfig()
       const clientId = this.selectedClient.id
+      const today = new Date()
+      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
+      console.log(date)
       const defaultValues = {
         clientId,
-        years: this.yearOptions[0].value
+        years: this.yearOptions[0].value,
+        logDate: date
       }
       const log = Object.assign({}, logsConstructor, defaultValues)
       this.$api.createLog(headers, { clientId, log })

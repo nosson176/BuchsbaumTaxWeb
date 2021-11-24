@@ -6,17 +6,17 @@
       v-model="computedValue"
       :open="showPicker"
       value-type="format"
-      format="YYYY-MM-DD"
+      format="M/D/YY"
       type="date"
       @blur="onBlur"
     />
-    <span v-else class="cursor-pointer">{{ formatDate(computedValue) }}</span>
+    <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
 
 <script>
 import { events } from '~/shared/constants'
-import { formatDateForTable } from '~/shared/domain-utilities'
+import { formatDateForClient, formatDateForServer } from '~/shared/domain-utilities'
 export default {
   name: 'EditableDateCell',
   props: {
@@ -37,10 +37,10 @@ export default {
   computed: {
     computedValue: {
       get () {
-        return this.value
+        return this.formatDateForClient(this.value)
       },
       set (newVal) {
-        this.$emit(events.input, newVal)
+        this.$emit(events.input, this.formatDateForServer(newVal))
         this.$emit(events.blur)
       }
     }
@@ -52,8 +52,11 @@ export default {
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForTable(date) : ''
+    formatDateForClient (date) {
+      return date ? formatDateForClient(date) : ''
+    },
+    formatDateForServer (date) {
+      return date ? formatDateForServer(date) : ''
     },
     onBlur (event) {
       if (!event.explicitOriginalTarget.data) {
