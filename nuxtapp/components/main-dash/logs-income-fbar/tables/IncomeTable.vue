@@ -117,6 +117,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const incomeBreakdownsConstructor = {
   clientId: NaN,
@@ -159,7 +160,7 @@ export default {
       } else {
         income = this.archived
       }
-      return income
+      return searchArrOfObjs(income, this.searchInput)
     },
     notArchived () {
       if (this.incomeBreakdowns) {
@@ -212,6 +213,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.logsIncomeFbar
     }
   },
   methods: {

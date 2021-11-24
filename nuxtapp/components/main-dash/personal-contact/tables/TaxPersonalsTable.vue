@@ -92,6 +92,7 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const taxPersonalConstructor = {
   clientId: NaN,
@@ -131,7 +132,7 @@ export default {
       } else {
         personals = this.archived
       }
-      return personals
+      return searchArrOfObjs(personals, this.searchInput)
     },
     notArchived () {
       if (this.taxPersonals) {
@@ -175,6 +176,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.personalContact
     }
   },
   methods: {

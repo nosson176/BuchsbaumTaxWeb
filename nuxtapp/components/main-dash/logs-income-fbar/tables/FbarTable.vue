@@ -106,6 +106,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const fbarBreakdownsConstructor = {
   clientId: NaN,
@@ -147,7 +148,7 @@ export default {
       } else {
         fbar = this.archived
       }
-      return fbar
+      return searchArrOfObjs(fbar, this.searchInput)
     },
     notArchived () {
       if (this.fbarBreakdowns) {
@@ -200,6 +201,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.logsIncomeFbar
     }
   },
   methods: {

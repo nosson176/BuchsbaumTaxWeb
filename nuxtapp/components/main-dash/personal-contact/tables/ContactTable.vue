@@ -80,6 +80,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const contactsConstructor = {
   clientId: NaN,
@@ -115,7 +116,7 @@ export default {
       } else {
         contacts = this.archived
       }
-      return contacts
+      return searchArrOfObjs(contacts, this.searchInput)
     },
     notArchived () {
       if (this.contacts) {
@@ -151,6 +152,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.personalContact
     }
   },
   methods: {

@@ -3,13 +3,13 @@
     <LogsIncomeFbarTabs @click="emitTabClick" />
     <div class="flex bg-blue-200 p-0.5">
       <ViewArchivedHeader @change="emitChange" />
-      <SearchHeader v-model="searchInput" @input="onSearchInput" />
+      <SearchHeader v-model="searchInput" />
     </div>
   </div>
 </template>
 
 <script>
-import { events } from '~/shared/constants'
+import { events, models, mutations } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarHeader',
   data () {
@@ -17,15 +17,24 @@ export default {
       searchInput: ''
     }
   },
+  watch: {
+    searchInput (searchInput) {
+      this.searchInputUpdate(searchInput)
+    }
+  },
   methods: {
     emitChange () {
       this.$emit(events.change)
     },
     emitTabClick (tab) {
+      this.searchInput = ''
       this.$emit(events.click, tab)
     },
-    onSearchInput () {
-      this.$emit(events.input, this.searchInput)
+    searchInputUpdate (searchInput) {
+      this.$store.commit(
+        mutations.setModelResponse,
+        { model: models.search, data: { logsIncomeFbar: searchInput } }
+      )
     }
   }
 }

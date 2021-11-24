@@ -71,6 +71,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { models, mutations, priority, tabs } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const logsConstructor = {
   clientId: NaN,
@@ -103,7 +104,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedLogs () {
       let logs = []
       if (!this.showArchived) {
@@ -111,7 +112,7 @@ export default {
       } else {
         logs = this.archived
       }
-      return logs
+      return searchArrOfObjs(logs, this.searchInput)
     },
     notArchived () {
       if (this.logs) {
@@ -149,6 +150,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.logsIncomeFbar
     }
   },
   methods: {
