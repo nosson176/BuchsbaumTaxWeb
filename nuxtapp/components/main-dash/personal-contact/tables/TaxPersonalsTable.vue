@@ -259,23 +259,4 @@ export default {
 </script>
 
 <style scoped>
-.header {
-  @apply px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
-}
-
-.table-col {
-  @apply px-1 py-1 whitespace-nowrap text-sm text-gray-500;
-}
-
-.table-primary-table-col {
-  @apply px-1 py-1 whitespace-nowrap text-sm font-medium text-gray-900;
-}
-
-.edit-mode {
-  @apply relative z-10 overflow-visible -mt-3.5;
-}
-
-.read-mode {
-  @apply overflow-hidden overflow-ellipsis;
-}
 </style>
