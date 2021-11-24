@@ -29,7 +29,7 @@
         <div class="table-header xs">
           X
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           $
         </div>
         <div class="table-header sm">
@@ -82,8 +82,8 @@
         <div :id="`${idx}-frequency`" class="table-col xs">
           {{ fbar.frequency || '' }}
         </div>
-        <div :id="`${idx}-$`" class="table-col xs">
-          $
+        <div :id="`${idx}-$`" class="table-col sm">
+          <EditableInputCell v-model="fbar.amountUSD" :is-editable="isEditable(`${idx}-$`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-documents`" class="table-col sm">
           {{ fbar.documents }}
