@@ -5,7 +5,6 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header xs" />
         <div class="table-header normal">
           Type
         </div>
@@ -33,15 +32,6 @@
         :key="contact.id"
         :idx="idx"
       >
-        <div :id="`${idx}`" class="table-col xs">
-          <div class="flex items-center h-5">
-            <input
-              :checked="false"
-              type="checkbox"
-              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            >
-          </div>
-        </div>
         <div :id="`${idx}-disabled`" class="table-col xs">
           <CheckBoxToDisplayTrueFalse
             id="disabled"
