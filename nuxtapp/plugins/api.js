@@ -54,6 +54,7 @@ export default ({ $axios, store }, inject) => {
   const updateFbar = (headers, { clientId, fbarId }, fbar) => $axios.put(
     `/clients/${clientId}/fbar/${fbarId}`, fbar, { headers }
   )
+  const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
 
   const api = {
     login,
@@ -72,7 +73,8 @@ export default ({ $axios, store }, inject) => {
     createIncome,
     updateIncome,
     createFbar,
-    updateFbar
+    updateFbar,
+    getAllUsers
   }
 
   // Inject to context as $api
