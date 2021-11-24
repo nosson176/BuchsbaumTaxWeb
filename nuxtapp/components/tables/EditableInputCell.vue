@@ -63,11 +63,11 @@ export default {
 
 <style scoped>
 input {
-  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
+  @apply block w-full shadow-sm m-0 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
 }
 
 .edit-mode {
-  @apply relative z-10 overflow-visible -mt-1;
+  @apply relative z-10 overflow-visible -mt-2.5;
 }
 
 .read-mode {

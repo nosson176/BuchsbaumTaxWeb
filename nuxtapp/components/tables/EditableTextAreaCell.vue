@@ -45,13 +45,13 @@ export default {
 
 <style scoped>
 textarea {
-  @apply text-xs shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded absolute top-0;
+  @apply text-xs shadow-sm block w-full m-0 focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded absolute top-0;
 
   resize: none;
 }
 
 .edit-mode {
-  @apply relative z-10 overflow-visible -mt-2;
+  @apply relative z-10 overflow-visible -mt-2.5;
 }
 
 .read-mode {
