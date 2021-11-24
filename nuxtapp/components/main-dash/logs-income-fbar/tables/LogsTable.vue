@@ -55,8 +55,8 @@
         <div :id="`${idx}-alarmTime`" class="table-col xs">
           {{ log.alarmTime }}
         </div>
-        <div :id="`${idx}-alarmUserName`" class="table-col sm">
-          {{ log.alarmUserName }}
+        <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
+          <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)" :options="userOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div class="table-col xs" />
         <div :id="`${idx}-delete`" class="table-col xs">
@@ -106,7 +106,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users]),
     displayedLogs () {
       let logs = []
       if (!this.showArchived) {
@@ -152,6 +152,11 @@ export default {
       } else {
         return null
       }
+    },
+    userOptions () {
+      return Object.values(this.users).map((user) => {
+        return { value: user.username }
+      })
     }
   },
   methods: {
