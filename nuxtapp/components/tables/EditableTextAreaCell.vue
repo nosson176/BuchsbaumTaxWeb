@@ -1,7 +1,14 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <textarea v-if="isEditable" ref="input" v-model="computedValue" @blur="onBlur" @keydown.tab.prevent />
-    <span v-else class="cursor-pointer">{{ computedValue }}</span>
+    <textarea
+      v-if="isEditable"
+      ref="input"
+      v-model="computedValue"
+      tabindex="0"
+      @blur="onBlur"
+      @keydown.tab.prevent
+    />
+    <span v-else tabindex="0" class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
 

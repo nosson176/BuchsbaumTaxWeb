@@ -4,6 +4,7 @@
       <button
         ref="button"
         type="button"
+        tabindex="0"
         class="p-0 text-xs relative min-h-full w-full bg-white text-left cursor-pointer outline-none border-blue-600 border-2"
         aria-haspopup="listbox"
         aria-expanded="true"
@@ -116,7 +117,7 @@ export default {
       } else {
         this.showOptions = true
         await this.$nextTick(() => {
-          this.$refs.selectDiv.focus()
+          this.$refs.button.focus()
         })
       }
     }
@@ -160,10 +161,10 @@ export default {
 
 <style scoped>
 .edit-mode {
-  @apply relative z-10 overflow-visible min-h-full;
+  @apply relative z-10 overflow-visible min-h-full outline-none;
 }
 
 .read-mode {
-  @apply overflow-hidden overflow-ellipsis m-px;
+  @apply overflow-hidden overflow-ellipsis m-px outline-none;
 }
 </style>
