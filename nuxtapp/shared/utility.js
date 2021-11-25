@@ -81,7 +81,7 @@ const searchArrOfObjs = (arr, searchKey) => {
   return arr.filter(function (obj) {
     return Object.keys(obj).some(function (key) {
       if (typeof obj[key] === 'string') {
-        return obj[key].includes(searchKey)
+        return obj[key].toLowerCase().includes(searchKey.toLowerCase())
       }
       return false
     })

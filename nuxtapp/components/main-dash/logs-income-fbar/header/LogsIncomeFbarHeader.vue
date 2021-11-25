@@ -1,20 +1,21 @@
 <template>
   <div class="flex flex-col">
-    <LogsIncomeFbarTabs @click="emitTabClick" />
+    <LogsIncomeFbarTabs :active-tab="activeTab" @click="emitTabClick" />
     <div class="flex bg-blue-200 p-0.5">
       <ViewArchivedHeader @change="emitChange" />
-      <SearchHeader v-model="searchInput" />
+      <SearchHeader v-model="searchInput" :active-tab="activeTab" />
     </div>
   </div>
 </template>
 
 <script>
-import { events, models, mutations } from '~/shared/constants'
+import { events, models, mutations, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarHeader',
   data () {
     return {
-      searchInput: ''
+      searchInput: '',
+      activeTab: tabs.logs
     }
   },
   watch: {
@@ -28,6 +29,7 @@ export default {
     },
     emitTabClick (tab) {
       this.searchInput = ''
+      this.activeTab = tab
       this.$emit(events.click, tab)
     },
     searchInputUpdate (searchInput) {

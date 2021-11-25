@@ -108,7 +108,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedContacts () {
       let contacts = []
       if (!this.showArchived) {

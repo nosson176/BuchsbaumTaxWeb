@@ -16,9 +16,10 @@
 import { events, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarTabs',
-  data () {
-    return {
-      activeTab: tabs.logs
+  props: {
+    activeTab: {
+      type: String,
+      default: tabs.logs
     }
   },
   computed: {
@@ -35,18 +36,12 @@ export default {
   methods: {
     setTabLogs () {
       this.$emit(events.click, tabs.logs)
-      this.setActiveTab(tabs.logs)
     },
     setTabIncome () {
       this.$emit(events.click, tabs.income)
-      this.setActiveTab(tabs.income)
     },
     setTabFbar () {
       this.$emit(events.click, tabs.fbar)
-      this.setActiveTab(tabs.fbar)
-    },
-    setActiveTab (tab) {
-      this.activeTab = tab
     }
   }
 }

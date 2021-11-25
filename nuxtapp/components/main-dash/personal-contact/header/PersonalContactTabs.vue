@@ -13,9 +13,10 @@
 import { events, tabs } from '~/shared/constants'
 export default {
   name: 'PersonalContactTabs',
-  data () {
-    return {
-      activeTab: tabs.tax_personals
+  props: {
+    activeTab: {
+      type: String,
+      default: tabs.tax_personals
     }
   },
   computed: {
@@ -29,14 +30,9 @@ export default {
   methods: {
     setTabTaxPersonals () {
       this.$emit(events.click, tabs.tax_personals)
-      this.setActiveTab(tabs.tax_personals)
     },
     setTabContact () {
       this.$emit(events.click, tabs.contact)
-      this.setActiveTab(tabs.contact)
-    },
-    setActiveTab (tab) {
-      this.activeTab = tab
     }
   }
 }
