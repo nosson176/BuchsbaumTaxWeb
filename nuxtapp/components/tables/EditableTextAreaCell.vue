@@ -45,7 +45,7 @@ export default {
 
 <style scoped>
 textarea {
-  @apply text-xs shadow-sm block w-full m-0 focus:ring-indigo-500 focus:border-indigo-500  border border-gray-300 rounded absolute top-0;
+  @apply text-xs shadow-sm block w-full m-0 focus:border-indigo-500  border border-gray-300 absolute top-0;
 
   resize: none;
 }

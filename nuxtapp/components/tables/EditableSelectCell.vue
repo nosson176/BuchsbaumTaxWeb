@@ -1,9 +1,9 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown="onKeyPress" @keyup="onKeyUp">
-    <div v-if="isEditable" class="relative m-0">
+    <div v-if="isEditable" class="relative m-0 p-0">
       <button
         type="button"
-        class="p-0 text-xs relative w-auto bg-white border border-gray-300 py-0 text-left cursor-pointer focus:outline-none focus:border-indigo-500"
+        class="p-0 text-xs relative w-full bg-white border border-gray-300 text-left cursor-pointer focus:outline-none focus:border-indigo-500"
         aria-haspopup="listbox"
         aria-expanded="true"
         aria-labelledby="listbox-label"
@@ -20,9 +20,9 @@
         </span>
       </button>
       <ul
-        v-if="showOptions"
+        v-if="isEditable"
         ref="select"
-        class="absolute z-10 w-auto bg-white max-h-60 text-base ring-1 ring-black ring-opacity-5 overflow-auto transition ease-in duration-100 focus:outline-none"
+        class="absolute z-10 w-auto bg-white max-h-60 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="isEditable ? 'opacity-100' : 'opacity-0'"
         tabindex="-1"
         role="listbox"
