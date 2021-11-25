@@ -1,9 +1,10 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown="onKeyPress" @keyup="onKeyUp">
-    <div v-if="isEditable" class="relative m-0 p-0">
+    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
       <button
+        ref="button"
         type="button"
-        class="p-0 text-xs relative w-full bg-white text-left cursor-pointer focus:outline-none border-indigo-500 border-2"
+        class="p-0 text-xs relative min-h-full w-full bg-white text-left cursor-pointer outline-none border-blue-600 border-2"
         aria-haspopup="listbox"
         aria-expanded="true"
         aria-labelledby="listbox-label"
@@ -14,10 +15,10 @@
         </span>
       </button>
       <ul
-        v-if="isEditable"
+        v-if="showOptions"
         ref="select"
         class="absolute z-10 w-auto bg-white max-h-60 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
-        :class="isEditable ? 'opacity-100' : 'opacity-0'"
+        :class="showOptions ? 'opacity-100' : 'opacity-0'"
         tabindex="-1"
         role="listbox"
         aria-labelledby="listbox-label"
@@ -115,7 +116,7 @@ export default {
       } else {
         this.showOptions = true
         await this.$nextTick(() => {
-          this.$refs.select.focus()
+          this.$refs.selectDiv.focus()
         })
       }
     }
@@ -159,7 +160,7 @@ export default {
 
 <style scoped>
 .edit-mode {
-  @apply relative z-10 overflow-visible;
+  @apply relative z-10 overflow-visible min-h-full;
 }
 
 .read-mode {

@@ -26,6 +26,9 @@
         <div class="table-header sm">
           Curr
         </div>
+        <div class="table-header xs">
+          X
+        </div>
         <div class="table-header sm">
           $
         </div>
@@ -71,8 +74,18 @@
         <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, fbar.id)">
           <EditableSelectCell v-model="fbar.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-$`" class="table-col sm">
-          <EditableInputCell v-model="fbar.amountUSD" :is-editable="isEditable(`${idx}-$`)" is-currency @blur="onBlur" @input="debounceUpdate" />
+        <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, fbar.id)">
+          <EditableInputCell v-model="fbar.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" @input="debounceUpdate" />
+        </div>
+        <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id)">
+          <EditableInputCell
+            v-model="fbar.amountUSD"
+            readonly
+            :is-editable="isEditable(`${idx}-$`)"
+            is-currency
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-documents`" class="table-col sm" @click="toggleEditable(`${idx}-documents`, fbar.id)">
           <EditableSelectCell v-model="fbar.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />

@@ -179,7 +179,7 @@
 
 .mx-input:hover,
 .mx-input:focus {
-    @apply border-indigo-500;
+    @apply border-transparent outline-none border focus:border-blue-600;
 }
 
 .mx-input:disabled,
