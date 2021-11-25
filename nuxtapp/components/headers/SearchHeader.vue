@@ -18,6 +18,7 @@
 
 <script>
 import { events, tabs } from '~/shared/constants'
+import { capitalizeFirstLetter } from '~/shared/utility'
 export default {
   name: 'SearchHeader',
   props: {
@@ -48,7 +49,8 @@ export default {
       }
     },
     placeholder () {
-      return `Search ${this.activeTab.replace('-', ' ')}`
+      const tabName = capitalizeFirstLetter(this.activeTab.replace('-', ' '))
+      return `Search ${tabName}`
     }
   },
   methods: {
