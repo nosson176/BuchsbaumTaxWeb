@@ -80,6 +80,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'diabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete'
@@ -110,7 +111,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedContacts () {
       let contacts = []
       if (!this.showArchived) {
@@ -118,7 +119,7 @@ export default {
       } else {
         contacts = this.archived
       }
-      return contacts
+      return searchArrOfObjs(contacts, this.searchInput)
     },
     notArchived () {
       if (this.contacts) {
@@ -154,6 +155,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.personalContact
     }
   },
   methods: {

@@ -106,6 +106,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
@@ -142,7 +143,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
       let fbar = []
       if (!this.showArchived) {
@@ -150,7 +151,7 @@ export default {
       } else {
         fbar = this.archived
       }
-      return fbar
+      return searchArrOfObjs(fbar, this.searchInput)
     },
     notArchived () {
       if (this.fbarBreakdowns) {
@@ -203,6 +204,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.logsIncomeFbar
     }
   },
   methods: {

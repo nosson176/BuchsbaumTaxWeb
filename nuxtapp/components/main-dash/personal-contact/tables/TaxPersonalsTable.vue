@@ -92,6 +92,7 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
+import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'include', 'category', 'firstName', 'middleInitial', 'lastName', 'dateOfBirth', 'ssn', 'informal', 'relation', 'language', 'delete'
@@ -126,7 +127,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedPersonals () {
       let personals = []
       if (!this.showArchived) {
@@ -134,7 +135,7 @@ export default {
       } else {
         personals = this.archived
       }
-      return personals
+      return searchArrOfObjs(personals, this.searchInput)
     },
     notArchived () {
       if (this.taxPersonals) {
@@ -178,6 +179,9 @@ export default {
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.personalContact
     }
   },
   methods: {

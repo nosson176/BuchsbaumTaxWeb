@@ -8,7 +8,8 @@ export const models = Object.freeze({
   selectedClient: 'selectedClient',
   valueTypes: 'valueTypes',
   valueTaxGroups: 'valueTaxGroups',
-  modals: 'modals'
+  modals: 'modals',
+  search: 'search'
 })
 
 // Store Mutations
