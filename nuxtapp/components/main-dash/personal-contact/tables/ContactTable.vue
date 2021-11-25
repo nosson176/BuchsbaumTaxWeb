@@ -104,12 +104,7 @@ export default {
       } else {
         contacts = this.archived
       }
-      contacts = contacts.map((contact) => {
-        return {
-          enabled: !contact.disabled,
-          ...contact
-        }
-      })
+      contacts.map((contact) => { return { enabled: !contact.disabled, ...contact } })
       return searchArrOfObjs(contacts, this.searchInput)
     },
     notArchived () {
