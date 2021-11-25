@@ -69,7 +69,7 @@ export default {
 
 <style scoped>
 input {
-  @apply w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
+  @apply w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 text-xs p-0 absolute top-0;
 }
 
 .edit-mode {

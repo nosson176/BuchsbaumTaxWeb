@@ -6,6 +6,7 @@
       v-model="computedValue"
       autofocus
       type="text"
+      class="block w-full shadow-sm m-0 focus:border-indigo-500 border-gray-300 text-xs p-0 absolute top-0 text-center"
       @blur="onBlur"
     >
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
@@ -62,10 +63,6 @@ export default {
 </script>
 
 <style scoped>
-input {
-  @apply block w-full shadow-sm m-0 focus:border-indigo-500 border-gray-300 text-xs p-0 absolute top-0 text-center;
-}
-
 .edit-mode {
   @apply relative z-10 overflow-visible -mt-2.5;
 }

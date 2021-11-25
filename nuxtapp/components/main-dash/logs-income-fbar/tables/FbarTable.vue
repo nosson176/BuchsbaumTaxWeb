@@ -50,13 +50,8 @@
         :key="fbar.id"
         :idx="idx"
       >
-        <div :id="`${idx}-include`" class="table-col xs">
-          <CheckBoxToDisplayTrueFalse
-            id="include"
-            :checked="fbar.include"
-            name="disabled"
-            disabled
-          />
+        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
+          <EditableCheckBoxCell v-model="fbar.include" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, fbar.id)">
           <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
