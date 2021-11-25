@@ -201,7 +201,6 @@ export default {
       const clientId = this.selectedClient.id
       const today = new Date()
       const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
-      console.log(date)
       const defaultValues = {
         clientId,
         years: this.yearOptions[0].value,
