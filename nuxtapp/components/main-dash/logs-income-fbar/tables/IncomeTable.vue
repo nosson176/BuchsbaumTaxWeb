@@ -86,14 +86,14 @@
         <div :id="`${idx}-$`" class="table-col sm">
           <EditableInputCell v-model="income.amountUSD" :is-editable="isEditable(`${idx}-$`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-documents`" class="table-col sm">
-          {{ income.documents }}
+        <div :id="`${idx}-documents`" class="table-col sm" @click="toggleEditable(`${idx}-documents`, income.id)">
+          <EditableSelectCell v-model="income.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-description`" class="table-col lg">
-          {{ income.description }}
+        <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, income.id)">
+          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-depend`" class="table-col sm">
-          {{ income.depend }}
+        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, income.id)">
+          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(income.id)" />
@@ -129,6 +129,10 @@ const incomeBreakdownsConstructor = {
   archived: false,
   exclusion: false
 }
+const docOptions = [
+  { value: 'HAS' },
+  { value: 'NEEDS' }
+]
 
 export default {
   name: 'IncomeTable',
@@ -209,6 +213,9 @@ export default {
     },
     searchInput () {
       return this.search?.logsIncomeFbar
+    },
+    docOptions () {
+      return docOptions
     }
   },
   methods: {

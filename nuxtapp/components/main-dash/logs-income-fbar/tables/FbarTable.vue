@@ -80,14 +80,14 @@
         <div :id="`${idx}-$`" class="table-col sm">
           <EditableInputCell v-model="fbar.amountUSD" :is-editable="isEditable(`${idx}-$`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-documents`" class="table-col sm">
-          {{ fbar.documents }}
+        <div :id="`${idx}-documents`" class="table-col sm" @click="toggleEditable(`${idx}-documents`, fbar.id)">
+          <EditableSelectCell v-model="fbar.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-description`" class="table-col lg">
-          {{ fbar.description }}
+        <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, fbar.id)">
+          <EditableInputCell v-model="fbar.description" :is-editable="isEditable(`${idx}-description`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-depend`" class="table-col sm">
-          {{ fbar.depend }}
+        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id)">
+          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(fbar.id)" />
@@ -122,6 +122,10 @@ const fbarBreakdownsConstructor = {
   include: true,
   archived: false
 }
+const docOptions = [
+  { value: 'HAS' },
+  { value: 'NEEDS' }
+]
 
 export default {
   name: 'FbarTable',
@@ -202,6 +206,9 @@ export default {
     },
     searchInput () {
       return this.search?.logsIncomeFbar
+    },
+    docOptions () {
+      return docOptions
     }
   },
   methods: {
