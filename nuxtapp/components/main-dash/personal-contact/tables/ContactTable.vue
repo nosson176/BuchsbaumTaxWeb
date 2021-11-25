@@ -33,7 +33,7 @@
         :idx="idx"
       >
         <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
-          <EditableCheckBoxCell v-model="contact.enabled" @input="debounceUpdate" />
+          <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
           <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" :options="contactTypeOptions" @blur="onBlur" @input="debounceUpdate" />

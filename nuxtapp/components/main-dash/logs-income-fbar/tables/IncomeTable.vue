@@ -54,7 +54,7 @@
         :idx="idx"
       >
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
-          <EditableCheckBoxCell v-model="income.include" @input="debounceUpdate" />
+          <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, income.id)">
           <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
@@ -66,7 +66,7 @@
           <EditableSelectCell v-model="income.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)" :options="taxGroupOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-exclusion`" class="table-col xs" @click="toggleEditable(`${idx}-exclusion`, income.id)">
-          <EditableCheckBoxCell v-model="income.exclusion" @input="debounceUpdate" />
+          <EditableCheckBoxCell v-model="income.exclusion" :is-editable="isEditable(`${idx}-exclusion`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, income.id)">
           <EditableSelectCell v-model="income.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />

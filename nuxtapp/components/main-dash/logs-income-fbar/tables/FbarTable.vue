@@ -51,7 +51,7 @@
         :idx="idx"
       >
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
-          <EditableCheckBoxCell v-model="fbar.include" @input="debounceUpdate" />
+          <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, fbar.id)">
           <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />

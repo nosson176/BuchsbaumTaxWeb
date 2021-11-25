@@ -18,6 +18,10 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    isEditable: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -27,6 +31,13 @@ export default {
       },
       set (newVal) {
         this.$emit(events.input, newVal)
+      }
+    }
+  },
+  watch: {
+    isEditable (newValue) {
+      if (newValue) {
+        this.$refs.checkbox.focus()
       }
     }
   }
