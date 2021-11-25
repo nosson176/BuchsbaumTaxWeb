@@ -32,13 +32,8 @@
         :key="contact.id"
         :idx="idx"
       >
-        <div :id="`${idx}-disabled`" class="table-col xs">
-          <CheckBoxToDisplayTrueFalse
-            id="disabled"
-            :checked="!contact.disabled"
-            name="disabled"
-            disabled
-          />
+        <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
+          <EditableCheckBoxCell v-model="contact.enabled" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
           <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" :options="contactTypeOptions" @blur="onBlur" @input="debounceUpdate" />
@@ -108,7 +103,12 @@ export default {
       } else {
         contacts = this.archived
       }
-      return contacts
+      return contacts.map((contact) => {
+        return {
+          enabled: !contact.disabled,
+          ...contact
+        }
+      })
     },
     notArchived () {
       if (this.contacts) {

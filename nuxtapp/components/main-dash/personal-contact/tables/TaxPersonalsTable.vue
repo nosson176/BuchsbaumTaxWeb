@@ -41,16 +41,8 @@
         :key="personal.id"
         :idx="idx"
       >
-        <div :id="`${idx}-include`" class="xs table-col">
-          <div class="flex items-center h-5">
-            <input
-              id="include"
-              :checked="personal.include"
-              name="include"
-              type="checkbox"
-              class="pointer-events-none focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            >
-          </div>
+        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, personal.id)">
+          <EditableCheckBoxCell v-model="personal.include" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
           <EditableSelectCell v-model="personal.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @input="debounceUpdate" @blur="onBlur" />
