@@ -9,7 +9,8 @@ export const models = Object.freeze({
   valueTypes: 'valueTypes',
   valueTaxGroups: 'valueTaxGroups',
   modals: 'modals',
-  search: 'search'
+  search: 'search',
+  allClientFees: 'allClientFees'
 })
 
 // Store Mutations

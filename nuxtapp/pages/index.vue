@@ -15,6 +15,7 @@ export default {
       .then(() => {
         this.$api.getValueTypes(headers)
         this.$api.getValueTaxGroups(headers)
+        this.$api.getAllClientFees(headers)
       })
       .catch((e) => {
         if (e.message === error.axios_401) {
