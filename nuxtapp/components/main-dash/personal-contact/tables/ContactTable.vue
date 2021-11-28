@@ -5,7 +5,6 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header xs" />
         <div class="table-header normal">
           Type
         </div>
@@ -33,22 +32,8 @@
         :key="contact.id"
         :idx="idx"
       >
-        <div :id="`${idx}`" class="table-col xs">
-          <div class="flex items-center h-5">
-            <input
-              :checked="false"
-              type="checkbox"
-              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            >
-          </div>
-        </div>
-        <div :id="`${idx}-disabled`" class="table-col xs">
-          <CheckBoxToDisplayTrueFalse
-            id="disabled"
-            :checked="!contact.disabled"
-            name="disabled"
-            disabled
-          />
+        <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
+          <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-contactType`" class="table-col-primary normal" @click="toggleEditable(`${idx}-contactType`, contact.id)">
           <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)" :options="contactTypeOptions" @blur="onBlur" @input="debounceUpdate" />
@@ -119,6 +104,7 @@ export default {
       } else {
         contacts = this.archived
       }
+      contacts.map((contact) => { return { enabled: !contact.disabled, ...contact } })
       return searchArrOfObjs(contacts, this.searchInput)
     },
     notArchived () {

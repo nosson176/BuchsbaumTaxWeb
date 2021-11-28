@@ -32,7 +32,7 @@
         <div class="table-header xs">
           X
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm">
           $
         </div>
         <div class="table-header sm">
@@ -53,13 +53,8 @@
         :key="income.id"
         :idx="idx"
       >
-        <div :id="`${idx}-include`" class="table-col xs">
-          <CheckBoxToDisplayTrueFalse
-            id="include"
-            :checked="income.include"
-            name="disabled"
-            disabled
-          />
+        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
+          <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, income.id)">
           <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
@@ -70,13 +65,8 @@
         <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
           <EditableSelectCell v-model="income.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)" :options="taxGroupOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-exclusion`" class="table-col xs">
-          <CheckBoxToDisplayTrueFalse
-            id="exclusion"
-            :checked="income.exclusion"
-            name="disabled"
-            disabled
-          />
+        <div :id="`${idx}-exclusion`" class="table-col xs" @click="toggleEditable(`${idx}-exclusion`, income.id)">
+          <EditableCheckBoxCell v-model="income.exclusion" :is-editable="isEditable(`${idx}-exclusion`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxType`" class="table-col normal" @click="toggleEditable(`${idx}-taxType`, income.id)">
           <EditableSelectCell v-model="income.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />
@@ -90,20 +80,27 @@
         <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, income.id)">
           <EditableSelectCell v-model="income.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-frequency`" class="table-col xs">
-          {{ income.frequency || '' }}
+        <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, income.id)">
+          <EditableInputCell v-model="income.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-$`" class="table-col xs">
-          $
+        <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, income.id)">
+          <EditableInputCell
+            v-model="income.amountUSD"
+            readonly
+            :is-editable="isEditable(`${idx}-$`)"
+            is-currency
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-documents`" class="table-col sm">
-          {{ income.documents }}
+        <div :id="`${idx}-documents`" class="table-col sm" @click="toggleEditable(`${idx}-documents`, income.id)">
+          <EditableSelectCell v-model="income.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-description`" class="table-col lg">
-          {{ income.description }}
+        <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, income.id)">
+          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-depend`" class="table-col sm">
-          {{ income.depend }}
+        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, income.id)">
+          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" is-currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(income.id)" />
@@ -139,6 +136,10 @@ const incomeBreakdownsConstructor = {
   archived: false,
   exclusion: false
 }
+const docOptions = [
+  { value: 'HAS' },
+  { value: 'NEEDS' }
+]
 
 export default {
   name: 'IncomeTable',
@@ -219,6 +220,9 @@ export default {
     },
     searchInput () {
       return this.search?.[tableGroups.logsIncomeFbar]
+    },
+    docOptions () {
+      return docOptions
     }
   },
   methods: {
@@ -232,7 +236,7 @@ export default {
       return this.editableId === id
     },
     handleUpdate () {
-      const income = this.displayedIncomess.find(income => income.id === this.editableIncomeId)
+      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
     onDeleteClick (incomeId) {

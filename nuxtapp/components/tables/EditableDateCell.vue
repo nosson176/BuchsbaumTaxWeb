@@ -5,28 +5,32 @@
       ref="input"
       v-model="computedValue"
       :open="showPicker"
-      value-type="format"
-      format="YYYY-MM-DD"
-      type="date"
+      :value-type="valueType"
+      :format="format"
+      :type="type"
       @blur="onBlur"
     />
-    <span v-else class="cursor-pointer">{{ formatDate(computedValue) }}</span>
+    <span v-else class="cursor-pointer">{{ computedValue }}</span>
   </div>
 </template>
 
 <script>
 import { events } from '~/shared/constants'
-import { formatDateForTable } from '~/shared/domain-utilities'
+import { formatDateForClient, formatDateForServer } from '~/shared/domain-utilities'
 export default {
   name: 'EditableDateCell',
   props: {
     value: {
       type: String,
-      default: ''
+      default: null
     },
     isEditable: {
       type: Boolean,
       required: true
+    },
+    type: {
+      type: String,
+      default: 'date'
     }
   },
   data () {
@@ -37,12 +41,29 @@ export default {
   computed: {
     computedValue: {
       get () {
-        return this.value
+        if (this.isTypeDate && this.value) {
+          return formatDateForClient(this.value)
+        } else {
+          return this.value
+        }
       },
       set (newVal) {
-        this.$emit(events.input, newVal)
+        if (this.isTypeDate) {
+          this.$emit('input', formatDateForServer(newVal))
+        } else {
+          this.$emit('input', newVal)
+        }
         this.$emit(events.blur)
       }
+    },
+    format () {
+      return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
+    },
+    valueType () {
+      return 'format'
+    },
+    isTypeDate () {
+      return this.type === 'date'
     }
   },
   updated () {
@@ -52,8 +73,11 @@ export default {
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForTable(date) : ''
+    formatDateForClient (date) {
+      return date ? formatDateForClient(date) : ''
+    },
+    formatDateForServer (date) {
+      return date ? formatDateForServer(date) : ''
     },
     onBlur (event) {
       if (!event.explicitOriginalTarget.data) {
@@ -66,7 +90,7 @@ export default {
 
 <style scoped>
 input {
-  @apply w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
+  @apply w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 text-xs p-0 absolute top-0;
 }
 
 .edit-mode {

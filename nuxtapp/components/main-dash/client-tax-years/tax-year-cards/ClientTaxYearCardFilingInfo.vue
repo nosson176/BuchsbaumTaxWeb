@@ -129,7 +129,7 @@
 
 <script>
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { formatDateForTable } from '~/shared/domain-utilities'
+import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -245,7 +245,7 @@ export default {
   },
   methods: {
     formatDate (date) {
-      return date ? formatDateForTable(date) : ''
+      return date ? formatDateForClient(date) : ''
     },
     formatAsILCurrency (amt) {
       return formatAsILCurrency(amt)
