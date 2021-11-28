@@ -5,9 +5,9 @@
       ref="input"
       v-model="computedValue"
       :open="showPicker"
-      value-type="format"
-      format="M/D/YY"
-      type="date"
+      :value-type="valueType"
+      :format="format"
+      :type="type"
       @blur="onBlur"
     />
     <span v-else class="cursor-pointer">{{ computedValue }}</span>
@@ -22,11 +22,15 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: null
     },
     isEditable: {
       type: Boolean,
       required: true
+    },
+    type: {
+      type: String,
+      default: 'date'
     }
   },
   data () {
@@ -37,12 +41,29 @@ export default {
   computed: {
     computedValue: {
       get () {
-        return this.formatDateForClient(this.value)
+        if (this.isTypeDate && this.value) {
+          return formatDateForClient(this.value)
+        } else {
+          return this.value
+        }
       },
       set (newVal) {
-        this.$emit(events.input, this.formatDateForServer(newVal))
+        if (this.isTypeDate) {
+          this.$emit('input', formatDateForServer(newVal))
+        } else {
+          this.$emit('input', newVal)
+        }
         this.$emit(events.blur)
       }
+    },
+    format () {
+      return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
+    },
+    valueType () {
+      return 'format'
+    },
+    isTypeDate () {
+      return this.type === 'date'
     }
   },
   updated () {
