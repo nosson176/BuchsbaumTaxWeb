@@ -47,16 +47,16 @@
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
-          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" @blur="onBlur" />
+          <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">
-          <CheckIcon v-if="log.alarmComplete" class="text-green-500" />
+          <CheckIcon v-if="log.alarmComplete" tabindex="0" class="text-green-500" />
         </div>
-        <div :id="`${idx}-alarmTime`" class="table-col xs">
-          {{ log.alarmTime }}
+        <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
+          <EditableDateCell v-model="log.alarmTime" type="time" :is-editable="isEditable(`${idx}-alarmTime`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-alarmUserName`" class="table-col sm">
-          {{ log.alarmUserName }}
+        <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
+          <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)" :options="userOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div class="table-col xs" />
         <div :id="`${idx}-delete`" class="table-col xs">
@@ -107,7 +107,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
       let logs = []
       if (!this.showArchived) {
@@ -154,6 +154,11 @@ export default {
         return null
       }
     },
+    userOptions () {
+      return Object.values(this.users).map((user) => {
+        return { value: user.username }
+      })
+    },
     searchInput () {
       return this.search?.logsIncomeFbar
     }
@@ -198,9 +203,12 @@ export default {
     onAddRowClick () {
       const headers = this.$api.getHttpConfig()
       const clientId = this.selectedClient.id
+      const today = new Date()
+      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
       const defaultValues = {
         clientId,
-        years: this.yearOptions[0].value
+        years: this.yearOptions[0].value,
+        logDate: date
       }
       const log = Object.assign({}, logsConstructor, defaultValues)
       this.$api.createLog(headers, { clientId, log })

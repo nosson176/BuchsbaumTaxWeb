@@ -41,16 +41,8 @@
         :key="personal.id"
         :idx="idx"
       >
-        <div :id="`${idx}-include`" class="xs table-col">
-          <div class="flex items-center h-5">
-            <input
-              id="include"
-              :checked="personal.include"
-              name="include"
-              type="checkbox"
-              class="pointer-events-none focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            >
-          </div>
+        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, personal.id)">
+          <EditableCheckBoxCell v-model="personal.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
           <EditableSelectCell v-model="personal.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @input="debounceUpdate" @blur="onBlur" />
@@ -263,23 +255,4 @@ export default {
 </script>
 
 <style scoped>
-.header {
-  @apply px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
-}
-
-.table-col {
-  @apply px-1 py-1 whitespace-nowrap text-sm text-gray-500;
-}
-
-.table-primary-table-col {
-  @apply px-1 py-1 whitespace-nowrap text-sm font-medium text-gray-900;
-}
-
-.edit-mode {
-  @apply relative z-10 overflow-visible -mt-3.5;
-}
-
-.read-mode {
-  @apply overflow-hidden overflow-ellipsis;
-}
 </style>

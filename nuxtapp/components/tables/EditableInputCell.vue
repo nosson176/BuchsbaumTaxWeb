@@ -1,14 +1,16 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+  <div ref="div" tabindex="0" :class="showEditMode ? 'edit-mode' : 'read-mode'">
     <input
-      v-if="isEditable"
+      v-if="showEditMode"
       ref="input"
       v-model="computedValue"
       autofocus
       type="text"
+      class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 text-center min-h-full"
+      tabindex="0"
       @blur="onBlur"
     >
-    <span v-else class="cursor-pointer">{{ computedValue }}</span>
+    <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
   </div>
 </template>
 
@@ -30,6 +32,10 @@ export default {
     isCurrency: {
       type: Boolean,
       default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -43,11 +49,18 @@ export default {
       set (newVal) {
         this.$emit(events.input, newVal)
       }
+    },
+    showEditMode () {
+      return this.isEditable && !this.readonly
     }
   },
   updated () {
     if (this.isEditable) {
-      this.$refs.input.focus()
+      if (this.readonly) {
+        this.$refs.div.focus()
+      } else {
+        this.$refs.input.focus()
+      }
     }
   },
   methods: {
@@ -62,15 +75,11 @@ export default {
 </script>
 
 <style scoped>
-input {
-  @apply block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded text-xs p-0 absolute top-0;
-}
-
 .edit-mode {
-  @apply relative z-10 overflow-visible -mt-1;
+  @apply relative z-10 overflow-visible -mt-2.5 outline-none;
 }
 
 .read-mode {
-  @apply overflow-hidden overflow-ellipsis;
+  @apply overflow-hidden overflow-ellipsis border-transparent outline-none border-2 focus:border-blue-600;
 }
 </style>

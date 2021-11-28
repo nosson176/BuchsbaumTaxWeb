@@ -1,29 +1,22 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown="onKeyPress" @keyup="onKeyUp">
-    <div v-if="isEditable" class="relative mt-3.5">
+    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
       <button
+        ref="button"
         type="button"
-        class=" text-xs relative w-auto bg-white border border-gray-300 rounded-md shadow-sm py-0 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-        aria-haspopup="listbox"
-        aria-expanded="true"
-        aria-labelledby="listbox-label"
+        tabindex="0"
+        class="p-0 text-xs relative h-5 w-full bg-white text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
       >
         <span class="block truncate mr-3">
           {{ shownValue }}
         </span>
-        <span class="absolute inset-y-0 right-0 flex items-center pr-0 pointer-events-none">
-          <!-- Heroicon name: solid/selector -->
-          <svg class="h-3 w-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </span>
       </button>
       <ul
         v-if="showOptions"
         ref="select"
-        class="absolute z-10 w-auto bg-white shadow-lg max-h-60 rounded-md text-base ring-1 ring-black ring-opacity-5 overflow-auto transition ease-in duration-100 focus:outline-none"
-        :class="isEditable ? 'opacity-100' : 'opacity-0'"
+        class="absolute z-10 w-auto bg-white max-h-60 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
+        :class="showOptions ? 'opacity-100' : 'opacity-0'"
         tabindex="-1"
         role="listbox"
         aria-labelledby="listbox-label"
@@ -50,7 +43,7 @@
         </li>
       </ul>
     </div>
-    <span v-else class="cursor-pointer">{{ shownValue }}</span>
+    <span v-else class="cursor-pointer m-px">{{ shownValue }}</span>
   </div>
 </template>
 
@@ -121,7 +114,7 @@ export default {
       } else {
         this.showOptions = true
         await this.$nextTick(() => {
-          this.$refs.select.focus()
+          this.$refs.button.focus()
         })
       }
     }
@@ -165,10 +158,10 @@ export default {
 
 <style scoped>
 .edit-mode {
-  @apply relative z-10 overflow-visible;
+  @apply relative z-10 overflow-visible min-h-full outline-none;
 }
 
 .read-mode {
-  @apply overflow-hidden overflow-ellipsis;
+  @apply overflow-hidden overflow-ellipsis m-px outline-none;
 }
 </style>
