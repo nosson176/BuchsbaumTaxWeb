@@ -5,10 +5,7 @@
         ref="button"
         type="button"
         tabindex="0"
-        class="p-0 text-xs relative min-h-full w-full bg-white text-left cursor-pointer outline-none border-blue-600 border-2"
-        aria-haspopup="listbox"
-        aria-expanded="true"
-        aria-labelledby="listbox-label"
+        class="p-0 text-xs relative h-5 w-full bg-white text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
       >
         <span class="block truncate mr-3">

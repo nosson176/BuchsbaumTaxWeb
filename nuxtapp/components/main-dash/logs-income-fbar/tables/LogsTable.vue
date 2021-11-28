@@ -50,7 +50,7 @@
           <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs">
-          <CheckIcon v-if="log.alarmComplete" class="text-green-500" />
+          <CheckIcon v-if="log.alarmComplete" tabindex="0" class="text-green-500" />
         </div>
         <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
           <EditableDateCell v-model="log.alarmTime" type="time" :is-editable="isEditable(`${idx}-alarmTime`)" @input="debounceUpdate" @blur="onBlur" />
