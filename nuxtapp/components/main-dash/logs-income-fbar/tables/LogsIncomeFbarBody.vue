@@ -30,8 +30,6 @@ export default {
     showFbar () {
       return this.currentTab === tabs.fbar
     }
-  },
-  methods: {
   }
 }
 </script>

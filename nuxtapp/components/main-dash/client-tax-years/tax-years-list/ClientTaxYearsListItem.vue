@@ -1,5 +1,5 @@
 <template>
-  <div class="px-3 py-1 text-xs tracking-tighter tax-year h-16 cursor-pointer border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
+  <div class="px-3 py-1 text-xs tracking-tighter h-16 cursor-pointer border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
     <div class="flex flex-col space-y-3">
       <div class="flex">
         <span class="font-bold mr-2">{{ year }}</span>

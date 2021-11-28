@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <FeesChecklistsTabs :active-tab="activeTab" @click="emitTabClick" />
-    <div class="flex bg-blue-200 p-0.5">
+    <div class="flex flex-col bg-blue-200 p-0.5 z-10 shadow">
       <ViewArchivedHeader @change="emitChange" />
       <SearchHeader v-model="searchInput" :active-tab="activeTab" />
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <ViewArchivedHeader @change="emitChange" />
+  <ViewArchivedHeader class="z-10 shadow" @change="emitChange" />
 </template>
 
 <script>
