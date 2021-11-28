@@ -1,16 +1,16 @@
 // Store State Models
 export const models = Object.freeze({
-  loading: 'loading',
-  token: 'token',
-  toast: 'toast',
+  allClientFees: 'allClientFees',
   appWidth: 'appWidth',
   clients: 'clients',
-  selectedClient: 'selectedClient',
-  valueTypes: 'valueTypes',
-  valueTaxGroups: 'valueTaxGroups',
+  loading: 'loading',
   modals: 'modals',
   search: 'search',
-  allClientFees: 'allClientFees'
+  selectedClient: 'selectedClient',
+  toast: 'toast',
+  token: 'token',
+  valueTaxGroups: 'valueTaxGroups',
+  valueTypes: 'valueTypes'
 })
 
 // Store Mutations
@@ -21,14 +21,14 @@ export const mutations = Object.freeze({
 
 // Route names
 export const routes = Object.freeze({
-  root: 'index',
+  admin: 'admin',
   home: 'home',
   login: 'login',
-  signup: 'signup',
-  terms: 'terms',
   privacy: 'privacy',
-  admin: 'admin',
-  resetPassword: 'reset-password'
+  resetPassword: 'reset-password',
+  root: 'index',
+  signup: 'signup',
+  terms: 'terms'
 })
 
 // Meta Tags
@@ -55,17 +55,17 @@ export const error = Object.freeze({
 
 // Events
 export const events = Object.freeze({
-  hide: 'hide',
-  click: 'click',
+  blur: 'blur',
   change: 'change',
-  input: 'input',
-  submit: 'submit',
-  resize: 'resize',
+  click: 'click',
   delete: 'delete',
-  keyup: 'keyup',
-  keypress: 'keypress',
+  hide: 'hide',
+  input: 'input',
   keydown: 'keydown',
-  blur: 'blur'
+  keypress: 'keypress',
+  keyup: 'keyup',
+  resize: 'resize',
+  submit: 'submit'
 })
 
 export const DATE_FORMAT_DEFAULT_INPUT = 'yyyy-MM-dd'
@@ -77,11 +77,13 @@ export const notification = Object.freeze({
 
 // Tabs
 export const tabs = Object.freeze({
-  tax_personals: 'tax-personals',
+  checklists: 'checklists',
   contact: 'contact',
-  logs: 'logs',
+  fbar: 'fbar',
+  fees: 'fees',
   income: 'income',
-  fbar: 'fbar'
+  logs: 'logs',
+  tax_personals: 'tax-personals'
 })
 
 export const categories = Object.freeze({
