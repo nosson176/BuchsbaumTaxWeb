@@ -90,7 +90,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models, mutations, tabs } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { sortByCategory } from '~/shared/domain-utilities'
 import { searchArrOfObjs } from '~/shared/utility'
 
@@ -181,7 +181,7 @@ export default {
       }
     },
     searchInput () {
-      return this.search?.personalContact
+      return this.search?.[tableGroups.personalContact]
     }
   },
   methods: {

@@ -109,3 +109,9 @@ export const filingTypes = Object.freeze({
   fbar: 'fbar',
   ext: 'ext'
 })
+
+export const tableGroups = Object.freeze({
+  feesChecklists: 'feesChecklists',
+  logsIncomeFbar: 'logsIncomeFbar',
+  personalContact: 'personalContact'
+})

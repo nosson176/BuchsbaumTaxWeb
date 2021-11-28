@@ -13,6 +13,7 @@
         <ClientTaxYears />
       </div>
       <div class="border border-green-500 bg-green-100 fees-checklists">
+        <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
         fees/checklists
       </div>
       <div class="border border-yellow-500 bg-yellow-100 smart-views">
@@ -49,6 +50,8 @@ export default {
       currentPersonalsTab: tabs.tax_personals,
       showArchivedLogsIncomeFbar: false,
       currentLogsIncomeFbarTab: tabs.logs,
+      currentFeesChecklistsTab: tabs.fees,
+      showArchivedFeesChecklists: false,
       deleteId: '',
       deleteType: ''
     }
@@ -76,8 +79,14 @@ export default {
     toggleShowArchivedLogsIncomeFbar () {
       this.showArchivedLogsIncomeFbar = !this.showArchivedLogsIncomeFbar
     },
+    toggleShowArchivedFeesChecklists () {
+      this.showArchivedFeesChecklists = !this.showArchivedFeesChecklists
+    },
     switchLogsIncomeFbarTab (tab) {
       this.currentLogsIncomeFbarTab = tab
+    },
+    switchFeesChecklistsTab (tab) {
+      this.currentFeesChecklistsTab = tab
     },
     openDeleteModal ({ id, type }) {
       this.showDeleteModal = true

@@ -105,7 +105,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models, mutations, tabs } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
@@ -206,7 +206,7 @@ export default {
       }
     },
     searchInput () {
-      return this.search?.logsIncomeFbar
+      return this.search?.[tableGroups.logsIncomeFbar]
     }
   },
   methods: {
