@@ -9,6 +9,7 @@ export const models = Object.freeze({
   selectedClient: 'selectedClient',
   toast: 'toast',
   token: 'token',
+  users: 'users',
   valueTaxGroups: 'valueTaxGroups',
   valueTypes: 'valueTypes'
 })
