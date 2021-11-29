@@ -1,6 +1,6 @@
 <template>
-  <div class="px-3 py-1 text-xs tracking-tighter h-16 cursor-pointer border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
-    <div class="flex flex-col">
+  <div class="px-3 py-1 text-xs tracking-tighter h-24 cursor-pointer border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
+    <div class="flex flex-col space-y-1.5 justify-center">
       <div class="flex justify-between">
         <span class=" align-top">{{ count }}</span>
         <div class="flex flex-col">
@@ -24,6 +24,12 @@
           <span class="missing">Time</span>
           <span>{{ dateFee }}</span>
         </div>
+        <div class="flex">
+          <span :class="fee.rate ? '' : 'missing'">{{ rate }}</span>
+        </div>
+      </div>
+      <div class="flex">
+        <span :class="fee.notes ? '' : 'missing'">{{ notes }}</span>
       </div>
     </div>
   </div>
@@ -76,6 +82,12 @@ export default {
     },
     dateFee () {
       return this.fee.dateFee
+    },
+    rate () {
+      return this.fee.rate || 'Rate/hr'
+    },
+    notes () {
+      return this.fee.notes || 'Notes'
     }
   },
   methods: {
