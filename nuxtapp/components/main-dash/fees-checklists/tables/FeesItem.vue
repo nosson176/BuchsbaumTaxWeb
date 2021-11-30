@@ -1,11 +1,25 @@
 <template>
-  <div class="px-3 py-1 text-xs tracking-tighter h-24 cursor-pointer border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
+  <div class="px-3 py-1 text-xs tracking-tighter h-auto border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
     <div class="flex flex-col space-y-1.5 justify-center">
       <div class="flex justify-between">
         <span class=" align-top">{{ count }}</span>
         <div class="flex flex-col">
-          <span :class="fee.feeType ? '' : 'missing'">{{ feeType }}</span>
-          <span :class="fee.year ? '' : 'missing'"> {{ year }}</span>
+          <div @click="setEditable('feeType')">
+            <EditableSelectCell
+              v-model="feeType"
+              :is-editable="isEditable('feeType')"
+              :options="feeTypeOptions"
+              @blur="onBlur"
+            />
+          </div>
+          <div @click="setEditable('year')">
+            <EditableSelectCell
+              v-model="year"
+              :is-editable="isEditable('year')"
+              :options="yearOptions"
+              @blur="onBlur"
+            />
+          </div>
         </div>
         <div class="flex flex-col">
           <span :class="fee.status ? '' : 'missing'">{{ status }}</span>
@@ -20,6 +34,7 @@
         </div>
       </div>
       <div class="flex justify-between">
+        <EditableCheckBoxCell v-model="include" />
         <div class="flex space-x-2">
           <span class="missing">Time</span>
           <span>{{ dateFee }}</span>
@@ -36,7 +51,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { formatAsILCurrency } from '~/shared/utility'
+import { models } from '~/shared/constants'
 export default {
   name: 'FeesItem',
   props: {
@@ -51,10 +68,11 @@ export default {
   },
   data () {
     return {
-
+      editable: ''
     }
   },
   computed: {
+    ...mapState([models.valueTypes]),
     classObj () {
       const even = this.idx % 2 === 0
       return { even }
@@ -88,11 +106,30 @@ export default {
     },
     notes () {
       return this.fee.notes || 'Notes'
+    },
+    include () {
+      return this.fee.include
+    },
+    yearOptions () {
+      return this.valueTypes.year_name.filter(year => year.show)
+    },
+    feeTypeOptions () {
+      return this.valueTypes.fee_type.filter(feeType => feeType.show)
     }
   },
   methods: {
     formatAsILS (amt) {
       return formatAsILCurrency(amt)
+    },
+    setEditable (field) {
+      this.editable = field
+    },
+    isEditable (field) {
+      return this.editable === field
+    },
+    onBlur () {
+      console.log('blur')
+      this.editable = ''
     }
   }
 }

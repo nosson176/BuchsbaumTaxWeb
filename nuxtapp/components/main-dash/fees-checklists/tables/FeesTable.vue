@@ -1,12 +1,13 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <FeesItem v-for="(fee, idx) in selectedClientFees" :key="idx" :idx="idx" :fee="fee" />
+    <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'FeesTable',
   props: {
@@ -16,7 +17,34 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.allClientFees, models.selectedClient]),
+    ...mapState([models.selectedClient]),
+    displayedFees () {
+      let fees = []
+      if (!this.showArchived) {
+        fees = this.notArchived
+      } else {
+        fees = this.archived
+      }
+      return searchArrOfObjs(fees, this.searchInput)
+    },
+    notArchived () {
+      if (this.fees) {
+        return this.fees
+          .filter(fee => !fee.archived)
+          .sort((a, b) => b.years - a.years)
+      } else {
+        return null
+      }
+    },
+    archived () {
+      if (this.fees) {
+        return this.fees
+          .filter(fee => fee.archived)
+          .sort((a, b) => b.years - a.years)
+      } else {
+        return null
+      }
+    },
     classObj () {
       const even = this.idx % 2 === 0
       return { even }
@@ -24,8 +52,12 @@ export default {
     selectedClientId () {
       return this.selectedClient.id
     },
-    selectedClientFees () {
-      return Object.values(this.allClientFees).filter(fees => fees.clientId === this.selectedClientId)
+    fees () {
+      if (this.selectedClient?.fees) {
+        return JSON.parse(JSON.stringify(this.selectedClient.fees))
+      } else {
+        return null
+      }
     }
   },
   methods: {
