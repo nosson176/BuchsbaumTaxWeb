@@ -1,13 +1,13 @@
 <template>
-  <div class="px-3 py-1 text-xs tracking-tighter h-auto border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
-    <div class="flex flex-col space-y-1.5 justify-center">
+  <div class="px-3 py-1 text-xs tracking-tighter my-auto h-28 border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
+    <div class="flex h-full flex-col space-y-1.5 justify-center">
       <div class="flex justify-between">
-        <span class=" align-top">{{ count }}</span>
+        <span class="align-top">{{ count }}</span>
         <div class="flex flex-col">
           <div @click="setEditable('feeType')">
             <EditableSelectCell
               v-model="feeType"
-              :class="fee.feeType ? '' : 'missing'"
+              :class="fee.feeType && !isEditable('feeType') ? '' : 'missing'"
               :is-editable="isEditable('feeType')"
               :options="feeTypeOptions"
               @blur="onBlur"
@@ -17,7 +17,7 @@
           <div @click="setEditable('year')">
             <EditableSelectCell
               v-model="year"
-              :class="fee.year ? '' : 'missing'"
+              :class="fee.year && !isEditable('year') ? '' : 'missing'"
               :is-editable="isEditable('year')"
               :options="yearOptions"
               @blur="onBlur"
@@ -29,7 +29,7 @@
           <div @click="setEditable('status')">
             <EditableSelectCell
               v-model="status"
-              :class="fee.status ? '' : 'missing'"
+              :class="fee.status && !isEditable('status') ? '' : 'missing'"
               :is-editable="isEditable('status')"
               :options="feeStatusOptions"
               @blur="onBlur"
@@ -39,7 +39,7 @@
           <div @click="setEditable('statusDetail')">
             <EditableSelectCell
               v-model="statusDetail"
-              :class="fee.statusDetail ? '' : 'missing'"
+              :class="fee.statusDetail && !isEditable('statusDetail') ? '' : 'missing'"
               :is-editable="isEditable('statusDetail')"
               :options="feeStatusDetailOptions"
               @blur="onBlur"
@@ -48,25 +48,59 @@
           </div>
         </div>
         <div class="flex items-center space-x-1">
-          <CheckBoxToDisplayTrueFalse :checked="formModel.sum" />
+          <div @click="setEditable('sum')">
+            <EditableCheckBoxCell
+              v-model="sum"
+              :is-editable="isEditable('sum')"
+              @blur="onBlur"
+              @input="debounceUpdate"
+            />
+          </div>
           <div class="flex flex-col">
-            <span>{{ manualAmount }}</span>
-            <span> {{ paidAmount }}</span>
+            <div @click="setEditable('manualAmount')">
+              <EditableInputCell v-model="manualAmount" :is-editable="isEditable('manualAmount')" @blur="onBlur" @input="debounceUpdate" />
+            </div>
+            <div @click="setEditable('paidAmount')">
+              <EditableInputCell v-model="paidAmount" :is-editable="isEditable('paidAmount')" @blur="onBlur" @input="debounceUpdate" />
+            </div>
           </div>
         </div>
       </div>
       <div class="flex justify-between">
-        <EditableCheckBoxCell v-model="include" />
+        <div @click="setEditable('include')">
+          <EditableCheckBoxCell
+            v-model="include"
+            :is-editable="isEditable('include')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
+        </div>
         <div class="flex space-x-2">
           <span class="missing">Time</span>
-          <span>{{ dateFee }}</span>
+          <div @click="setEditable('dateFee')">
+            <EditableDateCell
+              v-model="dateFee"
+              :class="fee.status && !isEditable('dateFee') ? '' : 'missing'"
+              type="date"
+              :is-editable="isEditable('dateFee')"
+              @input="debounceUpdate"
+              @blur="onBlur"
+            />
+          </div>
         </div>
-        <div class="flex">
-          <span :class="formModel.rate ? '' : 'missing'">{{ rate }}</span>
+        <div class="w-1/3">
+          <div @click="setEditable('rate')">
+            <EditableInputCell
+              v-model="rate"
+              :is-editable="isEditable('rate')"
+              @blur="onBlur"
+              @input="debounceUpdate"
+            />
+          </div>
         </div>
       </div>
-      <div class="flex">
-        <span :class="formModel.notes ? '' : 'missing'">{{ notes }}</span>
+      <div @click="setEditable('notes')">
+        <EditableInputCell v-model="notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
       </div>
     </div>
   </div>
@@ -183,6 +217,14 @@ export default {
         this.formModel.include = newVal
       }
     },
+    sum: {
+      get () {
+        return this.formModel.sum
+      },
+      set (newVal) {
+        this.formModel.sum = newVal
+      }
+    },
     yearOptions () {
       return this.valueTypes.year_name.filter(year => year.show)
     },
@@ -221,6 +263,6 @@ export default {
 
 <style scoped>
 .missing {
-  @apply italic opacity-75;
+  @apply italic text-gray-600;
 }
 </style>
