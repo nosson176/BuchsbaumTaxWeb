@@ -7,6 +7,7 @@
           <div @click="setEditable('feeType')">
             <EditableSelectCell
               v-model="feeType"
+              :class="fee.feeType ? '' : 'missing'"
               :is-editable="isEditable('feeType')"
               :options="feeTypeOptions"
               @blur="onBlur"
@@ -16,6 +17,7 @@
           <div @click="setEditable('year')">
             <EditableSelectCell
               v-model="year"
+              :class="fee.year ? '' : 'missing'"
               :is-editable="isEditable('year')"
               :options="yearOptions"
               @blur="onBlur"
@@ -24,8 +26,26 @@
           </div>
         </div>
         <div class="flex flex-col">
-          <span :class="formModel.status ? '' : 'missing'">{{ status }}</span>
-          <span :class="formModel.statusDetail ? '' : 'missing'"> {{ statusDetail }}</span>
+          <div @click="setEditable('status')">
+            <EditableSelectCell
+              v-model="status"
+              :class="fee.status ? '' : 'missing'"
+              :is-editable="isEditable('status')"
+              :options="feeStatusOptions"
+              @blur="onBlur"
+              @input="debounceUpdate"
+            />
+          </div>
+          <div @click="setEditable('statusDetail')">
+            <EditableSelectCell
+              v-model="statusDetail"
+              :class="fee.statusDetail ? '' : 'missing'"
+              :is-editable="isEditable('statusDetail')"
+              :options="feeStatusDetailOptions"
+              @blur="onBlur"
+              @input="debounceUpdate"
+            />
+          </div>
         </div>
         <div class="flex items-center space-x-1">
           <CheckBoxToDisplayTrueFalse :checked="formModel.sum" />
@@ -168,6 +188,12 @@ export default {
     },
     feeTypeOptions () {
       return this.valueTypes.fee_type.filter(feeType => feeType.show)
+    },
+    feeStatusOptions () {
+      return this.valueTypes.fee_status.filter(feeStatus => feeStatus.show)
+    },
+    feeStatusDetailOptions () {
+      return this.valueTypes.fee_status_detail.filter(feeStatusDetail => feeStatusDetail.show)
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
