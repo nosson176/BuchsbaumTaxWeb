@@ -54,6 +54,12 @@ export default ({ $axios, store }, inject) => {
   const updateFbar = (headers, { clientId, fbarId }, fbar) => $axios.put(
     `/clients/${clientId}/fbar/${fbarId}`, fbar, { headers }
   )
+  const createFee = (headers, { fee }) => $axios.post(
+    '/clients/fees', fee, { headers }
+  )
+  const updateFee = (headers, { feeId }, fee) => $axios.put(
+    `/clients/fees/${feeId}`, fee, { headers }
+  )
   const getAllClientFees = headers => $axios.get('/clients/fees', { headers, loading: models.allClientFees, store: models.allClientFees })
   const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
 
@@ -75,6 +81,8 @@ export default ({ $axios, store }, inject) => {
     updateIncome,
     createFbar,
     updateFbar,
+    createFee,
+    updateFee,
     getAllClientFees,
     getAllUsers
   }

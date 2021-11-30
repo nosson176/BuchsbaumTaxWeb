@@ -1,12 +1,12 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" />
+    <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" @input="handleUpdateFee" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, mutations } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'FeesTable',
@@ -18,6 +18,9 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient]),
+    headers () {
+      return this.$api.getHttpConfig()
+    },
     displayedFees () {
       let fees = []
       if (!this.showArchived) {
@@ -49,9 +52,6 @@ export default {
       const even = this.idx % 2 === 0
       return { even }
     },
-    selectedClientId () {
-      return this.selectedClient.id
-    },
     fees () {
       if (this.selectedClient?.fees) {
         return JSON.parse(JSON.stringify(this.selectedClient.fees))
@@ -61,7 +61,20 @@ export default {
     }
   },
   methods: {
-
+    handleUpdateFee (editedFee) {
+      this.updateOnBackend(editedFee)
+      this.updateOnClient(editedFee)
+    },
+    updateOnBackend (editedFee) {
+      this.$api.updateFee(this.headers, { feeId: editedFee.id }, editedFee)
+    },
+    updateOnClient (editedFee) {
+      const fees = JSON.parse(JSON.stringify(this.fees))
+      const editedFeeIndex = fees.findIndex(fee => fee.id === editedFee.id)
+      fees[editedFeeIndex] = editedFee
+      const data = Object.assign({}, this.selectedClient, { fees })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    }
   }
 }
 </script>

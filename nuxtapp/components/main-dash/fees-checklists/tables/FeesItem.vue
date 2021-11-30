@@ -10,6 +10,7 @@
               :is-editable="isEditable('feeType')"
               :options="feeTypeOptions"
               @blur="onBlur"
+              @input="debounceUpdate"
             />
           </div>
           <div @click="setEditable('year')">
@@ -18,15 +19,16 @@
               :is-editable="isEditable('year')"
               :options="yearOptions"
               @blur="onBlur"
+              @input="debounceUpdate"
             />
           </div>
         </div>
         <div class="flex flex-col">
-          <span :class="fee.status ? '' : 'missing'">{{ status }}</span>
-          <span :class="fee.statusDetail ? '' : 'missing'"> {{ statusDetail }}</span>
+          <span :class="formModel.status ? '' : 'missing'">{{ status }}</span>
+          <span :class="formModel.statusDetail ? '' : 'missing'"> {{ statusDetail }}</span>
         </div>
         <div class="flex items-center space-x-1">
-          <CheckBoxToDisplayTrueFalse :checked="fee.sum" />
+          <CheckBoxToDisplayTrueFalse :checked="formModel.sum" />
           <div class="flex flex-col">
             <span>{{ manualAmount }}</span>
             <span> {{ paidAmount }}</span>
@@ -40,11 +42,11 @@
           <span>{{ dateFee }}</span>
         </div>
         <div class="flex">
-          <span :class="fee.rate ? '' : 'missing'">{{ rate }}</span>
+          <span :class="formModel.rate ? '' : 'missing'">{{ rate }}</span>
         </div>
       </div>
       <div class="flex">
-        <span :class="fee.notes ? '' : 'missing'">{{ notes }}</span>
+        <span :class="formModel.notes ? '' : 'missing'">{{ notes }}</span>
       </div>
     </div>
   </div>
@@ -52,8 +54,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import { debounce } from 'lodash'
 import { formatAsILCurrency } from '~/shared/utility'
-import { models } from '~/shared/constants'
+import { events, models } from '~/shared/constants'
 export default {
   name: 'FeesItem',
   props: {
@@ -72,49 +75,102 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.valueTypes]),
+    ...mapState([models.valueTypes, models.selectedClient]),
     classObj () {
       const even = this.idx % 2 === 0
       return { even }
+    },
+    formModel () {
+      return {
+        ...this.fee
+      }
     },
     count () {
       return this.idx + 1
     },
     feeType () {
-      return this.fee.feeType || 'Type'
+      return this.formModel.feeType || 'Type'
     },
-    year () {
-      return this.fee.year || 'Year'
+    year: {
+      get () {
+        return this.formModel.year || 'Year'
+      },
+      set (newVal) {
+        this.formModel.year = newVal
+      }
     },
-    status () {
-      return this.fee.status || 'Status'
+    status: {
+      get () {
+        return this.formModel.status || 'Status'
+      },
+      set (newVal) {
+        this.formModel.status = newVal
+      }
     },
-    statusDetail () {
-      return this.fee.statusDetail || 'Detail'
+    statusDetail: {
+      get () {
+        return this.formModel.statusDetail || 'Detail'
+      },
+      set (newVal) {
+        this.formModel.statusDetail = newVal
+      }
     },
-    manualAmount () {
-      return this.formatAsILS(this.fee.manualAmount)
+    manualAmount: {
+      get () {
+        return this.formatAsILS(this.formModel.manualAmount)
+      },
+      set (newVal) {
+        this.formModel.manualAmount = newVal
+      }
     },
-    paidAmount () {
-      return this.formatAsILS(this.fee.paidAmount)
+    paidAmount: {
+      get () {
+        return this.formatAsILS(this.formModel.paidAmount)
+      },
+      set (newVal) {
+        this.formModel.paidAmount = newVal
+      }
     },
-    dateFee () {
-      return this.fee.dateFee
+    dateFee: {
+      get () {
+        return this.formModel.dateFee
+      },
+      set (newVal) {
+        this.formModel.dateFee = newVal
+      }
     },
-    rate () {
-      return this.fee.rate || 'Rate/hr'
+    rate: {
+      get () {
+        return this.formModel.rate || 'Rate/hr'
+      },
+      set (newVal) {
+        this.formModel.rate = newVal
+      }
     },
-    notes () {
-      return this.fee.notes || 'Notes'
+    notes: {
+      get () {
+        return this.formModel.notes || 'Notes'
+      },
+      set (newVal) {
+        this.formModel.notes = newVal
+      }
     },
-    include () {
-      return this.fee.include
+    include: {
+      get () {
+        return this.formModel.include
+      },
+      set (newVal) {
+        this.formModel.include = newVal
+      }
     },
     yearOptions () {
       return this.valueTypes.year_name.filter(year => year.show)
     },
     feeTypeOptions () {
       return this.valueTypes.fee_type.filter(feeType => feeType.show)
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
     }
   },
   methods: {
@@ -128,8 +184,10 @@ export default {
       return this.editable === field
     },
     onBlur () {
-      console.log('blur')
       this.editable = ''
+    },
+    handleUpdate () {
+      this.$emit(events.input, this.formModel)
     }
   }
 }
