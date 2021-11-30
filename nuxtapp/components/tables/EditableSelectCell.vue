@@ -114,7 +114,7 @@ export default {
       } else {
         this.showOptions = true
         await this.$nextTick(() => {
-          this.$refs.button.focus()
+          this.$refs.select.focus()
         })
       }
     }
