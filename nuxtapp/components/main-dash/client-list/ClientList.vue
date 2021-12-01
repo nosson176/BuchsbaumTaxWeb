@@ -2,6 +2,7 @@
   <div class="flex-grow overflow-auto">
     <div
       v-for="client in displayedClients"
+      :ref="client.id"
       :key="client.id"
       class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer"
       :class="client.id === selectedClientId ? 'selected' : ''"
@@ -28,7 +29,7 @@ export default {
     return { selectedClientId: NaN }
   },
   computed: {
-    ...mapState([models.clients]),
+    ...mapState([models.clients, models.selectedClient]),
     displayedClients () {
       if (!this.showArchived) {
         return this.notArchived
@@ -43,6 +44,17 @@ export default {
     archived () {
       return Object.fromEntries(Object.entries(this.clients)
         .filter(([key, client]) => client.archived))
+    }
+  },
+  watch: {
+    selectedClient () {
+      console.log('selectedClient', this.selectedClient)
+      this.selectedClientId = this.selectedClient.id
+      console.log(this.$refs[this.selectedClient.id])
+      this.$refs[this.selectedClient.id][0].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
     }
   },
   methods: {

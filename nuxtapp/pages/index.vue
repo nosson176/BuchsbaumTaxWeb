@@ -16,6 +16,7 @@ export default {
         this.$api.getValueTypes(headers)
         this.$api.getValueTaxGroups(headers)
         this.$api.getAllUsers(headers)
+        this.$api.getClientsHistory(headers)
       })
       .catch((e) => {
         if (e.message === error.axios_401) {
