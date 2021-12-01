@@ -58,10 +58,22 @@
           </div>
           <div class="flex flex-col">
             <div @click="setEditable('manualAmount')">
-              <EditableInputCell v-model="manualAmount" :is-editable="isEditable('manualAmount')" @blur="onBlur" @input="debounceUpdate" />
+              <EditableInputCell
+                v-model="manualAmount"
+                currency
+                :is-editable="isEditable('manualAmount')"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
             </div>
             <div @click="setEditable('paidAmount')">
-              <EditableInputCell v-model="paidAmount" :is-editable="isEditable('paidAmount')" @blur="onBlur" @input="debounceUpdate" />
+              <EditableInputCell
+                v-model="paidAmount"
+                currency
+                :is-editable="isEditable('paidAmount')"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
             </div>
           </div>
         </div>
@@ -109,8 +121,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { formatAsILCurrency } from '~/shared/utility'
-import { events, models } from '~/shared/constants'
+import { events, models, currencySymbols } from '~/shared/constants'
 export default {
   name: 'FeesItem',
   props: {
@@ -171,7 +182,7 @@ export default {
     },
     manualAmount: {
       get () {
-        return this.formatAsILS(this.formModel.manualAmount)
+        return this.formModel.manualAmount
       },
       set (newVal) {
         this.formModel.manualAmount = newVal
@@ -179,7 +190,7 @@ export default {
     },
     paidAmount: {
       get () {
-        return this.formatAsILS(this.formModel.paidAmount)
+        return this.formModel.paidAmount
       },
       set (newVal) {
         this.formModel.paidAmount = newVal
@@ -239,12 +250,12 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    currencySymbols () {
+      return currencySymbols
     }
   },
   methods: {
-    formatAsILS (amt) {
-      return formatAsILCurrency(amt)
-    },
     setEditable (field) {
       this.editable = field
     },

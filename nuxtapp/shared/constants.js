@@ -119,3 +119,8 @@ export const tableGroups = Object.freeze({
   logsIncomeFbar: 'logsIncomeFbar',
   personalContact: 'personalContact'
 })
+
+export const currencySymbols = Object.freeze({
+  us: '$',
+  il: '₪'
+})

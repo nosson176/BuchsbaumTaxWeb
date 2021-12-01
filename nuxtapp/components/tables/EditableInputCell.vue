@@ -30,7 +30,7 @@ export default {
       type: Boolean,
       required: true
     },
-    isCurrency: {
+    currency: {
       type: Boolean,
       default: false
     },
