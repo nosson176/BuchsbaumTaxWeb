@@ -3,7 +3,9 @@
     <dl class="w-full grid grid-cols-1 gap-x-1 gap-y-4 sm:grid-cols-2">
       <ClientTaxYearCardFilingInfoItem>
         <template v-if="taxForm" #value>
-          {{ taxForm }}
+          <div @click="setEditable('taxForm')">
+            <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')" @blur="onBlur" />
+          </div>
         </template>
         <template v-else #label>
           Tax Form
@@ -11,23 +13,29 @@
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
         <template v-if="status" #value>
-          {{ status }}
+          <div @click="setEditable('status')">
+            <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')" @blur="onBlur" />
+          </div>
         </template>
         <template v-else #label>
           Status
         </template>
       </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="statusDetail" #value>
-          {{ statusDetail }}
-        </template>
-        <template v-else #label>
-          Detail
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+      <div class="bg-red-500" @click="setEditable('statusDetail')">
+        <ClientTaxYearCardFilingInfoItem>
+          <template v-if="statusDetail || isEditable('statusDetail')" #value>
+            <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions" :is-editable="isEditable('statusDetail')" @blur="onBlur" />
+          </template>
+          <template v-else #label>
+            Detail
+          </template>
+        </ClientTaxYearCardFilingInfoItem>
+      </div>
       <ClientTaxYearCardFilingInfoItem>
         <template v-if="statusDate" #value>
-          {{ formattedStatusDate }}
+          <div @click="setEditable('statusDate')">
+            <EditableDateCell v-model="statusDate" type="date" :is-editable="isEditable('statusDate')" @blur="onBlur" />
+          </div>
         </template>
         <template v-else #label>
           Date
@@ -117,7 +125,9 @@
       </ClientTaxYearCardFilingInfoItem>
       <ClientTaxYearCardFilingInfoItem>
         <template v-if="dateFiled" #value>
-          {{ formattedDateFiled }}
+          <div @click="setEditable('dateFiled')">
+            <EditableDateCell v-model="dateFiled" type="date" :is-editable="isEditable('dateFiled')" @blur="onBlur" />
+          </div>
         </template>
         <template v-else #label>
           Date Filed
@@ -128,8 +138,9 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { formatDateForClient } from '~/shared/domain-utilities'
+import { models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -139,7 +150,13 @@ export default {
       default: () => null
     }
   },
+  data () {
+    return {
+      editable: ''
+    }
+  },
   computed: {
+    ...mapState([models.valueTypes]),
     taxForm () {
       return this.filing.taxForm
     },
@@ -151,9 +168,6 @@ export default {
     },
     statusDate () {
       return this.filing.statusDate
-    },
-    formattedStatusDate () {
-      return this.formatDate(this.statusDate)
     },
     memo () {
       return this.filing.memo
@@ -239,19 +253,31 @@ export default {
     dateFiled () {
       return this.filing.dateFiled
     },
-    formattedDateFiled () {
-      return this.formatDate(this.dateFiled)
+    taxFormOptions () {
+      return this.valueTypes.tax_form.filter(taxForm => taxForm.show)
+    },
+    statusOptions () {
+      return this.valueTypes.tax_year_status.filter(status => status.show)
+    },
+    statusDetailOptions () {
+      return this.valueTypes.tax_year_status_detail.filter(statusDetail => statusDetail.show)
     }
   },
   methods: {
-    formatDate (date) {
-      return date ? formatDateForClient(date) : ''
-    },
     formatAsILCurrency (amt) {
       return formatAsILCurrency(amt)
     },
     formatAsUSCurrency (amt) {
       return formatAsUSCurrency(amt)
+    },
+    setEditable (editable) {
+      this.editable = editable
+    },
+    isEditable (value) {
+      return this.editable === value
+    },
+    onBlur () {
+      this.setEditable('')
     }
   }
 }

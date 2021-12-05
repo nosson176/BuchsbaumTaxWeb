@@ -6,9 +6,10 @@
           {{ year }}
         </h3>
       </div>
-      <ClientTaxYearCardTabs :filings="filings" :active-filing-type="activeFilingType" @click="setActiveFilingType" />
-      <div class="flex mt-2" />
+      <ClientTaxYearCardTabs class="z-10 shadow" :filings="filings" :active-filing-type="activeFilingType" @click="setActiveFilingType" />
+      <div class="mt-2" />
       <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" />
+      <div class="mt-2" />
     </div>
   </div>
 </template>
