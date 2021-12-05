@@ -3,7 +3,7 @@
     <div class="flex h-full flex-col space-y-1.5 justify-center">
       <div class="flex justify-between">
         <span class="align-top">{{ count }}</span>
-        <div class="flex flex-col">
+        <div class="flex flex-col w-1/3">
           <div @click="setEditable('feeType')">
             <EditableSelectCell
               v-model="feeType"
@@ -25,7 +25,7 @@
             />
           </div>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col w-1/3">
           <div @click="setEditable('status')">
             <EditableSelectCell
               v-model="status"
@@ -47,7 +47,7 @@
             />
           </div>
         </div>
-        <div class="flex items-center space-x-1">
+        <div class="flex items-center w-1/3 space-x-1">
           <div @click="setEditable('sum')">
             <EditableCheckBoxCell
               v-model="sum"
@@ -58,22 +58,24 @@
           </div>
           <div class="flex flex-col">
             <div @click="setEditable('manualAmount')">
-              <EditableInputCell
+              <EditableInput
                 v-model="manualAmount"
                 currency
                 :is-editable="isEditable('manualAmount')"
                 @blur="onBlur"
                 @input="debounceUpdate"
               />
+              <div v-if="isEditable('manualAmount')" />
             </div>
             <div @click="setEditable('paidAmount')">
-              <EditableInputCell
+              <EditableInput
                 v-model="paidAmount"
                 currency
                 :is-editable="isEditable('paidAmount')"
                 @blur="onBlur"
                 @input="debounceUpdate"
               />
+              <div v-if="isEditable('paidAmount')" />
             </div>
           </div>
         </div>
@@ -90,9 +92,9 @@
         <div class="flex space-x-2">
           <span class="missing">Time</span>
           <div @click="setEditable('dateFee')">
-            <EditableDateCell
+            <EditableDate
               v-model="dateFee"
-              :class="fee.status && !isEditable('dateFee') ? '' : 'missing'"
+              :class="fee.dateFee && !isEditable('dateFee') ? '' : 'missing'"
               type="date"
               :is-editable="isEditable('dateFee')"
               @input="debounceUpdate"
@@ -102,7 +104,7 @@
         </div>
         <div class="w-1/3">
           <div @click="setEditable('rate')">
-            <EditableInputCell
+            <EditableInput
               v-model="rate"
               :is-editable="isEditable('rate')"
               @blur="onBlur"
@@ -112,7 +114,7 @@
         </div>
       </div>
       <div @click="setEditable('notes')">
-        <EditableInputCell v-model="notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
+        <EditableInput v-model="notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
       </div>
     </div>
   </div>
