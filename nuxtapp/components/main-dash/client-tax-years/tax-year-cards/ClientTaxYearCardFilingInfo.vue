@@ -14,38 +14,47 @@
         <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')" @blur="onBlur" />
       </div>
       <div @click="setEditable('memo')">
-        <EditableTextArea v-model="memo" :is-editable="isEditable('memo')" @blur="onBlur" />
+        <EditableTextArea v-model="memo" placeholder="Memo" :is-editable="isEditable('memo')" @blur="onBlur" />
       </div>
       <!-- spacing -->
       <div />
       <div />
       <div />
       <!-- end of spacing -->
-      <ClientTaxYearCardFilingInfoItem>
-        <template #label>
-          <div @click="setEditable('sum')">
-            <EditableCheckBoxCell
-              v-model="includeInRefund"
-              :is-editable="isEditable('sum')"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
-          </div>
-          Owes/Paid
-        </template>
-        <template v-if="hasOwesOrPaid" #value>
-          <span v-if="hasOwes"> {{ formattedOwes }}</span>/<span v-if="hasPaid">{{ formattedPaid }}</span>
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template #label>
-          <CheckBoxToDisplayTrueFalse id="includeFee" name="includeFee" disabled :checked="includeFee" />
-          FC/Insur
-        </template>
-        <template v-if="hasOwesFeeOrPaidFee" #value>
-          <span v-if="hasOwesFee"> {{ formattedOwesFee }}</span>/<span v-if="hasPaidFee">{{ formattedPaidFee }}</span>
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+      <div class="flex">
+        <div @click="setEditable('includeInRefund')">
+          <EditableCheckBoxCell
+            v-model="includeInRefund"
+            :is-editable="isEditable('includeInRefund')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
+        </div>
+        <div @click="setEditable('owes')">
+          <EditableInput v-model="owes" placeholder="Owes" currency :is-editable="isEditable('owes')" @blur="onBlur" />
+        </div>
+        /
+        <div @click="setEditable('paid')">
+          <EditableInput v-model="paid" placeholder="Paid" currency :is-editable="isEditable('paid')" @blur="onBlur" />
+        </div>
+      </div>
+      <div class="flex">
+        <div @click="setEditable('includeFee')">
+          <EditableCheckBoxCell
+            v-model="includeFee"
+            :is-editable="isEditable('includeFee')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
+        </div>
+        <div @click="setEditable('owesFee')">
+          <EditableInput v-model="owesFee" placeholder="FC" currency :is-editable="isEditable('owesFee')" @blur="onBlur" />
+        </div>
+        /
+        <div @click="setEditable('paidFee')">
+          <EditableInput v-model="paidFee" placeholder="Insur" currency :is-editable="isEditable('paidFee')" @blur="onBlur" />
+        </div>
+      </div>
       <ClientTaxYearCardFilingInfoItem>
         <template v-if="fileType" #value>
           {{ fileType }}
@@ -138,7 +147,7 @@ export default {
       return this.filing.statusDate
     },
     memo () {
-      return this.filing.memo || 'Memo'
+      return this.filing.memo
     },
     includeInRefund () {
       return this.filing.includeInRefund
@@ -146,23 +155,8 @@ export default {
     owes () {
       return this.filing.owes
     },
-    formattedOwes () {
-      return this.formatAsILCurrency(this.owes)
-    },
     paid () {
       return this.filing.paid
-    },
-    formattedPaid () {
-      return this.formatAsILCurrency(this.paid)
-    },
-    hasOwes () {
-      return this.owes
-    },
-    hasPaid () {
-      return this.paid
-    },
-    hasOwesOrPaid () {
-      return this.hasOwes || this.hasPaid
     },
     includeFee () {
       return this.filing.includeFee
@@ -170,23 +164,8 @@ export default {
     owesFee () {
       return this.filing.owesFee
     },
-    formattedOwesFee () {
-      return this.formatAsILCurrency(this.owesFee)
-    },
     paidFee () {
       return this.filing.paidFee
-    },
-    formattedPaidFee () {
-      return this.formatAsILCurrency(this.paidFee)
-    },
-    hasOwesFee () {
-      return this.owesFee
-    },
-    hasPaidFee () {
-      return this.paidFee
-    },
-    hasOwesFeeOrPaidFee () {
-      return this.hasOwesFee || this.hasPaidFee
     },
     fileType () {
       return this.filing.fileType
