@@ -1,35 +1,14 @@
 <template>
   <div class="p-2 overflow-auto flex flex-grow">
-    <dl class="w-full grid grid-cols-1 gap-x-1 gap-y-4 sm:grid-cols-2">
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="taxForm" #value>
-          <div @click="setEditable('taxForm')">
-            <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')" @blur="onBlur" />
-          </div>
-        </template>
-        <template v-else #label>
-          Tax Form
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="status" #value>
-          <div @click="setEditable('status')">
-            <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')" @blur="onBlur" />
-          </div>
-        </template>
-        <template v-else #label>
-          Status
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+    <div class="w-full grid grid-cols-1 gap-x-1 gap-y-4 sm:grid-cols-2">
+      <div @click="setEditable('taxForm')">
+        <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')" @blur="onBlur" />
+      </div>
+      <div @click="setEditable('status')">
+        <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')" @blur="onBlur" />
+      </div>
       <div class="bg-red-500" @click="setEditable('statusDetail')">
-        <ClientTaxYearCardFilingInfoItem>
-          <template v-if="statusDetail || isEditable('statusDetail')" #value>
-            <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions" :is-editable="isEditable('statusDetail')" @blur="onBlur" />
-          </template>
-          <template v-else #label>
-            Detail
-          </template>
-        </ClientTaxYearCardFilingInfoItem>
+        <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions" :is-editable="isEditable('statusDetail')" @blur="onBlur" />
       </div>
       <ClientTaxYearCardFilingInfoItem>
         <template v-if="statusDate" #value>
@@ -133,7 +112,7 @@
           Date Filed
         </template>
       </ClientTaxYearCardFilingInfoItem>
-    </dl>
+    </div>
   </div>
 </template>
 
@@ -158,19 +137,19 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     taxForm () {
-      return this.filing.taxForm
+      return this.filing.taxForm || 'Tax Form'
     },
     status () {
-      return this.filing.status
+      return this.filing.status || 'Status'
     },
     statusDetail () {
-      return this.filing.statusDetail
+      return this.filing.statusDetail || 'Status Detail'
     },
     statusDate () {
       return this.filing.statusDate
     },
     memo () {
-      return this.filing.memo
+      return this.filing.memo || 'Memo'
     },
     includeInRefund () {
       return this.filing.includeInRefund
