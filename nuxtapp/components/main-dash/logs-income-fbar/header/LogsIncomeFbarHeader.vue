@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { events, models, mutations, tabs } from '~/shared/constants'
+import { events, models, mutations, tableGroups, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarHeader',
   data () {
@@ -35,7 +35,7 @@ export default {
     searchInputUpdate (searchInput) {
       this.$store.commit(
         mutations.setModelResponse,
-        { model: models.search, data: { logsIncomeFbar: searchInput } }
+        { model: models.search, data: { [tableGroups.logsIncomeFbar]: searchInput } }
       )
     }
   }

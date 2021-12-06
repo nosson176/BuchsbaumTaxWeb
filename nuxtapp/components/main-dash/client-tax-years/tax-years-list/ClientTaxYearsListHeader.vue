@@ -19,7 +19,7 @@ export default {
 
 <style scoped>
 .header {
-  @apply flex w-full bg-blue-200 px-3 items-center;
+  @apply flex w-full bg-blue-200 px-3 items-center z-10 shadow;
 
   min-height: 2rem;
 }

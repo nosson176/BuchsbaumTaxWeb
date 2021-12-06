@@ -1,8 +1,6 @@
 <template>
   <div class="flex flex-col max-h-screen">
-    <div class="bg-black text-white w-full flex">
-      HEADER
-    </div>
+    <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list">
         <ClientListHeader @change="toggleShowArchivedClients" />
@@ -12,8 +10,9 @@
         <ClientTaxYearsHeader />
         <ClientTaxYears />
       </div>
-      <div class="border border-green-500 bg-green-100 fees-checklists">
-        fees/checklists
+      <div class="shadow rounded flex flex-col fees-checklists">
+        <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
+        <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
       </div>
       <div class="border border-yellow-500 bg-yellow-100 smart-views">
         smartviews
@@ -44,13 +43,15 @@ export default {
   name: 'Home',
   data () {
     return {
-      showArchivedClients: false,
-      showArchivedPersonals: false,
-      currentPersonalsTab: tabs.tax_personals,
-      showArchivedLogsIncomeFbar: false,
+      currentFeesChecklistsTab: tabs.fees,
       currentLogsIncomeFbarTab: tabs.logs,
+      currentPersonalsTab: tabs.tax_personals,
       deleteId: '',
-      deleteType: ''
+      deleteType: '',
+      showArchivedClients: false,
+      showArchivedFeesChecklists: false,
+      showArchivedLogsIncomeFbar: false,
+      showArchivedPersonals: false
     }
   },
   computed: {
@@ -76,8 +77,14 @@ export default {
     toggleShowArchivedLogsIncomeFbar () {
       this.showArchivedLogsIncomeFbar = !this.showArchivedLogsIncomeFbar
     },
+    toggleShowArchivedFeesChecklists () {
+      this.showArchivedFeesChecklists = !this.showArchivedFeesChecklists
+    },
     switchLogsIncomeFbarTab (tab) {
       this.currentLogsIncomeFbarTab = tab
+    },
+    switchFeesChecklistsTab (tab) {
+      this.currentFeesChecklistsTab = tab
     },
     openDeleteModal ({ id, type }) {
       this.showDeleteModal = true
