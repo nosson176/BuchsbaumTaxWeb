@@ -1,33 +1,21 @@
 <template>
   <div class="p-2 overflow-auto flex flex-grow">
-    <div class="w-full grid grid-cols-1 gap-x-1 gap-y-4 sm:grid-cols-2">
+    <div class="w-full grid grid-cols-1 gap-x-1 gap-y-4 text-xs sm:grid-cols-2">
       <div @click="setEditable('taxForm')">
         <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')" @blur="onBlur" />
       </div>
       <div @click="setEditable('status')">
         <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')" @blur="onBlur" />
       </div>
-      <div class="bg-red-500" @click="setEditable('statusDetail')">
+      <div @click="setEditable('statusDetail')">
         <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions" :is-editable="isEditable('statusDetail')" @blur="onBlur" />
       </div>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="statusDate" #value>
-          <div @click="setEditable('statusDate')">
-            <EditableDateCell v-model="statusDate" type="date" :is-editable="isEditable('statusDate')" @blur="onBlur" />
-          </div>
-        </template>
-        <template v-else #label>
-          Date
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="memo" #value>
-          {{ memo }}
-        </template>
-        <template v-else #label>
-          Memo
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+      <div @click="setEditable('statusDate')">
+        <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')" @blur="onBlur" />
+      </div>
+      <div @click="setEditable('memo')">
+        <EditableTextArea v-model="memo" :is-editable="isEditable('memo')" @blur="onBlur" />
+      </div>
       <!-- spacing -->
       <div />
       <div />
@@ -35,7 +23,14 @@
       <!-- end of spacing -->
       <ClientTaxYearCardFilingInfoItem>
         <template #label>
-          <CheckBoxToDisplayTrueFalse id="includeInRefund" name="includeInRefund" disabled :checked="includeInRefund" />
+          <div @click="setEditable('sum')">
+            <EditableCheckBoxCell
+              v-model="includeInRefund"
+              :is-editable="isEditable('sum')"
+              @blur="onBlur"
+              @input="debounceUpdate"
+            />
+          </div>
           Owes/Paid
         </template>
         <template v-if="hasOwesOrPaid" #value>
@@ -102,24 +97,18 @@
           Delivery 2
         </template>
       </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="dateFiled" #value>
-          <div @click="setEditable('dateFiled')">
-            <EditableDateCell v-model="dateFiled" type="date" :is-editable="isEditable('dateFiled')" @blur="onBlur" />
-          </div>
-        </template>
-        <template v-else #label>
-          Date Filed
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+      <div @click="setEditable('dateFiled')">
+        <EditableDate v-model="dateFiled" placeholder="Date Filed" type="date" :is-editable="isEditable('dateFiled')" @blur="onBlur" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import { debounce } from 'lodash'
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { models } from '~/shared/constants'
+import { models, mutations } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -143,7 +132,7 @@ export default {
       return this.filing.status || 'Status'
     },
     statusDetail () {
-      return this.filing.statusDetail || 'Status Detail'
+      return this.filing.statusDetail || 'Detail'
     },
     statusDate () {
       return this.filing.statusDate
@@ -232,6 +221,9 @@ export default {
     dateFiled () {
       return this.filing.dateFiled
     },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    },
     taxFormOptions () {
       return this.valueTypes.tax_form.filter(taxForm => taxForm.show)
     },
@@ -257,6 +249,20 @@ export default {
     },
     onBlur () {
       this.setEditable('')
+    },
+    handleUpdate (filing) {
+      this.updateOnBackend(filing)
+      this.updateOnClient(filing)
+    },
+    updateOnBackend (filing) {
+      this.$api.updateFiling(this.headers, { filingId: filing.id }, filing)
+    },
+    updateOnClient (updatedFiling) {
+      const filing = JSON.parse(JSON.stringify(this.filing))
+      const editedFilingIndex = filing.findIndex(filing => filing.id === updatedFiling.id)
+      filing[editedFilingIndex] = updatedFiling
+      const data = Object.assign({}, this.selectedClient, { filing })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }

@@ -8,9 +8,10 @@
       :value-type="valueType"
       :format="format"
       :type="type"
+      :placeholder="placeholder"
       @blur="onBlur"
     />
-    <span v-else class="cursor-pointer">{{ computedValue }}</span>
+    <span v-else class="cursor-pointer">{{ computedValue || placeholder }}</span>
   </div>
 </template>
 
@@ -31,6 +32,10 @@ export default {
     type: {
       type: String,
       default: 'date'
+    },
+    placeholder: {
+      type: String,
+      default: ''
     }
   },
   data () {
