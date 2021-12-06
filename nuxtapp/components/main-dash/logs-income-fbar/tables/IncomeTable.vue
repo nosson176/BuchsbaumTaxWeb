@@ -75,7 +75,7 @@
           <EditableSelectCell v-model="income.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-amount`" class="normal table-col" @click="toggleEditable(`${idx}-amount`, income.id)">
-          <EditableInputCell v-model="income.amount" :is-editable="isEditable(`${idx}-amount`)" is-currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="income.amount" :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, income.id)">
           <EditableSelectCell v-model="income.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
@@ -88,7 +88,7 @@
             v-model="income.amountUSD"
             readonly
             :is-editable="isEditable(`${idx}-$`)"
-            is-currency
+            currency
             @blur="onBlur"
             @input="debounceUpdate"
           />
@@ -97,10 +97,10 @@
           <EditableSelectCell v-model="income.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, income.id)">
-          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" is-currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, income.id)">
-          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" is-currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" currency @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(income.id)" />
@@ -113,7 +113,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models, mutations, tabs } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
@@ -219,7 +219,7 @@ export default {
       }
     },
     searchInput () {
-      return this.search?.logsIncomeFbar
+      return this.search?.[tableGroups.logsIncomeFbar]
     },
     docOptions () {
       return docOptions

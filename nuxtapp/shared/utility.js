@@ -96,6 +96,21 @@ const capitalizeFirstLetter = (string) => {
   return arr.join(' ')
 }
 
+/**
+ * Parse a localized number to a float.
+ * @param {string} stringNumber - the localized number
+ * @param {string} locale - [optional] the locale that the number is represented in. Omit this parameter to use the current locale.
+ */
+const parseLocaleNumber = (stringNumber, locale) => {
+  const thousandSeparator = Intl.NumberFormat(locale).format(11111).replace(/\p{Number}/gu, '')
+  const decimalSeparator = Intl.NumberFormat(locale).format(1.1).replace(/\p{Number}/gu, '')
+
+  return parseFloat(stringNumber
+    .replace(new RegExp('\\' + thousandSeparator, 'g'), '')
+    .replace(new RegExp('\\' + decimalSeparator), '.')
+  )
+}
+
 export {
   delayPromConstructor,
   getAppUniqueId,
@@ -105,5 +120,6 @@ export {
   downloadFile,
   getOrdinalNum,
   searchArrOfObjs,
-  capitalizeFirstLetter
+  capitalizeFirstLetter,
+  parseLocaleNumber
 }

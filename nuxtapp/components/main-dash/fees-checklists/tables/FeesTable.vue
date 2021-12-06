@@ -1,0 +1,86 @@
+<template>
+  <div class="flex-grow overflow-auto">
+    <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" @input="handleUpdateFee" />
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import { models, mutations } from '~/shared/constants'
+import { searchArrOfObjs } from '~/shared/utility'
+export default {
+  name: 'FeesTable',
+  props: {
+    showArchived: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    ...mapState([models.selectedClient]),
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    displayedFees () {
+      let fees = []
+      if (!this.showArchived) {
+        fees = this.notArchived
+      } else {
+        fees = this.archived
+      }
+      return searchArrOfObjs(fees, this.searchInput)
+    },
+    notArchived () {
+      if (this.fees) {
+        return this.fees
+          .filter(fee => !fee.archived)
+          .sort((a, b) => b.years - a.years)
+      } else {
+        return null
+      }
+    },
+    archived () {
+      if (this.fees) {
+        return this.fees
+          .filter(fee => fee.archived)
+          .sort((a, b) => b.years - a.years)
+      } else {
+        return null
+      }
+    },
+    classObj () {
+      const even = this.idx % 2 === 0
+      return { even }
+    },
+    fees () {
+      if (this.selectedClient?.fees) {
+        return JSON.parse(JSON.stringify(this.selectedClient.fees))
+      } else {
+        return null
+      }
+    }
+  },
+  methods: {
+    handleUpdateFee (editedFee) {
+      this.updateOnBackend(editedFee)
+      this.updateOnClient(editedFee)
+    },
+    updateOnBackend (editedFee) {
+      this.$api.updateFee(this.headers, { feeId: editedFee.id }, editedFee)
+    },
+    updateOnClient (editedFee) {
+      const fees = JSON.parse(JSON.stringify(this.fees))
+      const editedFeeIndex = fees.findIndex(fee => fee.id === editedFee.id)
+      fees[editedFeeIndex] = editedFee
+      const data = Object.assign({}, this.selectedClient, { fees })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.even {
+  @apply bg-gray-50;
+}
+</style>

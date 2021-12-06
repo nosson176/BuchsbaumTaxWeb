@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
-    <PersonalContactTabs :active-tab="activeTab" @click="emitTabClick" />
-    <div class="flex bg-blue-200 p-0.5">
+    <FeesChecklistsTabs :active-tab="activeTab" @click="emitTabClick" />
+    <div class="flex flex-col bg-blue-200 p-0.5 z-10 shadow">
       <ViewArchivedHeader @change="emitChange" />
       <SearchHeader v-model="searchInput" :active-tab="activeTab" />
     </div>
@@ -9,13 +9,13 @@
 </template>
 
 <script>
-import { events, models, mutations, tableGroups, tabs } from '~/shared/constants'
+import { events, models, mutations, tabs, tableGroups } from '~/shared/constants'
 export default {
-  name: 'PersonalContactHeader',
+  name: 'FeesChecklistsHeader',
   data () {
     return {
       searchInput: '',
-      activeTab: tabs.tax_personals
+      activeTab: tabs.fees
 
     }
   },
@@ -36,7 +36,7 @@ export default {
     searchInputUpdate (searchInput) {
       this.$store.commit(
         mutations.setModelResponse,
-        { model: models.search, data: { [tableGroups.personalContact]: searchInput } }
+        { model: models.search, data: { [tableGroups.feesChecklists]: searchInput } }
       )
     }
   }

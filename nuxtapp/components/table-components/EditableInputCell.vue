@@ -6,8 +6,9 @@
       v-model="computedValue"
       autofocus
       type="text"
-      class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 text-center min-h-full"
+      class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full"
       tabindex="0"
+      :placeholder="placeholder"
       @blur="onBlur"
     >
     <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
@@ -29,13 +30,17 @@ export default {
       type: Boolean,
       required: true
     },
-    isCurrency: {
+    currency: {
       type: Boolean,
       default: false
     },
     readonly: {
       type: Boolean,
       default: false
+    },
+    placeholder: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -81,5 +86,9 @@ export default {
 
 .read-mode {
   @apply overflow-hidden overflow-ellipsis border-transparent outline-none border-2 focus:border-blue-600;
+}
+
+input::placeholder {
+  @apply italic text-gray-600;
 }
 </style>
