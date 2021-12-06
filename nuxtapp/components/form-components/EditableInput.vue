@@ -11,7 +11,7 @@
       :placeholder="placeholder"
       @blur="onBlur"
     >
-    <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
+    <span v-else class="cursor-pointer">{{ computedValue || placeholder }}</span>
   </div>
 </template>
 

@@ -107,6 +107,7 @@
             <EditableInput
               v-model="rate"
               :is-editable="isEditable('rate')"
+              placeholder="Rate/hr"
               @blur="onBlur"
               @input="debounceUpdate"
             />
@@ -114,7 +115,7 @@
         </div>
       </div>
       <div @click="setEditable('notes')">
-        <EditableInput v-model="notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
+        <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
       </div>
     </div>
   </div>
@@ -208,7 +209,7 @@ export default {
     },
     rate: {
       get () {
-        return this.formModel.rate || 'Rate/hr'
+        return this.formModel.rate || ''
       },
       set (newVal) {
         this.formModel.rate = newVal
@@ -216,7 +217,7 @@ export default {
     },
     notes: {
       get () {
-        return this.formModel.notes || 'Notes'
+        return this.formModel.notes
       },
       set (newVal) {
         this.formModel.notes = newVal
