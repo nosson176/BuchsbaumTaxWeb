@@ -3,6 +3,7 @@ export const models = Object.freeze({
   allClientFees: 'allClientFees',
   appWidth: 'appWidth',
   clients: 'clients',
+  clientsHistory: 'clientsHistory',
   loading: 'loading',
   modals: 'modals',
   search: 'search',

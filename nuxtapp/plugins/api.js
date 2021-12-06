@@ -21,7 +21,7 @@ export default ({ $axios, store }, inject) => {
   const getClientList = headers => $axios.get('/clients', { headers, loading: models.clients, store: models.clients })
   const getClientData = (headers, id) => $axios.get(
     `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
-  )
+  ).then(() => getClientsHistory(headers))
   const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })
   const getValueTaxGroups = headers => $axios.get('values/tax-groups', { headers, loading: models.valueTaxGroups, store: models.valueTaxGroups })
   const createLog = (headers, { clientId, log }) => $axios.post(
@@ -62,6 +62,7 @@ export default ({ $axios, store }, inject) => {
   )
   const getAllClientFees = headers => $axios.get('/clients/fees', { headers, loading: models.allClientFees, store: models.allClientFees })
   const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
+  const getClientsHistory = headers => $axios.get('/clients/history', { headers, loading: models.clientsHistory, store: models.clientsHistory })
 
   const api = {
     login,
@@ -84,7 +85,8 @@ export default ({ $axios, store }, inject) => {
     createFee,
     updateFee,
     getAllClientFees,
-    getAllUsers
+    getAllUsers,
+    getClientsHistory
   }
 
   // Inject to context as $api

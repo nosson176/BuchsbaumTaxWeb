@@ -1,8 +1,6 @@
 <template>
   <div class="flex flex-col max-h-screen">
-    <div class="bg-black text-white w-full flex">
-      HEADER
-    </div>
+    <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list">
         <ClientListHeader @change="toggleShowArchivedClients" />
