@@ -150,12 +150,12 @@
       <!-- spacing -->
       <div />
       <!-- end of spacing -->
-      <div @click="setEditable('sum')">
+      <div>
         <EditableInput
           v-model="sum"
           placeholder="Sum"
           currency
-          :is-editable="isEditable('sum')"
+          :is-editable="false"
           @blur="onBlur"
           @input="debounceUpdate"
         />
@@ -198,7 +198,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { models, mutations } from '~/shared/constants'
+import { events, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -210,69 +210,153 @@ export default {
   },
   data () {
     return {
-      editable: ''
+      editable: '',
+      formModel: null
     }
   },
   computed: {
     ...mapState([models.valueTypes]),
-    formModel () {
-      return {
-        ...this.filing
+    headers () {
+      return this.$api.getHttpConfig()
+    },
+    taxForm: {
+      get () {
+        return this.formModel.taxForm
+      },
+      set (newValue) {
+        this.formModel.taxForm = newValue
       }
     },
-    taxForm () {
-      return this.formModel.taxForm
+    status: {
+      get () {
+        return this.formModel.status
+      },
+      set (newVal) {
+        this.formModel.status = newVal
+      }
     },
-    status () {
-      return this.formModel.status
+    statusDetail: {
+      get () {
+        return this.formModel.statusDetail
+      },
+      set (newVal) {
+        this.formModel.statusDetail = newVal
+      }
     },
-    statusDetail () {
-      return this.formModel.statusDetail
+    statusDate: {
+      get () {
+        return this.formModel.statusDate
+      },
+      set (newVal) {
+        this.formModel.statusDate = newVal
+      }
     },
-    statusDate () {
-      return this.formModel.statusDate
+    memo: {
+      get () {
+        return this.formModel.memo
+      },
+      set (newVal) {
+        this.formModel.memo = newVal
+      }
     },
-    memo () {
-      return this.formModel.memo
+    includeInRefund: {
+      get () {
+        return this.formModel.includeInRefund
+      },
+      set (newVal) {
+        this.formModel.includeInRefund = newVal
+      }
     },
-    includeInRefund () {
-      return this.formModel.includeInRefund
+    owes: {
+      get () {
+        return this.formModel.owes
+      },
+      set (newVal) {
+        this.formModel.owes = newVal
+      }
     },
-    owes () {
-      return this.formModel.owes
+    paid: {
+      get () {
+        return this.formModel.paid
+      },
+      set (newVal) {
+        this.formModel.paid = newVal
+      }
     },
-    paid () {
-      return this.formModel.paid
+    includeFee: {
+      get () {
+        return this.formModel.includeFee
+      },
+      set (newVal) {
+        this.formModel.includeFee = newVal
+      }
     },
-    includeFee () {
-      return this.formModel.includeFee
+    owesFee: {
+      get () {
+        return this.formModel.owesFee
+      },
+      set (newVal) {
+        this.formModel.owesFee = newVal
+      }
     },
-    owesFee () {
-      return this.formModel.owesFee
+    paidFee: {
+      get () {
+        return this.formModel.paidFee
+      },
+      set (newVal) {
+        this.formModel.paidFee = newVal
+      }
     },
-    paidFee () {
-      return this.formModel.paidFee
+    fileType: {
+      get () {
+        return this.formModel.fileType
+      },
+      set (newVal) {
+        this.formModel.fileType = newVal
+      }
     },
-    fileType () {
-      return this.formModel.fileType
+    refund: {
+      get () {
+        return this.formModel.refund
+      },
+      set (newVal) {
+        this.formModel.refund = newVal
+      }
     },
-    refund () {
-      return this.formModel.refund
-    },
-    rebate () {
-      return this.formModel.rebate
+    rebate: {
+      get () {
+        return this.formModel.rebate
+      },
+      set (newVal) {
+        this.formModel.rebate = newVal
+      }
     },
     sum () {
       return this.refund - this.rebate
     },
-    deliveryContact () {
-      return this.formModel.deliveryContact
+    deliveryContact: {
+      get () {
+        return this.formModel.deliveryContact
+      },
+      set (newVal) {
+        this.formModel.deliveryContact = newVal
+      }
     },
-    secondDeliveryContact () {
-      return this.formModel.secondDeliveryContact
+    secondDeliveryContact: {
+      get () {
+        return this.formModel.secondDeliveryContact
+      },
+      set (newVal) {
+        this.formModel.secondDeliveryContact = newVal
+      }
     },
-    dateFiled () {
-      return this.formModel.dateFiled
+    dateFiled: {
+      get () {
+        return this.formModel.dateFiled
+      },
+      set (newVal) {
+        this.formModel.dateFiled = newVal
+      }
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
@@ -293,6 +377,9 @@ export default {
       return this.valueTypes.contact_type.filter(contactType => contactType.show)
     }
   },
+  created () {
+    this.formModel = JSON.parse(JSON.stringify(this.filing))
+  },
   methods: {
     formatAsILCurrency (amt) {
       return formatAsILCurrency(amt)
@@ -309,19 +396,15 @@ export default {
     onBlur () {
       this.setEditable('')
     },
-    handleUpdate (filing) {
-      this.updateOnBackend(filing)
-      this.updateOnClient(filing)
+    handleUpdate () {
+      this.updateOnBackend()
+      this.updateOnClient()
     },
-    updateOnBackend (filing) {
-      this.$api.updateFiling(this.headers, { filingId: filing.id }, filing)
+    updateOnBackend () {
+      this.$api.updateFiling(this.headers, { filingId: this.filing.id }, this.formModel)
     },
-    updateOnClient (updatedFiling) {
-      const filing = JSON.parse(JSON.stringify(this.filing))
-      const editedFilingIndex = filing.findIndex(filing => filing.id === updatedFiling.id)
-      filing[editedFilingIndex] = updatedFiling
-      const data = Object.assign({}, this.selectedClient, { filing })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    updateOnClient () {
+      this.$emit(events.input, JSON.parse(JSON.stringify(this.formModel)))
     }
   }
 }
