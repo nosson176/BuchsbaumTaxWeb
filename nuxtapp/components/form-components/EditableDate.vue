@@ -4,12 +4,12 @@
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
-      :open="showPicker"
       :value-type="valueType"
       :format="format"
       :type="type"
       :placeholder="placeholder"
-      @blur="onBlur"
+      :open.sync="showPicker"
+      @focus="onFocus"
     />
     <span v-else class="cursor-pointer">{{ computedValue || placeholder }}</span>
   </div>
@@ -74,7 +74,9 @@ export default {
   updated () {
     if (this.isEditable) {
       this.$refs.input.focus()
-      this.showPicker = true
+    }
+    if (!this.showPicker) {
+      this.$emit(events.blur)
     }
   },
   methods: {
@@ -84,10 +86,8 @@ export default {
     formatDateForServer (date) {
       return date ? formatDateForServer(date) : ''
     },
-    onBlur (event) {
-      if (!event.explicitOriginalTarget.data) {
-        this.$emit(events.blur)
-      }
+    onFocus () {
+      this.showPicker = true
     }
   }
 }

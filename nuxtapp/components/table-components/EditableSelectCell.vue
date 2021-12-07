@@ -66,6 +66,10 @@ export default {
     options: {
       type: Array,
       required: true
+    },
+    placeholder: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -103,7 +107,7 @@ export default {
       if (this.multiple) {
         return this.splitOptions[0]
       } else {
-        return this.computedValue
+        return this.computedValue || this.placeholder
       }
     }
   },

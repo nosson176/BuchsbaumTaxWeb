@@ -2,19 +2,53 @@
   <div class="p-2 overflow-auto flex flex-grow">
     <div class="w-full grid grid-cols-1 gap-x-1 gap-y-4 text-xs sm:grid-cols-2">
       <div @click="setEditable('taxForm')">
-        <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')" @blur="onBlur" />
+        <EditableSelectCell
+          v-model="taxForm"
+          :options="taxFormOptions"
+          :is-editable="isEditable('taxForm')"
+          placeholder="Tax Form"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <div @click="setEditable('status')">
-        <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')" @blur="onBlur" />
+        <EditableSelectCell
+          v-model="status"
+          :options="statusOptions"
+          :is-editable="isEditable('status')"
+          placeholder="Status"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <div @click="setEditable('statusDetail')">
-        <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions" :is-editable="isEditable('statusDetail')" @blur="onBlur" />
+        <EditableSelectCell
+          v-model="statusDetail"
+          :options="statusDetailOptions"
+          :is-editable="isEditable('statusDetail')"
+          placeholder="Detail"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <div @click="setEditable('statusDate')">
-        <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')" @blur="onBlur" />
+        <EditableDate
+          v-model="statusDate"
+          placeholder="Date"
+          type="date"
+          :is-editable="isEditable('statusDate')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <div @click="setEditable('memo')">
-        <EditableTextArea v-model="memo" placeholder="Memo" :is-editable="isEditable('memo')" @blur="onBlur" />
+        <EditableTextArea
+          v-model="memo"
+          placeholder="Memo"
+          :is-editable="isEditable('memo')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <!-- spacing -->
       <div />
@@ -31,11 +65,25 @@
           />
         </div>
         <div @click="setEditable('owes')">
-          <EditableInput v-model="owes" placeholder="Owes" currency :is-editable="isEditable('owes')" @blur="onBlur" />
+          <EditableInput
+            v-model="owes"
+            placeholder="Owes"
+            currency
+            :is-editable="isEditable('owes')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         /
         <div @click="setEditable('paid')">
-          <EditableInput v-model="paid" placeholder="Paid" currency :is-editable="isEditable('paid')" @blur="onBlur" />
+          <EditableInput
+            v-model="paid"
+            placeholder="Paid"
+            currency
+            :is-editable="isEditable('paid')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
       </div>
       <div class="flex">
@@ -48,66 +96,99 @@
           />
         </div>
         <div @click="setEditable('owesFee')">
-          <EditableInput v-model="owesFee" placeholder="FC" currency :is-editable="isEditable('owesFee')" @blur="onBlur" />
+          <EditableInput
+            v-model="owesFee"
+            placeholder="FC"
+            currency
+            :is-editable="isEditable('owesFee')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         /
         <div @click="setEditable('paidFee')">
-          <EditableInput v-model="paidFee" placeholder="Insur" currency :is-editable="isEditable('paidFee')" @blur="onBlur" />
+          <EditableInput
+            v-model="paidFee"
+            placeholder="Insur"
+            currency
+            :is-editable="isEditable('paidFee')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
       </div>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="fileType" #value>
-          {{ fileType }}
-        </template>
-        <template v-else #label>
-          File Type
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="refund" #value>
-          {{ formattedRefund }}
-        </template>
-        <template v-else #label>
-          Refund
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="rebate" #value>
-          {{ formattedRebate }}
-        </template>
-        <template v-else #label>
-          Rebate
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+      <div @click="setEditable('fileType')">
+        <EditableSelectCell
+          v-model="fileType"
+          :options="fileTypeOptions"
+          :is-editable="isEditable('fileType')"
+          placeholder="File Type"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
+      <div @click="setEditable('refund')">
+        <EditableInput
+          v-model="refund"
+          placeholder="Refund"
+          currency
+          :is-editable="isEditable('refund')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
+      <div @click="setEditable('rebate')">
+        <EditableInput
+          v-model="rebate"
+          placeholder="Rebate"
+          currency
+          :is-editable="isEditable('rebate')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
       <!-- spacing -->
       <div />
       <!-- end of spacing -->
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="hasSum" #value>
-          {{ formattedSum }}
-        </template>
-        <template v-else #label>
-          Sum
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="deliveryContact" #value>
-          {{ deliveryContact }}
-        </template>
-        <template v-else #label>
-          Delivery 1
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
-      <ClientTaxYearCardFilingInfoItem>
-        <template v-if="secondDeliveryContact" #value>
-          {{ secondDeliveryContact }}
-        </template>
-        <template v-else #label>
-          Delivery 2
-        </template>
-      </ClientTaxYearCardFilingInfoItem>
+      <div @click="setEditable('sum')">
+        <EditableInput
+          v-model="sum"
+          placeholder="Sum"
+          currency
+          :is-editable="isEditable('sum')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
+      <div @click="setEditable('deliveryContact')">
+        <EditableSelectCell
+          v-model="deliveryContact"
+          :options="contactTypeOptions"
+          :is-editable="isEditable('deliveryContact')"
+          placeholder="Delivery1"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
+      <div @click="setEditable('secondDeliveryContact')">
+        <EditableSelectCell
+          v-model="secondDeliveryContact"
+          :options="contactTypeOptions"
+          :is-editable="isEditable('secondDeliveryContact')"
+          placeholder="Delivery2"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
       <div @click="setEditable('dateFiled')">
-        <EditableDate v-model="dateFiled" placeholder="Date Filed" type="date" :is-editable="isEditable('dateFiled')" @blur="onBlur" />
+        <EditableDate
+          v-model="dateFiled"
+          placeholder="Date Filed"
+          type="date"
+          :is-editable="isEditable('dateFiled')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
     </div>
   </div>
@@ -134,71 +215,64 @@ export default {
   },
   computed: {
     ...mapState([models.valueTypes]),
+    formModel () {
+      return {
+        ...this.filing
+      }
+    },
     taxForm () {
-      return this.filing.taxForm || 'Tax Form'
+      return this.formModel.taxForm
     },
     status () {
-      return this.filing.status || 'Status'
+      return this.formModel.status
     },
     statusDetail () {
-      return this.filing.statusDetail || 'Detail'
+      return this.formModel.statusDetail
     },
     statusDate () {
-      return this.filing.statusDate
+      return this.formModel.statusDate
     },
     memo () {
-      return this.filing.memo
+      return this.formModel.memo
     },
     includeInRefund () {
-      return this.filing.includeInRefund
+      return this.formModel.includeInRefund
     },
     owes () {
-      return this.filing.owes
+      return this.formModel.owes
     },
     paid () {
-      return this.filing.paid
+      return this.formModel.paid
     },
     includeFee () {
-      return this.filing.includeFee
+      return this.formModel.includeFee
     },
     owesFee () {
-      return this.filing.owesFee
+      return this.formModel.owesFee
     },
     paidFee () {
-      return this.filing.paidFee
+      return this.formModel.paidFee
     },
     fileType () {
-      return this.filing.fileType
+      return this.formModel.fileType
     },
     refund () {
-      return this.filing.refund
-    },
-    formattedRefund () {
-      return formatAsUSCurrency(this.refund)
+      return this.formModel.refund
     },
     rebate () {
-      return this.filing.rebate
-    },
-    formattedRebate () {
-      return formatAsUSCurrency(this.rebate)
-    },
-    hasSum () {
-      return this.refund || this.rebate
+      return this.formModel.rebate
     },
     sum () {
       return this.refund - this.rebate
     },
-    formattedSum () {
-      return formatAsUSCurrency(this.sum)
-    },
     deliveryContact () {
-      return this.filing.deliveryContact
+      return this.formModel.deliveryContact
     },
     secondDeliveryContact () {
-      return this.filing.secondDeliveryContact
+      return this.formModel.secondDeliveryContact
     },
     dateFiled () {
-      return this.filing.dateFiled
+      return this.formModel.dateFiled
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
@@ -211,6 +285,12 @@ export default {
     },
     statusDetailOptions () {
       return this.valueTypes.tax_year_status_detail.filter(statusDetail => statusDetail.show)
+    },
+    fileTypeOptions () {
+      return this.valueTypes.file_type.filter(fileType => fileType.show)
+    },
+    contactTypeOptions () {
+      return this.valueTypes.contact_type.filter(contactType => contactType.show)
     }
   },
   methods: {
