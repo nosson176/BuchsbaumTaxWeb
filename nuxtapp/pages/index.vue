@@ -18,6 +18,7 @@ export default {
         this.$api.getValueTaxGroups(headers)
         this.$api.getAllClientFees(headers)
         this.$api.getClientsHistory(headers)
+        this.$api.getSmartviews(headers)
       })
       .catch((e) => {
         if (e.message === error.axios_401) {

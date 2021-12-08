@@ -29,21 +29,18 @@ export default {
     return { selectedClientId: NaN }
   },
   computed: {
-    ...mapState([models.clients, models.selectedClient]),
+    ...mapState([models.clients, models.selectedClient, models.selectedSmartview]),
     displayedClients () {
-      if (!this.showArchived) {
-        return this.notArchived
-      } else {
-        return this.archived
-      }
+      return this.filteredClients
     },
-    notArchived () {
+    filteredClients () {
       return Object.fromEntries(Object.entries(this.clients)
-        .filter(([key, client]) => !client.archived))
+        .filter(([key, client]) => this.showArchived === client.archived)
+        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds.includes(client.id) : true)
+      )
     },
-    archived () {
-      return Object.fromEntries(Object.entries(this.clients)
-        .filter(([key, client]) => client.archived))
+    hasSelectedSmartview () {
+      return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     }
   },
   watch: {

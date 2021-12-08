@@ -14,8 +14,9 @@
         <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
         <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
       </div>
-      <div class="border border-yellow-500 bg-yellow-100 smart-views">
-        smartviews
+      <div class="border flex flex-col smart-views">
+        <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
+        <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar">
         <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
@@ -51,7 +52,8 @@ export default {
       showArchivedClients: false,
       showArchivedFeesChecklists: false,
       showArchivedLogsIncomeFbar: false,
-      showArchivedPersonals: false
+      showArchivedPersonals: false,
+      showArchivedSmartviews: false
     }
   },
   computed: {
@@ -70,6 +72,9 @@ export default {
     },
     toggleShowArchivedPersonals () {
       this.showArchivedPersonals = !this.showArchivedPersonals
+    },
+    toggleShowArchivedSmartviews () {
+      this.showArchivedSmartviews = !this.showArchivedSmartviews
     },
     switchPersonalsTab (tab) {
       this.currentPersonalsTab = tab
