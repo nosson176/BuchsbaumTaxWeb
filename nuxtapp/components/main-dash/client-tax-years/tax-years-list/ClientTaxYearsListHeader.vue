@@ -1,5 +1,6 @@
 <template>
-  <div class="header">
+  <div class="flex bg-blue-200 px-1 justify-between items-center z-10 shadow">
+    <AddRowButton @click="onAddRowClick" />
     <ViewArchivedHeader @change="emitChange" />
   </div>
 </template>
@@ -18,9 +19,4 @@ export default {
 </script>
 
 <style scoped>
-.header {
-  @apply flex w-full bg-blue-200 px-3 items-center z-10 shadow;
-
-  min-height: 2rem;
-}
 </style>
