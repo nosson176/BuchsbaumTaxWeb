@@ -20,33 +20,19 @@ export default {
     ...mapState([models.selectedClient]),
     displayedTaxYearData () {
       if (this.isClientSelected) {
-        if (!this.showArchived) {
-          return this.notArchived
-        } else {
-          return this.archived
-        }
+        return Object.assign(
+          Object.values(this.selectedClient.taxYearData)
+            .filter(taxYear => this.showArchived === taxYear.archived)
+            .sort((a, b) => {
+              return a.year > b.year ? 1 : -1
+            })
+        )
       } else {
         return null
       }
     },
     isClientSelected () {
       return this.selectedClient.length || Object.entries(this.selectedClient).length
-    },
-    notArchived () {
-      return Object.assign(
-        Object.values(this.selectedClient.taxYearData)
-          .filter(taxYear => !taxYear.archived)
-          .sort((a, b) => {
-            return a.year > b.year ? 1 : -1
-          })
-      )
-    },
-    archived () {
-      return Object.assign(
-        Object.values(this.selectedClient.taxYearData)
-          .filter(taxYear => taxYear.archived)
-          .sort((a, b) => a.year > b.year ? 1 : -1)
-      )
     },
     federalFilingInfo () {
       return this.filings.filter(filing => filing.filingType === filingTypes.federal)[0]

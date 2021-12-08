@@ -98,27 +98,14 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedContacts () {
-      let contacts = []
-      if (!this.showArchived) {
-        contacts = this.notArchived
-      } else {
-        contacts = this.archived
-      }
+      const contacts = this.filteredContacts
       contacts.map((contact) => { return { enabled: !contact.disabled, ...contact } })
       return searchArrOfObjs(contacts, this.searchInput)
     },
-    notArchived () {
+    filteredContacts () {
       if (this.contacts) {
         return this.contacts
-          .filter(contact => !contact.archived)
-      } else {
-        return null
-      }
-    },
-    archived () {
-      if (this.contacts) {
-        return this.contacts
-          .filter(contact => contact.archived)
+          .filter(contact => this.showArchived === contact.archived)
       } else {
         return null
       }

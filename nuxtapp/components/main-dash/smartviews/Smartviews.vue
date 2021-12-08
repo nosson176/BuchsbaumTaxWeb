@@ -33,21 +33,9 @@ export default {
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews () {
-      if (!this.showArchived) {
-        return this.notArchived
-      } else {
-        return this.archived
-      }
-    },
-    notArchived () {
       return Object.fromEntries(Object.entries(this.smartviews)
-        .filter(([key, smartview]) => {
-          return !smartview.archived
-        }))
-    },
-    archived () {
-      return Object.fromEntries(Object.entries(this.smartviews)
-        .filter(([key, smartview]) => smartview.archived))
+        .filter(([key, smartview]) => this.showArchived === smartview.archived
+        ))
     }
   },
   methods: {
