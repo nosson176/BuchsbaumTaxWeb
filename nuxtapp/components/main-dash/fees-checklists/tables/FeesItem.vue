@@ -156,8 +156,13 @@ export default {
     count () {
       return this.idx + 1
     },
-    feeType () {
-      return this.formModel.feeType || 'Type'
+    feeType: {
+      get () {
+        return this.formModel.feeType || 'Type'
+      },
+      set (newValue) {
+        this.formModel.feeType = newValue
+      }
     },
     year: {
       get () {

@@ -46,8 +46,8 @@ export default {
   computed: {
     computedValue: {
       get () {
-        if (this.isCurrency) {
-          return formatAsNumber(this.value)
+        if (this.currency) {
+          return this.value ? formatAsNumber(this.value) : ''
         }
         return this.value
       },
@@ -69,9 +69,6 @@ export default {
     }
   },
   methods: {
-    formatAsCurrency (amount) {
-      return formatAsNumber(amount)
-    },
     onBlur () {
       this.$emit(events.blur)
     }

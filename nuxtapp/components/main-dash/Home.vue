@@ -6,7 +6,7 @@
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
-      <div class="bg-gray-100 border border-gray-500 shadow-md rounded flex flex-col client-tax-years">
+      <div class="bg-gray-100 border border-gray-500 shadow-md rounded-t flex flex-col client-tax-years">
         <ClientTaxYearsHeader />
         <ClientTaxYears />
       </div>

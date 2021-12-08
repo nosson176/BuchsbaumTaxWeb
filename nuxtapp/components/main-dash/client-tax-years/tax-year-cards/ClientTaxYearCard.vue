@@ -6,15 +6,18 @@
           {{ year }}
         </h3>
       </div>
-      <ClientTaxYearCardTabs :filings="filings" :active-filing-type="activeFilingType" @click="setActiveFilingType" />
-      <div class="flex mt-2" />
-      <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" />
+      <ClientTaxYearCardTabs class="z-10 shadow" :filings="filings" :active-filing-type="activeFilingType" @click="setActiveFilingType" />
+      <div class="mt-2" />
+      <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
+      <div class="mt-2" />
     </div>
   </div>
 </template>
 
 <script>
-import { filingTypes } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { filingTypes, models, mutations } from '~/shared/constants'
+
 export default {
   name: 'ClientTaxYearCard',
   props: {
@@ -29,6 +32,7 @@ export default {
     }
   },
   computed: {
+    ...mapState([models.selectedClient]),
     year () {
       return this.yearData.year
     },
@@ -42,6 +46,16 @@ export default {
   methods: {
     setActiveFilingType (filingType) {
       this.activeFilingType = filingType
+    },
+    updateOnClient (updatedFiling) {
+      const taxYearData = JSON.parse(JSON.stringify(this.selectedClient.taxYearData))
+      const taxYearIndex = taxYearData.findIndex(taxYear => taxYear.id === this.yearData.id)
+      const filings = taxYearData[taxYearIndex].filings
+      const editedFilingIndex = filings.findIndex(filing => filing.id === updatedFiling.id)
+      filings[editedFilingIndex] = updatedFiling
+      taxYearData[taxYearIndex].filings = filings
+      const data = Object.assign({}, this.selectedClient, { taxYearData })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     }
   }
 }

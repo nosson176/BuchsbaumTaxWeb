@@ -46,8 +46,8 @@ export default {
   computed: {
     computedValue: {
       get () {
-        if (this.isCurrency) {
-          return formatAsNumber(this.value)
+        if (this.currency) {
+          return this.value ? formatAsNumber(this.value) : ''
         }
         return this.value
       },

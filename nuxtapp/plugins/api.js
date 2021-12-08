@@ -60,6 +60,9 @@ export default ({ $axios, store }, inject) => {
   const updateFee = (headers, { feeId }, fee) => $axios.put(
     `/clients/fees/${feeId}`, fee, { headers }
   )
+  const updateFiling = (headers, { filingId }, filing) => $axios.put(
+    `/clients/filings/${filingId}`, filing, { headers }
+  )
   const getAllClientFees = headers => $axios.get('/clients/fees', { headers, loading: models.allClientFees, store: models.allClientFees })
   const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
   const getClientsHistory = headers => $axios.get('/clients/history', { headers, loading: models.clientsHistory, store: models.clientsHistory })
@@ -86,7 +89,8 @@ export default ({ $axios, store }, inject) => {
     updateFee,
     getAllClientFees,
     getAllUsers,
-    getClientsHistory
+    getClientsHistory,
+    updateFiling
   }
 
   // Inject to context as $api
