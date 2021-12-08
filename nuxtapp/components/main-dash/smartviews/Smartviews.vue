@@ -4,11 +4,12 @@
       v-for="smartview in displayedSmartviews"
       :ref="smartview.id"
       :key="smartview.id"
-      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs smartview cursor-pointer"
+      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs smartview cursor-pointer flex justify-between"
       :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
       @click="selectSmartview(smartview)"
     >
-      {{ smartview.name }}
+      <span class="font-medium text-gray-900">{{ smartview.name }}</span>
+      <span>{{ smartview.clientIds.length }}</span>
     </div>
   </div>
 </template>
