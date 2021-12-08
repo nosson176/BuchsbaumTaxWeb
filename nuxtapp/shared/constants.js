@@ -8,6 +8,8 @@ export const models = Object.freeze({
   modals: 'modals',
   search: 'search',
   selectedClient: 'selectedClient',
+  selectedSmartview: 'selectedSmartview',
+  smartviews: 'smartviews',
   toast: 'toast',
   token: 'token',
   users: 'users',

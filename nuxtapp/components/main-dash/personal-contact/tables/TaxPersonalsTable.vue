@@ -121,27 +121,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedPersonals () {
-      let personals = []
-      if (!this.showArchived) {
-        personals = this.notArchived
-      } else {
-        personals = this.archived
-      }
+      const personals = this.filteredPersonals
       return searchArrOfObjs(personals, this.searchInput)
     },
-    notArchived () {
+    filteredPersonals () {
       if (this.taxPersonals) {
         return this.taxPersonals
-          .filter(personal => !personal.archived)
-          .sort((a, b) => sortByCategory(a, b))
-      } else {
-        return null
-      }
-    },
-    archived () {
-      if (this.taxPersonals) {
-        return this.taxPersonals
-          .filter(personal => personal.archived)
+          .filter(personal => this.showArchived === personal.archived)
           .sort((a, b) => sortByCategory(a, b))
       } else {
         return null
