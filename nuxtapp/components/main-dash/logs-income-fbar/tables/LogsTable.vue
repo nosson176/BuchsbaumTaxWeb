@@ -109,27 +109,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
-      let logs = []
-      if (!this.showArchived) {
-        logs = this.notArchived
-      } else {
-        logs = this.archived
-      }
+      const logs = this.filteredLogs
       return searchArrOfObjs(logs, this.searchInput)
     },
-    notArchived () {
+    filteredLogs () {
       if (this.logs) {
         return this.logs
-          .filter(log => !log.archived)
-          .reverse()
-      } else {
-        return null
-      }
-    },
-    archived () {
-      if (this.logs) {
-        return this.logs
-          .filter(log => log.archived)
+          .filter(log => this.showArchived === log.archived)
           .reverse()
       } else {
         return null

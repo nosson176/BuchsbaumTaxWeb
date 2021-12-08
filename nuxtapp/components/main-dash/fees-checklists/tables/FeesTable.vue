@@ -22,27 +22,13 @@ export default {
       return this.$api.getHttpConfig()
     },
     displayedFees () {
-      let fees = []
-      if (!this.showArchived) {
-        fees = this.notArchived
-      } else {
-        fees = this.archived
-      }
+      const fees = this.filteredFees
       return searchArrOfObjs(fees, this.searchInput)
     },
-    notArchived () {
+    filteredFees () {
       if (this.fees) {
         return this.fees
-          .filter(fee => !fee.archived)
-          .sort((a, b) => b.years - a.years)
-      } else {
-        return null
-      }
-    },
-    archived () {
-      if (this.fees) {
-        return this.fees
-          .filter(fee => fee.archived)
+          .filter(fee => this.showArchived === fee.archived)
           .sort((a, b) => b.years - a.years)
       } else {
         return null

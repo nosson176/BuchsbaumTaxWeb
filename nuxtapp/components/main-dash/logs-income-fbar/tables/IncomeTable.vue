@@ -158,27 +158,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedIncomes () {
-      let income = []
-      if (!this.showArchived) {
-        income = this.notArchived
-      } else {
-        income = this.archived
-      }
+      const income = this.filteredIncomes
       return searchArrOfObjs(income, this.searchInput)
     },
-    notArchived () {
+    filteredIncomes () {
       if (this.incomeBreakdowns) {
         return this.incomeBreakdowns
-          .filter(income => !income.archived)
-          .sort((a, b) => b.years - a.years)
-      } else {
-        return null
-      }
-    },
-    archived () {
-      if (this.incomeBreakdowns) {
-        return this.incomeBreakdowns
-          .filter(income => income.archived)
+          .filter(income => this.showArchived === income.archived)
           .sort((a, b) => b.years - a.years)
       } else {
         return null

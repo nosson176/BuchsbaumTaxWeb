@@ -151,27 +151,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
-      let fbar = []
-      if (!this.showArchived) {
-        fbar = this.notArchived
-      } else {
-        fbar = this.archived
-      }
+      const fbar = this.filteredFbars
       return searchArrOfObjs(fbar, this.searchInput)
     },
-    notArchived () {
+    filteredFbars () {
       if (this.fbarBreakdowns) {
         return this.fbarBreakdowns
-          .filter(fbar => !fbar.archived)
-          .sort((a, b) => b.years - a.years)
-      } else {
-        return null
-      }
-    },
-    archived () {
-      if (this.fbarBreakdowns) {
-        return this.fbarBreakdowns
-          .filter(fbar => fbar.archived)
+          .filter(fbar => this.showArchived === fbar.archived)
           .sort((a, b) => b.years - a.years)
       } else {
         return null
