@@ -1,15 +1,22 @@
 <template>
-  <div class="px-3 py-1 text-xs tracking-tighter h-16 cursor-pointer border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
-    <div class="flex flex-col space-y-3">
-      <div class="flex">
-        <span class="font-bold mr-2">{{ year }}</span>
-        <span> {{ status }}</span>
-        <span class="ml-auto">{{ owes }}</span>
+  <div>
+    <div class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1" :class="classObj">
+      <div class="text-xs tracking-tighter cursor-pointer w-full">
+        <div class="flex flex-col space-y-3">
+          <div class="flex">
+            <span class="font-bold mr-2">{{ year }}</span>
+            <span> {{ status }}</span>
+            <span class="ml-auto">{{ owes }}</span>
+          </div>
+          <div class="flex">
+            <span class="mr-2"> {{ taxForm }}</span>
+            <span>{{ statusDetail }}</span>
+            <span class="ml-auto">{{ paid }}</span>
+          </div>
+        </div>
       </div>
-      <div class="flex">
-        <span class="mr-2"> {{ taxForm }}</span>
-        <span>{{ statusDetail }}</span>
-        <span class="ml-auto">{{ paid }}</span>
+      <div class="w-3">
+        <CheckBoxWithEyeIcon v-model="showing" />
       </div>
     </div>
   </div>
@@ -55,6 +62,9 @@ export default {
     classObj () {
       const even = this.idx % 2 === 0
       return { even }
+    },
+    showing () {
+      return this.taxYear.shown
     }
   },
   methods: {
@@ -66,7 +76,7 @@ export default {
 </script>
 
 <style scoped>
-.even {
-  @apply bg-gray-50;
-}
+  .even {
+    @apply bg-gray-50;
+  }
 </style>

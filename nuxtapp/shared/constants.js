@@ -9,6 +9,7 @@ export const models = Object.freeze({
   search: 'search',
   selectedClient: 'selectedClient',
   selectedSmartview: 'selectedSmartview',
+  shownTaxYears: 'shownTaxYears',
   smartviews: 'smartviews',
   toast: 'toast',
   token: 'token',

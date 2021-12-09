@@ -13,6 +13,9 @@ export default {
   methods: {
     emitChange () {
       this.$emit(events.change)
+    },
+    onAddRowClick () {
+
     }
   }
 }
