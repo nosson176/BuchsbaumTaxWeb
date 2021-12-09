@@ -47,19 +47,19 @@ export default {
       return this.taxYear.year
     },
     status () {
-      return this.federalFilingInfo.status
+      return this.federalFilingInfo?.status
     },
     owes () {
-      return this.federalFilingInfo.owes ? this.formatAsILS(this.federalFilingInfo.owes).split('.')[0] : ''
+      return this.federalFilingInfo?.owes ? this.formatAsILS(this.federalFilingInfo.owes).split('.')[0] : ''
     },
     taxForm () {
-      return this.federalFilingInfo.taxForm
+      return this.federalFilingInfo?.taxForm
     },
     statusDetail () {
-      return this.federalFilingInfo.statusDetail
+      return this.federalFilingInfo?.statusDetail
     },
     paid () {
-      return this.federalFilingInfo.paid ? this.formatAsILS(this.federalFilingInfo.paid).split('.')[0] : ''
+      return this.federalFilingInfo?.paid ? this.formatAsILS(this.federalFilingInfo.paid).split('.')[0] : ''
     },
     classObj () {
       const even = this.idx % 2 === 0
