@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import { events } from '~/shared/constants'
+
 export default {
   name: 'CheckBoxWithEyeIcon',
   props: {
@@ -33,7 +35,7 @@ export default {
         return this.value
       },
       set (newVal) {
-        this.$emit('input', newVal)
+        this.$emit(events.input, newVal)
       }
     }
   },

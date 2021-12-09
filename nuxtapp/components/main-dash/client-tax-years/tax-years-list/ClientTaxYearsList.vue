@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <ClientTaxYearsListItem v-for="(taxYear, idx) in displayedTaxYearData" :key="taxYear.id" :idx="idx" :tax-year="taxYear" />
+    <ClientTaxYearsListItem v-for="(taxYear, idx) in displayedTaxYearData" :key="taxYear.id" :idx="idx" :tax-year="taxYear" @change="toggleItemShown($event,taxYear)" />
   </div>
 </template>
 
@@ -33,7 +33,7 @@ export default {
         )
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
-          data: displayedTaxYearData.filter(taxYear => taxYear.shown)
+          data: displayedTaxYearData.filter(taxYear => taxYear.shown).map(taxYear => taxYear.id)
         })
         return displayedTaxYearData
       } else {
@@ -45,6 +45,21 @@ export default {
     },
     federalFilingInfo () {
       return this.filings.filter(filing => filing.filingType === filingTypes.federal)[0]
+    }
+  },
+  methods: {
+    toggleItemShown (setValue, taxYear) {
+      if (setValue) {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.shownTaxYears,
+          data: [...this.shownTaxYears, taxYear.id]
+        })
+      } else {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.shownTaxYears,
+          data: this.shownTaxYears.filter(id => id !== taxYear.id)
+        })
+      }
     }
   }
 }

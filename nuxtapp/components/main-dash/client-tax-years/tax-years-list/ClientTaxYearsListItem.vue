@@ -23,7 +23,8 @@
 </template>
 
 <script>
-import { filingTypes } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, filingTypes, models } from '~/shared/constants'
 import { formatAsILCurrency } from '~/shared/utility'
 export default {
   name: 'ClientTaxYearsListItem',
@@ -38,6 +39,7 @@ export default {
     }
   },
   computed: {
+    ...mapState([models.shownTaxYears]),
     federalFilingInfo () {
       return this.taxYear.filings.filter(filing => filing.filingType === filingTypes.federal)[0]
     },
@@ -63,8 +65,13 @@ export default {
       const even = this.idx % 2 === 0
       return { even }
     },
-    showing () {
-      return this.taxYear.shown
+    showing: {
+      get () {
+        return this.shownTaxYears.includes(this.taxYear.id)
+      },
+      set (newVal) {
+        this.$emit(events.change, newVal)
+      }
     }
   },
   methods: {
