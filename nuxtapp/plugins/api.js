@@ -18,44 +18,56 @@ export default ({ $axios, store }, inject) => {
     store.commit(mutations.setModelResponse, { model: models.token, data: { token } })
   }
 
+  // GET
   const getClientList = headers => $axios.get('/clients', { headers, loading: models.clients, store: models.clients })
   const getClientData = (headers, id) => $axios.get(
     `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
   ).then(() => getClientsHistory(headers))
   const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })
   const getValueTaxGroups = headers => $axios.get('values/tax-groups', { headers, loading: models.valueTaxGroups, store: models.valueTaxGroups })
+  const getAllClientFees = headers => $axios.get('/clients/fees', { headers, loading: models.allClientFees, store: models.allClientFees })
+  const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
+  const getClientsHistory = headers => $axios.get('/clients/history', { headers, loading: models.clientsHistory, store: models.clientsHistory })
+  const getSmartviews = headers => $axios.get('/smartviews', { headers, loading: models.smartviews, store: models.smartviews })
+
+  // CREATE
   const createLog = (headers, { clientId, log }) => $axios.post(
-    `/clients/${clientId}/logs`, log, { headers }
-  )
-  const updateLog = (headers, { clientId, logId }, log) => $axios.put(
-    `/clients/${clientId}/logs/${logId}`, log, { headers }
+  `/clients/${clientId}/logs`, log, { headers }
   )
   const createTaxPersonal = (headers, { clientId, personal }) => $axios.post(
-    `/clients/${clientId}/personals`, personal, { headers }
+  `/clients/${clientId}/personals`, personal, { headers }
+  )
+  const createContact = (headers, { clientId, contact }) => $axios.post(
+  `/clients/${clientId}/contacts`, contact, { headers }
+  )
+  const createIncome = (headers, { clientId, income }) => $axios.post(
+  `/clients/${clientId}/income`, income, { headers }
+  )
+  const createFbar = (headers, { clientId, fbar }) => $axios.post(
+  `/clients/${clientId}/fbar`, fbar, { headers }
+  )
+  const createFee = (headers, { fee }) => $axios.post(
+    '/clients/fees', fee, { headers }
+  )
+  const createTaxYear = (headers, { clientId, taxYear }) => $axios.post(
+    `/clients/${clientId}/tax-years`, taxYear, { headers }
+  )
+
+  // UPDATE
+  const updateLog = (headers, { clientId, logId }, log) => $axios.put(
+    `/clients/${clientId}/logs/${logId}`, log, { headers }
   )
   const updateTaxPersonal = (headers, { clientId, personalId }, personal) => $axios.put(
     `/clients/${clientId}/personals/${personalId}`, personal, { headers }
   )
-  const createContact = (headers, { clientId, contact }) => $axios.post(
-    `/clients/${clientId}/contacts`, contact, { headers }
-  )
   const updateContact = (headers, { clientId, contactId }, contact) => $axios.put(
     `/clients/${clientId}/contacts/${contactId}`, contact, { headers }
-  )
-  const createIncome = (headers, { clientId, income }) => $axios.post(
-    `/clients/${clientId}/income`, income, { headers }
   )
   const updateIncome = (headers, { clientId, incomeId }, income) => $axios.put(
     `/clients/${clientId}/income/${incomeId}`, income, { headers }
   )
-  const createFbar = (headers, { clientId, fbar }) => $axios.post(
-    `/clients/${clientId}/fbar`, fbar, { headers }
-  )
   const updateFbar = (headers, { clientId, fbarId }, fbar) => $axios.put(
     `/clients/${clientId}/fbar/${fbarId}`, fbar, { headers }
-  )
-  const createFee = (headers, { fee }) => $axios.post(
-    '/clients/fees', fee, { headers }
   )
   const updateFee = (headers, { feeId }, fee) => $axios.put(
     `/clients/fees/${feeId}`, fee, { headers }
@@ -63,36 +75,33 @@ export default ({ $axios, store }, inject) => {
   const updateFiling = (headers, { filingId }, filing) => $axios.put(
     `/clients/filings/${filingId}`, filing, { headers }
   )
-  const getAllClientFees = headers => $axios.get('/clients/fees', { headers, loading: models.allClientFees, store: models.allClientFees })
-  const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
-  const getClientsHistory = headers => $axios.get('/clients/history', { headers, loading: models.clientsHistory, store: models.clientsHistory })
-  const getSmartviews = headers => $axios.get('/smartviews', { headers, loading: models.smartviews, store: models.smartviews })
 
   const api = {
-    login,
-    signout,
-    getClientList,
-    getClientData,
-    getValueTypes,
-    getValueTaxGroups,
-    getHttpConfig,
-    createLog,
-    updateLog,
-    createTaxPersonal,
-    updateTaxPersonal,
     createContact,
-    updateContact,
-    createIncome,
-    updateIncome,
     createFbar,
-    updateFbar,
     createFee,
-    updateFee,
+    createIncome,
+    createLog,
+    createTaxPersonal,
+    createTaxYear,
     getAllClientFees,
     getAllUsers,
+    getClientData,
+    getClientList,
     getClientsHistory,
+    getHttpConfig,
+    getSmartviews,
+    getValueTaxGroups,
+    getValueTypes,
+    login,
+    signout,
+    updateContact,
+    updateFbar,
+    updateFee,
     updateFiling,
-    getSmartviews
+    updateIncome,
+    updateLog,
+    updateTaxPersonal
   }
 
   // Inject to context as $api
