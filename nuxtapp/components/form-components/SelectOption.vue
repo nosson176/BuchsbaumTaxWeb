@@ -22,7 +22,7 @@
       <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <ul
           v-if="showOptions"
-          class="absolute z-10 mt-1 w-auto bg-white text-xs shadow-lg max-h-60 rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
+          class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg max-h-60 rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
           tabindex="-1"
           role="listbox"
           aria-labelledby="listbox-label"
@@ -32,7 +32,7 @@
             v-for="option in options"
             id="listbox-option-0"
             :key="option.id"
-            class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:text-white hover:bg-indigo-600"
+            class="text-gray-900 cursor-default select-none relative bg-white py-2 pl-3 pr-9 hover:text-white hover:bg-indigo-600"
             role="option"
             @click="setSelectOption(option)"
           >
@@ -55,7 +55,7 @@
 <script>
 import { events } from '~/shared/constants'
 export default {
-  name: 'SelectOptionType1',
+  name: 'SelectOption',
   props: {
     value: {
       type: String,
