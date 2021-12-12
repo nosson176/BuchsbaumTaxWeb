@@ -252,8 +252,8 @@ export default {
       }
       const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
       this.$api.createFbar(headers, { clientId, fbar })
-        .then(() => {
-          this.addRowOnClient(fbar)
+        .then((data) => {
+          this.addRowOnClient(data)
         })
     },
     addRowOnClient (fbar) {

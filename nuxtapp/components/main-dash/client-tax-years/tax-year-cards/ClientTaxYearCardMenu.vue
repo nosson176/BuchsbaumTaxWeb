@@ -17,14 +17,13 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.shownTaxYears]),
     displayedTaxYearData () {
       if (this.isClientSelected) {
         return Object.assign(
           Object.values(this.selectedClient.taxYearData)
-            .filter(taxYear => this.showArchived === taxYear.archived)
+            .filter(taxYear => this.shownTaxYears.includes(taxYear.id))
             .sort((a, b) => a.year < b.year ? 1 : -1)
-            .slice(0, 4)
         )
       } else {
         return null

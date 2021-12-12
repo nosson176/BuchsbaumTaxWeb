@@ -4,7 +4,7 @@
       v-for="smartview in displayedSmartviews"
       :ref="smartview.id"
       :key="smartview.id"
-      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs smartview cursor-pointer flex justify-between"
+      class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between"
       :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
       @click="selectSmartview(smartview)"
     >
