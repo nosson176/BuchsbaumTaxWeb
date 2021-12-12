@@ -209,8 +209,8 @@ export default {
       }
       const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
       this.$api.createTaxPersonal(headers, { clientId, personal })
-        .then(() => {
-          this.addRowOnClient(personal)
+        .then((data) => {
+          this.addRowOnClient(data)
         })
     },
     addRowOnClient (personal) {

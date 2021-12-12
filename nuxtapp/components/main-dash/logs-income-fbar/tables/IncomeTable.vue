@@ -259,8 +259,8 @@ export default {
       }
       const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
       this.$api.createIncome(headers, { clientId, income })
-        .then(() => {
-          this.addRowOnClient(income)
+        .then((data) => {
+          this.addRowOnClient(data)
         })
     },
     addRowOnClient (income) {
