@@ -52,6 +52,9 @@ export default ({ $axios, store }, inject) => {
   const createTaxYear = (headers, { clientId, taxYear }) => $axios.post(
     `/clients/${clientId}/tax-years`, taxYear, { headers }
   )
+  const createFiling = (headers, { filing }) => $axios.post(
+    '/clients/filings', filing, { headers }
+  )
 
   // UPDATE
   const updateLog = (headers, { clientId, logId }, log) => $axios.put(
@@ -80,6 +83,7 @@ export default ({ $axios, store }, inject) => {
     createContact,
     createFbar,
     createFee,
+    createFiling,
     createIncome,
     createLog,
     createTaxPersonal,

@@ -377,6 +377,15 @@ export default {
       return this.valueTypes.contact_type.filter(contactType => contactType.show)
     }
   },
+  watch:
+  {
+    filing: {
+      handler () {
+        this.formModel = JSON.parse(JSON.stringify(this.filing))
+      },
+      deep: true
+    }
+  },
   created () {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
   },
