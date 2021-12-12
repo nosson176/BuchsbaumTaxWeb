@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1" :class="classObj">
+    <div class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1" :class="classObj" @click="toggleShowing">
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col space-y-3">
           <div class="flex">
@@ -77,6 +77,9 @@ export default {
   methods: {
     formatAsILS (amt) {
       return formatAsILCurrency(amt)
+    },
+    toggleShowing () {
+      this.showing = !this.showing
     }
   }
 }
