@@ -8,8 +8,14 @@
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
         <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
       </div>
-      <div class="col-start-3 font-semibold text-gray-100 flex justify-center">
-        {{ selectedClient.currentStatus }}
+      <div class="col-start-3 font-semibold text-gray-100 flex justify-center" @click="setEditable('status')">
+        <EditableSelectCell
+          v-model="status"
+          :options="statusOptions"
+          :is-editable="isEditable('status')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <div class="col-start-4">
         {{ selectedClient.periodical }}
@@ -23,13 +29,19 @@
 
 <script>
 import { mapState } from 'vuex'
+import { debounce } from 'lodash'
 import { categories, models } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
   name: 'ClientTaxYearsHeader',
+  data () {
+    return {
+      editingId: ''
+    }
+  },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.valueTypes]),
     primaryPersonal () {
       return this.selectedClient?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
     },
@@ -42,6 +54,28 @@ export default {
       } else {
         return ''
       }
+    },
+    status () {
+      return this.selectedClient.status
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
+    },
+    statusOptions () {
+      return this.valueTypes.status
+    }
+  },
+  methods: {
+    setEditable (editingId) {
+      this.editingId = editingId
+    },
+    isEditable (editingId) {
+      return this.editingId === editingId
+    },
+    onBlur () {
+      this.editingId = ''
+    },
+    handleUpdate () {
     }
   }
 }
