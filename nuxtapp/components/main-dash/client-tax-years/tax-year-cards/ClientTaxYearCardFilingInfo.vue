@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2 overflow-auto flex flex-grow">
+  <div v-if="filing" class="p-2 overflow-auto flex flex-grow">
     <div class="w-full grid grid-cols-1 gap-x-1 gap-y-4 text-xs sm:grid-cols-2">
       <div @click="setEditable('taxForm')">
         <EditableSelectCell
@@ -375,6 +375,15 @@ export default {
     },
     contactTypeOptions () {
       return this.valueTypes.contact_type.filter(contactType => contactType.show)
+    }
+  },
+  watch:
+  {
+    filing: {
+      handler () {
+        this.formModel = JSON.parse(JSON.stringify(this.filing))
+      },
+      deep: true
     }
   },
   created () {

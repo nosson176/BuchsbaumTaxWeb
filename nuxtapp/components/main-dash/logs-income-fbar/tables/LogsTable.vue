@@ -198,8 +198,8 @@ export default {
       }
       const log = Object.assign({}, logsConstructor, defaultValues)
       this.$api.createLog(headers, { clientId, log })
-        .then(() => {
-          this.addRowOnClient(log)
+        .then((data) => {
+          this.addRowOnClient(data)
         })
     },
     addRowOnClient (log) {

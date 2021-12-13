@@ -176,8 +176,8 @@ export default {
       }
       const contact = Object.assign({}, contactsConstructor, defaultValues)
       this.$api.createContact(headers, { clientId, contact })
-        .then(() => {
-          this.addRowOnClient(contact)
+        .then((data) => {
+          this.addRowOnClient(data)
         })
     },
     addRowOnClient (contact) {
