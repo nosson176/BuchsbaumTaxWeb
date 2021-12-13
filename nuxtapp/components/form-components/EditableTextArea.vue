@@ -9,7 +9,9 @@
       @blur="onBlur"
       @keydown.tab.prevent
     />
-    <span v-else tabindex="0" class="cursor-pointer">{{ computedValue || placeholder }}</span>
+    <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
+      {{ computedValue || placeholder }}
+    </span>
   </div>
 </template>
 
