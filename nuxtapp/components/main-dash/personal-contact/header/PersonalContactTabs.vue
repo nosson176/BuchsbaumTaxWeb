@@ -1,16 +1,17 @@
 <template>
   <div class="flex space-x-2">
-    <Tab :active="isTaxPersonalsActive" @click="setTabTaxPersonals">
+    <Tab :active="isTaxPersonalsActive" :count="contactsCount" @click="setTabTaxPersonals">
       Tax Personals
     </Tab>
-    <Tab :active="isContactsActive" @click="setTabContact">
+    <Tab :active="isContactsActive" :count="taxPersonalsCount" @click="setTabContact">
       Contact
     </Tab>
   </div>
 </template>
 
 <script>
-import { events, tabs } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, models, tabs } from '~/shared/constants'
 export default {
   name: 'PersonalContactTabs',
   props: {
@@ -20,11 +21,18 @@ export default {
     }
   },
   computed: {
+    ...mapState([models.selectedClient]),
     isTaxPersonalsActive () {
       return this.activeTab === tabs.tax_personals
     },
     isContactsActive () {
       return this.activeTab === tabs.contact
+    },
+    contactsCount () {
+      return this.selectedClient?.contacts?.filter(contact => !contact.archived).length
+    },
+    taxPersonalsCount () {
+      return this.selectedClient?.taxPersonals?.filter(taxPersonal => !taxPersonal.archived).length
     }
   },
   methods: {

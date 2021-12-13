@@ -1,10 +1,17 @@
 <template>
   <div
-    class="cursor-pointer border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+    class="flex items-center cursor-pointer border-transparent border-b-2 hover:border-gray-300 hover:text-gray-700"
     :class="classObj"
     @click="emitClick"
   >
-    <slot />
+    <div v-if="count >= 0" class="text-white rounded-full bg-indigo-600 py-0.5 px-1.5 text-xs">
+      {{ count }}
+    </div>
+    <div
+      class="text-gray-500  inline-flex items-center py-0.5 px-1.5 text-sm font-medium"
+    >
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -16,6 +23,10 @@ export default {
     active: {
       type: Boolean,
       default: false
+    },
+    count: {
+      type: Number,
+      default: -1
     }
   },
   computed: {
