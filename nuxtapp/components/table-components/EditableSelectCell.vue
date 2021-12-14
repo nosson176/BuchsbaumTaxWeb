@@ -43,7 +43,9 @@
         </li>
       </ul>
     </div>
-    <span v-else class="cursor-pointer m-px">{{ shownValue }}</span>
+    <span v-else class="cursor-pointer m-px" :class="computedValue ? '' : 'text-gray-400 italic'">
+      {{ shownValue }}
+    </span>
   </div>
 </template>
 

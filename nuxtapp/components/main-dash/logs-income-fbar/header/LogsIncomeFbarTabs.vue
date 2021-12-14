@@ -1,19 +1,20 @@
 <template>
   <div class="flex space-x-2">
-    <Tab :active="isLogsActive" @click="setTabLogs">
+    <Tab :active="isLogsActive" :count="logsCount" @click="setTabLogs">
       Logs
     </Tab>
-    <Tab :active="isIncomeActive" @click="setTabIncome">
+    <Tab :active="isIncomeActive" :count="incomeCount" @click="setTabIncome">
       Income
     </Tab>
-    <Tab :active="isFbarActive" @click="setTabFbar">
+    <Tab :active="isFbarActive" :count="fbarCount" @click="setTabFbar">
       Fbar
     </Tab>
   </div>
 </template>
 
 <script>
-import { events, tabs } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, models, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarTabs',
   props: {
@@ -23,6 +24,7 @@ export default {
     }
   },
   computed: {
+    ...mapState([models.selectedClient]),
     isLogsActive () {
       return this.activeTab === tabs.logs
     },
@@ -31,6 +33,15 @@ export default {
     },
     isFbarActive () {
       return this.activeTab === tabs.fbar
+    },
+    logsCount () {
+      return this.selectedClient?.logs?.filter(log => !log.archived).length
+    },
+    incomeCount () {
+      return this.selectedClient?.incomeBreakdowns?.filter(income => !income.archived).length
+    },
+    fbarCount () {
+      return this.selectedClient?.fbarBreakdowns?.filter(fbar => !fbar.archived).length
     }
   },
   methods: {

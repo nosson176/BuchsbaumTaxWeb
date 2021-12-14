@@ -2,7 +2,6 @@
   <div class="px-3 py-1 text-xs tracking-tighter my-auto h-28 border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
     <div class="flex h-full flex-col space-y-1.5 justify-center">
       <div class="flex justify-between">
-        <span class="align-top">{{ count }}</span>
         <div class="flex flex-col w-1/3">
           <div @click="setEditable('feeType')">
             <EditableSelectCell
