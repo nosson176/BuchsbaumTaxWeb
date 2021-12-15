@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div v-if="selectedClient" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
+    <div v-if="selectedClientCopy" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
       <div class="col-start-1 font-bold text-lg">
         {{ selectedClient.lastName }}
       </div>
@@ -36,7 +36,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { categories, models } from '~/shared/constants'
+import { categories, models, mutations } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
@@ -48,24 +48,37 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes]),
+    selectedClientCopy () {
+      return { ...this.selectedClient }
+    },
     primaryPersonal () {
-      return this.selectedClient?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
+      return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
     },
     secondaryPersonal () {
-      return this.selectedClient?.taxPersonals?.filter(personal => personal.category === categories.secondary)[0]
+      return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.secondary)[0]
     },
     formattedCreatedDate () {
-      if (this.selectedClient.created) {
-        return formatDateForClient(this.selectedClient.created)
+      if (this.selectedClientCopy.created) {
+        return formatDateForClient(this.selectedClientCopy.created)
       } else {
         return ''
       }
     },
-    status () {
-      return this.selectedClient.status
+    status: {
+      get () {
+        return this.selectedClientCopy.status
+      },
+      set (newVal) {
+        this.selectedClientCopy.status = newVal
+      }
     },
-    periodical () {
-      return this.selectedClient.periodical
+    periodical: {
+      get () {
+        return this.selectedClientCopy.periodical
+      },
+      set (newVal) {
+        this.selectedClientCopy.periodical = newVal
+      }
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
@@ -89,8 +102,12 @@ export default {
     },
     handleUpdate () {
       const headers = this.$api.getHeaders()
-      const client = this.selectedClient
+      const client = this.selectedClientCopy
       this.$api.updateClient(headers, { clientId: client.id, client })
+      this.updateLocal()
+    },
+    updateLocal () {
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data: this.selectedClientCopy })
     }
   }
 }
