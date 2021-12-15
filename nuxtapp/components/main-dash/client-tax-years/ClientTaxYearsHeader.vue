@@ -1,8 +1,8 @@
 <template>
   <div class="header">
     <div v-if="selectedClientCopy" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
-      <div class="col-start-1 font-bold text-lg">
-        {{ selectedClient.lastName }}
+      <div class="col-start-1 font-bold text-lg cursor-pointer" @click="openEditNameDialogue">
+        {{ lastName }}
       </div>
       <div class="col-start-2">
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
@@ -30,6 +30,9 @@
         {{ formattedCreatedDate }}
       </div>
     </div>
+    <Modal :showing="showEditNameDialogue">
+      <FormInput v-model="lastName" @submit="handleUpdate" />
+    </Modal>
   </div>
 </template>
 
@@ -43,7 +46,8 @@ export default {
   name: 'ClientTaxYearsHeader',
   data () {
     return {
-      editingId: ''
+      editingId: '',
+      showEditNameDialogue: false
     }
   },
   computed: {
@@ -62,6 +66,14 @@ export default {
         return formatDateForClient(this.selectedClientCopy.created)
       } else {
         return ''
+      }
+    },
+    lastName: {
+      get () {
+        return this.selectedClientCopy.lastName
+      },
+      set (newVal) {
+        this.selectedClientCopy.lastName = newVal
       }
     },
     status: {
@@ -108,6 +120,12 @@ export default {
     },
     updateLocal () {
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data: this.selectedClientCopy })
+    },
+    openEditNameDialogue () {
+      this.showEditNameDialogue = true
+    },
+    closeEditNameDialogue () {
+      this.showEditNameDialogue = false
     }
   }
 }

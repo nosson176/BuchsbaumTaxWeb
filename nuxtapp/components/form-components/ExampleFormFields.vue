@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <FormInputType1
+      <FormInput
         id="example-form-string-input"
         v-model="stringProp"
         placeholder="example placeholder"
@@ -9,7 +9,7 @@
       />
     </div>
     <div>
-      <FormInputType1
+      <FormInput
         id="example-form-number-input"
         v-model.number="numberProp"
         type="number"

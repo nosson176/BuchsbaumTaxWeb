@@ -20,7 +20,7 @@ import { mapGetters } from 'vuex'
 import { events } from '~/shared/constants'
 
 export default {
-  name: 'FormInputType1',
+  name: 'FormInput',
   props: {
     value: {
       type: [String, Number],

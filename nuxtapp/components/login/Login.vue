@@ -9,7 +9,7 @@
     <form class="mt-8 space-y-6" @submit.prevent="handleSubmit">
       <input type="hidden" name="remember" value="true">
       <div class="rounded-md shadow-sm -space-y-px">
-        <FormInputType1
+        <FormInput
           id="username"
           v-model="formModel.username.input"
           name="username"
@@ -20,7 +20,7 @@
           first
           required
         />
-        <FormInputType1
+        <FormInput
           id="password"
           v-model="formModel.password.input"
           name="password"
