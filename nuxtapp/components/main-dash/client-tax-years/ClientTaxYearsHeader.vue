@@ -83,7 +83,7 @@ export default {
 
 <style scoped>
   .header {
-    @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center;
+    @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center z-10 shadow;
 
     min-height: 4rem;
   }
