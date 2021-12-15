@@ -55,7 +55,7 @@ export default {
       return this.modalData.type
     },
     headers () {
-      return this.$api.getHttpConfig()
+      return this.$api.getHeaders()
     },
     updateToValue () {
       return this.updatedItem.archived ? 'archive' : 'unarchive'

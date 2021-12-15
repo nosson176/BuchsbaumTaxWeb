@@ -73,7 +73,7 @@ export default {
       return this.filings.some(filing => filing.filingType === filingType)
     },
     addFiling (filingType) {
-      const headers = this.$api.getHttpConfig()
+      const headers = this.$api.getHeaders()
       const defaultValues = {
         filingType,
         taxYearId: this.taxYear.id

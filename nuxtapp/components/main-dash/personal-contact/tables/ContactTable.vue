@@ -117,7 +117,7 @@ export default {
       return this.valueTypes.contact_type.filter(type => type.show)
     },
     headers () {
-      return this.$api.getHttpConfig()
+      return this.$api.getHeaders()
     },
     clientId () {
       return this.selectedClient.id
@@ -168,7 +168,7 @@ export default {
       this.updateStoreObject()
     },
     onAddRowClick () {
-      const headers = this.$api.getHttpConfig()
+      const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,

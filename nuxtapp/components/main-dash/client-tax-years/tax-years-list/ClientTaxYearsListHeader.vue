@@ -20,7 +20,7 @@ export default {
     },
     onAddRowClick () {
       if (this.selectedClient) {
-        const headers = this.$api.getHttpConfig()
+        const headers = this.$api.getHeaders()
         const clientId = this.selectedClient.id
         const taxYear = {
           clientId,

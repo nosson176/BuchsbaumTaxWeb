@@ -217,7 +217,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     headers () {
-      return this.$api.getHttpConfig()
+      return this.$api.getHeaders()
     },
     taxForm: {
       get () {

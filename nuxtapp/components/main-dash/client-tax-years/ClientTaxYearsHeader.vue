@@ -88,6 +88,9 @@ export default {
       this.editingId = ''
     },
     handleUpdate () {
+      const headers = this.$api.getHeaders()
+      const client = this.selectedClient
+      this.$api.updateClient(headers, { clientId: client.id, client })
     }
   }
 }
