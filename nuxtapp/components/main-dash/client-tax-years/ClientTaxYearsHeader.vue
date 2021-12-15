@@ -17,8 +17,14 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-start-4">
-        {{ selectedClient.periodical }}
+      <div class="col-start-4 font-semibold text-gray-100 flex justify-center" @click="setEditable('periodical')">
+        <EditableSelectCell
+          v-model="periodical"
+          :options="periodicalOptions"
+          :is-editable="isEditable('periodical')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
       </div>
       <div class="col-start-5">
         {{ formattedCreatedDate }}
@@ -58,11 +64,17 @@ export default {
     status () {
       return this.selectedClient.status
     },
+    periodical () {
+      return this.selectedClient.periodical
+    },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
     },
     statusOptions () {
       return this.valueTypes.status
+    },
+    periodicalOptions () {
+      return this.valueTypes.periodical
     }
   },
   methods: {
