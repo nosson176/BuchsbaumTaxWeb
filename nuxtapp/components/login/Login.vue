@@ -119,7 +119,7 @@ export default {
         })
     },
     setSessionKey ({ token }) {
-      if (this.rememberMe) {
+      if (this.formModel.rememberMe) {
         setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: 365 })
       } else {
         setCookieByKey(COOKIE_KEY_SESSION_TOKEN, token, { expires: null })
