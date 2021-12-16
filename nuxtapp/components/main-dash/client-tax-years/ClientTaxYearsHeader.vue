@@ -31,7 +31,9 @@
       </div>
     </div>
     <Modal :showing="showEditNameDialogue">
-      <FormInput v-model="lastName" @submit="handleUpdate" />
+      <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
+        <FormInput v-model="lastName" label="Lastname" />
+      </SubmitCard>
     </Modal>
   </div>
 </template>
@@ -47,13 +49,14 @@ export default {
   data () {
     return {
       editingId: '',
-      showEditNameDialogue: false
+      showEditNameDialogue: false,
+      isLastNameUpdateLoading: false
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes]),
+    ...mapState([models.selectedClient, models.valueTypes, models.clients]),
     selectedClientCopy () {
-      return { ...this.selectedClient }
+      return JSON.parse(JSON.stringify(this.selectedClient))
     },
     primaryPersonal () {
       return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
@@ -96,10 +99,16 @@ export default {
       return debounce(this.handleUpdate, 500)
     },
     statusOptions () {
-      return this.valueTypes.status
+      return this.valueTypes.status || []
     },
     periodicalOptions () {
-      return this.valueTypes.periodical
+      return this.valueTypes.periodical || []
+    },
+    clientsCopy () {
+      return JSON.parse(JSON.stringify(Object.assign(
+        Object.values(this.clients)
+          .map(client => client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client)
+      )))
     }
   },
   methods: {
@@ -116,10 +125,15 @@ export default {
       const headers = this.$api.getHeaders()
       const client = this.selectedClientCopy
       this.$api.updateClient(headers, { clientId: client.id, client })
-      this.updateLocal()
+        .then(() => {
+          this.updateLocal()
+        })
     },
     updateLocal () {
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data: this.selectedClientCopy })
+      const client = JSON.parse(JSON.stringify(this.selectedClientCopy))
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data: client })
+      const clients = this.clientsCopy
+      this.$store.commit(mutations.setModelResponse, { model: models.clients, data: clients })
     },
     openEditNameDialogue () {
       this.showEditNameDialogue = true

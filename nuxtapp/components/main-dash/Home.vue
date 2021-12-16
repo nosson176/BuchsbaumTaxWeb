@@ -6,10 +6,6 @@
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
-      <div class="bg-gray-100 border border-gray-500 shadow-md rounded-t flex flex-col client-tax-years">
-        <ClientTaxYearsHeader />
-        <ClientTaxYears />
-      </div>
       <div class="shadow rounded flex flex-col fees-checklists">
         <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
         <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
@@ -25,6 +21,11 @@
       <div class="shadow rounded flex flex-col personal-contact">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
         <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+      </div>
+      <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
+      <div class="bg-gray-100 border border-gray-500 shadow-md rounded-t flex flex-col-reverse client-tax-years">
+        <ClientTaxYears />
+        <ClientTaxYearsHeader />
       </div>
       <Modal :showing="showDeleteModal">
         <DeleteCard @hide="closeDeleteModal" />

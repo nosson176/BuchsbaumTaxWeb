@@ -35,14 +35,14 @@
 
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <input id="remember-me" v-model="formModel.rememberMe" name="remember-me" type="checkbox" class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded">
+          <input id="remember-me" v-model="formModel.rememberMe" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
           <label for="remember-me" class="ml-2 block text-sm text-gray-900">
             Remember me
           </label>
         </div>
 
         <div class="text-sm">
-          <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500">
+          <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
             Forgot your password?
           </a>
         </div>
@@ -53,9 +53,9 @@
       </div>
 
       <div>
-        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <LockIcon class="h-5 w-5 text-yellow-500 group-hover:text-yellow-400" />
+            <LockIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" />
           </span>
           Sign in
         </button>
