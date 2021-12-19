@@ -19,7 +19,9 @@ export default ({ $axios, store }, inject) => {
   }
 
   // GET
-  const getClientList = headers => $axios.get('/clients', { headers, loading: models.clients, store: models.clients })
+  const getClientList = (headers, searchParam = '') => $axios.get(
+    searchParam ? `clients/?q=${searchParam}` : 'clients/', { headers, loading: models.clients, store: models.clients }
+  )
   const getClientData = (headers, id) => $axios.get(
     `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
   ).then(() => getClientsHistory(headers))

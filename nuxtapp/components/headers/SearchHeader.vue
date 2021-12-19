@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { events, tabs } from '~/shared/constants'
+import { events } from '~/shared/constants'
 import { capitalizeFirstLetter } from '~/shared/utility'
 export default {
   name: 'SearchHeader',
@@ -36,7 +36,7 @@ export default {
     },
     activeTab: {
       type: String,
-      default: tabs.logs
+      default: ''
     }
   },
   computed: {
