@@ -15,7 +15,7 @@
       <ul
         v-if="showOptions"
         ref="select"
-        class="absolute z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
+        class="absolute z-10 bg-white max-h-32 text-base w-10 shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="showOptions ? 'opacity-100' : 'opacity-0'"
         tabindex="-1"
         role="listbox"
@@ -27,17 +27,17 @@
           v-for="(option, idx) in priorityOptions"
           :id="idx"
           :key="idx"
-          class="flex items-center justify-start cursor-pointer select-none relative py-1 px-2 hover:bg-gray-300"
+          class="flex items-center justify-start cursor-pointer select-none relative py-1 px-1 hover:bg-gray-300 space-x-1"
           role="option"
           @click="emitChange(option.value)"
         >
           <div class="h-3 w-3 rounded-full" :class="priorityColor(option.value)" />
-          <span v-if="isSelected(option)" class="text-indigo-600 inset-y-0 flex items-center p-0">
+          <div v-if="isSelected(option)" class="text-indigo-600 inset-y-0 flex items-center p-0">
             <!-- Heroicon name: solid/check -->
             <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
-          </span>
+          </div>
         </li>
       </ul>
     </div>
