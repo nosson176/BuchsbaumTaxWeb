@@ -5,7 +5,7 @@
         ref="button"
         type="button"
         tabindex="0"
-        class="p-0 text-xs relative h-5 w-full bg-white text-left cursor-pointer outline-none border-blue-600 border-2"
+        class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
       >
         <span class="block truncate mr-3">

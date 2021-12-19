@@ -19,7 +19,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient]),
     headers () {
-      return this.$api.getHttpConfig()
+      return this.$api.getHeaders()
     },
     displayedFees () {
       const fees = this.filteredFees

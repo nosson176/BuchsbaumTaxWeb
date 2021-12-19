@@ -10,7 +10,7 @@ import { error, routes } from '~/shared/constants'
 export default {
   name: 'IndexPage',
   created () {
-    const headers = this.$api.getHttpConfig()
+    const headers = this.$api.getHeaders()
     this.$api.getClientList(headers)
       .then(() => {
         this.$api.getValueTypes(headers)

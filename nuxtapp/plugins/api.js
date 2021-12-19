@@ -2,7 +2,7 @@ import { COOKIE_KEY_SESSION_TOKEN, models, mutations } from '~/shared/constants'
 import { getCookieByKey, setCookieByKey } from '~/shared/cookie-utilities'
 
 export default ({ $axios, store }, inject) => {
-  const getHttpConfig = () => {
+  const getHeaders = () => {
     const headers = {}
     const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
     if (token) {
@@ -57,6 +57,9 @@ export default ({ $axios, store }, inject) => {
   )
 
   // UPDATE
+  const updateClient = (headers, { clientId, client }) => $axios.put(
+    `/clients/${clientId}`, client, { headers }
+  )
   const updateLog = (headers, { clientId, logId }, log) => $axios.put(
     `/clients/${clientId}/logs/${logId}`, log, { headers }
   )
@@ -93,12 +96,13 @@ export default ({ $axios, store }, inject) => {
     getClientData,
     getClientList,
     getClientsHistory,
-    getHttpConfig,
+    getHeaders,
     getSmartviews,
     getValueTaxGroups,
     getValueTypes,
     login,
     signout,
+    updateClient,
     updateContact,
     updateFbar,
     updateFee,

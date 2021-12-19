@@ -128,7 +128,7 @@ export default {
       return this.valueTypes.year_name.filter(year => year.show)
     },
     headers () {
-      return this.$api.getHttpConfig()
+      return this.$api.getHeaders()
     },
     clientId () {
       return this.selectedClient.id
@@ -187,7 +187,7 @@ export default {
       this.updateStoreObject()
     },
     onAddRowClick () {
-      const headers = this.$api.getHttpConfig()
+      const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const today = new Date()
       const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()

@@ -34,7 +34,7 @@ export default {
   methods: {
     getSelectedClient (selectedClientName) {
       const selectedClient = Object.values(this.clientsHistory).find(client => client.lastName === selectedClientName)
-      const headers = this.$api.getHttpConfig()
+      const headers = this.$api.getHeaders()
       const id = selectedClient.id
       this.$api.getClientData(headers, id)
     }

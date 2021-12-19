@@ -7,7 +7,6 @@
         </h3>
       </div>
       <ClientTaxYearCardTabs
-        class="z-10 shadow"
         :filings="filings"
         :active-filing-type="activeFilingType"
         :tax-year="yearData"
