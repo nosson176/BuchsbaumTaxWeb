@@ -34,8 +34,8 @@
         :key="log.id"
         :idx="idx"
       >
-        <div :id="`${idx}-priority`" class="table-col inline-flex justify-center items-center xs">
-          <div class="h-3 w-3 rounded-full" :class="priorityColor(log.priority)" />
+        <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
+          <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
           <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions" @input="debounceUpdate" @blur="onBlur" />
@@ -70,7 +70,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { models, mutations, priority, tableGroups, tabs } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
@@ -150,9 +150,6 @@ export default {
     }
   },
   methods: {
-    priorityColor (p) {
-      return p ? priority[p] : ''
-    },
     toggleEditable (id, logId) {
       this.editableLogId = logId
       if (!(this.editableId === id)) {
