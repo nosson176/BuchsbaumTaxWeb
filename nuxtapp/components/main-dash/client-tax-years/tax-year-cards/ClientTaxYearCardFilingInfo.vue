@@ -198,7 +198,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { events, models } from '~/shared/constants'
+import { events, filingTypes, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -358,6 +358,9 @@ export default {
         this.formModel.dateFiled = newVal
       }
     },
+    filingType () {
+      return this.filing.filingType
+    },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
     },
@@ -365,10 +368,41 @@ export default {
       return this.valueTypes.tax_form.filter(taxForm => taxForm.show)
     },
     statusOptions () {
-      return this.valueTypes.tax_year_status.filter(status => status.show)
+      if (this.filingType === filingTypes.fbar) {
+        return this.valueTypes.fbar_status.filter(status => status.show)
+      } else if (this.filingType === filingTypes.state) {
+        return this.valueTypes.state_status.filter(status => status.show)
+      } else {
+        return this.valueTypes.tax_year_status.filter(status => status.show)
+      }
     },
     statusDetailOptions () {
-      return this.valueTypes.tax_year_status_detail.filter(statusDetail => statusDetail.show)
+      const parentId = this.statusOptions.find(statusOption => statusOption.value === this.formModel.status)?.id
+      if (this.filingType === filingTypes.fbar) {
+        return this.valueTypes.fbar_status_detail.filter((status) => {
+          if (this.formModel.status) {
+            return status.show && status.parentId === parentId
+          } else {
+            return status.show
+          }
+        })
+      } else if (this.filingType === filingTypes.state) {
+        return this.valueTypes.state_status_detail.filter((status) => {
+          if (this.formModel.status) {
+            return status.show && status.parentId === parentId
+          } else {
+            return status.show
+          }
+        })
+      } else {
+        return this.valueTypes.tax_year_status_detail.filter((status) => {
+          if (this.formModel.status) {
+            return status.show && status.parentId === parentId
+          } else {
+            return status.show
+          }
+        })
+      }
     },
     fileTypeOptions () {
       return this.valueTypes.file_type.filter(fileType => fileType.show)
