@@ -253,7 +253,14 @@ export default {
       return this.valueTypes.fee_status.filter(feeStatus => feeStatus.show)
     },
     feeStatusDetailOptions () {
-      return this.valueTypes.fee_status_detail.filter(feeStatusDetail => feeStatusDetail.show)
+      return this.valueTypes.fee_status_detail.filter((feeStatusDetail) => {
+        const parentId = this.feeStatusOptions.find(statusOption => statusOption.value === this.formModel.status)?.id
+        if (this.formModel.status) {
+          return feeStatusDetail.parentId === parentId
+        } else {
+          return feeStatusDetail.show
+        }
+      })
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)

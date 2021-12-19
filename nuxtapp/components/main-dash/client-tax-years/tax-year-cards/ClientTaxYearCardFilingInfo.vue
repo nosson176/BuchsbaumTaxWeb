@@ -377,7 +377,7 @@ export default {
       }
     },
     statusDetailOptions () {
-      const parentId = this.statusOptions.find(statusOption => statusOption.value === this.formModel.status).id
+      const parentId = this.statusOptions.find(statusOption => statusOption.value === this.formModel.status)?.id
       if (this.filingType === filingTypes.fbar) {
         return this.valueTypes.fbar_status_detail.filter((status) => {
           if (this.formModel.status) {
