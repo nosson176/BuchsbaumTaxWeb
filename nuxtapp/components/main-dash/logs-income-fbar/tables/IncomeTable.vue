@@ -249,26 +249,20 @@ export default {
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId,
-        category: this.categoryOptions[2].value,
-        years: this.yearNameOptions[0].value,
-        taxType: this.taxTypeOptions[0].value,
-        taxGroup: this.taxGroupOptions[0].value,
-        job: this.jobOptions[0].value,
-        currency: this.currencyOptions[0].value
+        clientId
       }
       const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
       this.$api.createIncome(headers, { clientId, income })
         .then((data) => {
-          this.addRowOnClient(data)
+          this.getUpdatedClientData(data)
         })
     },
-    addRowOnClient (income) {
-      this.incomeBreakdowns.push(income)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedIncomes.length - 1}-years`, income.id)
-      })
+    getUpdatedClientData (income) {
+      const headers = this.$api.getHeaders()
+      this.$api.getClientData(headers, this.selectedClient.id)
+        .then(() => {
+          this.toggleEditable('0-years', income.id)
+        })
     },
     updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })

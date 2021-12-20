@@ -201,11 +201,7 @@ export default {
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
-        category: this.categoryOptions[2].value,
-        language: this.languageOptions[0].value,
-        relation: this.relationOptions[0].value,
-        dateOfBirth: new Date(),
-        archived: this.showArchived
+        lastName: this.selectedClient.lastName
       }
       const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
       this.$api.createTaxPersonal(headers, { clientId, personal })

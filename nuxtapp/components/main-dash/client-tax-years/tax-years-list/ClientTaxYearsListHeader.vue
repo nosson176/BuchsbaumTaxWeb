@@ -23,10 +23,7 @@ export default {
         const headers = this.$api.getHeaders()
         const clientId = this.selectedClient.id
         const taxYear = {
-          clientId,
-          year: this.valueTypes.year_name.filter(year => year.show)[0].value,
-          archived: false,
-          irsHistory: false
+          clientId
         }
         this.$api.createTaxYear(headers, { clientId, taxYear })
           .then((data) => {

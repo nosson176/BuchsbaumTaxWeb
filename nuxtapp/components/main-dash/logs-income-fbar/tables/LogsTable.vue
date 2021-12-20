@@ -116,7 +116,6 @@ export default {
       if (this.logs) {
         return this.logs
           .filter(log => this.showArchived === log.archived)
-          .reverse()
       } else {
         return null
       }
@@ -186,25 +185,21 @@ export default {
     onAddRowClick () {
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
-      const today = new Date()
-      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
       const defaultValues = {
-        clientId,
-        years: this.yearOptions[0].value,
-        logDate: date
+        clientId
       }
       const log = Object.assign({}, logsConstructor, defaultValues)
       this.$api.createLog(headers, { clientId, log })
         .then((data) => {
-          this.addRowOnClient(data)
+          this.getUpdatedClientData(data)
         })
     },
-    addRowOnClient (log) {
-      this.logs.push(log)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable('0-years', log.id)
-      })
+    getUpdatedClientData (log) {
+      const headers = this.$api.getHeaders()
+      this.$api.getClientData(headers, this.selectedClient.id)
+        .then(() => {
+          this.toggleEditable('0-years', log.id)
+        })
     },
     updateStoreObject () {
       const data = Object.assign({}, this.selectedClient, { logs: this.logs })

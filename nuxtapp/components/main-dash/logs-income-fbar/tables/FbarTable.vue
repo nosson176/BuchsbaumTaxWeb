@@ -242,13 +242,7 @@ export default {
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId,
-        category: this.categoryOptions[2].value,
-        years: this.yearNameOptions[0].value,
-        taxType: this.taxTypeOptions[0].value,
-        taxGroup: this.taxGroupOptions[0].value,
-        job: this.jobOptions[0].value,
-        currency: this.currencyOptions[0].value
+        clientId
       }
       const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
       this.$api.createFbar(headers, { clientId, fbar })
@@ -260,7 +254,7 @@ export default {
       this.fbarBreakdowns.push(fbar)
       this.updateStoreObject()
       this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedFbars.length - 1}-years`, fbar.id)
+        this.toggleEditable('0-years', fbar.id)
       })
     },
     updateStoreObject () {

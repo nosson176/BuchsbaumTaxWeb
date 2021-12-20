@@ -171,8 +171,7 @@ export default {
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId,
-        contactType: this.contactTypeOptions[0].value
+        clientId
       }
       const contact = Object.assign({}, contactsConstructor, defaultValues)
       this.$api.createContact(headers, { clientId, contact })
