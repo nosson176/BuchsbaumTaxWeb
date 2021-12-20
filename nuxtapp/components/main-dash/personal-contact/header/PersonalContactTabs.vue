@@ -1,9 +1,9 @@
 <template>
   <div class="flex space-x-2">
-    <Tab :active="isTaxPersonalsActive" :count="contactsCount" @click="setTabTaxPersonals">
+    <Tab :active="isTaxPersonalsActive" :count="taxPersonalsCount" @click="setTabTaxPersonals">
       Tax Personals
     </Tab>
-    <Tab :active="isContactsActive" :count="taxPersonalsCount" @click="setTabContact">
+    <Tab :active="isContactsActive" :count="contactsCount" @click="setTabContact">
       Contact
     </Tab>
   </div>
