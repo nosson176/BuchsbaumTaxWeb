@@ -127,6 +127,9 @@
           @input="debounceUpdate"
         />
       </div>
+      <!-- spacing -->
+      <div />
+      <!-- end of spacing -->
       <div @click="setEditable('refund')">
         <EditableInput
           v-model="refund"
@@ -147,18 +150,20 @@
           @input="debounceUpdate"
         />
       </div>
-      <!-- spacing -->
-      <div />
-      <!-- end of spacing -->
-      <div>
-        <EditableInput
-          v-model="sum"
-          placeholder="Sum"
-          currency
-          :is-editable="false"
-          @blur="onBlur"
-          @input="debounceUpdate"
-        />
+      <div class="col-span-2 flex justify-evenly py-1 items-center" :class="sumClassObj">
+        <div>
+          <span class="text-white" :class="sum ? 'font-semibold' : 'italic'">
+            {{ sum || 'Sum' }}
+          </span>
+        </div>
+        <div @click="setEditable('completed')">
+          <EditableCheckBoxCell
+            v-model="completed"
+            :is-editable="isEditable('completed')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
+        </div>
       </div>
       <div @click="setEditable('deliveryContact')">
         <EditableSelectCell
@@ -331,8 +336,25 @@ export default {
         this.formModel.rebate = newVal
       }
     },
+    completed: {
+      get () {
+        return this.formModel.completed
+      },
+      set (newVal) {
+        this.formModel.completed = newVal
+      }
+    },
     sum () {
       return this.refund - this.rebate
+    },
+    sumClassObj () {
+      return {
+        'bg-gray-400': this.sum === 0,
+        'bg-yellow-400': this.sum > 0 && !this.completed,
+        'bg-green-400': this.sum > 0 && this.completed,
+        'bg-blue-400': this.sum < 0 && !this.completed,
+        'bg-red-400': this.sum < 0 && this.completed
+      }
     },
     deliveryContact: {
       get () {
