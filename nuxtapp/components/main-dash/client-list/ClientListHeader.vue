@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col bg-blue-200 p-0.5 z-10 shadow">
     <ViewArchivedHeader @change="emitChange" />
-    <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" />
+    <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
   </div>
 </template>
 
@@ -28,6 +28,10 @@ export default {
     searchClients () {
       const headers = this.$api.getHeaders()
       this.$api.getClientList(headers, this.searchInput)
+    },
+    clearSearch () {
+      this.searchInput = ''
+      this.searchClients()
     }
   }
 }
