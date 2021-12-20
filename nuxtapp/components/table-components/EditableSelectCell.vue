@@ -13,10 +13,10 @@
         </span>
       </button>
       <ul
-        v-if="showOptions"
+        v-if="showOptions && isEditable"
         ref="select"
         class="absolute z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
-        :class="showOptions ? 'opacity-100' : 'opacity-0'"
+        :class="showOptions && isEditable ? 'opacity-100' : 'opacity-0'"
         tabindex="-1"
         role="listbox"
         aria-labelledby="listbox-label"
@@ -29,7 +29,7 @@
           :key="idx"
           class="text-gray-900 text-xs cursor-default select-none relative py-0 pl-0 pr-1 hover:text-white hover:bg-indigo-600"
           role="option"
-          @click="emitChange(option.value)"
+          @click.stop="emitChange(option.value)"
         >
           <span class="ml-4 block truncate" :class="isSelected(option) ? 'font-semibold' : 'font-normal'">
             {{ option.value }}
