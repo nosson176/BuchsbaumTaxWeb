@@ -146,15 +146,14 @@ export default {
     handleUpdate () {
       const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (contactId) {
       if (this.showArchived) {
         const contact = this.displayedContacts.find(contact => contact.id === contactId)
         contact.archived = false
         this.$api.updateContact(this.headers, { clientId: this.clientId, contactId }, contact)
-          .then(() => {
-            this.updateClient(contactId, contact)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
@@ -162,33 +161,14 @@ export default {
         )
       }
     },
-    updateClient (contactId, contact) {
-      const contactIndex = this.contacts.findIndex(contact => contact.id === contactId)
-      this.contacts[contactIndex] = contact
-      this.updateStoreObject()
-    },
     onAddRowClick () {
-      const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId
       }
       const contact = Object.assign({}, contactsConstructor, defaultValues)
-      this.$api.createContact(headers, { clientId, contact })
-        .then((data) => {
-          this.addRowOnClient(data)
-        })
-    },
-    addRowOnClient (contact) {
-      this.contacts.push(contact)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedContacts.length - 1}-contactType`, contact.id)
-      })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+      this.$api.createContact(this.headers, { clientId, contact })
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onKeyDown () {
       const currentCell = this.editableId

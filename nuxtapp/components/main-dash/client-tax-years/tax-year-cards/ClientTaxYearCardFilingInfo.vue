@@ -198,7 +198,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { events, filingTypes, models } from '~/shared/constants'
+import { filingTypes, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -215,7 +215,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.valueTypes]),
+    ...mapState([models.valueTypes, models.selectedClient]),
     headers () {
       return this.$api.getHeaders()
     },
@@ -447,7 +447,7 @@ export default {
       this.$api.updateFiling(this.headers, { filingId: this.filing.id }, this.formModel)
     },
     updateOnClient () {
-      this.$emit(events.input, JSON.parse(JSON.stringify(this.formModel)))
+      this.$api.getClientData(this.headers, this.selectedClient.id)
     }
   }
 }

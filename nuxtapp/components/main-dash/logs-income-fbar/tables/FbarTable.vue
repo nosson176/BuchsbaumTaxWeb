@@ -223,20 +223,13 @@ export default {
         const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
-          .then(() => {
-            this.updateClient(fbarId, fbar)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
           { model: models.modals, data: { delete: { showing: true, data: { id: fbarId, type: tabs.fbar } } } }
         )
       }
-    },
-    updateClient (fbarId, fbar) {
-      const fbarIndex = this.fbarBreakdowns.findIndex(fbar => fbar.id === fbarId)
-      this.fbarBreakdowns[fbarIndex] = fbar
-      this.updateStoreObject()
     },
     onAddRowClick () {
       const headers = this.$api.getHeaders()
@@ -252,14 +245,9 @@ export default {
     },
     addRowOnClient (fbar) {
       this.fbarBreakdowns.push(fbar)
-      this.updateStoreObject()
       this.$nextTick(() => {
         this.toggleEditable('0-years', fbar.id)
       })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbarBreakdowns })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId

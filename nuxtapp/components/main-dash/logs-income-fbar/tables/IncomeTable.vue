@@ -230,20 +230,13 @@ export default {
         const income = this.displayedIncomes.find(income => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
-          .then(() => {
-            this.updateClient(incomeId, income)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
           { model: models.modals, data: { delete: { showing: true, data: { id: incomeId, type: tabs.income } } } }
         )
       }
-    },
-    updateClient (incomeId, income) {
-      const incomeIndex = this.incomeBreakdowns.findIndex(income => income.id === incomeId)
-      this.incomeBreakdowns[incomeIndex] = income
-      this.updateStoreObject()
     },
     onAddRowClick () {
       const headers = this.$api.getHeaders()
@@ -263,10 +256,6 @@ export default {
         .then(() => {
           this.toggleEditable('0-years', income.id)
         })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId

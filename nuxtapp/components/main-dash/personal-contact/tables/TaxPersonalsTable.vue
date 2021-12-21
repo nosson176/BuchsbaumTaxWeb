@@ -175,15 +175,14 @@ export default {
     handleUpdate () {
       const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (personalId) {
       if (this.showArchived) {
         const personal = this.displayedPersonals.find(personal => personal.id === personalId)
         personal.archived = false
         this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
-          .then(() => {
-            this.updateClient(personalId, personal)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
@@ -197,28 +196,14 @@ export default {
       this.updateStoreObject()
     },
     onAddRowClick () {
-      const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
         lastName: this.selectedClient.lastName
       }
       const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
-      this.$api.createTaxPersonal(headers, { clientId, personal })
-        .then((data) => {
-          this.addRowOnClient(data)
-        })
-    },
-    addRowOnClient (personal) {
-      this.taxPersonals.push(personal)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedPersonals.length - 1}-category`, personal.id)
-      })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+      this.$api.createTaxPersonal(this.headers, { clientId, personal })
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onKeyDown () {
       const currentCell = this.editableId

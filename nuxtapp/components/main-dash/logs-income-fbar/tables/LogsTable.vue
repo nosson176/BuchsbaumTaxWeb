@@ -167,20 +167,13 @@ export default {
         const log = this.displayedLogs.find(log => log.id === logId)
         log.archived = false
         this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
-          .then(() => {
-            this.updateClient(logId, log)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
           { model: models.modals, data: { delete: { showing: true, data: { id: logId, type: tabs.logs } } } }
         )
       }
-    },
-    updateClient (logId, log) {
-      const logIndex = this.logs.findIndex(log => log.id === logId)
-      this.logs[logIndex] = log
-      this.updateStoreObject()
     },
     onAddRowClick () {
       const headers = this.$api.getHeaders()
@@ -190,9 +183,7 @@ export default {
       }
       const log = Object.assign({}, logsConstructor, defaultValues)
       this.$api.createLog(headers, { clientId, log })
-        .then((data) => {
-          this.getUpdatedClientData(data)
-        })
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     getUpdatedClientData (log) {
       const headers = this.$api.getHeaders()
@@ -200,10 +191,6 @@ export default {
         .then(() => {
           this.toggleEditable('0-years', log.id)
         })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { logs: this.logs })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId
