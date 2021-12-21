@@ -152,8 +152,8 @@
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center" :class="sumClassObj">
         <div>
-          <span class="text-white" :class="sum ? 'font-semibold' : 'italic'">
-            {{ sum || 'Sum' }}
+          <span class="text-white font-semibold text-sm">
+            {{ sum }}
           </span>
         </div>
         <div @click="setEditable('completed')">
