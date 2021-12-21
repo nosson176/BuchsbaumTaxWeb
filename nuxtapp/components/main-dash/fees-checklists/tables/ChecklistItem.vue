@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full justify-between text-gray-500 bg-white px-2 py-1 text-xs client cursor-pointer" :class="classObj">
-    <div @click="setEditable('finished')">
+    <div class="w-1/8" @click="setEditable('finished')">
       <EditableCheckBoxCell
         v-model="finished"
         :is-editable="isEditable('finished')"
@@ -8,7 +8,7 @@
         @input="debounceUpdate"
       />
     </div>
-    <div @click="setEditable('translated')">
+    <div class="w-1/8" @click="setEditable('translated')">
       <EditableCheckBoxCell
         v-model="translated"
         :is-editable="isEditable('translated')"
@@ -16,7 +16,7 @@
         @input="debounceUpdate"
       />
     </div>
-    <div @click="setEditable('memo')">
+    <div class="w-3/4" @click="setEditable('memo')">
       <EditableSelectCell
         v-model="memo"
         :class="memo && !isEditable('memo') ? '' : 'missing'"
@@ -103,9 +103,8 @@ export default {
     },
     handleUpdate () {
       const headers = this.$api.getHeaders()
-      this.$api.updateChecklist(
-        headers, { clientId: this.selectedClient.id, checklistId: this.checklist.id }, { ...this.formModel }
-      )
+      this.$api.updateChecklist(headers, { checklistId: this.checklist.id }, { ...this.formModel })
+        .then(() => this.$api.getClientData(headers, this.selectedClient.id))
     },
     onBlur () {
       this.editable = ''
