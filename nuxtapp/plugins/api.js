@@ -83,8 +83,8 @@ export default ({ $axios, store }, inject) => {
   const updateFiling = (headers, { filingId }, filing) => $axios.put(
     `/clients/filings/${filingId}`, filing, { headers }
   )
-  const updateChecklist = (headers, { clientId, checklistId }, checklist) => $axios.put(
-    `/clients/${clientId}/checklists/${checklistId}`, checklist, { headers }
+  const updateChecklist = (headers, { checklistId }, checklist) => $axios.put(
+    `/clients/checklists/${checklistId}`, checklist, { headers }
   )
 
   const api = {
