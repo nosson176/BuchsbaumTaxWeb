@@ -98,6 +98,9 @@ export default {
     },
     handleUpdate () {
 
+    },
+    onBlur () {
+      this.editable = ''
     }
   }
 }
