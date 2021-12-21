@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full">
+  <div class="flex w-full justify-between text-gray-500 bg-white px-2 py-1 text-xs client cursor-pointer" :class="classObj">
     <div @click="setEditable('finished')">
       <EditableCheckBoxCell
         v-model="finished"
@@ -87,6 +87,11 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    classObj () {
+      return {
+        odd: this.odd
+      }
     }
   },
   methods: {
@@ -97,15 +102,21 @@ export default {
       return this.editable === editable
     },
     handleUpdate () {
-
+      const headers = this.$api.getHeaders()
+      this.$api.updateChecklist(
+        headers, { clientId: this.selectedClient.id, checklistId: this.checklist.id }, { ...this.formModel }
+      )
     },
     onBlur () {
       this.editable = ''
     }
   }
 }
+
 </script>
 
 <style scoped>
-
+.odd {
+  @apply bg-gray-50;
+}
 </style>

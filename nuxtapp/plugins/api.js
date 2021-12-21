@@ -83,6 +83,9 @@ export default ({ $axios, store }, inject) => {
   const updateFiling = (headers, { filingId }, filing) => $axios.put(
     `/clients/filings/${filingId}`, filing, { headers }
   )
+  const updateChecklist = (headers, { clientId, checklistId }, checklist) => $axios.put(
+    `/clients/${clientId}/checklists/${checklistId}`, checklist, { headers }
+  )
 
   const api = {
     createContact,
@@ -104,6 +107,7 @@ export default ({ $axios, store }, inject) => {
     getValueTypes,
     login,
     signout,
+    updateChecklist,
     updateClient,
     updateContact,
     updateFbar,
