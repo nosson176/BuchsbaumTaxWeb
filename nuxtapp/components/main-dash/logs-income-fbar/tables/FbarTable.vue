@@ -217,6 +217,7 @@ export default {
     handleUpdate () {
       const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
@@ -240,14 +241,15 @@ export default {
       const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
       this.$api.createFbar(headers, { clientId, fbar })
         .then((data) => {
-          this.addRowOnClient(data)
+          this.getUpdatedClientData(data)
         })
     },
-    addRowOnClient (fbar) {
-      this.fbarBreakdowns.push(fbar)
-      this.$nextTick(() => {
-        this.toggleEditable('0-years', fbar.id)
-      })
+    getUpdatedClientData (income) {
+      const headers = this.$api.getHeaders()
+      this.$api.getClientData(headers, this.selectedClient.id)
+        .then(() => {
+          this.toggleEditable('0-years', income.id)
+        })
     },
     onKeyDown () {
       const currentCell = this.editableId
