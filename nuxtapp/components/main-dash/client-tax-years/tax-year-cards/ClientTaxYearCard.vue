@@ -46,7 +46,7 @@ export default {
     ...mapState([models.selectedClient]),
     year: {
       get () {
-        return this.yearCopy.year
+        return this.yearData.year
       },
       set (newVal) {
         this.yearCopy.year = newVal
@@ -89,8 +89,12 @@ export default {
       this.editableId = ''
     },
     handleUpdate () {
-      // const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
-      // this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+      const headers = this.$api.getHeaders()
+      const yearData = Object.assign({}, this.yearData, this.yearCopy)
+      const taxYearId = yearData.id
+      const clientId = this.selectedClient.id
+      this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
+        .then(() => this.$api.getClientData(headers, clientId))
     }
   }
 }

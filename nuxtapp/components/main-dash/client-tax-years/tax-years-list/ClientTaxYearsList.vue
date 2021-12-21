@@ -17,7 +17,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.shownTaxYears]),
+    ...mapState([models.selectedClient, models.shownTaxYears, models.shownTaxYears]),
     displayedTaxYearData () {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
@@ -27,7 +27,7 @@ export default {
               return a.year < b.year ? 1 : -1
             })
             .map((taxYear, index) => {
-              const shown = index < 4
+              const shown = index < 4 || this.shownTaxYears.includes(taxYear.id)
               return { shown, ...taxYear }
             })
         )
