@@ -56,6 +56,7 @@ export default {
   methods: {
     onClearClick () {
       this.computedValue = ''
+      this.$emit(events.click)
     }
   }
 }
