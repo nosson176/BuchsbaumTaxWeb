@@ -41,7 +41,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div @click="setEditable('memo')">
+      <div class="col-span-2 cursor-pointer" @click="setEditable('memo')">
         <EditableTextArea
           v-model="memo"
           placeholder="Memo"
@@ -50,11 +50,6 @@
           @input="debounceUpdate"
         />
       </div>
-      <!-- spacing -->
-      <div />
-      <div />
-      <div />
-      <!-- end of spacing -->
       <div class="flex">
         <div @click="setEditable('includeInRefund')">
           <EditableCheckBoxCell
