@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-grow overflow-hidden">
     <FeesTable v-if="showFees" :show-archived="showArchived" />
+    <ChecklistsTable v-if="showChecklists" :show-archived="showArchived" />
   </div>
 </template>
 
