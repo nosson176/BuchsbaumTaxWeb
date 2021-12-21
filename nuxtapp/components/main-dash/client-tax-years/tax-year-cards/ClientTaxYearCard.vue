@@ -1,9 +1,11 @@
 <template>
   <div class="flex-grow flex">
     <div class="bg-white shadow w-80 flex flex-col overflow-hidden">
-      <div class="p-2 flex justify-between">
+      <div class="p-2 flex justify-between z-10">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          {{ year }}
+          <div @click="toggleEditable('year', yearData.id)">
+            <EditableSelectCell v-model="year" :options="yearOptions" :is-editable="isEditable('year')" @blur="onBlur" @input="debounceUpdate" />
+          </div>
         </h3>
       </div>
       <ClientTaxYearCardTabs
@@ -22,6 +24,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { debounce } from 'lodash'
 import { filingTypes, models, mutations } from '~/shared/constants'
 
 export default {
@@ -34,19 +37,35 @@ export default {
   },
   data () {
     return {
-      activeFilingType: filingTypes.federal
+      activeFilingType: filingTypes.federal,
+      editableId: '',
+      editableYearId: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient]),
-    year () {
-      return this.yearData.year
+    year: {
+      get () {
+        return this.yearCopy.year
+      },
+      set (newVal) {
+        this.yearCopy.year = newVal
+      }
+    },
+    yearCopy () {
+      return Object.assign({}, this.yearData)
     },
     filings () {
       return this.yearData.filings
     },
     displayedFilingInfo () {
       return this.filings.filter(filing => filing.filingType === this.activeFilingType)[0]
+    },
+    yearOptions () {
+      return this.$store.state.valueTypes.year_name.filter(year => year.show)
+    },
+    debounceUpdate () {
+      return debounce(this.handleUpdate, 500)
     }
   },
   methods: {
@@ -66,6 +85,22 @@ export default {
       taxYearData[taxYearIndex].filings = filings
       const data = Object.assign({}, this.selectedClient, { taxYearData })
       this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    },
+    toggleEditable (field, id) {
+      this.editableYearId = id
+      if (!(this.editableId === field)) {
+        this.editableId = field
+      }
+    },
+    isEditable (id) {
+      return this.editableId === id
+    },
+    onBlur () {
+      this.editableId = ''
+    },
+    handleUpdate () {
+      // const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
+      // this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
     }
   }
 }
