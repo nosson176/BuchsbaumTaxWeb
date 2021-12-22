@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between items-center bg-gray-50 pl-1" :class="idx % 2 === 0 ? 'even': ''">
+  <div class="flex items-center bg-gray-50 pl-1" :class="idx % 2 === 0 ? 'even': ''">
     <slot />
   </div>
 </template>

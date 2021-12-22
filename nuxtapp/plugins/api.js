@@ -57,6 +57,9 @@ export default ({ $axios, store }, inject) => {
   const createFiling = (headers, { filing }) => $axios.post(
     '/clients/filings', filing, { headers }
   )
+  const createChecklist = (headers, { checklist }) => $axios.post(
+    '/clients/checklists', checklist, { headers }
+  )
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) => $axios.put(
@@ -86,8 +89,12 @@ export default ({ $axios, store }, inject) => {
   const updateTaxYear = (headers, { clientId, taxYearId }, taxYear) => $axios.put(
     `/clients/${clientId}/tax-years/${taxYearId}`, taxYear, { headers }
   )
+  const updateChecklist = (headers, { checklistId }, checklist) => $axios.put(
+    `/clients/checklists/${checklistId}`, checklist, { headers }
+  )
 
   const api = {
+    createChecklist,
     createContact,
     createFbar,
     createFee,
@@ -107,6 +114,7 @@ export default ({ $axios, store }, inject) => {
     getValueTypes,
     login,
     signout,
+    updateChecklist,
     updateClient,
     updateContact,
     updateFbar,

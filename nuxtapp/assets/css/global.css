@@ -39,7 +39,7 @@
 .table-col-primary.lg {
   @apply w-3/12;
 
-  min-width: 12rem;
+  min-width: 8rem;
 }
 
 .table-col.xl,

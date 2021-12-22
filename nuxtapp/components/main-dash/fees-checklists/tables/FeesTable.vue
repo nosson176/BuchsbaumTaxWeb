@@ -6,7 +6,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, tableGroups } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'FeesTable',
@@ -34,16 +34,15 @@ export default {
         return null
       }
     },
-    classObj () {
-      const even = this.idx % 2 === 0
-      return { even }
-    },
     fees () {
       if (this.selectedClient?.fees) {
         return JSON.parse(JSON.stringify(this.selectedClient.fees))
       } else {
         return null
       }
+    },
+    searchInput () {
+      return this.search?.[tableGroups.feesChecklists]
     }
   },
   methods: {

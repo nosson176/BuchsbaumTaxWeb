@@ -124,6 +124,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { events, models, currencySymbols } from '~/shared/constants'
+
 export default {
   name: 'FeesItem',
   props: {
