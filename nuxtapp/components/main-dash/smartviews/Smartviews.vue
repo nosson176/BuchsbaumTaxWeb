@@ -9,7 +9,7 @@
       @click="selectSmartview(smartview)"
     >
       <span class="font-medium text-gray-900">{{ smartview.name }}</span>
-      <span>{{ smartview.clientIds.length }}</span>
+      <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
     </div>
   </div>
 </template>
@@ -34,9 +34,13 @@ export default {
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews () {
-      return Object.fromEntries(Object.entries(this.smartviews)
-        .filter(([key, smartview]) => this.showArchived === smartview.archived
-        ))
+      if (this.smartviews) {
+        return Object.fromEntries(Object.entries(this.smartviews)
+          .filter(([key, smartview]) => this.showArchived === smartview.archived
+          ))
+      } else {
+        return []
+      }
     }
   },
   methods: {
