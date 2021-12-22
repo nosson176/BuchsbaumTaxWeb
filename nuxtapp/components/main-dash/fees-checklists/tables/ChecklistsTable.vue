@@ -111,7 +111,11 @@ export default {
       this.editable = ''
     },
     onAddRowClick () {
-
+      const checklist = {
+        clientId: this.selectedClient.id
+      }
+      this.$api.createChecklist(this.headers, { checklist })
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onKeyDown () {
       const currentCell = this.editable
