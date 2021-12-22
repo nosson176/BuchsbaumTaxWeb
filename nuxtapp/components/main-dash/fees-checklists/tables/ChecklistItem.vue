@@ -31,7 +31,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { models } from '~/shared/constants'
 
 export default {
@@ -82,12 +81,6 @@ export default {
         ...this.checklist
       }
     },
-    memoOptions () {
-      return this.valueTypes.checklist_memo.filter(memo => memo.show)
-    },
-    debounceUpdate () {
-      return debounce(this.handleUpdate, 500)
-    },
     classObj () {
       return {
         odd: this.odd
@@ -95,20 +88,6 @@ export default {
     }
   },
   methods: {
-    setEditable (editable) {
-      this.editable = editable
-    },
-    isEditable (editable) {
-      return this.editable === editable
-    },
-    handleUpdate () {
-      const headers = this.$api.getHeaders()
-      this.$api.updateChecklist(headers, { checklistId: this.checklist.id }, { ...this.formModel })
-        .then(() => this.$api.getClientData(headers, this.selectedClient.id))
-    },
-    onBlur () {
-      this.editable = ''
-    }
   }
 }
 
