@@ -4,7 +4,7 @@
       v-for="client in displayedClients"
       :ref="client.id"
       :key="client.id"
-      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-500 hover:text-white"
+      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
@@ -67,7 +67,7 @@ export default {
 }
 
 .client:nth-child(even):hover {
-  @apply bg-gray-500;
+  @apply bg-gray-400;
 }
 
 .client.selected {
