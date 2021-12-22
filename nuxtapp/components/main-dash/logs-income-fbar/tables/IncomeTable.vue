@@ -152,14 +152,21 @@ export default {
   data () {
     return {
       editableId: '',
+      newIncomeId: -1,
       editableIncomeId: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedIncomes () {
-      const income = this.filteredIncomes
-      return searchArrOfObjs(income, this.searchInput)
+      const incomes = this.filteredIncomes
+      const newIncomeIdx = incomes.findIndex(income => income.id === this.newIncomeId)
+      if (newIncomeIdx > -1) {
+        const tempIncome = incomes[newIncomeIdx]
+        incomes.splice(newIncomeIdx, 1)
+        incomes.unshift(tempIncome)
+      }
+      return searchArrOfObjs(incomes, this.searchInput)
     },
     filteredIncomes () {
       if (this.incomeBreakdowns) {
@@ -246,15 +253,10 @@ export default {
       }
       const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
       this.$api.createIncome(headers, { clientId, income })
-        .then((data) => {
-          this.getUpdatedClientData(data)
-        })
-    },
-    getUpdatedClientData (income) {
-      const headers = this.$api.getHeaders()
-      this.$api.getClientData(headers, this.selectedClient.id)
-        .then(() => {
-          this.toggleEditable('0-years', income.id)
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newIncomeId = data.id
+          this.toggleEditable('0-include', data.id)
         })
     },
     onKeyDown () {
