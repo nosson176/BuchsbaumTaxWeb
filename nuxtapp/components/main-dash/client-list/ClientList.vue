@@ -4,11 +4,11 @@
       v-for="client in displayedClients"
       :ref="client.id"
       :key="client.id"
-      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer"
+      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-500 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
-      <span class="font-medium text-gray-900">{{ client.lastName }}</span> {{ client.displayName }}
+      <span class="font-medium text-gray-900 ">{{ client.lastName }}</span> {{ client.displayName }}
     </div>
   </div>
 </template>
@@ -64,6 +64,10 @@ export default {
 <style scoped>
 .client:nth-child(even) {
   @apply bg-white;
+}
+
+.client:nth-child(even):hover {
+  @apply bg-gray-500;
 }
 
 .client.selected {
