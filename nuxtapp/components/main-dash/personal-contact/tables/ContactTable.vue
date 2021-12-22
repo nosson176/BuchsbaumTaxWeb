@@ -92,6 +92,7 @@ export default {
   data () {
     return {
       editableId: '',
+      newContactId: -1,
       editableContactId: ''
     }
   },
@@ -100,6 +101,12 @@ export default {
     displayedContacts () {
       const contacts = this.filteredContacts
       contacts.map((contact) => { return { enabled: !contact.disabled, ...contact } })
+      const newContactIdx = contacts.findIndex(contact => contact.id === this.newContactId)
+      if (newContactIdx > -1) {
+        const tempContact = contacts[newContactIdx]
+        contacts.splice(newContactIdx, 1)
+        contacts.unshift(tempContact)
+      }
       return searchArrOfObjs(contacts, this.searchInput)
     },
     filteredContacts () {
@@ -168,7 +175,11 @@ export default {
       }
       const contact = Object.assign({}, contactsConstructor, defaultValues)
       this.$api.createContact(this.headers, { clientId, contact })
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          const contactId = data.id
+          this.newContactId = contactId
+        })
     },
     onKeyDown () {
       const currentCell = this.editableId
