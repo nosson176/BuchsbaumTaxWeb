@@ -5,8 +5,8 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header normal">
-          Trans
+        <div class="table-header xs">
+          T
         </div>
         <div class="table-header lg">
           Memo
@@ -20,13 +20,13 @@
         :key="checklist.id"
         :idx="idx"
       >
-        <div :id="`${idx}-finished`" class="table-col xs" @click="toggleEditable(`${idx}-finished`, checklist.id)">
-          <EditableCheckBoxCell v-model="checklist.finished" :is-editable="isEditable(`${idx}-finished`)" @input="debounceUpdate" />
+        <div :id="`${idx}-finished`" class="table-col xs" @click="setEditable(`${idx}-finished`, checklist.id)">
+          <EditableCheckBoxCell v-model="checklist.finished" :is-editable="isEditable(`${idx}-finished`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-translate`" class="table-col normal" @click="toggleEditable(`${idx}-translate`, checklist.id)">
-          <EditableCheckBoxCell v-model="checklist.translate" :is-editable="isEditable(`${idx}-translate`)" @input="debounceUpdate" />
+        <div :id="`${idx}-translate`" class="table-col xs" @click="setEditable(`${idx}-translate`, checklist.id)">
+          <EditableCheckBoxCell v-model="checklist.translate" :is-editable="isEditable(`${idx}-translate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-memo`" class="table-col lg" @click="toggleEditable(`${idx}-memo`, checklist.id)">
+        <div :id="`${idx}-memo`" class="table-col lg" @click="setEditable(`${idx}-memo`, checklist.id)">
           <EditableSelectCell v-model="checklist.memo" :options="memoOptions" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
@@ -42,6 +42,10 @@ import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { searchArrOfObjs } from '~/shared/utility'
 import { models, tableGroups } from '~/shared/constants'
+
+const columns = [
+  'finished', 'translate', 'memo', 'delete'
+]
 
 export default {
   name: 'ChecklistsTable',
@@ -86,6 +90,9 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    headers () {
+      return this.$api.getHeaders()
     }
   },
   methods: {
@@ -97,8 +104,8 @@ export default {
       return this.editable === editable
     },
     handleUpdate () {
-      const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
-      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+      const checklist = this.displayedChecklists.find(checklist => checklist.id === this.editableChecklistId)
+      this.$api.updateChecklist(this.headers, { checklistId: this.editableChecklistId }, checklist)
     },
     onBlur () {
       this.editable = ''
@@ -107,13 +114,13 @@ export default {
 
     },
     onKeyDown () {
-      // const currentCell = this.editableId
-      // const idArr = currentCell.split('-')
-      // const columnIndex = columns.findIndex(col => col === idArr[1])
-      // if (columnIndex < columns.length - 1) {
-      //   const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-      //   this.toggleEditable(nextCell, this.editableContactId)
-      // }
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.setEditable(nextCell, this.editableChecklistId)
+      }
     }
   }
 }

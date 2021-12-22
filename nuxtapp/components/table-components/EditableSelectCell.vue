@@ -15,7 +15,7 @@
       <ul
         v-if="showOptions"
         ref="select"
-        class="absolute z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
+        class="absolute overflow-x-hidden z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="showOptions ? 'opacity-100' : 'opacity-0'"
         tabindex="-1"
         role="listbox"
