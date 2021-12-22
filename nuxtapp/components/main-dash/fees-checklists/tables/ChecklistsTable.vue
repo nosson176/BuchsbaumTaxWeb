@@ -114,7 +114,7 @@ export default {
 
     },
     onKeyDown () {
-      const currentCell = this.editableId
+      const currentCell = this.editable
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
