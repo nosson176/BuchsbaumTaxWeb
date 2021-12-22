@@ -102,6 +102,7 @@ export default {
   },
   data () {
     return {
+      newLogId: -1,
       editableId: '',
       editableLogId: ''
     }
@@ -110,6 +111,12 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
       const logs = this.filteredLogs
+      const newLogIdx = logs.findIndex(contact => contact.id === this.newLogId)
+      if (newLogIdx > -1) {
+        const tempLog = logs[newLogIdx]
+        logs.splice(newLogIdx, 1)
+        logs.unshift(tempLog)
+      }
       return searchArrOfObjs(logs, this.searchInput)
     },
     filteredLogs () {
@@ -183,13 +190,10 @@ export default {
       }
       const log = Object.assign({}, logsConstructor, defaultValues)
       this.$api.createLog(headers, { clientId, log })
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
-    },
-    getUpdatedClientData (log) {
-      const headers = this.$api.getHeaders()
-      this.$api.getClientData(headers, this.selectedClient.id)
-        .then(() => {
-          this.toggleEditable('0-years', log.id)
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newLogId = data.id
+          this.toggleEditable('0-priority', data.id)
         })
     },
     onKeyDown () {
