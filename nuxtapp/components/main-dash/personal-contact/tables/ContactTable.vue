@@ -177,8 +177,8 @@ export default {
       this.$api.createContact(this.headers, { clientId, contact })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          const contactId = data.id
-          this.newContactId = contactId
+          this.newContactId = data.id
+          this.toggleEditable('0-disabled', data.id)
         })
     },
     onKeyDown () {
