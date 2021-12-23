@@ -311,6 +311,6 @@ export default {
 
 <style scoped>
 .missing {
-  @apply italic text-gray-600;
+  @apply italic text-gray-400;
 }
 </style>
