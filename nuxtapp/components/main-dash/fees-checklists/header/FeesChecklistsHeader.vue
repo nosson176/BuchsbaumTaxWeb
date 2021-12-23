@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <FeesChecklistsTabs :active-tab="activeTab" @click="emitTabClick" />
-    <div class="flex flex-col bg-blue-200 p-0.5 z-10 shadow">
+    <div class="flex flex-col bg-blue-200 p-0.5" :class="isFeeTabActive ? '' : 'shadow'">
       <ViewArchivedHeader @change="emitChange" />
       <SearchHeader v-model="searchInput" :active-tab="activeTab" />
     </div>
@@ -19,11 +19,15 @@ export default {
 
     }
   },
+  computed: {
+    isFeesTabActive () {
+      return this.activeTab === tabs.fees
+    }
+  },
   watch: {
     searchInput (searchInput) {
       this.searchInputUpdate(searchInput)
     }
-
   },
   methods: {
     emitChange () {

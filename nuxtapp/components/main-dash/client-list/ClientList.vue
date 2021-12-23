@@ -1,5 +1,8 @@
 <template>
   <div class="flex-grow overflow-auto">
+    <div class="bg-white sticky top-0 shadow">
+      <AddRowButton @click="onAddRowClick" />
+    </div>
     <div
       v-for="client in displayedClients"
       :ref="client.id"
