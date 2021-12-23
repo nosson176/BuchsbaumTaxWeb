@@ -3,7 +3,14 @@
     <div class="bg-white sticky top-0 shadow">
       <AddRowButton @click="onAddRowClick" />
     </div>
-    <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" @input="handleUpdateFee" />
+    <FeesItem
+      v-for="(fee, idx) in displayedFees"
+      :key="idx"
+      :idx="idx"
+      :fee="fee"
+      :is-new="newFeeId === fee.id"
+      @input="handleUpdateFee"
+    />
   </div>
 </template>
 
