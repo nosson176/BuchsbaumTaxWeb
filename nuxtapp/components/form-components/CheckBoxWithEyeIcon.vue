@@ -9,10 +9,11 @@
         class="opacity-0 h-3 w-3 col-start-1 row-start-1 col-span-1 row-span-1 cursor-pointer"
       >
       <div
-        class="border border-gray-300 rounded h-3 w-3 shadow-inner text-indigo-600 focus-within:ring ring-indigo-600 ring-offset-2 col-start-1 row-start-1 col-span-1 row-span-1"
+        class="h-4 w-4 col-start-1 row-start-1 col-span-1 row-span-1"
+        :class="computedValue ? 'text-indigo-600' : 'text-gray-400'"
         @click="onClick"
       >
-        <EyeIcon v-if="computedValue" class="p-px" />
+        <EyeIcon />
       </div>
     </div>
   </div>

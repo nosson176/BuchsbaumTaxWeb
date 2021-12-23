@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col flex-grow overflow-hidden" @keydown.tab.prevent="emitKeyDown">
+  <div class="flex flex-col flex-grow overflow-hidden bg-white" @keydown.tab.prevent="emitKeyDown">
     <slot name="header" />
     <div class="flex-grow overflow-auto">
       <slot name="body" />

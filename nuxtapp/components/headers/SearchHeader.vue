@@ -9,8 +9,10 @@
         class="focus:ring-indigo-500 focus:border-indigo-500 block w-full py-0.5 pr-10 sm:text-sm border-gray-300 rounded-full"
         :placeholder="placeholder"
       >
-      <div class="absolute inset-y-0 right-0 pr-2 flex items-center">
-        <CloseIcon class="h-4 w-4 bg-gray-500 rounded-full cursor-pointer text-white " @click="onClearClick" />
+      <div class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" @click="onClearClick">
+        <div class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center">
+          <CloseIcon class="w-3 h-3" />
+        </div>
       </div>
     </div>
   </div>
