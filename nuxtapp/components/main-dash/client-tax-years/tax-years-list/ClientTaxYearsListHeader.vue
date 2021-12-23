@@ -19,23 +19,24 @@ export default {
       this.$emit(events.change)
     },
     onAddRowClick () {
-      if (this.selectedClient) {
-        const headers = this.$api.getHeaders()
-        const clientId = this.selectedClient.id
-        const taxYear = {
-          clientId
-        }
-        this.$api.createTaxYear(headers, { clientId, taxYear })
-          .then((data) => {
-            this.$api.getClientData(headers, clientId)
-              .then(() => {
-                this.$store.commit(mutations.setModelResponse, {
-                  model: models.shownTaxYears,
-                  data: [...this.shownTaxYears, data.id]
-                })
-              })
-          })
+      if (!this.selectedClient) {
+        return
       }
+      const headers = this.$api.getHeaders()
+      const clientId = this.selectedClient.id
+      const taxYear = {
+        clientId
+      }
+      this.$api.createTaxYear(headers, { clientId, taxYear })
+        .then((data) => {
+          this.$api.getClientData(headers, clientId)
+            .then(() => {
+              this.$store.commit(mutations.setModelResponse, {
+                model: models.shownTaxYears,
+                data: [...this.shownTaxYears, data.id]
+              })
+            })
+        })
     }
   }
 }

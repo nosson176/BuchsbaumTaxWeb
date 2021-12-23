@@ -113,22 +113,7 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
-const fbarBreakdownsConstructor = {
-  clientId: NaN,
-  years: '',
-  category: '',
-  taxGroup: '',
-  taxType: '',
-  part: '',
-  currency: '',
-  frequency: 0,
-  documents: '',
-  description: '',
-  amount: 0,
-  depend: '',
-  include: true,
-  archived: false
-}
+
 const docOptions = [
   { value: 'HAS' },
   { value: 'NEEDS' }
@@ -144,6 +129,7 @@ export default {
   },
   data () {
     return {
+      newFbarId: NaN,
       editableId: '',
       editableFbarId: ''
     }
@@ -151,8 +137,14 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
-      const fbar = this.filteredFbars
-      return searchArrOfObjs(fbar, this.searchInput)
+      const fbars = this.filteredFbars
+      const newFbarIdx = fbars?.findIndex(fbar => fbar.id === this.newFbarId)
+      if (newFbarIdx > -1) {
+        const tempFbar = fbars[newFbarIdx]
+        fbars.splice(newFbarIdx, 1)
+        fbars.unshift(tempFbar)
+      }
+      return searchArrOfObjs(fbars, this.searchInput)
     },
     filteredFbars () {
       if (this.fbarBreakdowns) {
@@ -233,22 +225,20 @@ export default {
       }
     },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId
       }
-      const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
+      const fbar = Object.assign({}, defaultValues)
       this.$api.createFbar(headers, { clientId, fbar })
-        .then((data) => {
-          this.getUpdatedClientData(data)
-        })
-    },
-    getUpdatedClientData (income) {
-      const headers = this.$api.getHeaders()
-      this.$api.getClientData(headers, this.selectedClient.id)
-        .then(() => {
-          this.toggleEditable('0-years', income.id)
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newFbarId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
     },
     onKeyDown () {

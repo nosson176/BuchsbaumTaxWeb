@@ -68,18 +68,8 @@ import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
-  'diabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete'
+  'disabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete'
 ]
-const contactsConstructor = {
-  clientId: NaN,
-  contactType: '',
-  memo: '',
-  mainDetail: '',
-  secondaryDetail: '',
-  state: '',
-  zip: 0,
-  archived: false
-}
 
 export default {
   name: 'ContactTable',
@@ -92,7 +82,7 @@ export default {
   data () {
     return {
       editableId: '',
-      newContactId: -1,
+      newContactId: NaN,
       editableContactId: ''
     }
   },
@@ -101,7 +91,7 @@ export default {
     displayedContacts () {
       const contacts = this.filteredContacts
       contacts.map((contact) => { return { enabled: !contact.disabled, ...contact } })
-      const newContactIdx = contacts.findIndex(contact => contact.id === this.newContactId)
+      const newContactIdx = contacts?.findIndex(contact => contact.id === this.newContactId)
       if (newContactIdx > -1) {
         const tempContact = contacts[newContactIdx]
         contacts.splice(newContactIdx, 1)
@@ -169,16 +159,19 @@ export default {
       }
     },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId
       }
-      const contact = Object.assign({}, contactsConstructor, defaultValues)
+      const contact = Object.assign({}, defaultValues)
       this.$api.createContact(this.headers, { clientId, contact })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newContactId = data.id
-          this.toggleEditable('0-disabled', data.id)
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
     },
     onKeyDown () {

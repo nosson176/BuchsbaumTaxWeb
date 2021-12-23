@@ -76,21 +76,6 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
 ]
-const logsConstructor = {
-  clientId: NaN,
-  years: '',
-  alarmUserId: null,
-  alert: false,
-  alarmComplete: false,
-  alarmDate: null,
-  alarmTime: null,
-  logDate: null,
-  priority: 0,
-  note: '',
-  secondsSpent: 0,
-  archived: false,
-  alerted: false
-}
 
 export default {
   name: 'LogsTable',
@@ -102,7 +87,7 @@ export default {
   },
   data () {
     return {
-      newLogId: -1,
+      newLogId: NaN,
       editableId: '',
       editableLogId: ''
     }
@@ -111,7 +96,7 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
       const logs = this.filteredLogs
-      const newLogIdx = logs.findIndex(contact => contact.id === this.newLogId)
+      const newLogIdx = logs?.findIndex(contact => contact.id === this.newLogId)
       if (newLogIdx > -1) {
         const tempLog = logs[newLogIdx]
         logs.splice(newLogIdx, 1)
@@ -183,17 +168,20 @@ export default {
       }
     },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId
       }
-      const log = Object.assign({}, logsConstructor, defaultValues)
+      const log = Object.assign({}, defaultValues)
       this.$api.createLog(headers, { clientId, log })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newLogId = data.id
-          this.toggleEditable('0-priority', data.id)
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
     },
     onKeyDown () {

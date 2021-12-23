@@ -89,20 +89,6 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'include', 'category', 'firstName', 'middleInitial', 'lastName', 'dateOfBirth', 'ssn', 'informal', 'relation', 'language', 'delete'
 ]
-const taxPersonalConstructor = {
-  clientId: NaN,
-  category: '',
-  include: true,
-  language: '',
-  relation: '',
-  firstName: '',
-  middleInitial: '',
-  lastName: '',
-  dateOfBirth: '',
-  ssn: '000-000-000',
-  informal: '',
-  archived: false
-}
 
 export default {
   name: 'TaxPersonalsTable',
@@ -115,6 +101,7 @@ export default {
   data () {
     return {
       editableId: '',
+      newPersonalId: NaN,
       editablePersonalId: ''
     }
   },
@@ -122,6 +109,12 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedPersonals () {
       const personals = this.filteredPersonals
+      const newPersonalIdx = personals?.findIndex(personal => personal.id === this.newPersonalId)
+      if (newPersonalIdx > -1) {
+        const tempPersonal = personals[newPersonalIdx]
+        personals.splice(newPersonalIdx, 1)
+        personals.unshift(tempPersonal)
+      }
       return searchArrOfObjs(personals, this.searchInput)
     },
     filteredPersonals () {
@@ -196,14 +189,21 @@ export default {
       this.updateStoreObject()
     },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
         lastName: this.selectedClient.lastName
       }
-      const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
+      const personal = Object.assign({}, defaultValues)
       this.$api.createTaxPersonal(this.headers, { clientId, personal })
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newPersonalId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
+        })
     },
     onKeyDown () {
       const currentCell = this.editableId

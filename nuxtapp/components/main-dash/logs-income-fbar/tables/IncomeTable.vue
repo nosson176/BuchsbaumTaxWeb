@@ -119,23 +119,7 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
-const incomeBreakdownsConstructor = {
-  clientId: NaN,
-  years: '',
-  category: '',
-  taxGroup: '',
-  taxType: '',
-  part: '',
-  currency: '',
-  frequency: 0,
-  documents: '',
-  description: '',
-  amount: 0,
-  depend: '',
-  include: true,
-  archived: false,
-  exclusion: false
-}
+
 const docOptions = [
   { value: 'HAS' },
   { value: 'NEEDS' }
@@ -152,7 +136,7 @@ export default {
   data () {
     return {
       editableId: '',
-      newIncomeId: -1,
+      newIncomeId: NaN,
       editableIncomeId: ''
     }
   },
@@ -160,7 +144,7 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedIncomes () {
       const incomes = this.filteredIncomes
-      const newIncomeIdx = incomes.findIndex(income => income.id === this.newIncomeId)
+      const newIncomeIdx = incomes?.findIndex(income => income.id === this.newIncomeId)
       if (newIncomeIdx > -1) {
         const tempIncome = incomes[newIncomeIdx]
         incomes.splice(newIncomeIdx, 1)
@@ -246,17 +230,20 @@ export default {
       }
     },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId
       }
-      const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
+      const income = Object.assign({}, defaultValues)
       this.$api.createIncome(headers, { clientId, income })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newIncomeId = data.id
-          this.toggleEditable('0-include', data.id)
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
     },
     onKeyDown () {
