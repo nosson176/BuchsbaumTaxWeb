@@ -23,6 +23,7 @@ export default {
     searchInput (searchInput) {
       this.searchInputUpdate(searchInput)
     }
+
   },
   methods: {
     emitChange () {

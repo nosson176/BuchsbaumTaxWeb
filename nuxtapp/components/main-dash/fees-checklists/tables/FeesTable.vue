@@ -1,5 +1,8 @@
 <template>
   <div class="flex-grow overflow-auto">
+    <div class="bg-white sticky top-0 shadow">
+      <AddRowButton @click="onAddRowClick" />
+    </div>
     <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" @input="handleUpdateFee" />
   </div>
 </template>
@@ -16,6 +19,11 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      newFeeId: NaN
+    }
+  },
   computed: {
     ...mapState([models.selectedClient]),
     headers () {
@@ -23,6 +31,12 @@ export default {
     },
     displayedFees () {
       const fees = this.filteredFees
+      const newFeeIdx = fees?.findIndex(fee => fee.id === this.newFeeId)
+      if (newFeeIdx > -1) {
+        const tempFee = fees[newFeeIdx]
+        fees.splice(newFeeIdx, 1)
+        fees.unshift(tempFee)
+      }
       return searchArrOfObjs(fees, this.searchInput)
     },
     filteredFees () {
@@ -49,6 +63,21 @@ export default {
     handleUpdateFee (editedFee) {
       this.$api.updateFee(this.headers, { feeId: editedFee.id }, editedFee)
         .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+    },
+    onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
+      const clientId = this.selectedClient.id
+      const defaultValues = {
+        clientId
+      }
+      const fee = Object.assign({}, defaultValues)
+      this.$api.createFee(this.headers, { clientId, fee })
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newFeeId = data.id
+        })
     }
   }
 }
