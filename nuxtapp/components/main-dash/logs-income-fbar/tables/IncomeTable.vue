@@ -171,7 +171,12 @@ export default {
       return this.valueTypes.year_name.filter(yearName => yearName.show)
     },
     taxTypeOptions () {
-      return this.valueTypes.tax_type.filter(taxType => taxType.show)
+      return this.valueTypes.tax_type.filter(taxType => taxType.show && taxType.parentId === this.editableIncomeTaxGroupId)
+    },
+    editableIncomeTaxGroupId () {
+      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
+      const taxGroup = this.taxGroupOptions.find(taxGroup => taxGroup.value === income?.taxGroup)
+      return taxGroup?.id
     },
     jobOptions () {
       return this.valueTypes.job.filter(job => job.show)
