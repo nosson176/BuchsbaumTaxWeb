@@ -5,7 +5,7 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header xs">
+        <div class="table-header normal">
           Year
         </div>
         <div class="table-header xxl">
@@ -21,7 +21,7 @@
         <div class="table-header xs">
           Time
         </div>
-        <div class="table-header sm">
+        <div class="table-header normal">
           Employee
         </div>
         <div class="table-header xs" />
@@ -37,7 +37,7 @@
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-years`" class="table-col xs" @click="toggleEditable(`${idx}-years`, log.id)">
+        <div :id="`${idx}-years`" class="table-col normal" @click="toggleEditable(`${idx}-years`, log.id)">
           <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
@@ -55,7 +55,7 @@
         <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
           <EditableDateCell v-model="log.alarmTime" type="time" :is-editable="isEditable(`${idx}-alarmTime`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
+        <div :id="`${idx}-alarmUserName`" class="table-col normal" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)" :options="userOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div class="table-col xs" />
