@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-blue-200 items-center p-1 rounded-t-sm space-x-1">
+  <div class="flex bg-blue-200 items-center p-0.5 rounded-t-sm space-x-1">
     <button
       type="button"
       class="relative inline-flex flex-shrink-0 h-3 w-5 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

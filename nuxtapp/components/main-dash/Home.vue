@@ -1,29 +1,29 @@
 <template>
-  <div class="flex flex-col max-h-screen">
+  <div class="flex flex-col max-h-screen bg-gray-100">
     <Header />
     <div class="grid flex-grow overflow-hidden p-2">
-      <div class="shadow rounded flex flex-col client-list">
+      <div class="shadow rounded flex flex-col client-list bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
-      <div class="shadow rounded flex flex-col fees-checklists">
+      <div class="shadow rounded flex flex-col fees-checklists bg-white">
         <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
         <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
       </div>
-      <div class="shadow rounded flex flex-col smart-views">
+      <div class="shadow rounded flex flex-col smart-views bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
-      <div class="shadow rounded flex flex-col logs-income-fbar">
+      <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
         <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
         <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
       </div>
-      <div class="shadow rounded flex flex-col personal-contact">
+      <div class="shadow rounded flex flex-col personal-contact bg-white">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
         <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
-      <div class="bg-gray-100 border border-gray-500 shadow-md rounded-t flex flex-col-reverse client-tax-years">
+      <div class="bg-white border border-gray-500 shadow-md rounded-t flex flex-col-reverse client-tax-years">
         <ClientTaxYears />
         <ClientTaxYearsHeader />
       </div>

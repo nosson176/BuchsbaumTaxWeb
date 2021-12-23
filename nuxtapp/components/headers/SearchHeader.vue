@@ -10,7 +10,7 @@
         :placeholder="placeholder"
       >
       <div class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" @click="onClearClick">
-        <div class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center" tabindex="0" @click="emitClick" @keypress.enter="emitClick">
+        <div class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center">
           <CloseIcon class="w-3 h-3" />
         </div>
       </div>
