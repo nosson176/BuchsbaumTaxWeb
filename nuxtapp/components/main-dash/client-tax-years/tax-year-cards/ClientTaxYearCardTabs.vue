@@ -2,7 +2,7 @@
   <div class="border-t border-gray-300 space-x-1 flex shadow">
     <Tab v-for="(filingType ,idx) in filingTypes" :key="idx" :active="filingType === activeFilingType" @click="handleClick(filingType)">
       <span v-if="filingHasFilingType(filingType)" class="uppercase">{{ filingType }}</span>
-      <span v-else class="text-sm font-semibold text-gray-300 uppercase flex items-center"><AddRowButton /> {{ filingType }}</span>
+      <span v-else class="text-xs font-light text-gray-300 uppercase flex items-center"><AddRowButton /> {{ filingType }}</span>
     </Tab>
   </div>
 </template>
