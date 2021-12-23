@@ -46,7 +46,8 @@ export default {
   watch: {
     selectedClient () {
       this.selectedClientId = this.selectedClient.id
-      this.$refs[this.selectedClient.id][0].scrollIntoView({
+      const selectedClientRef = this.$refs[this.selectedClient.id][0]
+      selectedClientRef?.scrollIntoView({
         behavior: 'smooth'
       })
     }
