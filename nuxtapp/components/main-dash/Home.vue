@@ -23,7 +23,7 @@
         <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
-      <div class="bg-white border border-gray-500 shadow-md rounded-t flex flex-col-reverse client-tax-years">
+      <div class="bg-white shadow-md rounded-t flex flex-col-reverse client-tax-years">
         <ClientTaxYears />
         <ClientTaxYearsHeader />
       </div>
