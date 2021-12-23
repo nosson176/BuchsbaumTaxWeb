@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col bg-blue-200 p-0.5 z-10 shadow">
+  <div class="flex flex-col bg-blue-200 p-0.5">
     <ViewArchivedHeader @change="emitChange" />
     <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
   </div>

@@ -143,6 +143,10 @@ export default {
     idx: {
       type: Number,
       default: NaN
+    },
+    isNew: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -276,6 +280,16 @@ export default {
     },
     currencySymbols () {
       return currencySymbols
+    }
+  },
+  watch: {
+    fee: {
+      handler () {
+        if (this.isNew) {
+          this.editable = 'feeType'
+        }
+      },
+      deep: true
     }
   },
   methods: {
