@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-center">
-    <div class="rounded-full cursor-pointer bg-gray-500 text-white w-5 h-5 leading-tight text-center" tabindex="0" @click="emitClick" @keypress.enter="emitClick">
-      <CloseIcon class="w-5 h-5" />
+    <div class="flex justify-center items-center rounded-full cursor-pointer bg-gray-500 text-white w-4 h-4 leading-tight text-center" tabindex="0" @click="emitClick" @keypress.enter="emitClick">
+      <CloseIcon class="w-3 h-3" />
     </div>
   </div>
 </template>
