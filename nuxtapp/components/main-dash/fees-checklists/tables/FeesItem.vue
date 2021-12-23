@@ -6,6 +6,7 @@
           <div @click="setEditable('feeType')">
             <EditableSelectCell
               v-model="feeType"
+              placeholder="Type"
               :class="fee.feeType && !isEditable('feeType') ? '' : 'missing'"
               :is-editable="isEditable('feeType')"
               :options="feeTypeOptions"
@@ -16,6 +17,7 @@
           <div @click="setEditable('year')">
             <EditableSelectCell
               v-model="year"
+              placeholder="Year"
               :class="fee.year && !isEditable('year') ? '' : 'missing'"
               :is-editable="isEditable('year')"
               :options="yearOptions"
@@ -28,6 +30,7 @@
           <div @click="setEditable('status')">
             <EditableSelectCell
               v-model="status"
+              placeholder="Status"
               :class="fee.status && !isEditable('status') ? '' : 'missing'"
               :is-editable="isEditable('status')"
               :options="feeStatusOptions"
@@ -38,6 +41,7 @@
           <div @click="setEditable('statusDetail')">
             <EditableSelectCell
               v-model="statusDetail"
+              placeholder="Detail"
               :class="fee.statusDetail && !isEditable('statusDetail') ? '' : 'missing'"
               :is-editable="isEditable('statusDetail')"
               :options="feeStatusDetailOptions"
@@ -50,6 +54,7 @@
           <div @click="setEditable('sum')">
             <EditableCheckBoxCell
               v-model="sum"
+              placeholder="Sum"
               :is-editable="isEditable('sum')"
               @blur="onBlur"
               @input="debounceUpdate"
@@ -59,6 +64,7 @@
             <div @click="setEditable('manualAmount')">
               <EditableInput
                 v-model="manualAmount"
+                placeholder="Amount"
                 currency
                 :is-editable="isEditable('manualAmount')"
                 @blur="onBlur"
@@ -69,6 +75,7 @@
             <div @click="setEditable('paidAmount')">
               <EditableInput
                 v-model="paidAmount"
+                placeholder="Paid"
                 currency
                 :is-editable="isEditable('paidAmount')"
                 @blur="onBlur"
@@ -93,6 +100,7 @@
           <div @click="setEditable('dateFee')">
             <EditableDate
               v-model="dateFee"
+              placeholder="Date"
               :class="fee.dateFee && !isEditable('dateFee') ? '' : 'missing'"
               type="date"
               :is-editable="isEditable('dateFee')"
@@ -158,7 +166,7 @@ export default {
     },
     feeType: {
       get () {
-        return this.formModel.feeType || 'Type'
+        return this.formModel.feeType
       },
       set (newValue) {
         this.formModel.feeType = newValue
@@ -166,7 +174,7 @@ export default {
     },
     year: {
       get () {
-        return this.formModel.year || 'Year'
+        return this.formModel.year
       },
       set (newVal) {
         this.formModel.year = newVal
@@ -174,7 +182,7 @@ export default {
     },
     status: {
       get () {
-        return this.formModel.status || 'Status'
+        return this.formModel.status
       },
       set (newVal) {
         this.formModel.status = newVal
@@ -182,7 +190,7 @@ export default {
     },
     statusDetail: {
       get () {
-        return this.formModel.statusDetail || 'Detail'
+        return this.formModel.statusDetail
       },
       set (newVal) {
         this.formModel.statusDetail = newVal
@@ -214,7 +222,7 @@ export default {
     },
     rate: {
       get () {
-        return this.formModel.rate || ''
+        return this.formModel.rate
       },
       set (newVal) {
         this.formModel.rate = newVal
