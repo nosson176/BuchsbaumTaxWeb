@@ -174,7 +174,7 @@ export default {
       return this.valueTypes.tax_type.filter(taxType => taxType.show && taxType.parentId === this.editableIncomeTaxGroupId)
     },
     editableIncomeTaxGroupId () {
-      const income = this.displayedFbars.find(income => income.id === this.editableIncomeId)
+      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       const taxGroup = this.taxGroupOptions.find(taxGroup => taxGroup.value === income?.taxGroup)
       return taxGroup?.id
     },
