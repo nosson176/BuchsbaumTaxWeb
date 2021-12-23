@@ -1,5 +1,5 @@
 <template>
-  <div class="flex space-x-2">
+  <div class="flex space-x-2 justify-center">
     <Tab :active="isTaxPersonalsActive" :count="taxPersonalsCount" @click="setTabTaxPersonals">
       Tax Personals
     </Tab>
