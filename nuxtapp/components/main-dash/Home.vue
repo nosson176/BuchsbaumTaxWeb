@@ -31,9 +31,6 @@
         <DeleteCard @hide="closeDeleteModal" />
       </Modal>
     </div>
-    <div class="bg-black text-white flex">
-      FOOTER
-    </div>
   </div>
 </template>
 
