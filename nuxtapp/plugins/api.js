@@ -60,6 +60,9 @@ export default ({ $axios, store }, inject) => {
   const createChecklist = (headers, { checklist }) => $axios.post(
     '/clients/checklists', checklist, { headers }
   )
+  const createClient = (headers, { client }) => $axios.post(
+    '/clients', client, { headers }
+  )
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) => $axios.put(
@@ -95,6 +98,7 @@ export default ({ $axios, store }, inject) => {
 
   const api = {
     createChecklist,
+    createClient,
     createContact,
     createFbar,
     createFee,

@@ -44,22 +44,44 @@ export default {
     },
     hasSelectedSmartview () {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
+    },
+    headers () {
+      return this.$api.getHeaders()
     }
   },
   watch: {
     selectedClient () {
-      this.selectedClientId = this.selectedClient.id
-      const selectedClientRef = this.$refs[this.selectedClient.id][0]
-      selectedClientRef?.scrollIntoView({
-        behavior: 'smooth'
-      })
+      this.scrollClientIntoView()
     }
   },
   methods: {
     selectClient ({ id }) {
       this.selectedClientId = id
-      const headers = this.$api.getHeaders()
+      const headers = this.headers
       this.$api.getClientData(headers, id)
+    },
+    onAddRowClick () {
+      const defaultValues = {
+        lastName: 'New Client'
+      }
+      const client = Object.assign({}, defaultValues)
+      this.$api.createClient(this.headers, { client })
+        .then((data) => {
+          this.$api.getClientData(this.headers, data.id)
+            .then(async () => {
+              await this.$api.getClientList(this.headers)
+              this.scrollClientIntoView()
+            })
+        })
+    },
+    scrollClientIntoView () {
+      if (this.selectedClient) {
+        this.selectedClientId = this.selectedClient.id
+        const selectedClientRef = this.$refs[this.selectedClient.id]
+        if (selectedClientRef) {
+          selectedClientRef[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
+      }
     }
   }
 }
