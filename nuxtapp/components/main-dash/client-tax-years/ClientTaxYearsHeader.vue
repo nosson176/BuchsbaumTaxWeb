@@ -32,7 +32,7 @@
     </div>
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
-        <FormInput v-model="lastName" label="Lastname" />
+        <FormInput ref="lastNameInput" v-model="lastName" label="Lastname" />
       </SubmitCard>
     </Modal>
   </div>
@@ -109,6 +109,17 @@ export default {
         Object.values(this.clients)
           .map(client => client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client)
       )))
+    }
+  },
+  watch: {
+    showEditNameDialogue: {
+      handler (newVal) {
+        if (newVal) {
+          this.$nextTick(() => {
+            this.$refs.lastNameInput.$refs.input.focus()
+          })
+        }
+      }
     }
   },
   methods: {

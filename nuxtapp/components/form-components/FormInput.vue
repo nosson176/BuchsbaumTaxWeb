@@ -3,6 +3,7 @@
     <label :for="name" class="sr-only">{{ label }}</label>
     <input
       :id="id"
+      ref="input"
       v-model="computedValue"
       :name="name"
       :type="type"
