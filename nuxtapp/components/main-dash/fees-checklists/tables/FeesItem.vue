@@ -7,7 +7,6 @@
             <EditableSelectCell
               v-model="feeType"
               placeholder="Type"
-              :class="fee.feeType && !isEditable('feeType') ? '' : 'missing'"
               :is-editable="isEditable('feeType')"
               :options="feeTypeOptions"
               @blur="onBlur"
@@ -18,7 +17,6 @@
             <EditableSelectCell
               v-model="year"
               placeholder="Year"
-              :class="fee.year && !isEditable('year') ? '' : 'missing'"
               :is-editable="isEditable('year')"
               :options="yearOptions"
               @blur="onBlur"
@@ -31,7 +29,6 @@
             <EditableSelectCell
               v-model="status"
               placeholder="Status"
-              :class="fee.status && !isEditable('status') ? '' : 'missing'"
               :is-editable="isEditable('status')"
               :options="feeStatusOptions"
               @blur="onBlur"
@@ -42,7 +39,6 @@
             <EditableSelectCell
               v-model="statusDetail"
               placeholder="Detail"
-              :class="fee.statusDetail && !isEditable('statusDetail') ? '' : 'missing'"
               :is-editable="isEditable('statusDetail')"
               :options="feeStatusDetailOptions"
               @blur="onBlur"
@@ -101,7 +97,6 @@
             <EditableDate
               v-model="dateFee"
               placeholder="Date"
-              :class="fee.dateFee && !isEditable('dateFee') ? '' : 'missing'"
               type="date"
               :is-editable="isEditable('dateFee')"
               @input="debounceUpdate"
