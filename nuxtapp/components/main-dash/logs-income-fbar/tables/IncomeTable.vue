@@ -119,23 +119,7 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
-const incomeBreakdownsConstructor = {
-  clientId: NaN,
-  years: '',
-  category: '',
-  taxGroup: '',
-  taxType: '',
-  part: '',
-  currency: '',
-  frequency: 0,
-  documents: '',
-  description: '',
-  amount: 0,
-  depend: '',
-  include: true,
-  archived: false,
-  exclusion: false
-}
+
 const docOptions = [
   { value: 'HAS' },
   { value: 'NEEDS' }
@@ -152,14 +136,21 @@ export default {
   data () {
     return {
       editableId: '',
+      newIncomeId: NaN,
       editableIncomeId: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedIncomes () {
-      const income = this.filteredIncomes
-      return searchArrOfObjs(income, this.searchInput)
+      const incomes = this.filteredIncomes
+      const newIncomeIdx = incomes?.findIndex(income => income.id === this.newIncomeId)
+      if (newIncomeIdx > -1) {
+        const tempIncome = incomes[newIncomeIdx]
+        incomes.splice(newIncomeIdx, 1)
+        incomes.unshift(tempIncome)
+      }
+      return searchArrOfObjs(incomes, this.searchInput)
     },
     filteredIncomes () {
       if (this.incomeBreakdowns) {
@@ -230,9 +221,7 @@ export default {
         const income = this.displayedIncomes.find(income => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
-          .then(() => {
-            this.updateClient(incomeId, income)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
@@ -240,39 +229,22 @@ export default {
         )
       }
     },
-    updateClient (incomeId, income) {
-      const incomeIndex = this.incomeBreakdowns.findIndex(income => income.id === incomeId)
-      this.incomeBreakdowns[incomeIndex] = income
-      this.updateStoreObject()
-    },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId,
-        category: this.categoryOptions[2].value,
-        years: this.yearNameOptions[0].value,
-        taxType: this.taxTypeOptions[0].value,
-        taxGroup: this.taxGroupOptions[0].value,
-        job: this.jobOptions[0].value,
-        currency: this.currencyOptions[0].value
+        clientId
       }
-      const income = Object.assign({}, incomeBreakdownsConstructor, defaultValues)
+      const income = Object.assign({}, defaultValues)
       this.$api.createIncome(headers, { clientId, income })
-        .then((data) => {
-          this.addRowOnClient(data)
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newIncomeId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
-    },
-    addRowOnClient (income) {
-      this.incomeBreakdowns.push(income)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedIncomes.length - 1}-years`, income.id)
-      })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomeBreakdowns })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId

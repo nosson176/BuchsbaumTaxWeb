@@ -89,20 +89,6 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'include', 'category', 'firstName', 'middleInitial', 'lastName', 'dateOfBirth', 'ssn', 'informal', 'relation', 'language', 'delete'
 ]
-const taxPersonalConstructor = {
-  clientId: NaN,
-  category: '',
-  include: true,
-  language: '',
-  relation: '',
-  firstName: '',
-  middleInitial: '',
-  lastName: '',
-  dateOfBirth: '',
-  ssn: '000-000-000',
-  informal: '',
-  archived: false
-}
 
 export default {
   name: 'TaxPersonalsTable',
@@ -115,6 +101,7 @@ export default {
   data () {
     return {
       editableId: '',
+      newPersonalId: NaN,
       editablePersonalId: ''
     }
   },
@@ -122,6 +109,12 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedPersonals () {
       const personals = this.filteredPersonals
+      const newPersonalIdx = personals?.findIndex(personal => personal.id === this.newPersonalId)
+      if (newPersonalIdx > -1) {
+        const tempPersonal = personals[newPersonalIdx]
+        personals.splice(newPersonalIdx, 1)
+        personals.unshift(tempPersonal)
+      }
       return searchArrOfObjs(personals, this.searchInput)
     },
     filteredPersonals () {
@@ -175,15 +168,14 @@ export default {
     handleUpdate () {
       const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (personalId) {
       if (this.showArchived) {
         const personal = this.displayedPersonals.find(personal => personal.id === personalId)
         personal.archived = false
         this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
-          .then(() => {
-            this.updateClient(personalId, personal)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
@@ -197,32 +189,21 @@ export default {
       this.updateStoreObject()
     },
     onAddRowClick () {
-      const headers = this.$api.getHeaders()
+      if (!this.selectedClient) {
+        return
+      }
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
-        category: this.categoryOptions[2].value,
-        language: this.languageOptions[0].value,
-        relation: this.relationOptions[0].value,
-        dateOfBirth: new Date(),
-        archived: this.showArchived
+        lastName: this.selectedClient.lastName
       }
-      const personal = Object.assign({}, taxPersonalConstructor, defaultValues)
-      this.$api.createTaxPersonal(headers, { clientId, personal })
-        .then((data) => {
-          this.addRowOnClient(data)
+      const personal = Object.assign({}, defaultValues)
+      this.$api.createTaxPersonal(this.headers, { clientId, personal })
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newPersonalId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
-    },
-    addRowOnClient (personal) {
-      this.taxPersonals.push(personal)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedPersonals.length - 1}-category`, personal.id)
-      })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId

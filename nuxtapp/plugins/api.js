@@ -86,6 +86,9 @@ export default ({ $axios, store }, inject) => {
   const updateFiling = (headers, { filingId }, filing) => $axios.put(
     `/clients/filings/${filingId}`, filing, { headers }
   )
+  const updateTaxYear = (headers, { clientId, taxYearId }, taxYear) => $axios.put(
+    `/clients/${clientId}/tax-years/${taxYearId}`, taxYear, { headers }
+  )
   const updateChecklist = (headers, { checklistId }, checklist) => $axios.put(
     `/clients/checklists/${checklistId}`, checklist, { headers }
   )
@@ -119,7 +122,8 @@ export default ({ $axios, store }, inject) => {
     updateFiling,
     updateIncome,
     updateLog,
-    updateTaxPersonal
+    updateTaxPersonal,
+    updateTaxYear
   }
 
   // Inject to context as $api

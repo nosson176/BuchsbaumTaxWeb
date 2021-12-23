@@ -11,31 +11,6 @@
 import { mapState } from 'vuex'
 import { events, filingTypes, models } from '~/shared/constants'
 
-const filingConstructor = {
-  taxForm: '',
-  status: '',
-  statusDetail: '',
-  statusDate: null,
-  memo: '',
-  includeInRefund: false,
-  owes: 0,
-  paid: 0,
-  includeFee: false,
-  owesFee: 0,
-  paidFee: 0,
-  fileType: '',
-  refund: 0,
-  rebate: 0,
-  completed: false,
-  deliveryContact: '',
-  secondDeliveryContact: '',
-  dateFiled: null,
-  filingType: '',
-  state: '',
-  taxYearId: NaN,
-  amount: 0
-}
-
 export default {
   name: 'ClientTaxYearCardTabs',
   props: {
@@ -78,7 +53,7 @@ export default {
         filingType,
         taxYearId: this.taxYear.id
       }
-      const filing = Object.assign({}, filingConstructor, defaultValues)
+      const filing = Object.assign({}, defaultValues)
       // const clientId = this.selectedClient.id
       this.$api.createFiling(headers, { filing })
         .then((data) => {

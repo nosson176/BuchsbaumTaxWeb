@@ -6,7 +6,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations, tableGroups } from '~/shared/constants'
+import { models, tableGroups } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'FeesTable',
@@ -47,18 +47,8 @@ export default {
   },
   methods: {
     handleUpdateFee (editedFee) {
-      this.updateOnBackend(editedFee)
-      this.updateOnClient(editedFee)
-    },
-    updateOnBackend (editedFee) {
       this.$api.updateFee(this.headers, { feeId: editedFee.id }, editedFee)
-    },
-    updateOnClient (editedFee) {
-      const fees = JSON.parse(JSON.stringify(this.fees))
-      const editedFeeIndex = fees.findIndex(fee => fee.id === editedFee.id)
-      fees[editedFeeIndex] = editedFee
-      const data = Object.assign({}, this.selectedClient, { fees })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     }
   }
 }

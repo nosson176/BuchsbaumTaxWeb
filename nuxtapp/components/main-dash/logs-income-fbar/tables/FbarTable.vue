@@ -113,22 +113,7 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
 ]
-const fbarBreakdownsConstructor = {
-  clientId: NaN,
-  years: '',
-  category: '',
-  taxGroup: '',
-  taxType: '',
-  part: '',
-  currency: '',
-  frequency: 0,
-  documents: '',
-  description: '',
-  amount: 0,
-  depend: '',
-  include: true,
-  archived: false
-}
+
 const docOptions = [
   { value: 'HAS' },
   { value: 'NEEDS' }
@@ -144,6 +129,7 @@ export default {
   },
   data () {
     return {
+      newFbarId: NaN,
       editableId: '',
       editableFbarId: ''
     }
@@ -151,8 +137,14 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
-      const fbar = this.filteredFbars
-      return searchArrOfObjs(fbar, this.searchInput)
+      const fbars = this.filteredFbars
+      const newFbarIdx = fbars?.findIndex(fbar => fbar.id === this.newFbarId)
+      if (newFbarIdx > -1) {
+        const tempFbar = fbars[newFbarIdx]
+        fbars.splice(newFbarIdx, 1)
+        fbars.unshift(tempFbar)
+      }
+      return searchArrOfObjs(fbars, this.searchInput)
     },
     filteredFbars () {
       if (this.fbarBreakdowns) {
@@ -217,15 +209,14 @@ export default {
     handleUpdate () {
       const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
         const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
-          .then(() => {
-            this.updateClient(fbarId, fbar)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
@@ -233,39 +224,22 @@ export default {
         )
       }
     },
-    updateClient (fbarId, fbar) {
-      const fbarIndex = this.fbarBreakdowns.findIndex(fbar => fbar.id === fbarId)
-      this.fbarBreakdowns[fbarIndex] = fbar
-      this.updateStoreObject()
-    },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId,
-        category: this.categoryOptions[2].value,
-        years: this.yearNameOptions[0].value,
-        taxType: this.taxTypeOptions[0].value,
-        taxGroup: this.taxGroupOptions[0].value,
-        job: this.jobOptions[0].value,
-        currency: this.currencyOptions[0].value
+        clientId
       }
-      const fbar = Object.assign({}, fbarBreakdownsConstructor, defaultValues)
+      const fbar = Object.assign({}, defaultValues)
       this.$api.createFbar(headers, { clientId, fbar })
-        .then((data) => {
-          this.addRowOnClient(data)
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newFbarId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
-    },
-    addRowOnClient (fbar) {
-      this.fbarBreakdowns.push(fbar)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable(`${this.displayedFbars.length - 1}-years`, fbar.id)
-      })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbarBreakdowns })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId

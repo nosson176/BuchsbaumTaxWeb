@@ -76,21 +76,6 @@ import { searchArrOfObjs } from '~/shared/utility'
 const columns = [
   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
 ]
-const logsConstructor = {
-  clientId: NaN,
-  years: '',
-  alarmUserId: null,
-  alert: false,
-  alarmComplete: false,
-  alarmDate: null,
-  alarmTime: null,
-  logDate: null,
-  priority: 0,
-  note: '',
-  secondsSpent: 0,
-  archived: false,
-  alerted: false
-}
 
 export default {
   name: 'LogsTable',
@@ -102,6 +87,7 @@ export default {
   },
   data () {
     return {
+      newLogId: NaN,
       editableId: '',
       editableLogId: ''
     }
@@ -110,13 +96,18 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
       const logs = this.filteredLogs
+      const newLogIdx = logs?.findIndex(contact => contact.id === this.newLogId)
+      if (newLogIdx > -1) {
+        const tempLog = logs[newLogIdx]
+        logs.splice(newLogIdx, 1)
+        logs.unshift(tempLog)
+      }
       return searchArrOfObjs(logs, this.searchInput)
     },
     filteredLogs () {
       if (this.logs) {
         return this.logs
           .filter(log => this.showArchived === log.archived)
-          .reverse()
       } else {
         return null
       }
@@ -168,9 +159,7 @@ export default {
         const log = this.displayedLogs.find(log => log.id === logId)
         log.archived = false
         this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
-          .then(() => {
-            this.updateClient(logId, log)
-          })
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
@@ -178,37 +167,22 @@ export default {
         )
       }
     },
-    updateClient (logId, log) {
-      const logIndex = this.logs.findIndex(log => log.id === logId)
-      this.logs[logIndex] = log
-      this.updateStoreObject()
-    },
     onAddRowClick () {
+      if (!this.selectedClient) {
+        return
+      }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
-      const today = new Date()
-      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()
       const defaultValues = {
-        clientId,
-        years: this.yearOptions[0].value,
-        logDate: date
+        clientId
       }
-      const log = Object.assign({}, logsConstructor, defaultValues)
+      const log = Object.assign({}, defaultValues)
       this.$api.createLog(headers, { clientId, log })
-        .then((data) => {
-          this.addRowOnClient(data)
+        .then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newLogId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
         })
-    },
-    addRowOnClient (log) {
-      this.logs.push(log)
-      this.updateStoreObject()
-      this.$nextTick(() => {
-        this.toggleEditable('0-years', log.id)
-      })
-    },
-    updateStoreObject () {
-      const data = Object.assign({}, this.selectedClient, { logs: this.logs })
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
     },
     onKeyDown () {
       const currentCell = this.editableId

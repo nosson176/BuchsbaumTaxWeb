@@ -41,7 +41,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div @click="setEditable('memo')">
+      <div class="col-span-2 cursor-pointer" @click="setEditable('memo')">
         <EditableTextArea
           v-model="memo"
           placeholder="Memo"
@@ -50,11 +50,6 @@
           @input="debounceUpdate"
         />
       </div>
-      <!-- spacing -->
-      <div />
-      <div />
-      <div />
-      <!-- end of spacing -->
       <div class="flex">
         <div @click="setEditable('includeInRefund')">
           <EditableCheckBoxCell
@@ -203,7 +198,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
-import { events, filingTypes, models } from '~/shared/constants'
+import { filingTypes, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -220,7 +215,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.valueTypes]),
+    ...mapState([models.valueTypes, models.selectedClient]),
     headers () {
       return this.$api.getHeaders()
     },
@@ -469,7 +464,7 @@ export default {
       this.$api.updateFiling(this.headers, { filingId: this.filing.id }, this.formModel)
     },
     updateOnClient () {
-      this.$emit(events.input, JSON.parse(JSON.stringify(this.formModel)))
+      this.$api.getClientData(this.headers, this.selectedClient.id)
     }
   }
 }
