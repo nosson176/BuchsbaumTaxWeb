@@ -100,6 +100,26 @@
           <DeleteButton @click="onDeleteClick(fbar.id)" />
         </div>
       </TableRow>
+      <TableRow class="sticky bottom-0 bg-gray-300 shadow">
+        <div class="table-col xs" />
+        <div class="table-col-primary sm" />
+        <div class="table-col xs" />
+        <div class="table-col normal" />
+        <div class="table-col normal" />
+        <div class="table-col sm" />
+        <div class="normal table-col">
+          {{ amountTotal }}
+        </div>
+        <div class="table-col sm" />
+        <div class="table-col xs" />
+        <div class="table-col sm">
+          {{ amountUSDTotal }}
+        </div>
+        <div class="table-col sm" />
+        <div class="table-col lg" />
+        <div class="table-col sm" />
+        <div class="table-col xs" />
+      </TableRow>
     </template>
   </Table>
 </template>
@@ -108,7 +128,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { searchArrOfObjs } from '~/shared/utility'
+import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
@@ -199,6 +219,12 @@ export default {
     },
     docOptions () {
       return docOptions
+    },
+    amountTotal () {
+      return formatAsNumber(this.displayedFbars.filter(fbar => fbar.include).reduce((acc, fbar) => acc + fbar.amount, 0))
+    },
+    amountUSDTotal () {
+      return formatAsNumber(this.displayedFbars.filter(fbar => fbar.include).reduce((acc, fbar) => acc + fbar.amountUSD, 0))
     }
   },
   methods: {
