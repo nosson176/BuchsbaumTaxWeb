@@ -232,6 +232,9 @@ export default {
     },
     amountUSDTotal () {
       return formatAsNumber(this.displayedIncomes.filter(income => income.include).reduce((acc, income) => acc + income.amountUSD, 0))
+    },
+    filteredYearsOptions () {
+      return this.yearNameOptions.filter(yearName => this.displayedIncomes.find(income => income.years === yearName.value))
     }
   },
   methods: {
