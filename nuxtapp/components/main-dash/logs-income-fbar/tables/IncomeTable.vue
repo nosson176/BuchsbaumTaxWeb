@@ -5,8 +5,9 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex flex-col">
           Year
+          <SelectOption v-model="yearFilterValue" :options="filteredYearsOptions" />
         </div>
         <div class="table-header xs">
           Cat
@@ -158,13 +159,20 @@ export default {
     return {
       editableId: '',
       newIncomeId: NaN,
-      editableIncomeId: ''
+      editableIncomeId: '',
+      yearFilterValue: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedIncomes () {
-      const incomes = this.filteredIncomes
+      const incomes = this.shownIncomes
+        .filter((income) => {
+          if (this.yearFilterValue === 'All') {
+            return true
+          }
+          return income.years === this.yearFilterValue
+        })
       const newIncomeIdx = incomes?.findIndex(income => income.id === this.newIncomeId)
       if (newIncomeIdx > -1) {
         const tempIncome = incomes[newIncomeIdx]
@@ -173,7 +181,7 @@ export default {
       }
       return searchArrOfObjs(incomes, this.searchInput)
     },
-    filteredIncomes () {
+    shownIncomes () {
       if (this.incomeBreakdowns) {
         return this.incomeBreakdowns
           .filter(income => this.showArchived === income.archived)
@@ -234,7 +242,10 @@ export default {
       return formatAsNumber(this.displayedIncomes.filter(income => income.include).reduce((acc, income) => acc + income.amountUSD, 0))
     },
     filteredYearsOptions () {
-      return this.yearNameOptions.filter(yearName => this.displayedIncomes.find(income => income.years === yearName.value))
+      const options = this.yearNameOptions
+        .filter(yearName => this.shownIncomes.find(income => income.years === yearName.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
     }
   },
   methods: {
