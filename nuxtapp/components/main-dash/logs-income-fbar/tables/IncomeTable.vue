@@ -7,33 +7,33 @@
         </div>
         <div class="table-header sm flex flex-col">
           Year
-          <SelectOption v-model="yearFilterValue" :options="filteredYearsOptions" />
+          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearsOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           Cat
-          <SelectOption v-model="categoryFilterValue" :options="filteredCategoriesOptions" />
+          <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoriesOptions" />
         </div>
         <div class="table-header  normal flex flex-col">
           Group
-          <SelectOption v-model="groupFilterValue" :options="filteredGroupsOptions" />
+          <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupsOptions" />
         </div>
         <div class="table-header xs">
           Ex
         </div>
         <div class="table-header normal flex flex-col">
           Type
-          <SelectOption v-model="typeFilterValue" :options="filteredTypesOptions" />
+          <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypesOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           Job
-          <SelectOption v-model="jobFilterValue" :options="filteredJobsOptions" />
+          <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobsOptions" />
         </div>
         <div class="table-header normal">
           Amt
         </div>
         <div class="table-header sm flex flex-col">
           Curr
-          <SelectOption v-model="currencyFilterValue" :options="filteredCurrenciesOptions" />
+          <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrenciesOptions" />
         </div>
         <div class="table-header xs">
           X
@@ -46,7 +46,7 @@
         </div>
         <div class="table-header lg flex flex-col">
           Description
-          <SelectOption v-model="descriptionFilterValue" :options="filteredDescriptionsOptions" />
+          <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionsOptions" />
         </div>
         <div class="table-header sm">
           Depend

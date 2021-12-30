@@ -7,30 +7,30 @@
         </div>
         <div class="table-header sm flex flex-col">
           Year
-          <SelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
+          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           Cat
-          <SelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
+          <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
         </div>
         <div class="table-header  normal flex flex-col">
           Group
-          <SelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
+          <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
         </div>
         <div class="table-header normal flex flex-col">
           Type
-          <SelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
+          <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           Job
-          <SelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
+          <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
         </div>
         <div class="table-header normal">
           Amt
         </div>
         <div class="table-header sm flex flex-col">
           Curr
-          <SelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
+          <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
         <div class="table-header xs">
           X
@@ -43,7 +43,7 @@
         </div>
         <div class="table-header lg flex flex-col">
           Description
-          <SelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
+          <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
         </div>
         <div class="table-header sm">
           Depend
