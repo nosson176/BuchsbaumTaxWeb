@@ -1,5 +1,5 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
@@ -9,26 +9,31 @@
           Year
           <SelectOption v-model="yearFilterValue" :options="filteredYearsOptions" />
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm flex flex-col">
           Cat
+          <SelectOption v-model="categoryFilterValue" :options="filteredCategoriesOptions" />
         </div>
-        <div class="table-header  normal">
+        <div class="table-header  normal flex flex-col">
           Group
+          <SelectOption v-model="groupFilterValue" :options="filteredGroupsOptions" />
         </div>
         <div class="table-header xs">
           Ex
         </div>
-        <div class="table-header normal">
+        <div class="table-header normal flex flex-col">
           Type
+          <SelectOption v-model="typeFilterValue" :options="filteredTypesOptions" />
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex flex-col">
           Job
+          <SelectOption v-model="jobFilterValue" :options="filteredJobsOptions" />
         </div>
         <div class="table-header normal">
           Amt
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex flex-col">
           Curr
+          <SelectOption v-model="currencyFilterValue" :options="filteredCurrenciesOptions" />
         </div>
         <div class="table-header xs">
           X
@@ -39,8 +44,9 @@
         <div class="table-header sm">
           Doc
         </div>
-        <div class="table-header lg">
+        <div class="table-header lg flex flex-col">
           Description
+          <SelectOption v-model="descriptionFilterValue" :options="filteredDescriptionsOptions" />
         </div>
         <div class="table-header sm">
           Depend
@@ -60,7 +66,7 @@
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, income.id)">
           <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, income.id)">
+        <div :id="`${idx}-category`" class="table-col sm" @click="toggleEditable(`${idx}-category`, income.id)">
           <EditableSelectCell v-model="income.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
@@ -160,7 +166,13 @@ export default {
       editableId: '',
       newIncomeId: NaN,
       editableIncomeId: '',
-      yearFilterValue: ''
+      yearFilterValue: '',
+      categoryFilterValue: '',
+      groupFilterValue: '',
+      typeFilterValue: '',
+      jobFilterValue: '',
+      currencyFilterValue: '',
+      descriptionFilterValue: ''
     }
   },
   computed: {
@@ -168,10 +180,15 @@ export default {
     displayedIncomes () {
       const incomes = this.shownIncomes
         .filter((income) => {
-          if (this.yearFilterValue === 'All') {
+          if (!this.filterByYear && !this.filterByCategory && !this.filterByGroup && !this.filterByType &&
+              !this.filterByJob && !this.filterByCurrency && !this.filterByDescription
+          ) {
             return true
           }
-          return income.years === this.yearFilterValue
+          return income.years === this.yearFilterValue || income.category === this.categoryFilterValue ||
+            income.taxGroup === this.groupFilterValue || income.taxType === this.typeFilterValue ||
+            income.job === this.jobFilterValue || income.currency === this.currencyFilterValue ||
+            income.description.toLowerCase().includes(this.descriptionFilterValue.toLowerCase())
         })
       const newIncomeIdx = incomes?.findIndex(income => income.id === this.newIncomeId)
       if (newIncomeIdx > -1) {
@@ -246,6 +263,69 @@ export default {
         .filter(yearName => this.shownIncomes.find(income => income.years === yearName.value))
       options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
+    },
+    filteredCategoriesOptions () {
+      const options = this.categoryOptions
+        .filter(category => this.shownIncomes.find(income => income.category === category.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredGroupsOptions () {
+      const options = this.taxGroupOptions
+        .filter(taxGroup => this.shownIncomes.find(income => income.taxGroup === taxGroup.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredTypesOptions () {
+      const options = this.taxTypeOptions
+        .filter(taxType => this.shownIncomes.find(income => income.taxType === taxType.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredJobsOptions () {
+      const options = this.jobOptions
+        .filter(job => this.shownIncomes.find(income => income.job === job.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredCurrenciesOptions () {
+      const options = this.currencyOptions
+        .filter(currency => this.shownIncomes.find(income => income.currency === currency.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredDescriptionsOptions () {
+      const options = this.shownIncomes
+        .filter(income => income.description)
+        .map(income => income.description)
+        .filter((description, idx, arr) => arr.indexOf(description) === idx)
+        .map(description => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filterByYear () {
+      return !(this.yearFilterValue === 'All' || this.yearFilterValue === '')
+    },
+    filterByCategory () {
+      return !(this.categoryFilterValue === 'All' || this.categoryFilterValue === '')
+    },
+    filterByGroup () {
+      return !(this.groupFilterValue === 'All' || this.groupFilterValue === '')
+    },
+    filterByType () {
+      return !(this.typeFilterValue === 'All' || this.typeFilterValue === '')
+    },
+    filterByJob () {
+      return !(this.jobFilterValue === 'All' || this.jobFilterValue === '')
+    },
+    filterByCurrency () {
+      return !(this.currencyFilterValue === 'All' || this.currencyFilterValue === '')
+    },
+    filterByDescription () {
+      return !(this.descriptionFilterValue === 'All' || this.descriptionFilterValue === '')
+    },
+    isClientSelected () {
+      return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     }
   },
   methods: {

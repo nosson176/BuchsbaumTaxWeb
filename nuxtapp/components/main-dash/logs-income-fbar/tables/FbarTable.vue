@@ -1,30 +1,36 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex flex-col">
           Year
+          <SelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
-        <div class="table-header xs">
+        <div class="table-header sm flex flex-col">
           Cat
+          <SelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
         </div>
-        <div class="table-header  normal">
+        <div class="table-header  normal flex flex-col">
           Group
+          <SelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
         </div>
-        <div class="table-header normal">
+        <div class="table-header normal flex flex-col">
           Type
+          <SelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex flex-col">
           Job
+          <SelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
         </div>
         <div class="table-header normal">
           Amt
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex flex-col">
           Curr
+          <SelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
         <div class="table-header xs">
           X
@@ -35,8 +41,9 @@
         <div class="table-header sm">
           Doc
         </div>
-        <div class="table-header lg">
+        <div class="table-header lg flex flex-col">
           Description
+          <SelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
         </div>
         <div class="table-header sm">
           Depend
@@ -56,7 +63,7 @@
         <div :id="`${idx}-years`" class="table-col-primary sm" @click="toggleEditable(`${idx}-years`, fbar.id)">
           <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
+        <div :id="`${idx}-category`" class="table-col sm" @click="toggleEditable(`${idx}-category`, fbar.id)">
           <EditableSelectCell v-model="fbar.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col normal" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
@@ -151,13 +158,31 @@ export default {
     return {
       newFbarId: NaN,
       editableId: '',
-      editableFbarId: ''
+      editableFbarId: '',
+      yearFilterValue: '',
+      categoryFilterValue: '',
+      groupFilterValue: '',
+      typeFilterValue: '',
+      jobFilterValue: '',
+      currencyFilterValue: '',
+      descriptionFilterValue: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
-      const fbars = this.filteredFbars
+      const fbars = this.shownFbars
+        .filter((fbar) => {
+          if (!this.filterByYear && !this.filterByCategory && !this.filterByGroup && !this.filterByType &&
+              !this.filterByJob && !this.filterByCurrency && !this.filterByDescription
+          ) {
+            return true
+          }
+          return fbar.years === this.yearFilterValue || fbar.category === this.categoryFilterValue ||
+            fbar.taxGroup === this.groupFilterValue || fbar.taxType === this.typeFilterValue ||
+            fbar.job === this.jobFilterValue || fbar.currency === this.currencyFilterValue ||
+            fbar.description.toLowerCase().includes(this.descriptionFilterValue.toLowerCase())
+        })
       const newFbarIdx = fbars?.findIndex(fbar => fbar.id === this.newFbarId)
       if (newFbarIdx > -1) {
         const tempFbar = fbars[newFbarIdx]
@@ -166,7 +191,7 @@ export default {
       }
       return searchArrOfObjs(fbars, this.searchInput)
     },
-    filteredFbars () {
+    shownFbars () {
       if (this.fbarBreakdowns) {
         return this.fbarBreakdowns
           .filter(fbar => this.showArchived === fbar.archived)
@@ -225,6 +250,74 @@ export default {
     },
     amountUSDTotal () {
       return formatAsNumber(this.displayedFbars.filter(fbar => fbar.include).reduce((acc, fbar) => acc + fbar.amountUSD, 0))
+    },
+    filteredYearOptions () {
+      const options = this.yearNameOptions
+        .filter(yearName => this.shownFbars.find(fbar => fbar.years === yearName.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredCategoryOptions () {
+      const options = this.categoryOptions
+        .filter(category => this.shownFbars.find(fbar => fbar.category === category.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredGroupOptions () {
+      const options = this.taxGroupOptions
+        .filter(taxGroup => this.shownFbars.find(fbar => fbar.taxGroup === taxGroup.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredTypeOptions () {
+      const options = this.taxTypeOptions
+        .filter(taxType => this.shownFbars.find(fbar => fbar.taxType === taxType.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredJobOptions () {
+      const options = this.jobOptions
+        .filter(job => this.shownFbars.find(fbar => fbar.job === job.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredCurrencyOptions () {
+      const options = this.currencyOptions
+        .filter(currency => this.shownFbars.find(fbar => fbar.currency === currency.value))
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filteredDescriptionOptions () {
+      const options = this.shownFbars
+        .filter(fbar => fbar.description)
+        .map(fbar => fbar.description)
+        .filter((value, index, self) => self.indexOf(value) === index)
+      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+      return options
+    },
+    filterByYear () {
+      return !(this.yearFilterValue === 'All' || this.yearFilterValue === '')
+    },
+    filterByCategory () {
+      return !(this.categoryFilterValue === 'All' || this.categoryFilterValue === '')
+    },
+    filterByGroup () {
+      return !(this.groupFilterValue === 'All' || this.groupFilterValue === '')
+    },
+    filterByType () {
+      return !(this.typeFilterValue === 'All' || this.typeFilterValue === '')
+    },
+    filterByJob () {
+      return !(this.jobFilterValue === 'All' || this.jobFilterValue === '')
+    },
+    filterByCurrency () {
+      return !(this.currencyFilterValue === 'All' || this.currencyFilterValue === '')
+    },
+    filterByDescription () {
+      return !(this.descriptionFilterValue === 'All' || this.descriptionFilterValue === '')
+    },
+    isClientSelected () {
+      return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     }
   },
   methods: {
