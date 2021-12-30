@@ -25,7 +25,6 @@
           Employee
         </div>
         <div class="table-header xs" />
-        <div class="table-header xs" />
       </TableHeader>
     </template>
     <template #body>
@@ -58,7 +57,6 @@
         <div :id="`${idx}-alarmUserName`" class="table-col normal" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)" :options="userOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div class="table-col xs" />
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(log.id)" />
         </div>
