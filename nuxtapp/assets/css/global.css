@@ -15,7 +15,7 @@
 .table-col-primary.xs {
   @apply w-1/12;
 
-  max-width: 8.3333%;
+  min-width: 1.5rem;
 }
 
 .table-col.sm,
@@ -23,7 +23,7 @@
 .table-col-primary.sm {
   @apply w-2/12;
 
-  max-width: 16.6667%;
+  min-width: 2rem;
 }
 
 .table-col.normal,
@@ -31,7 +31,7 @@
 .table-col-primary.normal {
   @apply w-1/5;
 
-  max-width: 20%;
+  min-width: 3rem;
 }
 
 .table-col.lg,
@@ -39,7 +39,7 @@
 .table-col-primary.lg {
   @apply w-3/12;
 
-  max-width: 25%;
+  min-width: 8rem;
 }
 
 .table-col.xl,
@@ -47,7 +47,7 @@
 .table-col-primary.xl {
   @apply w-6/12;
 
-  max-width: 50%;
+  min-width: 24rem;
 }
 
 .table-col.xxl,
@@ -55,5 +55,5 @@
 .table-col-primary.xxl {
   @apply w-9/12;
 
-  min-width: 75%;
+  min-width: 48rem;
 }
