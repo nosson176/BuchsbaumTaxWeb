@@ -243,10 +243,14 @@ export default {
       return docOptions
     },
     amountTotal () {
-      return formatAsNumber(this.displayedIncomes.filter(income => income.include).reduce((acc, income) => acc + income.amount, 0))
+      return formatAsNumber(this.displayedIncomes
+        .filter(income => income.include)
+        .reduce((acc, income) => income.frequency ? (acc + income.amount * income.frequency) : (acc + income.amount), 0))
     },
     amountUSDTotal () {
-      return formatAsNumber(this.displayedIncomes.filter(income => income.include).reduce((acc, income) => acc + income.amountUSD, 0))
+      return formatAsNumber(this.displayedIncomes
+        .filter(income => income.include)
+        .reduce((acc, income) => income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD), 0))
     },
     filteredYearsOptions () {
       const options = this.yearNameOptions
@@ -331,6 +335,7 @@ export default {
     handleUpdate () {
       const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {

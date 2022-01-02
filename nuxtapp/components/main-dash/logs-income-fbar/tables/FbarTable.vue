@@ -236,10 +236,14 @@ export default {
       return docOptions
     },
     amountTotal () {
-      return formatAsNumber(this.displayedFbars.filter(fbar => fbar.include).reduce((acc, fbar) => acc + fbar.amount, 0))
+      return formatAsNumber(this.displayedFbars
+        .filter(fbar => fbar.include)
+        .reduce((acc, fbar) => fbar.frequency ? (acc + fbar.amount * fbar.frequency) : (acc + fbar.amount), 0))
     },
     amountUSDTotal () {
-      return formatAsNumber(this.displayedFbars.filter(fbar => fbar.include).reduce((acc, fbar) => acc + fbar.amountUSD, 0))
+      return formatAsNumber(this.displayedFbars
+        .filter(fbar => fbar.include)
+        .reduce((acc, fbar) => fbar.frequency ? (acc + fbar.amountUSD * fbar.frequency) : (acc + fbar.amountUSD), 0))
     },
     filteredYearOptions () {
       const options = this.yearNameOptions
