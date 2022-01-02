@@ -29,15 +29,6 @@
           aria-activedescendant="listbox-option-3"
         >
           <li
-            id="listbox-option-0"
-            key="clear"
-            class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
-            role="option"
-            @click="setSelectOption({value:''})"
-          >
-            <DeleteButton />
-          </li>
-          <li
             v-for="option in options"
             id="listbox-option-0"
             :key="option.id"

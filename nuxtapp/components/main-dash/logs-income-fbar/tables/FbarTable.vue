@@ -6,30 +6,42 @@
           <AddRowButton @click="onAddRowClick" />
         </div>
         <div class="table-header sm flex flex-col">
-          Year
+          <div class="flex items-center space-x-1">
+            <span>Year</span> <DeleteButton @click="yearFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
         <div class="table-header sm flex flex-col">
-          Cat
+          <div class="flex items-center space-x-1">
+            <span>Cat</span> <DeleteButton @click="categoryFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
         </div>
         <div class="table-header  normal flex flex-col">
-          Group
+          <div class="flex items-center space-x-1">
+            <span>Group</span> <DeleteButton @click="groupFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
         </div>
         <div class="table-header normal flex flex-col">
-          Type
+          <div class="flex items-center space-x-1">
+            <span>Type</span> <DeleteButton @click="typeFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
         <div class="table-header sm flex flex-col">
-          Job
+          <div class="flex items-center space-x-1">
+            <span>Job</span> <DeleteButton @click="jobFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
         </div>
         <div class="table-header normal">
           Amt
         </div>
         <div class="table-header sm flex flex-col">
-          Curr
+          <div class="flex items-center space-x-1">
+            <span>Curr</span> <DeleteButton @click="currencyFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
         <div class="table-header xs">
@@ -42,7 +54,9 @@
           Doc
         </div>
         <div class="table-header lg flex flex-col">
-          Description
+          <div class="flex items-center space-x-1">
+            <span>Description</span> <DeleteButton @click="descriptionFilterValue = ''" />
+          </div>
           <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
         </div>
         <div class="table-header sm">
@@ -315,6 +329,14 @@ export default {
     },
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
+    }
+  },
+  watch: {
+    selectedClient: {
+      handler () {
+        Object.assign(this.$data, this.$options.data.apply(this))
+      },
+      deep: true
     }
   },
   methods: {
