@@ -17,7 +17,7 @@ const formatAsILCurrency = (s) => {
 }
 
 const formatAsNumber = (s) => {
-  return s.toLocaleString('en-US')
+  return Math.round(s).toLocaleString('en-US')
 }
 
 let uuid = 1
