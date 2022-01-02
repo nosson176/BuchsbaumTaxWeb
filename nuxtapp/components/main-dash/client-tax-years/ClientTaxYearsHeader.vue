@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div v-if="selectedClientCopy" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
-      <div class="col-start-1 font-bold text-lg cursor-pointer" @click="openEditNameDialogue">
+      <div class="col-start-1 font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">
         {{ lastName }}
       </div>
       <div class="col-start-2">
@@ -17,7 +17,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-start-4 font-semibold text-gray-100 flex justify-center" @click="setEditable('periodical')">
+      <div class="col-start-4 text-gray-100 flex justify-center" @click="setEditable('periodical')">
         <EditableSelectCell
           v-model="periodical"
           :options="periodicalOptions"
