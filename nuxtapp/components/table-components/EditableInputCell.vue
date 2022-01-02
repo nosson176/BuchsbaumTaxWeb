@@ -41,12 +41,18 @@ export default {
     placeholder: {
       type: String,
       default: ''
+    },
+    rounded: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
     computedValue: {
       get () {
-        if (this.currency) {
+        if (this.rounded) {
+          return this.value ? formatAsNumber(Math.round(this.value)) : ''
+        } else if (this.currency) {
           return this.value ? formatAsNumber(this.value) : ''
         }
         return this.value

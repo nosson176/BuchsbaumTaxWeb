@@ -96,6 +96,7 @@
             readonly
             :is-editable="isEditable(`${idx}-$`)"
             currency
+            rounded
             @blur="onBlur"
             @input="debounceUpdate"
           />
@@ -248,9 +249,10 @@ export default {
         .reduce((acc, income) => income.frequency ? (acc + income.amount * income.frequency) : (acc + income.amount), 0))
     },
     amountUSDTotal () {
-      return formatAsNumber(this.displayedIncomes
+      return formatAsNumber(Math.round(this.displayedIncomes
         .filter(income => income.include)
-        .reduce((acc, income) => income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD), 0))
+        .reduce((acc, income) => income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD), 0)
+      ))
     },
     filteredYearsOptions () {
       const options = this.yearNameOptions

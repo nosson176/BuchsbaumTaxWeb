@@ -89,6 +89,7 @@
             v-model="fbar.amountUSD"
             readonly
             :is-editable="isEditable(`${idx}-$`)"
+            rounded
             currency
             @blur="onBlur"
             @input="debounceUpdate"
