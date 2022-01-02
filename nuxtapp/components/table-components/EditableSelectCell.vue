@@ -1,5 +1,5 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown="onKeyPress" @keyup="onKeyUp">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown.prevent="onKeyPress" @keyup.prevent="onKeyUp">
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
       <button
         ref="button"
@@ -27,14 +27,17 @@
           v-for="(option, idx) in options"
           :id="idx"
           :key="idx"
-          class="text-gray-900 text-xs cursor-default select-none relative py-0 pl-0 pr-1 hover:text-white hover:bg-indigo-600"
+          ref="option"
+          class="text-xs cursor-default select-none relative py-0 pl-0 pr-1"
+          :class="hoverIndex === idx ? 'text-white bg-indigo-600' : 'text-gray-900'"
           role="option"
+          @mouseover="onMouseOver(idx)"
           @click.stop="emitChange(option.value)"
         >
           <span class="ml-4 block truncate" :class="isSelected(option) ? 'font-semibold' : 'font-normal'">
             {{ option.value }}
           </span>
-          <span v-if="isSelected(option)" class="text-indigo-600 absolute inset-y-0 left-0 flex items-center p-0 hover:text-white">
+          <span v-if="isSelected(option)" class="text-indigo-600 absolute inset-y-0 left-0 flex items-center p-0">
             <!-- Heroicon name: solid/check -->
             <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -77,7 +80,9 @@ export default {
   data () {
     return {
       showOptions: false,
-      shiftActive: false
+      shiftActive: false,
+      hoverIndex: 0,
+      mouseMode: false
     }
   },
   computed: {
@@ -151,11 +156,35 @@ export default {
     onKeyPress (evt) {
       if (evt.key === 'Shift') {
         this.shiftActive = true
+      } else if (evt.key === 'Enter') {
+        this.emitChange(this.options[this.hoverIndex].value)
+      } else if (evt.key === 'ArrowDown') {
+        if (this.hoverIndex < this.options.length - 1) {
+          this.hoverIndex++
+          this.scrollSelectedIntoView()
+        }
+      } else if (evt.key === 'ArrowUp') {
+        if (this.hoverIndex > 0) {
+          this.hoverIndex--
+          this.scrollSelectedIntoView()
+        }
       }
     },
     onKeyUp (evt) {
       if (evt.key === 'Shift') {
         this.shiftActive = false
+      }
+    },
+    onMouseOver (idx) {
+      this.hoverIndex = idx
+    },
+    scrollSelectedIntoView () {
+      if (this.$refs.option) {
+        if (this.$refs.option[this.hoverIndex]) {
+          this.$refs.option[this.hoverIndex].scrollIntoView({
+            block: 'center'
+          })
+        }
       }
     }
   }
