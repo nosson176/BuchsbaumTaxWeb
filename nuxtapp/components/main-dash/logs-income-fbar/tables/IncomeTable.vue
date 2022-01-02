@@ -104,10 +104,10 @@
           <EditableSelectCell v-model="income.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, income.id)">
-          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, income.id)">
-          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(income.id)" />
@@ -255,37 +255,31 @@ export default {
     filteredYearsOptions () {
       const options = this.yearNameOptions
         .filter(yearName => this.shownIncomes.find(income => income.years === yearName.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredCategoriesOptions () {
       const options = this.categoryOptions
         .filter(category => this.shownIncomes.find(income => income.category === category.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredGroupsOptions () {
       const options = this.taxGroupOptions
         .filter(taxGroup => this.shownIncomes.find(income => income.taxGroup === taxGroup.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredTypesOptions () {
       const options = this.valueTypes.tax_type
         .filter(taxType => taxType.show && this.shownIncomes.find(income => income.taxType === taxType.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredJobsOptions () {
       const options = this.jobOptions
         .filter(job => this.shownIncomes.find(income => income.job === job.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredCurrenciesOptions () {
       const options = this.currencyOptions
         .filter(currency => this.shownIncomes.find(income => income.currency === currency.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredDescriptionsOptions () {
@@ -294,29 +288,28 @@ export default {
         .map(income => income.description)
         .filter((description, idx, arr) => arr.indexOf(description) === idx)
         .map(description => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filterByYear () {
-      return !(this.yearFilterValue === 'All' || this.yearFilterValue === '')
+      return !(this.yearFilterValue === '')
     },
     filterByCategory () {
-      return !(this.categoryFilterValue === 'All' || this.categoryFilterValue === '')
+      return !(this.categoryFilterValue === '')
     },
     filterByGroup () {
-      return !(this.groupFilterValue === 'All' || this.groupFilterValue === '')
+      return !(this.groupFilterValue === '')
     },
     filterByType () {
-      return !(this.typeFilterValue === 'All' || this.typeFilterValue === '')
+      return !(this.typeFilterValue === '')
     },
     filterByJob () {
-      return !(this.jobFilterValue === 'All' || this.jobFilterValue === '')
+      return !(this.jobFilterValue === '')
     },
     filterByCurrency () {
-      return !(this.currencyFilterValue === 'All' || this.currencyFilterValue === '')
+      return !(this.currencyFilterValue === '')
     },
     filterByDescription () {
-      return !(this.descriptionFilterValue === 'All' || this.descriptionFilterValue === '')
+      return !(this.descriptionFilterValue === '')
     },
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
@@ -381,7 +374,7 @@ export default {
     },
     filterIncomes (income) {
       let returnValue = true
-      returnValue = this.filterByYear ? income.year === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByYear ? income.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByCategory ? income.category === this.categoryFilterValue && returnValue : returnValue
       returnValue = this.filterByGroup ? income.taxGroup === this.groupFilterValue && returnValue : returnValue
       returnValue = this.filterByType ? income.taxType === this.typeFilterValue && returnValue : returnValue

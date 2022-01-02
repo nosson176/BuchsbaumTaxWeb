@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mt-1 relative">
+    <div class="mt-1 relative" @blur="onBlur">
       <button
         type="button"
         class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-1 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -28,6 +28,15 @@
           aria-labelledby="listbox-label"
           aria-activedescendant="listbox-option-3"
         >
+          <li
+            id="listbox-option-0"
+            key="clear"
+            class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
+            role="option"
+            @click="setSelectOption({value:''})"
+          >
+            <DeleteButton />
+          </li>
           <li
             v-for="option in options"
             id="listbox-option-0"
@@ -91,6 +100,9 @@ export default {
     },
     setSelectOption (option) {
       this.computedValue = option.value
+      this.showOptions = false
+    },
+    onBlur () {
       this.showOptions = false
     }
   }

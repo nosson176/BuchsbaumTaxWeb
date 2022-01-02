@@ -98,10 +98,10 @@
           <EditableSelectCell v-model="fbar.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, fbar.id)">
-          <EditableInputCell v-model="fbar.description" :is-editable="isEditable(`${idx}-description`)" currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="fbar.description" :is-editable="isEditable(`${idx}-description`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id)">
-          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(fbar.id)" />
@@ -248,19 +248,19 @@ export default {
     filteredYearOptions () {
       const options = this.yearNameOptions
         .filter(yearName => this.shownFbars.find(fbar => fbar.years === yearName.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+
       return options
     },
     filteredCategoryOptions () {
       const options = this.categoryOptions
         .filter(category => this.shownFbars.find(fbar => fbar.category === category.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+
       return options
     },
     filteredGroupOptions () {
       const options = this.taxGroupOptions
         .filter(taxGroup => this.shownFbars.find(fbar => fbar.taxGroup === taxGroup.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+
       return options
     },
     filteredTypeOptions () {
@@ -268,19 +268,18 @@ export default {
         .filter(taxType => taxType.show && this.shownFbars.find((fbar) => {
           return fbar.taxType === taxType.value
         }))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
     filteredJobOptions () {
       const options = this.jobOptions
         .filter(job => this.shownFbars.find(fbar => fbar.job === job.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+
       return options
     },
     filteredCurrencyOptions () {
       const options = this.currencyOptions
         .filter(currency => this.shownFbars.find(fbar => fbar.currency === currency.value))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+
       return options
     },
     filteredDescriptionOptions () {
@@ -289,29 +288,29 @@ export default {
         .map(fbar => fbar.description)
         .filter((value, index, self) => self.indexOf(value) === index)
         .map(description => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
-      options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
+
       return options
     },
     filterByYear () {
-      return !(this.yearFilterValue === 'All' || this.yearFilterValue === '')
+      return !(this.yearFilterValue === '')
     },
     filterByCategory () {
-      return !(this.categoryFilterValue === 'All' || this.categoryFilterValue === '')
+      return !(this.categoryFilterValue === '')
     },
     filterByGroup () {
-      return !(this.groupFilterValue === 'All' || this.groupFilterValue === '')
+      return !(this.groupFilterValue === '')
     },
     filterByType () {
-      return !(this.typeFilterValue === 'All' || this.typeFilterValue === '')
+      return !(this.typeFilterValue === '')
     },
     filterByJob () {
-      return !(this.jobFilterValue === 'All' || this.jobFilterValue === '')
+      return !(this.jobFilterValue === '')
     },
     filterByCurrency () {
-      return !(this.currencyFilterValue === 'All' || this.currencyFilterValue === '')
+      return !(this.currencyFilterValue === '')
     },
     filterByDescription () {
-      return !(this.descriptionFilterValue === 'All' || this.descriptionFilterValue === '')
+      return !(this.descriptionFilterValue === '')
     },
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
@@ -376,7 +375,7 @@ export default {
     },
     filterFbars (fbar) {
       let returnValue = true
-      returnValue = this.filterByYear ? fbar.year === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByYear ? fbar.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByCategory ? fbar.category === this.categoryFilterValue && returnValue : returnValue
       returnValue = this.filterByGroup ? fbar.taxGroup === this.groupFilterValue && returnValue : returnValue
       returnValue = this.filterByType ? fbar.taxType === this.typeFilterValue && returnValue : returnValue
