@@ -267,8 +267,8 @@ export default {
       return options
     },
     filteredTypesOptions () {
-      const options = this.taxTypeOptions
-        .filter(taxType => this.shownIncomes.find(income => income.taxType === taxType.value))
+      const options = this.valueTypes.tax_type
+        .filter(taxType => taxType.show && this.shownIncomes.find(income => income.taxType === taxType.value))
       options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },

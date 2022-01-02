@@ -260,8 +260,10 @@ export default {
       return options
     },
     filteredTypeOptions () {
-      const options = this.taxTypeOptions
-        .filter(taxType => this.shownFbars.find(fbar => fbar.taxType === taxType.value))
+      const options = this.valueTypes.tax_type
+        .filter(taxType => taxType.show && this.shownFbars.find((fbar) => {
+          return fbar.taxType === taxType.value
+        }))
       options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
@@ -282,6 +284,7 @@ export default {
         .filter(fbar => fbar.description)
         .map(fbar => fbar.description)
         .filter((value, index, self) => self.indexOf(value) === index)
+        .map(description => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
       options.unshift({ id: 'all', include: true, show: true, sortOrder: 0, value: 'All' })
       return options
     },
