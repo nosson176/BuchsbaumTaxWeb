@@ -47,7 +47,7 @@
 .table-col-primary.xl {
   @apply w-6/12;
 
-  min-width: 24rem;
+  min-width: 38rem;
 }
 
 .table-col.xxl,
@@ -55,5 +55,5 @@
 .table-col-primary.xxl {
   @apply w-9/12;
 
-  min-width: 40rem;
+  min-width: 48rem;
 }
