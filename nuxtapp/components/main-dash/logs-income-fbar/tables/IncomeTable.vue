@@ -116,7 +116,7 @@
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
         <div class="table-col xs" />
         <div class="table-col-primary sm" />
-        <div class="table-col xs" />
+        <div class="table-col sm" />
         <div class="table-col normal" />
         <div class="table-col xs" />
         <div class="table-col normal" />
@@ -179,17 +179,7 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedIncomes () {
       const incomes = this.shownIncomes
-        .filter((income) => {
-          if (!this.filterByYear && !this.filterByCategory && !this.filterByGroup && !this.filterByType &&
-              !this.filterByJob && !this.filterByCurrency && !this.filterByDescription
-          ) {
-            return true
-          }
-          return income.years === this.yearFilterValue || income.category === this.categoryFilterValue ||
-            income.taxGroup === this.groupFilterValue || income.taxType === this.typeFilterValue ||
-            income.job === this.jobFilterValue || income.currency === this.currencyFilterValue ||
-            income.description.toLowerCase().includes(this.descriptionFilterValue.toLowerCase())
-        })
+        .filter(income => this.filterIncomes(income))
       const newIncomeIdx = incomes?.findIndex(income => income.id === this.newIncomeId)
       if (newIncomeIdx > -1) {
         const tempIncome = incomes[newIncomeIdx]
@@ -383,6 +373,17 @@ export default {
     },
     onBlur () {
       this.editableId = ''
+    },
+    filterIncomes (income) {
+      let returnValue = true
+      returnValue = this.filterByYear ? income.year === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByCategory ? income.category === this.categoryFilterValue && returnValue : returnValue
+      returnValue = this.filterByGroup ? income.taxGroup === this.groupFilterValue && returnValue : returnValue
+      returnValue = this.filterByType ? income.taxType === this.typeFilterValue && returnValue : returnValue
+      returnValue = this.filterByJob ? income.job === this.jobFilterValue && returnValue : returnValue
+      returnValue = this.filterByCurrency ? income.currency === this.currencyFilterValue && returnValue : returnValue
+      returnValue = this.filterByDescription ? income.description === this.descriptionFilterValue && returnValue : returnValue
+      return returnValue
     }
   }
 }

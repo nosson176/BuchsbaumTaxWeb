@@ -110,7 +110,7 @@
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
         <div class="table-col xs" />
         <div class="table-col-primary sm" />
-        <div class="table-col xs" />
+        <div class="table-col sm" />
         <div class="table-col normal" />
         <div class="table-col normal" />
         <div class="table-col sm" />
@@ -172,17 +172,7 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
       const fbars = this.shownFbars
-        .filter((fbar) => {
-          if (!this.filterByYear && !this.filterByCategory && !this.filterByGroup && !this.filterByType &&
-              !this.filterByJob && !this.filterByCurrency && !this.filterByDescription
-          ) {
-            return true
-          }
-          return fbar.years === this.yearFilterValue || fbar.category === this.categoryFilterValue ||
-            fbar.taxGroup === this.groupFilterValue || fbar.taxType === this.typeFilterValue ||
-            fbar.job === this.jobFilterValue || fbar.currency === this.currencyFilterValue ||
-            fbar.description.toLowerCase().includes(this.descriptionFilterValue.toLowerCase())
-        })
+        .filter(fbar => this.filterFbars(fbar))
       const newFbarIdx = fbars?.findIndex(fbar => fbar.id === this.newFbarId)
       if (newFbarIdx > -1) {
         const tempFbar = fbars[newFbarIdx]
@@ -376,6 +366,17 @@ export default {
     },
     onBlur () {
       this.editableId = ''
+    },
+    filterFbars (fbar) {
+      let returnValue = true
+      returnValue = this.filterByYear ? fbar.year === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByCategory ? fbar.category === this.categoryFilterValue && returnValue : returnValue
+      returnValue = this.filterByGroup ? fbar.taxGroup === this.groupFilterValue && returnValue : returnValue
+      returnValue = this.filterByType ? fbar.taxType === this.typeFilterValue && returnValue : returnValue
+      returnValue = this.filterByJob ? fbar.job === this.jobFilterValue && returnValue : returnValue
+      returnValue = this.filterByCurrency ? fbar.currency === this.currencyFilterValue && returnValue : returnValue
+      returnValue = this.filterByDescription ? fbar.description === this.descriptionFilterValue && returnValue : returnValue
+      return returnValue
     }
   }
 }
