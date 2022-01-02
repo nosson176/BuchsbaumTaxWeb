@@ -18,7 +18,7 @@ export default {
       return this.personal.category
     },
     firstName () {
-      return this.personal.firstName
+      return this.personal.informal || this.personal.firstName
     },
     relationFirstLetter () {
       return this.personal.relation?.slice(0, 1)
