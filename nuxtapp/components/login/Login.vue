@@ -110,8 +110,8 @@ export default {
   methods: {
     handleSubmit () {
       this.$api.login(this.loginPayload)
-        .then((data) => {
-          this.setSessionKey(data)
+        .then(async (data) => {
+          await this.setSessionKey(data)
           this.routeToMainDash()
         })
         .catch((e) => {

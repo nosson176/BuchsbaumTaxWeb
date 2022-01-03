@@ -151,6 +151,7 @@ export default {
     handleUpdate () {
       const log = this.displayedLogs.find(log => log.id === this.editableLogId)
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (logId) {
       if (this.showArchived) {

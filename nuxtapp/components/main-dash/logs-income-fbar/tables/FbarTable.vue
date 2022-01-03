@@ -1,30 +1,48 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header xs">
-          Year
+        <div class="table-header xs flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Year</span> <DeleteButton @click="yearFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
-        <div class="table-header xs">
-          Cat
+        <div class="table-header xs flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Cat</span> <DeleteButton @click="categoryFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
         </div>
-        <div class="table-header  sm">
-          Group
+        <div class="table-header  sm flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Group</span> <DeleteButton @click="groupFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
         </div>
-        <div class="table-header sm">
-          Type
+        <div class="table-header sm flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Type</span> <DeleteButton @click="typeFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
-        <div class="table-header sm">
-          Job
+        <div class="table-header xs flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Job</span> <DeleteButton @click="jobFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
         </div>
         <div class="table-header sm">
           Amt
         </div>
-        <div class="table-header sm">
-          Curr
+        <div class="table-header xs flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Curr</span> <DeleteButton @click="currencyFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
         <div class="table-header xs">
           X
@@ -32,11 +50,14 @@
         <div class="table-header sm">
           $
         </div>
-        <div class="table-header sm">
+        <div class="table-header xs">
           Doc
         </div>
-        <div class="table-header lg">
-          Description
+        <div class="table-header lg flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Description</span> <DeleteButton @click="descriptionFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
         </div>
         <div class="table-header sm">
           Depend
@@ -65,13 +86,13 @@
         <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
           <EditableSelectCell v-model="fbar.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
+        <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, fbar.id)">
           <EditableSelectCell v-model="fbar.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
           <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div :id="`${idx}-currency`" class="table-col sm" @click="toggleEditable(`${idx}-currency`, fbar.id)">
+        <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, fbar.id)">
           <EditableSelectCell v-model="fbar.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, fbar.id)">
@@ -82,23 +103,44 @@
             v-model="fbar.amountUSD"
             readonly
             :is-editable="isEditable(`${idx}-$`)"
+            rounded
             currency
             @blur="onBlur"
             @input="debounceUpdate"
           />
         </div>
-        <div :id="`${idx}-documents`" class="table-col sm" @click="toggleEditable(`${idx}-documents`, fbar.id)">
+        <div :id="`${idx}-documents`" class="table-col xs" @click="toggleEditable(`${idx}-documents`, fbar.id)">
           <EditableSelectCell v-model="fbar.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, fbar.id)">
-          <EditableInputCell v-model="fbar.description" :is-editable="isEditable(`${idx}-description`)" currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="fbar.description" :is-editable="isEditable(`${idx}-description`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id)">
-          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" currency @blur="onBlur" @input="debounceUpdate" />
+          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton @click="onDeleteClick(fbar.id)" />
         </div>
+      </TableRow>
+      <TableRow class="sticky bottom-0 bg-gray-300 shadow">
+        <div class="table-col xs" />
+        <div class="table-col-primary xs" />
+        <div class="table-col xs" />
+        <div class="table-col sm" />
+        <div class="table-col sm" />
+        <div class="table-col xs" />
+        <div class="sm table-col-primary">
+          {{ amountTotal }}
+        </div>
+        <div class="table-col xs" />
+        <div class="table-col xs" />
+        <div class="table-col-primary sm">
+          {{ amountUSDTotal }}
+        </div>
+        <div class="table-col xs" />
+        <div class="table-col lg" />
+        <div class="table-col sm" />
+        <div class="table-col xs" />
       </TableRow>
     </template>
   </Table>
@@ -108,7 +150,7 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { searchArrOfObjs } from '~/shared/utility'
+import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'include', 'years', 'category', 'taxGroup', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
@@ -131,13 +173,21 @@ export default {
     return {
       newFbarId: NaN,
       editableId: '',
-      editableFbarId: ''
+      editableFbarId: '',
+      yearFilterValue: '',
+      categoryFilterValue: '',
+      groupFilterValue: '',
+      typeFilterValue: '',
+      jobFilterValue: '',
+      currencyFilterValue: '',
+      descriptionFilterValue: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
     displayedFbars () {
-      const fbars = this.filteredFbars
+      const fbars = this.shownFbars
+        .filter(fbar => this.filterFbars(fbar))
       const newFbarIdx = fbars?.findIndex(fbar => fbar.id === this.newFbarId)
       if (newFbarIdx > -1) {
         const tempFbar = fbars[newFbarIdx]
@@ -146,7 +196,7 @@ export default {
       }
       return searchArrOfObjs(fbars, this.searchInput)
     },
-    filteredFbars () {
+    shownFbars () {
       if (this.fbarBreakdowns) {
         return this.fbarBreakdowns
           .filter(fbar => this.showArchived === fbar.archived)
@@ -199,6 +249,95 @@ export default {
     },
     docOptions () {
       return docOptions
+    },
+    amountTotal () {
+      return formatAsNumber(this.displayedFbars
+        .filter(fbar => fbar.include)
+        .reduce((acc, fbar) => fbar.frequency ? (acc + fbar.amount * fbar.frequency) : (acc + fbar.amount), 0))
+    },
+    amountUSDTotal () {
+      return `$${formatAsNumber(Math.round(this.displayedFbars
+        .filter(fbar => fbar.include)
+        .reduce((acc, fbar) => fbar.frequency ? (acc + fbar.amountUSD * fbar.frequency) : (acc + fbar.amountUSD), 0)
+      ))}`
+    },
+    filteredYearOptions () {
+      const options = this.yearNameOptions
+        .filter(yearName => this.shownFbars.find(fbar => fbar.years === yearName.value))
+
+      return options
+    },
+    filteredCategoryOptions () {
+      const options = this.categoryOptions
+        .filter(category => this.shownFbars.find(fbar => fbar.category === category.value))
+
+      return options
+    },
+    filteredGroupOptions () {
+      const options = this.taxGroupOptions
+        .filter(taxGroup => this.shownFbars.find(fbar => fbar.taxGroup === taxGroup.value))
+
+      return options
+    },
+    filteredTypeOptions () {
+      const options = this.valueTypes.tax_type
+        .filter(taxType => taxType.show && this.shownFbars.find((fbar) => {
+          return fbar.taxType === taxType.value
+        }))
+      return options
+    },
+    filteredJobOptions () {
+      const options = this.jobOptions
+        .filter(job => this.shownFbars.find(fbar => fbar.job === job.value))
+
+      return options
+    },
+    filteredCurrencyOptions () {
+      const options = this.currencyOptions
+        .filter(currency => this.shownFbars.find(fbar => fbar.currency === currency.value))
+
+      return options
+    },
+    filteredDescriptionOptions () {
+      const options = this.shownFbars
+        .filter(fbar => fbar.description)
+        .map(fbar => fbar.description)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .map(description => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
+
+      return options
+    },
+    filterByYear () {
+      return !(this.yearFilterValue === '')
+    },
+    filterByCategory () {
+      return !(this.categoryFilterValue === '')
+    },
+    filterByGroup () {
+      return !(this.groupFilterValue === '')
+    },
+    filterByType () {
+      return !(this.typeFilterValue === '')
+    },
+    filterByJob () {
+      return !(this.jobFilterValue === '')
+    },
+    filterByCurrency () {
+      return !(this.currencyFilterValue === '')
+    },
+    filterByDescription () {
+      return !(this.descriptionFilterValue === '')
+    },
+    isClientSelected () {
+      return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
+    }
+  },
+  watch: {
+    selectedClient: {
+      handler () {
+        Object.assign(this.$data, this.$options.data.apply(this))
+      },
+      deep: true
     }
   },
   methods: {
@@ -257,6 +396,17 @@ export default {
     },
     onBlur () {
       this.editableId = ''
+    },
+    filterFbars (fbar) {
+      let returnValue = true
+      returnValue = this.filterByYear ? fbar.years === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByCategory ? fbar.category === this.categoryFilterValue && returnValue : returnValue
+      returnValue = this.filterByGroup ? fbar.taxGroup === this.groupFilterValue && returnValue : returnValue
+      returnValue = this.filterByType ? fbar.taxType === this.typeFilterValue && returnValue : returnValue
+      returnValue = this.filterByJob ? fbar.job === this.jobFilterValue && returnValue : returnValue
+      returnValue = this.filterByCurrency ? fbar.currency === this.currencyFilterValue && returnValue : returnValue
+      returnValue = this.filterByDescription ? fbar.description === this.descriptionFilterValue && returnValue : returnValue
+      return returnValue
     }
   }
 }
