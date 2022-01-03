@@ -9,7 +9,13 @@
       :type="type"
       :open.sync="showPicker"
       @focus="onFocus"
-    />
+    >
+      <template #header="{ emit }">
+        <button class="mx-btn mx-btn-text" @click="emit(new Date())">
+          Today
+        </button>
+      </template>
+    </date-picker>
     <span v-else class="cursor-pointer">{{ displayedValue }}</span>
   </div>
 </template>

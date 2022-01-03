@@ -11,7 +11,13 @@
       :open.sync="showPicker"
       @focus="onFocus"
       @input="onInput"
-    />
+    >
+      <template #header="{ emit }">
+        <button class="mx-btn mx-btn-text" @click="emit(new Date())">
+          Today
+        </button>
+      </template>
+    </date-picker>
     <span v-else class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
       {{ displayedValue || placeholder }}
     </span>
@@ -53,7 +59,6 @@ export default {
       },
       set (newVal) {
         this.$emit('input', newVal)
-        console.log({ newVal })
         this.$emit(events.blur)
       }
     },
