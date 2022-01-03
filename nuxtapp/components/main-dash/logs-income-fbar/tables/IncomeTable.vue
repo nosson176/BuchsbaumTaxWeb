@@ -263,10 +263,10 @@ export default {
         .reduce((acc, income) => income.frequency ? (acc + income.amount * income.frequency) : (acc + income.amount), 0))
     },
     amountUSDTotal () {
-      return formatAsNumber(Math.round(this.displayedIncomes
+      return `$${formatAsNumber(Math.round(this.displayedIncomes
         .filter(income => income.include)
         .reduce((acc, income) => income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD), 0)
-      ))
+      ))}`
     },
     filteredYearsOptions () {
       const options = this.yearNameOptions
