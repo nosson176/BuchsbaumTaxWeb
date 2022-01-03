@@ -3,7 +3,7 @@
     <div class="mt-1 relative" @blur="onBlur">
       <button
         type="button"
-        class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-1 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+        class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
         aria-haspopup="listbox"
         aria-expanded="true"
         aria-labelledby="listbox-label"
