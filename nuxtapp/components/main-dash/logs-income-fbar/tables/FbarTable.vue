@@ -129,12 +129,12 @@
         <div class="table-col normal" />
         <div class="table-col normal" />
         <div class="table-col sm" />
-        <div class="normal table-col">
+        <div class="normal table-col-primary">
           {{ amountTotal }}
         </div>
         <div class="table-col sm" />
         <div class="table-col xs" />
-        <div class="table-col sm">
+        <div class="table-col-primary sm">
           {{ amountUSDTotal }}
         </div>
         <div class="table-col sm" />
