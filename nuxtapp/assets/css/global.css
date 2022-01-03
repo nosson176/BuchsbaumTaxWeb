@@ -10,6 +10,14 @@
   @apply px-px py-1 whitespace-nowrap text-xs font-medium text-gray-900;
 }
 
+.disabled .table-col {
+  @apply text-gray-300;
+}
+
+.disabled .table-col-primary {
+  @apply text-gray-300;
+}
+
 .table-col.xs,
 .table-header.xs,
 .table-col-primary.xs {
