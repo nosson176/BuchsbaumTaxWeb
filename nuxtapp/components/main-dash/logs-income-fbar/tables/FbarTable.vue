@@ -224,7 +224,7 @@ export default {
       return taxGroup?.id
     },
     jobOptions () {
-      return this.valueTypes.job.filter(job => job.show)
+      return this.valueTypes.part.filter(job => job.show)
     },
     currencyOptions () {
       return this.valueTypes.currency.filter(currency => currency.show)
