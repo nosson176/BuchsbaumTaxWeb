@@ -9,7 +9,7 @@
         aria-labelledby="listbox-label"
         @click="toggleShowOptions"
       >
-        <span class="block truncate h-3">
+        <span class="block truncate h-4">
           {{ shownValue || computedValue }}
         </span>
         <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
