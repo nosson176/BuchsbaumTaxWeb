@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mt-1 relative">
+    <div class="mt-1 relative" @keydown.prevent="onKeyPress">
       <button
         type="button"
         class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -29,11 +29,14 @@
           aria-activedescendant="listbox-option-3"
         >
           <li
-            v-for="option in options"
+            v-for="(option, idx) in options"
             id="listbox-option-0"
             :key="option.id"
-            class="text-gray-900 cursor-default select-none relative bg-white py-2 pl-3 pr-9 hover:text-white hover:bg-indigo-600"
+            ref="option"
+            class="cursor-default select-none relative bg-white py-2 pl-3 pr-9"
+            :class="hoverIndex === idx ? 'text-white bg-indigo-600' : 'text-gray-900'"
             role="option"
+            @mouseover="onMouseOver(idx)"
             @click="setSelectOption(option)"
           >
             <span :class="[option.selected ? 'font-semibold' : 'font-normal','block truncate']">
@@ -72,7 +75,8 @@ export default {
   },
   data () {
     return {
-      showOptions: false
+      showOptions: false,
+      hoverIndex: 0
     }
   },
   computed: {
@@ -92,6 +96,33 @@ export default {
     setSelectOption (option) {
       this.computedValue = option.value
       this.showOptions = false
+    },
+    onKeyPress (evt) {
+      if (evt.key === 'Enter') {
+        this.computedValue = this.options[this.hoverIndex].value
+      } else if (evt.key === 'ArrowDown') {
+        if (this.hoverIndex < this.options.length - 1) {
+          this.hoverIndex++
+          this.scrollSelectedIntoView()
+        }
+      } else if (evt.key === 'ArrowUp') {
+        if (this.hoverIndex > 0) {
+          this.hoverIndex--
+          this.scrollSelectedIntoView()
+        }
+      }
+    },
+    onMouseOver (idx) {
+      this.hoverIndex = idx
+    },
+    scrollSelectedIntoView () {
+      if (this.$refs.option) {
+        if (this.$refs.option[this.hoverIndex]) {
+          this.$refs.option[this.hoverIndex].scrollIntoView({
+            block: 'center'
+          })
+        }
+      }
     }
   }
 }
