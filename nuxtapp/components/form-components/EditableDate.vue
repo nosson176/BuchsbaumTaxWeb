@@ -10,16 +10,17 @@
       :placeholder="placeholder"
       :open.sync="showPicker"
       @focus="onFocus"
+      @input="onInput"
     />
     <span v-else class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
-      {{ computedValue || placeholder }}
+      {{ displayedValue || placeholder }}
     </span>
   </div>
 </template>
 
 <script>
 import { events } from '~/shared/constants'
-import { formatDateForClient, formatDateForServer } from '~/shared/domain-utilities'
+import { formatDateForClient } from '~/shared/domain-utilities'
 export default {
   name: 'EditableDate',
   props: {
@@ -48,18 +49,11 @@ export default {
   computed: {
     computedValue: {
       get () {
-        if (this.isTypeDate && this.value) {
-          return formatDateForClient(this.value)
-        } else {
-          return this.value
-        }
+        return this.value
       },
       set (newVal) {
-        if (this.isTypeDate) {
-          this.$emit('input', formatDateForServer(newVal))
-        } else {
-          this.$emit('input', newVal)
-        }
+        this.$emit('input', newVal)
+        console.log({ newVal })
         this.$emit(events.blur)
       }
     },
@@ -67,10 +61,13 @@ export default {
       return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
     },
     valueType () {
-      return 'format'
+      return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
     },
     isTypeDate () {
       return this.type === 'date'
+    },
+    displayedValue () {
+      return this.isTypeDate && this.computedValue ? formatDateForClient(this.computedValue) : this.computedValue
     }
   },
   updated () {
@@ -82,14 +79,11 @@ export default {
     }
   },
   methods: {
-    formatDateForClient (date) {
-      return date ? formatDateForClient(date) : ''
-    },
-    formatDateForServer (date) {
-      return date ? formatDateForServer(date) : ''
-    },
     onFocus () {
       this.showPicker = true
+    },
+    onInput (newVal) {
+      this.computedValue = newVal
     }
   }
 }
