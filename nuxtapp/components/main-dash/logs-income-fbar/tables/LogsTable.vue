@@ -1,12 +1,15 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header sm">
-          Year
+        <div class="table-header sm flex flex-col">
+          <div class="flex items-center space-x-1">
+            <span>Year</span> <DeleteButton @click="yearFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
         <div class="table-header xxl">
           Note
@@ -21,8 +24,11 @@
         <div class="table-header xs">
           Time
         </div>
-        <div class="table-header sm">
-          Employee
+        <div class="table-header sm flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Emp</span> <DeleteButton @click="employeeFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
         <div class="table-header xs" />
       </TableHeader>
@@ -94,13 +100,16 @@ export default {
     return {
       newLogId: NaN,
       editableId: '',
-      editableLogId: ''
+      editableLogId: '',
+      yearFilterValue: '',
+      employeeFilterValue: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
-      const logs = this.filteredLogs
+      const logs = this.shownLogs
+        .filter(log => this.filterLogs(log))
       const newLogIdx = logs?.findIndex(contact => contact.id === this.newLogId)
       if (newLogIdx > -1) {
         const tempLog = logs[newLogIdx]
@@ -109,7 +118,7 @@ export default {
       }
       return searchArrOfObjs(logs, this.searchInput)
     },
-    filteredLogs () {
+    shownLogs () {
       if (this.logs) {
         return this.logs
           .filter(log => this.showArchived === log.archived)
@@ -143,6 +152,25 @@ export default {
     },
     searchInput () {
       return this.search?.[tableGroups.logsIncomeFbar]
+    },
+    isClientSelected () {
+      return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
+    },
+    filteredYearOptions () {
+      const options = this.yearOptions
+        .filter(yearName => this.shownLogs?.find(log => log.years === yearName.value))
+      return options
+    },
+    filteredUserOptions () {
+      const options = this.userOptions
+        .filter(user => this.shownLogs?.find(log => log.alarmUserName === user.value))
+      return options
+    },
+    filterByYear () {
+      return !(this.yearFilterValue === '')
+    },
+    filterByEmployee () {
+      return !(this.employeeFilterValue === '')
     }
   },
   methods: {
@@ -216,6 +244,12 @@ export default {
       }
       this.editableLogId = log.id
       this.debounceUpdate()
+    },
+    filterLogs (log) {
+      let returnValue = true
+      returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
+      return returnValue
     }
   }
 }

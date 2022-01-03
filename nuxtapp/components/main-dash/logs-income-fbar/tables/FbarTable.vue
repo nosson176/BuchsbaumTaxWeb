@@ -265,19 +265,16 @@ export default {
     filteredYearOptions () {
       const options = this.yearNameOptions
         .filter(yearName => this.shownFbars.find(fbar => fbar.years === yearName.value))
-
       return options
     },
     filteredCategoryOptions () {
       const options = this.categoryOptions
         .filter(category => this.shownFbars.find(fbar => fbar.category === category.value))
-
       return options
     },
     filteredGroupOptions () {
       const options = this.taxGroupOptions
         .filter(taxGroup => this.shownFbars.find(fbar => fbar.taxGroup === taxGroup.value))
-
       return options
     },
     filteredTypeOptions () {
