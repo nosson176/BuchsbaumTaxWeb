@@ -1,12 +1,19 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <ClientTaxYearsListItem v-for="(taxYear, idx) in displayedTaxYearData" :key="taxYear.id" :idx="idx" :tax-year="taxYear" @change="toggleItemShown($event,taxYear)" />
+    <ClientTaxYearsListItem
+      v-for="(taxYear, idx) in displayedTaxYearData"
+      :key="taxYear.id"
+      :idx="idx"
+      :tax-year="taxYear"
+      @delete="onDeleteClick"
+      @change="toggleItemShown($event,taxYear)"
+    />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { filingTypes, models, mutations } from '~/shared/constants'
+import { filingTypes, models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearsList',
@@ -45,6 +52,9 @@ export default {
     },
     federalFilingInfo () {
       return this.filings.filter(filing => filing.filingType === filingTypes.federal)[0]
+    },
+    headers () {
+      return this.$api.getHeaders()
     }
   },
   methods: {
@@ -59,6 +69,19 @@ export default {
           model: models.shownTaxYears,
           data: this.shownTaxYears.filter(id => id !== taxYear.id)
         })
+      }
+    },
+    onDeleteClick (taxYearId) {
+      if (this.showArchived) {
+        const taxYear = this.displayedTaxYearData.find(taxYear => taxYear.id === taxYearId)
+        taxYear.archived = false
+        this.$api.updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
+          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+      } else {
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years } } } }
+        )
       }
     }
   }
