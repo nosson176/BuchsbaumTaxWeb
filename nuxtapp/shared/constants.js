@@ -91,7 +91,8 @@ export const tabs = Object.freeze({
   fees: 'fees',
   income: 'income',
   logs: 'logs',
-  tax_personals: 'tax-personals'
+  tax_personals: 'tax-personals',
+  tax_years: 'tax-years'
 })
 
 export const categories = Object.freeze({

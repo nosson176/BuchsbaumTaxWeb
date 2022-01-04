@@ -4,8 +4,11 @@
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
+      class="text-xs shadow-sm block w-full m-0 border-transparent outline-none border p-0 focus:border-indigo-500 min-h-full"
       tabindex="0"
       :placeholder="placeholder"
+      :class="resize ? '' : 'resize-none'"
+      :rows="rows"
       @blur="onBlur"
       @keydown.tab.prevent
     />
@@ -32,6 +35,14 @@ export default {
     placeholder: {
       type: String,
       default: ''
+    },
+    resize: {
+      type: Boolean,
+      default: false
+    },
+    rows: {
+      type: Number,
+      default: 3
     }
   },
   computed: {
@@ -58,12 +69,6 @@ export default {
 </script>
 
 <style scoped>
-textarea {
-  @apply text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 min-h-full;
-
-  resize: none;
-}
-
 .edit-mode {
   @apply overflow-visible outline-none;
 }

@@ -31,7 +31,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, tabs } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 
 export default {
   name: 'DeleteCard',
@@ -75,6 +75,9 @@ export default {
     isTypeTaxPersonals () {
       return this.type === tabs.tax_personals
     },
+    isTypeTaxYear () {
+      return this.type === tabs.tax_years
+    },
     logs () {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
@@ -89,6 +92,9 @@ export default {
     },
     taxPersonals () {
       return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
+    },
+    taxYears () {
+      return JSON.parse(JSON.stringify(this.selectedClient.taxYearData))
     },
     updatedLog () {
       const log = this.logs.find(log => log.id === this.id)
@@ -115,6 +121,11 @@ export default {
       taxPersonal.archived = !taxPersonal.archived
       return taxPersonal
     },
+    updatedTaxYear () {
+      const taxYear = this.taxYears.find(taxYear => taxYear.id === this.id)
+      taxYear.archived = !taxYear.archived
+      return taxYear
+    },
     updatedItem () {
       let item = null
       if (this.isTypeLog) {
@@ -127,6 +138,8 @@ export default {
         item = this.updatedContact
       } else if (this.isTypeTaxPersonals) {
         item = this.updatedTaxPersonal
+      } else if (this.isTypeTaxYear) {
+        item = this.updatedTaxYear
       }
       return item
     }
@@ -144,6 +157,8 @@ export default {
         this.updateContact()
       } else if (this.isTypeTaxPersonals) {
         this.updateTaxPersonal()
+      } else if (this.isTypeTaxYear) {
+        this.updateTaxYear()
       }
     },
     emitHide () {
@@ -151,51 +166,30 @@ export default {
     },
     updateLog () {
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
-        .then(() => {
-          const logIndex = this.logs.findIndex(log => log.id === this.id)
-          this.logs[logIndex] = this.updatedItem
-          const data = Object.assign({}, this.selectedClient, { logs: this.logs })
-          this.updateClient(data)
-        })
+        .then(() => this.updateClient())
     },
     updateIncome () {
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
-        .then(() => {
-          const incomeIndex = this.incomes.findIndex(log => log.id === this.id)
-          this.incomes[incomeIndex] = this.updatedItem
-          const data = Object.assign({}, this.selectedClient, { incomeBreakdowns: this.incomes })
-          this.updateClient(data)
-        })
+        .then(() => this.updateClient())
     },
     updateFbar () {
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
-        .then(() => {
-          const fbarIndex = this.fbars.findIndex(log => log.id === this.id)
-          this.fbars[fbarIndex] = this.updatedItem
-          const data = Object.assign({}, this.selectedClient, { fbarBreakdowns: this.fbars })
-          this.updateClient(data)
-        })
+        .then(() => this.updateClient())
     },
     updateContact () {
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
-        .then(() => {
-          const contactIndex = this.contacts.findIndex(log => log.id === this.id)
-          this.contacts[contactIndex] = this.updatedItem
-          const data = Object.assign({}, this.selectedClient, { contacts: this.contacts })
-          this.updateClient(data)
-        })
+        .then(() => this.updateClient())
     },
     updateTaxPersonal () {
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
-        .then(() => {
-          const taxPersonalIndex = this.taxPersonals.findIndex(log => log.id === this.id)
-          this.taxPersonals[taxPersonalIndex] = this.updatedItem
-          const data = Object.assign({}, this.selectedClient, { taxPersonals: this.taxPersonals })
-          this.updateClient(data)
-        })
+        .then(() => this.updateClient())
     },
-    async updateClient (data) {
-      await this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data })
+    updateTaxYear () {
+      this.$api.updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
+        .then(() => this.updateClient())
+    },
+    async updateClient () {
+      await this.$api.getClientData(this.headers, this.selectedClient.id)
       this.isLoading = false
       this.emitHide()
     }
