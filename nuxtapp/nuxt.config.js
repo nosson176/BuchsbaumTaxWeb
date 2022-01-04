@@ -79,6 +79,9 @@ export default {
       qs.stringify(params, { arrayFormat: 'repeat' })
     }
   },
+  // vue-toastification configuration https://github.com/Maronato/vue-toastification/tree/main
+  toast: {
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
