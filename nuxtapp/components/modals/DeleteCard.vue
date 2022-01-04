@@ -188,8 +188,7 @@ export default {
       this.$api.updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
         .finally(() => this.updateClient())
     },
-    async updateClient () {
-      await this.$api.getClientData(this.headers, this.selectedClient.id)
+    updateClient () {
       this.isLoading = false
       this.emitHide()
     }

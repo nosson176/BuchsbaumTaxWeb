@@ -68,8 +68,7 @@ export default {
   },
   methods: {
     handleUpdateFee (editedFee) {
-      this.$api.updateFee(this.headers, { feeId: editedFee.id }, editedFee)
-        .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+      this.$api.updateFee(this.headers, { clientId: this.selectedClient.id, feeId: editedFee.id }, editedFee)
     },
     onAddRowClick () {
       if (!this.selectedClient) {

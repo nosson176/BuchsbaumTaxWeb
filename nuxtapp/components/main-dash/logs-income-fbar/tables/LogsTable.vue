@@ -186,14 +186,12 @@ export default {
     handleUpdate () {
       const log = this.displayedLogs.find(log => log.id === this.editableLogId)
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
-        .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (logId) {
       if (this.showArchived) {
         const log = this.displayedLogs.find(log => log.id === logId)
         log.archived = false
         this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
-          .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
