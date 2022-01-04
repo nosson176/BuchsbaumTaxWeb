@@ -1,12 +1,15 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header sm">
-          Year
+        <div class="table-header sm flex flex-col">
+          <div class="flex items-center space-x-1">
+            <span>Year</span> <DeleteButton @click="yearFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
         <div class="table-header xxl">
           Note
@@ -21,8 +24,11 @@
         <div class="table-header xs">
           Time
         </div>
-        <div class="table-header sm">
-          Employee
+        <div class="table-header sm flex flex-col">
+          <div class="flex items-center space-x-0.5">
+            <span>Emp</span> <DeleteButton @click="employeeFilterValue = ''" />
+          </div>
+          <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
         <div class="table-header xs" />
       </TableHeader>
@@ -32,6 +38,7 @@
         v-for="(log, idx) in displayedLogs"
         :key="log.id"
         :idx="idx"
+        :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete}"
       >
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />
@@ -48,8 +55,13 @@
         <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
           <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-alarmComplete`" class="table-col xs">
-          <CheckIcon v-if="log.alarmComplete" tabindex="0" class="text-green-500" />
+        <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
+          <CheckIcon
+            v-if="log.alarmComplete || isTodayOrPast(log.alarmDate)"
+            tabindex="0"
+            class="cursor-pointer"
+            :class="isTodayOrPast(log.alarmDate) && !log.alarmComplete ? 'text-gray-400' : 'text-green-500'"
+          />
         </div>
         <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
           <EditableDateCell v-model="log.alarmTime" type="time" :is-editable="isEditable(`${idx}-alarmTime`)" @input="debounceUpdate" @blur="onBlur" />
@@ -68,6 +80,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
+import { isToday, isPast, parseISO } from 'date-fns'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
@@ -87,13 +100,16 @@ export default {
     return {
       newLogId: NaN,
       editableId: '',
-      editableLogId: ''
+      editableLogId: '',
+      yearFilterValue: '',
+      employeeFilterValue: ''
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
     displayedLogs () {
-      const logs = this.filteredLogs
+      const logs = this.shownLogs
+        .filter(log => this.filterLogs(log))
       const newLogIdx = logs?.findIndex(contact => contact.id === this.newLogId)
       if (newLogIdx > -1) {
         const tempLog = logs[newLogIdx]
@@ -102,7 +118,7 @@ export default {
       }
       return searchArrOfObjs(logs, this.searchInput)
     },
-    filteredLogs () {
+    shownLogs () {
       if (this.logs) {
         return this.logs
           .filter(log => this.showArchived === log.archived)
@@ -136,6 +152,25 @@ export default {
     },
     searchInput () {
       return this.search?.[tableGroups.logsIncomeFbar]
+    },
+    isClientSelected () {
+      return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
+    },
+    filteredYearOptions () {
+      const options = this.yearOptions
+        .filter(yearName => this.shownLogs?.find(log => log.years === yearName.value))
+      return options
+    },
+    filteredUserOptions () {
+      const options = this.userOptions
+        .filter(user => this.shownLogs?.find(log => log.alarmUserName === user.value))
+      return options
+    },
+    filterByYear () {
+      return !(this.yearFilterValue === '')
+    },
+    filterByEmployee () {
+      return !(this.employeeFilterValue === '')
     }
   },
   methods: {
@@ -194,11 +229,34 @@ export default {
     },
     onBlur () {
       this.editableId = ''
+    },
+    isTodayOrPast (date) {
+      const parsedDate = parseISO(date)
+      return isToday(parsedDate) || isPast(parsedDate)
+    },
+    toggleComplete (log) {
+      if (!this.isTodayOrPast(log.alarmDate) && !log.alarmComplete) {
+        return
+      } else if (log.alarmComplete) {
+        log.alarmComplete = false
+      } else if (this.isTodayOrPast(log.alarmDate) && !log.alarmComplete) {
+        log.alarmComplete = true
+      }
+      this.editableLogId = log.id
+      this.debounceUpdate()
+    },
+    filterLogs (log) {
+      let returnValue = true
+      returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
+      returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
+      return returnValue
     }
   }
 }
 </script>
 
 <style scoped>
-
+.alarm {
+  @apply bg-indigo-100;
+}
 </style>

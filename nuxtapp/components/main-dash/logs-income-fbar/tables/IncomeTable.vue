@@ -73,6 +73,7 @@
         v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
+        :class="{'disabled': !income.include}"
       >
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
           <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />

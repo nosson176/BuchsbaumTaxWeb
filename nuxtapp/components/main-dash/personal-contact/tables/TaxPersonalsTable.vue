@@ -40,6 +40,7 @@
         v-for="(personal, idx) in displayedPersonals"
         :key="personal.id"
         :idx="idx"
+        :class="{'disabled': !personal.include}"
       >
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, personal.id)">
           <EditableCheckBoxCell v-model="personal.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
@@ -167,6 +168,9 @@ export default {
     },
     handleUpdate () {
       const personal = this.displayedPersonals.find(personal => personal.id === this.editablePersonalId)
+      if (/^([0-9]{9})$/.test(personal.ssn)) {
+        personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
+      }
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
         .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },

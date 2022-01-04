@@ -70,6 +70,7 @@
         v-for="(fbar, idx) in displayedFbars"
         :key="fbar.id"
         :idx="idx"
+        :class="{'disabled': !fbar.include}"
       >
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
           <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
@@ -223,7 +224,7 @@ export default {
       return taxGroup?.id
     },
     jobOptions () {
-      return this.valueTypes.job.filter(job => job.show)
+      return this.valueTypes.part.filter(job => job.show)
     },
     currencyOptions () {
       return this.valueTypes.currency.filter(currency => currency.show)
@@ -264,19 +265,16 @@ export default {
     filteredYearOptions () {
       const options = this.yearNameOptions
         .filter(yearName => this.shownFbars.find(fbar => fbar.years === yearName.value))
-
       return options
     },
     filteredCategoryOptions () {
       const options = this.categoryOptions
         .filter(category => this.shownFbars.find(fbar => fbar.category === category.value))
-
       return options
     },
     filteredGroupOptions () {
       const options = this.taxGroupOptions
         .filter(taxGroup => this.shownFbars.find(fbar => fbar.taxGroup === taxGroup.value))
-
       return options
     },
     filteredTypeOptions () {

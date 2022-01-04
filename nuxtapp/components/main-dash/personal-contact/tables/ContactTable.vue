@@ -31,6 +31,7 @@
         v-for="(contact, idx) in displayedContacts"
         :key="contact.id"
         :idx="idx"
+        :class="{'disabled': !contact.enabled}"
       >
         <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
           <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)" @input="debounceUpdate" />
