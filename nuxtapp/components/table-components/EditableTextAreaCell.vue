@@ -5,10 +5,13 @@
       ref="input"
       v-model="computedValue"
       tabindex="0"
+      class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full"
       @blur="onBlur"
       @keydown.tab.prevent
     />
-    <span v-else tabindex="0" class="cursor-pointer">{{ computedValue }}</span>
+    <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
+      {{ computedValue || placeholder }}
+    </span>
   </div>
 </template>
 
@@ -25,6 +28,10 @@ export default {
     isEditable: {
       type: Boolean,
       required: true
+    },
+    placeholder: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -51,17 +58,11 @@ export default {
 </script>
 
 <style scoped>
-textarea {
-  @apply text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full;
-
-  resize: none;
-}
-
 .edit-mode {
-  @apply relative z-10 overflow-visible -mt-2.5 outline-none;
+  @apply relative z-10 overflow-visible -mt-3 outline-none h-8;
 }
 
 .read-mode {
-  @apply overflow-hidden overflow-ellipsis border-transparent outline-none border focus:border-indigo-500;
+  @apply overflow-hidden overflow-ellipsis border-transparent outline-none border focus:border-indigo-500 h-5;
 }
 </style>
