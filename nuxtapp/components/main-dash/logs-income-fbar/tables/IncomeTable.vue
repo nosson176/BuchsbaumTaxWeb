@@ -353,14 +353,14 @@ export default {
     handleUpdate () {
       const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+        .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {
         const income = this.displayedIncomes.find(income => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+          .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,

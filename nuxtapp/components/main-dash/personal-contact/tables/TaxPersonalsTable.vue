@@ -172,14 +172,14 @@ export default {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+        .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (personalId) {
       if (this.showArchived) {
         const personal = this.displayedPersonals.find(personal => personal.id === personalId)
         personal.archived = false
         this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
+          .finally(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
