@@ -67,43 +67,43 @@ export default ({ $axios, store }, inject) => {
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
     $axios.put(`/clients/${clientId}`, client, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateLog = (headers, { clientId, logId }, log) =>
     $axios.put(`/clients/${clientId}/logs/${logId}`, log, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateTaxPersonal = (headers, { clientId, personalId }, personal) =>
     $axios.put(`/clients/${clientId}/personals/${personalId}`, personal, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateContact = (headers, { clientId, contactId }, contact) =>
     $axios.put(`/clients/${clientId}/contacts/${contactId}`, contact, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateIncome = (headers, { clientId, incomeId }, income) =>
     $axios.put(`/clients/${clientId}/income/${incomeId}`, income, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateFbar = (headers, { clientId, fbarId }, fbar) =>
     $axios.put(`/clients/${clientId}/fbar/${fbarId}`, fbar, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
     $axios.put(`/clients/fees/${feeId}`, fee, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateFiling = (headers, { clientId, filingId }, filing) =>
     $axios.put(`/clients/filings/${filingId}`, filing, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateTaxYear = (headers, { clientId, taxYearId }, taxYear) =>
     $axios.put(`/clients/${clientId}/tax-years/${taxYearId}`, taxYear, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const updateChecklist = (headers, { clientId, checklistId }, checklist) =>
     $axios.put(`/clients/checklists/${checklistId}`, checklist, { headers })
-      .finally(() => this.$api.getClientData(headers, clientId))
+      .finally(() => getClientData(headers, clientId))
 
   const api = {
     createChecklist,
