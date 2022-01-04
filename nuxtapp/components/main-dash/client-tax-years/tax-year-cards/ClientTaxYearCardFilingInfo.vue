@@ -11,6 +11,16 @@
           @input="debounceUpdate"
         />
       </div>
+      <div @click="setEditable('statusDate')">
+        <EditableDate
+          v-model="statusDate"
+          placeholder="Date"
+          type="date"
+          :is-editable="isEditable('statusDate')"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
       <div @click="setEditable('status')">
         <EditableSelectCell
           v-model="status"
@@ -27,16 +37,6 @@
           :options="statusDetailOptions"
           :is-editable="isEditable('statusDetail')"
           placeholder="Detail"
-          @blur="onBlur"
-          @input="debounceUpdate"
-        />
-      </div>
-      <div @click="setEditable('statusDate')">
-        <EditableDate
-          v-model="statusDate"
-          placeholder="Date"
-          type="date"
-          :is-editable="isEditable('statusDate')"
           @blur="onBlur"
           @input="debounceUpdate"
         />
