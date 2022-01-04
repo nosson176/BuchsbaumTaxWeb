@@ -42,7 +42,7 @@
         />
       </div>
       <div class="col-span-2 cursor-pointer" @click="setEditable('memo')">
-        <EditableTextArea
+        <EditableTextAreaCell
           v-model="memo"
           placeholder="Memo"
           :is-editable="isEditable('memo')"
