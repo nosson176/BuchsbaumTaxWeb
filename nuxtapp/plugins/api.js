@@ -19,50 +19,44 @@ export default ({ $axios, store }, inject) => {
   }
 
   // GET
-  const getClientList = (headers, searchParam = '') => $axios.get(
-    searchParam ? `clients/?q=${searchParam}` : 'clients/', { headers, loading: models.clients, store: models.clients }
-  )
-  const getClientData = (headers, id) => $axios.get(
-    `/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient }
-  ).then(() => getClientsHistory(headers))
+  const getClientList = (headers, searchParam = '') =>
+    $axios.get(searchParam ? `clients/?q=${searchParam}` : 'clients/', { headers, loading: models.clients, store: models.clients })
+
+  const getClientData = (headers, id) => $axios.get(`/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient })
+    .then(() => getClientsHistory(headers))
+
   const getValueTypes = headers => $axios.get('values', { headers, loading: models.valueTypes, store: models.valueTypes })
+
   const getValueTaxGroups = headers => $axios.get('values/tax-groups', { headers, loading: models.valueTaxGroups, store: models.valueTaxGroups })
+
   const getAllClientFees = headers => $axios.get('/clients/fees', { headers, loading: models.allClientFees, store: models.allClientFees })
+
   const getAllUsers = headers => $axios.get('/users', { headers, loading: models.users, store: models.users })
+
   const getClientsHistory = headers => $axios.get('/clients/history', { headers, loading: models.clientsHistory, store: models.clientsHistory })
+
   const getSmartviews = headers => $axios.get('/smartviews', { headers, loading: models.smartviews, store: models.smartviews })
 
   // CREATE
-  const createLog = (headers, { clientId, log }) => $axios.post(
-  `/clients/${clientId}/logs`, log, { headers }
+  const createLog = (headers, { clientId, log }) => $axios.post(`/clients/${clientId}/logs`, log, { headers }
   )
-  const createTaxPersonal = (headers, { clientId, personal }) => $axios.post(
-  `/clients/${clientId}/personals`, personal, { headers }
-  )
-  const createContact = (headers, { clientId, contact }) => $axios.post(
-  `/clients/${clientId}/contacts`, contact, { headers }
-  )
-  const createIncome = (headers, { clientId, income }) => $axios.post(
-  `/clients/${clientId}/income`, income, { headers }
-  )
-  const createFbar = (headers, { clientId, fbar }) => $axios.post(
-  `/clients/${clientId}/fbar`, fbar, { headers }
-  )
-  const createFee = (headers, { fee }) => $axios.post(
-    '/clients/fees', fee, { headers }
-  )
-  const createTaxYear = (headers, { clientId, taxYear }) => $axios.post(
-    `/clients/${clientId}/tax-years`, taxYear, { headers }
-  )
-  const createFiling = (headers, { filing }) => $axios.post(
-    '/clients/filings', filing, { headers }
-  )
-  const createChecklist = (headers, { checklist }) => $axios.post(
-    '/clients/checklists', checklist, { headers }
-  )
-  const createClient = (headers, { client }) => $axios.post(
-    '/clients', client, { headers }
-  )
+  const createTaxPersonal = (headers, { clientId, personal }) => $axios.post(`/clients/${clientId}/personals`, personal, { headers })
+
+  const createContact = (headers, { clientId, contact }) => $axios.post(`/clients/${clientId}/contacts`, contact, { headers })
+
+  const createIncome = (headers, { clientId, income }) => $axios.post(`/clients/${clientId}/income`, income, { headers })
+
+  const createFbar = (headers, { clientId, fbar }) => $axios.post(`/clients/${clientId}/fbar`, fbar, { headers })
+
+  const createFee = (headers, { fee }) => $axios.post('/clients/fees', fee, { headers })
+
+  const createTaxYear = (headers, { clientId, taxYear }) => $axios.post(`/clients/${clientId}/tax-years`, taxYear, { headers })
+
+  const createFiling = (headers, { filing }) => $axios.post('/clients/filings', filing, { headers })
+
+  const createChecklist = (headers, { checklist }) => $axios.post('/clients/checklists', checklist, { headers })
+
+  const createClient = (headers, { client }) => $axios.post('/clients', client, { headers })
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
