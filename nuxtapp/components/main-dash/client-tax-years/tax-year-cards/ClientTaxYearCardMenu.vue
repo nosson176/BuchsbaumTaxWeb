@@ -23,7 +23,6 @@ export default {
         return Object.assign(
           Object.values(this.selectedClient.taxYearData)
             .filter(taxYear => this.shownTaxYears.includes(taxYear.id))
-            .sort((a, b) => a.year < b.year ? 1 : -1)
         )
       } else {
         return null
