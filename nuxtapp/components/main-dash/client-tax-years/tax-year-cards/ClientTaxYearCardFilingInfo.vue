@@ -349,8 +349,8 @@ export default {
         'bg-gray-400': this.sum === 0,
         'bg-yellow-400': this.sum > 0 && !this.completed,
         'bg-green-400': this.sum > 0 && this.completed,
-        'bg-blue-400': this.sum < 0 && !this.completed,
-        'bg-red-400': this.sum < 0 && this.completed
+        'bg-blue-400': this.sum < 0 && this.completed,
+        'bg-red-400': this.sum < 0 && !this.completed
       }
     },
     deliveryContact: {
