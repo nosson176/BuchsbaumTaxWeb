@@ -39,8 +39,7 @@ export default {
     '@/plugins/axios.js',
     '@/plugins/api.js',
     '@/plugins/breakpoints-mixin.js',
-    '@/plugins/datePicker.client.js',
-    '@/plugins/vue-toastification.client.js'
+    '@/plugins/datePicker.client.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -65,7 +64,9 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    // Doc: https://github.com/Maronato/vue-toastification/tree/main
+    'vue-toastification/nuxt'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -81,6 +82,8 @@ export default {
   },
   // vue-toastification configuration https://github.com/Maronato/vue-toastification/tree/main
   toast: {
+    position: 'bottom-right',
+    timeout: 5000
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
