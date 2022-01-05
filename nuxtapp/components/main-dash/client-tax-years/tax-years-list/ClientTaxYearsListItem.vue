@@ -17,7 +17,7 @@
       </div>
       <div class="flex flex-col items-center w-3 space-y-3.5">
         <CheckBoxWithEyeIcon v-model="showing" />
-        <DeleteButton small class="cursor-pointer hover:text-indigo-600" @click="onDeleteClick()" />
+        <DeleteButton small @click="onDeleteClick()" />
       </div>
     </div>
   </div>
