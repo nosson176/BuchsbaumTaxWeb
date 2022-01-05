@@ -73,7 +73,7 @@
           <EditableSelectCell v-model="personal.language" :is-editable="isEditable(`${idx}-language`)" :options="languageOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(personal.id)" />
+          <DeleteButton small @click="onDeleteClick(personal.id)" />
         </div>
       </TableRow>
     </template>

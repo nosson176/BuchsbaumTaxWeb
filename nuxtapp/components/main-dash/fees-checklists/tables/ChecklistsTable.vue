@@ -30,7 +30,7 @@
           <EditableSelectCell v-model="checklist.memo" :options="memoOptions" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(checklist.id)" />
+          <DeleteButton small @click="onDeleteClick(checklist.id)" />
         </div>
       </TableRow>
     </template>

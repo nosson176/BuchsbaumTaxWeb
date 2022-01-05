@@ -1,123 +1,128 @@
 <template>
-  <div class="px-3 py-1 text-xs tracking-tighter my-auto h-28 border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
-    <div class="flex h-full flex-col space-y-1.5 justify-center">
-      <div class="flex justify-between">
-        <div class="flex flex-col w-1/3">
-          <div @click="setEditable('feeType')">
-            <EditableSelectCell
-              v-model="feeType"
-              placeholder="Type"
-              :is-editable="isEditable('feeType')"
-              :options="feeTypeOptions"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
+  <div>
+    <div class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
+      <div class="flex h-full flex-col space-y-1.5 justify-center">
+        <div class="flex justify-end pt-1">
+          <DeleteButton small @click="onDeleteClick()" />
+        </div>
+        <div class="flex justify-between">
+          <div class="flex flex-col w-1/3">
+            <div @click="setEditable('feeType')">
+              <EditableSelectCell
+                v-model="feeType"
+                placeholder="Type"
+                :is-editable="isEditable('feeType')"
+                :options="feeTypeOptions"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div @click="setEditable('year')">
+              <EditableSelectCell
+                v-model="year"
+                placeholder="Year"
+                :is-editable="isEditable('year')"
+                :options="yearOptions"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
           </div>
-          <div @click="setEditable('year')">
-            <EditableSelectCell
-              v-model="year"
-              placeholder="Year"
-              :is-editable="isEditable('year')"
-              :options="yearOptions"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
+          <div class="flex flex-col w-1/3">
+            <div @click="setEditable('status')">
+              <EditableSelectCell
+                v-model="status"
+                placeholder="Status"
+                :is-editable="isEditable('status')"
+                :options="feeStatusOptions"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div @click="setEditable('statusDetail')">
+              <EditableSelectCell
+                v-model="statusDetail"
+                placeholder="Detail"
+                :is-editable="isEditable('statusDetail')"
+                :options="feeStatusDetailOptions"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+          </div>
+          <div class="flex items-center w-1/3 space-x-1">
+            <div @click="setEditable('sum')">
+              <EditableCheckBoxCell
+                v-model="sum"
+                placeholder="Sum"
+                :is-editable="isEditable('sum')"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div class="flex flex-col">
+              <div @click="setEditable('manualAmount')">
+                <EditableInput
+                  v-model="manualAmount"
+                  placeholder="Amount"
+                  currency
+                  :is-editable="isEditable('manualAmount')"
+                  @blur="onBlur"
+                  @input="debounceUpdate"
+                />
+                <div v-if="isEditable('manualAmount')" />
+              </div>
+              <div @click="setEditable('paidAmount')">
+                <EditableInput
+                  v-model="paidAmount"
+                  placeholder="Paid"
+                  currency
+                  :is-editable="isEditable('paidAmount')"
+                  @blur="onBlur"
+                  @input="debounceUpdate"
+                />
+                <div v-if="isEditable('paidAmount')" />
+              </div>
+            </div>
           </div>
         </div>
-        <div class="flex flex-col w-1/3">
-          <div @click="setEditable('status')">
-            <EditableSelectCell
-              v-model="status"
-              placeholder="Status"
-              :is-editable="isEditable('status')"
-              :options="feeStatusOptions"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
-          </div>
-          <div @click="setEditable('statusDetail')">
-            <EditableSelectCell
-              v-model="statusDetail"
-              placeholder="Detail"
-              :is-editable="isEditable('statusDetail')"
-              :options="feeStatusDetailOptions"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
-          </div>
-        </div>
-        <div class="flex items-center w-1/3 space-x-1">
-          <div @click="setEditable('sum')">
+        <div class="flex justify-between">
+          <div @click="setEditable('include')">
             <EditableCheckBoxCell
-              v-model="sum"
-              placeholder="Sum"
-              :is-editable="isEditable('sum')"
+              v-model="include"
+              :is-editable="isEditable('include')"
               @blur="onBlur"
               @input="debounceUpdate"
             />
           </div>
-          <div class="flex flex-col">
-            <div @click="setEditable('manualAmount')">
+          <div class="flex space-x-2">
+            <span class="missing">Time</span>
+            <div @click="setEditable('dateFee')">
+              <EditableDate
+                v-model="dateFee"
+                placeholder="Date"
+                type="date"
+                :is-editable="isEditable('dateFee')"
+                @input="debounceUpdate"
+                @blur="onBlur"
+              />
+            </div>
+          </div>
+          <div class="w-1/3">
+            <div @click="setEditable('rate')">
               <EditableInput
-                v-model="manualAmount"
-                placeholder="Amount"
-                currency
-                :is-editable="isEditable('manualAmount')"
+                v-model="rate"
+                :is-editable="isEditable('rate')"
+                placeholder="Rate/hr"
                 @blur="onBlur"
                 @input="debounceUpdate"
               />
-              <div v-if="isEditable('manualAmount')" />
-            </div>
-            <div @click="setEditable('paidAmount')">
-              <EditableInput
-                v-model="paidAmount"
-                placeholder="Paid"
-                currency
-                :is-editable="isEditable('paidAmount')"
-                @blur="onBlur"
-                @input="debounceUpdate"
-              />
-              <div v-if="isEditable('paidAmount')" />
             </div>
           </div>
         </div>
-      </div>
-      <div class="flex justify-between">
-        <div @click="setEditable('include')">
-          <EditableCheckBoxCell
-            v-model="include"
-            :is-editable="isEditable('include')"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+        <div @click="setEditable('notes')">
+          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
         </div>
-        <div class="flex space-x-2">
-          <span class="missing">Time</span>
-          <div @click="setEditable('dateFee')">
-            <EditableDate
-              v-model="dateFee"
-              placeholder="Date"
-              type="date"
-              :is-editable="isEditable('dateFee')"
-              @input="debounceUpdate"
-              @blur="onBlur"
-            />
-          </div>
-        </div>
-        <div class="w-1/3">
-          <div @click="setEditable('rate')">
-            <EditableInput
-              v-model="rate"
-              :is-editable="isEditable('rate')"
-              placeholder="Rate/hr"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
-          </div>
-        </div>
-      </div>
-      <div @click="setEditable('notes')">
-        <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
       </div>
     </div>
   </div>
@@ -299,6 +304,9 @@ export default {
     },
     handleUpdate () {
       this.$emit(events.input, this.formModel)
+    },
+    onDeleteClick () {
+      this.$emit(events.delete, this.fee.id)
     }
   }
 }

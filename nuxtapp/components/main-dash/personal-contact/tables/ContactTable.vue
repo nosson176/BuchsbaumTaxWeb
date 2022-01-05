@@ -55,7 +55,7 @@
           <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(contact.id)" />
+          <DeleteButton small @click="onDeleteClick(contact.id)" />
         </div>
       </TableRow>
     </template>
