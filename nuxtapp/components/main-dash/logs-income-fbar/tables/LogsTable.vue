@@ -113,7 +113,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
     displayedLogs () {
       const logs = this.shownLogs
         .filter(log => this.filterLogs(log))
@@ -178,6 +178,22 @@ export default {
     },
     filterByEmployee () {
       return !(this.employeeFilterValue === '')
+    },
+    isCmdPressed () {
+      return this.cmdPressed || this.cmdPressed.length !== 0
+    },
+    selectedLogIds () {
+      return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    }
+  },
+  watch: {
+    selectedClient (newClient) {
+      if (newClient) {
+        this.selectedItems = {}
+        this.logs.forEach((log) => {
+          this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
+        })
+      }
     }
   },
   created () {
@@ -217,14 +233,31 @@ export default {
       if (!this.selectedClient) {
         return
       }
-      const headers = this.$api.getHeaders()
-      const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId
+        clientId: this.selectedClient.id
       }
-      // if()
-      const log = Object.assign({}, defaultValues)
-      this.$api.createLog(headers, { log })
+      if (this.isCmdPressed && this.selectedLogIds.length > 0) {
+        this.selectedLogIds.forEach(async (logId, idx) => {
+          const log = this.displayedLogs.find((log) => {
+            return log.id === Number(logId)
+          })
+          const newLog = Object.assign({}, log)
+          await this.$api.createLog(this.headers, { log: newLog })
+            .then(async (data) => {
+              if (this.selectedLogIds.length === idx + 1) {
+                await this.$api.getClientData(this.headers, this.selectedClient.id)
+                this.newLogId = data.id
+                this.toggleEditable(`0-${columns[0]}`, data.id)
+              }
+            })
+        })
+      } else {
+        const log = Object.assign({}, defaultValues)
+        this.createLog(log)
+      }
+    },
+    createLog (log) {
+      this.$api.createLog(this.headers, { log })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newLogId = data.id
