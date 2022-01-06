@@ -2,6 +2,7 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
+        <div class="xs table-header" />
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
@@ -40,6 +41,9 @@
         :idx="idx"
         :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete}"
       >
+        <div class="xs table-col">
+          <ToggleButton v-model="selectedItems[log.id]" @click="toggleSelected($event, log)" />
+        </div>
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
@@ -102,7 +106,8 @@ export default {
       editableId: '',
       editableLogId: '',
       yearFilterValue: '',
-      employeeFilterValue: ''
+      employeeFilterValue: '',
+      selectedItems: {}
     }
   },
   computed: {
@@ -250,6 +255,11 @@ export default {
       returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
       return returnValue
+    },
+    toggleSelected (newVal, log) {
+      console.log(newVal, log)
+      this.selectedItems = Object.assign(this.selectedItems, { [log.id]: newVal })
+      console.log(this.selectedItems)
     }
   }
 }
