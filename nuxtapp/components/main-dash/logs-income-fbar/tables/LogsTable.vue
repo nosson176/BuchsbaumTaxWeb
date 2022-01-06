@@ -222,7 +222,7 @@ export default {
       }
       // if()
       const log = Object.assign({}, defaultValues)
-      this.$api.createLog(headers, { clientId, log })
+      this.$api.createLog(headers, { log })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newLogId = data.id

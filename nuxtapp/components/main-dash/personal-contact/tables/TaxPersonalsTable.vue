@@ -200,7 +200,7 @@ export default {
         lastName: this.selectedClient.lastName
       }
       const personal = Object.assign({}, defaultValues)
-      this.$api.createTaxPersonal(this.headers, { clientId, personal })
+      this.$api.createTaxPersonal(this.headers, { personal })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newPersonalId = data.id

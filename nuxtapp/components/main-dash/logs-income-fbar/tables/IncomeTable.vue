@@ -376,7 +376,7 @@ export default {
         clientId
       }
       const income = Object.assign({}, defaultValues)
-      this.$api.createIncome(headers, { clientId, income })
+      this.$api.createIncome(headers, { income })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newIncomeId = data.id

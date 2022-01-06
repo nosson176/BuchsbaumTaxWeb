@@ -27,7 +27,7 @@ export default {
       const taxYear = {
         clientId
       }
-      this.$api.createTaxYear(headers, { clientId, taxYear })
+      this.$api.createTaxYear(headers, { taxYear })
         .then((data) => {
           this.$api.getClientData(headers, clientId)
             .then(() => {

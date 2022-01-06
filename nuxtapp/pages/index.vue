@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { error, routes } from '~/shared/constants'
-
 export default {
   name: 'IndexPage',
   created () {
@@ -19,12 +17,6 @@ export default {
         this.$api.getAllClientFees(headers)
         this.$api.getClientsHistory(headers)
         this.$api.getSmartviews(headers)
-      })
-      .catch((e) => {
-        if (e.message === error.axios_401) {
-          this.$api.signout()
-          this.$router.replace(routes.login)
-        }
       })
   }
 }

@@ -374,7 +374,7 @@ export default {
         clientId
       }
       const fbar = Object.assign({}, defaultValues)
-      this.$api.createFbar(headers, { clientId, fbar })
+      this.$api.createFbar(headers, { fbar })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newFbarId = data.id

@@ -166,7 +166,7 @@ export default {
         clientId
       }
       const contact = Object.assign({}, defaultValues)
-      this.$api.createContact(this.headers, { clientId, contact })
+      this.$api.createContact(this.headers, { contact })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newContactId = data.id
