@@ -7,31 +7,31 @@
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Year</span> <DeleteButton @click="yearFilterValue = ''" />
+            <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Cat</span> <DeleteButton @click="categoryFilterValue = ''" />
+            <span>Cat</span> <DeleteButton small @click="categoryFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
         </div>
         <div class="table-header  sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Group</span> <DeleteButton @click="groupFilterValue = ''" />
+            <span>Group</span> <DeleteButton small @click="groupFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Type</span> <DeleteButton @click="typeFilterValue = ''" />
+            <span>Type</span> <DeleteButton small @click="typeFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Job</span> <DeleteButton @click="jobFilterValue = ''" />
+            <span>Job</span> <DeleteButton small @click="jobFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
         </div>
@@ -40,7 +40,7 @@
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Curr</span> <DeleteButton @click="currencyFilterValue = ''" />
+            <span>Curr</span> <DeleteButton small @click="currencyFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
@@ -55,7 +55,7 @@
         </div>
         <div class="table-header lg flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Description</span> <DeleteButton @click="descriptionFilterValue = ''" />
+            <span>Description</span> <DeleteButton small @click="descriptionFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
         </div>
@@ -120,7 +120,7 @@
           <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(fbar.id)" />
+          <DeleteButton small @click="onDeleteClick(fbar.id)" />
         </div>
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
@@ -351,14 +351,12 @@ export default {
     handleUpdate () {
       const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
         const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,

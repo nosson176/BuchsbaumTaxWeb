@@ -41,7 +41,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { categories, models, mutations } from '~/shared/constants'
+import { categories, models } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
@@ -136,15 +136,6 @@ export default {
       const headers = this.$api.getHeaders()
       const client = this.selectedClientCopy
       this.$api.updateClient(headers, { clientId: client.id, client })
-        .then(() => {
-          this.updateLocal()
-        })
-    },
-    updateLocal () {
-      const client = JSON.parse(JSON.stringify(this.selectedClientCopy))
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedClient, data: client })
-      const clients = this.clientsCopy
-      this.$store.commit(mutations.setModelResponse, { model: models.clients, data: clients })
     },
     openEditNameDialogue () {
       this.showEditNameDialogue = true

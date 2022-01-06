@@ -30,7 +30,7 @@
           <EditableSelectCell v-model="checklist.memo" :options="memoOptions" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(checklist.id)" />
+          <DeleteButton small @click="onDeleteClick(checklist.id)" />
         </div>
       </TableRow>
     </template>
@@ -114,7 +114,7 @@ export default {
     },
     handleUpdate () {
       const checklist = this.displayedChecklists.find(checklist => checklist.id === this.editableChecklistId)
-      this.$api.updateChecklist(this.headers, { checklistId: this.editableChecklistId }, checklist)
+      this.$api.updateChecklist(this.headers, { clientId: this.selectedClient.id, checklistId: this.editableChecklistId }, checklist)
     },
     onBlur () {
       this.editableId = ''

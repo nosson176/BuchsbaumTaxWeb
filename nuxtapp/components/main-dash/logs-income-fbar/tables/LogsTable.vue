@@ -8,7 +8,7 @@
         </div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-1">
-            <span>Year</span> <DeleteButton @click="yearFilterValue = ''" />
+            <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
@@ -27,7 +27,7 @@
         </div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Emp</span> <DeleteButton @click="employeeFilterValue = ''" />
+            <span>Emp</span> <DeleteButton small @click="employeeFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
@@ -74,7 +74,7 @@
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)" :options="userOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(log.id)" />
+          <DeleteButton small @click="onDeleteClick(log.id)" />
         </div>
       </TableRow>
     </template>
@@ -191,14 +191,12 @@ export default {
     handleUpdate () {
       const log = this.displayedLogs.find(log => log.id === this.editableLogId)
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (logId) {
       if (this.showArchived) {
         const log = this.displayedLogs.find(log => log.id === logId)
         log.archived = false
         this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,

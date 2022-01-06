@@ -73,7 +73,7 @@
           <EditableSelectCell v-model="personal.language" :is-editable="isEditable(`${idx}-language`)" :options="languageOptions" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(personal.id)" />
+          <DeleteButton small @click="onDeleteClick(personal.id)" />
         </div>
       </TableRow>
     </template>
@@ -172,14 +172,12 @@ export default {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.editablePersonalId }, personal)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (personalId) {
       if (this.showArchived) {
         const personal = this.displayedPersonals.find(personal => personal.id === personalId)
         personal.archived = false
         this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,

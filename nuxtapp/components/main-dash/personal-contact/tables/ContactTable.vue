@@ -55,7 +55,7 @@
           <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @blur="onBlur" @input="debounceUpdate" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton @click="onDeleteClick(contact.id)" />
+          <DeleteButton small @click="onDeleteClick(contact.id)" />
         </div>
       </TableRow>
     </template>
@@ -144,14 +144,12 @@ export default {
     handleUpdate () {
       const contact = this.displayedContacts.find(contact => contact.id === this.editableContactId)
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (contactId) {
       if (this.showArchived) {
         const contact = this.displayedContacts.find(contact => contact.id === contactId)
         contact.archived = false
         this.$api.updateContact(this.headers, { clientId: this.clientId, contactId }, contact)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,
