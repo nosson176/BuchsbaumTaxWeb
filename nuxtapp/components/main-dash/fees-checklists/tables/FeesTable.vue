@@ -10,13 +10,14 @@
       :fee="fee"
       :is-new="newFeeId === fee.id"
       @input="handleUpdateFee"
+      @delete="onDeleteClick"
     />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models, tableGroups } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'FeesTable',
@@ -84,6 +85,18 @@ export default {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.newFeeId = data.id
         })
+    },
+    onDeleteClick (feeId) {
+      if (this.showArchived) {
+        const fee = this.displayedFees.find(fee => fee.id === feeId)
+        fee.archived = false
+        this.$api.updateFee(this.headers, { clientId: this.selectedClient.id, feeId }, fee)
+      } else {
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: feeId, type: tabs.fees } } } }
+        )
+      }
     }
   }
 }

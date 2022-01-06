@@ -78,6 +78,9 @@ export default {
     isTypeTaxYear () {
       return this.type === tabs.tax_years
     },
+    isTypeFee () {
+      return this.type === tabs.fees
+    },
     logs () {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
@@ -95,6 +98,9 @@ export default {
     },
     taxYears () {
       return JSON.parse(JSON.stringify(this.selectedClient.taxYearData))
+    },
+    fees () {
+      return JSON.parse(JSON.stringify(this.selectedClient.fees))
     },
     updatedLog () {
       const log = this.logs.find(log => log.id === this.id)
@@ -126,6 +132,11 @@ export default {
       taxYear.archived = !taxYear.archived
       return taxYear
     },
+    updatedFee () {
+      const fee = this.fees.find(fee => fee.id === this.id)
+      fee.archived = !fee.archived
+      return fee
+    },
     updatedItem () {
       let item = null
       if (this.isTypeLog) {
@@ -140,6 +151,8 @@ export default {
         item = this.updatedTaxPersonal
       } else if (this.isTypeTaxYear) {
         item = this.updatedTaxYear
+      } else if (this.isTypeFee) {
+        item = this.updatedFee
       }
       return item
     }
@@ -159,6 +172,8 @@ export default {
         this.updateTaxPersonal()
       } else if (this.isTypeTaxYear) {
         this.updateTaxYear()
+      } else if (this.isTypeFee) {
+        this.updateFee()
       }
     },
     emitHide () {
@@ -187,6 +202,10 @@ export default {
     updateTaxYear () {
       this.$api.updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
         .finally(() => this.updateClient())
+    },
+    updateFee () {
+      this.$api.updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
+        .then(() => this.updateClient())
     },
     updateClient () {
       this.isLoading = false
