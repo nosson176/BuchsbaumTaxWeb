@@ -351,14 +351,12 @@ export default {
     handleUpdate () {
       const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {
         const fbar = this.displayedFbars.find(fbar => fbar.id === fbarId)
         fbar.archived = false
         this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
         this.$store.commit(
           mutations.setModelResponse,

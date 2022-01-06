@@ -181,34 +181,33 @@ export default {
     },
     updateLog () {
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .finally(() => this.updateClient())
     },
     updateIncome () {
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .finally(() => this.updateClient())
     },
     updateFbar () {
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .finally(() => this.updateClient())
     },
     updateContact () {
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .finally(() => this.updateClient())
     },
     updateTaxPersonal () {
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .finally(() => this.updateClient())
     },
     updateTaxYear () {
       this.$api.updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .finally(() => this.updateClient())
     },
     updateFee () {
       this.$api.updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
         .then(() => this.updateClient())
     },
-    async updateClient () {
-      await this.$api.getClientData(this.headers, this.selectedClient.id)
+    updateClient () {
       this.isLoading = false
       this.emitHide()
     }

@@ -94,7 +94,6 @@ export default {
       const taxYearId = yearData.id
       const clientId = this.selectedClient.id
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
-        .then(() => this.$api.getClientData(headers, clientId))
     }
   }
 }

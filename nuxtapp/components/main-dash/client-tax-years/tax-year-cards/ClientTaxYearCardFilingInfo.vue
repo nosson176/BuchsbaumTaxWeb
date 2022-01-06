@@ -459,14 +459,7 @@ export default {
       this.setEditable('')
     },
     handleUpdate () {
-      this.updateOnBackend()
-      this.updateOnClient()
-    },
-    updateOnBackend () {
-      this.$api.updateFiling(this.headers, { filingId: this.filing.id }, this.formModel)
-    },
-    updateOnClient () {
-      this.$api.getClientData(this.headers, this.selectedClient.id)
+      this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.filing.id }, this.formModel)
     }
   }
 }

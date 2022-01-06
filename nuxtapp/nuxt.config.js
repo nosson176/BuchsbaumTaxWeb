@@ -64,7 +64,9 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    // Doc: https://github.com/Maronato/vue-toastification/tree/main
+    'vue-toastification/nuxt'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -77,6 +79,11 @@ export default {
     paramsSerializer: (params) => {
       qs.stringify(params, { arrayFormat: 'repeat' })
     }
+  },
+  // vue-toastification configuration https://github.com/Maronato/vue-toastification/tree/main
+  toast: {
+    position: 'bottom-right',
+    timeout: 5000
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

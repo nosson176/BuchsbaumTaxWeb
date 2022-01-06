@@ -114,7 +114,7 @@ export default {
     },
     handleUpdate () {
       const checklist = this.displayedChecklists.find(checklist => checklist.id === this.editableChecklistId)
-      this.$api.updateChecklist(this.headers, { checklistId: this.editableChecklistId }, checklist)
+      this.$api.updateChecklist(this.headers, { clientId: this.selectedClient.id, checklistId: this.editableChecklistId }, checklist)
     },
     onBlur () {
       this.editableId = ''
