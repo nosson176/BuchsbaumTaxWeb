@@ -1,5 +1,7 @@
 <template>
   <div class="flex flex-col max-h-screen bg-gray-100">
+    <Keypress key-event="keydown" :key-code="91" prevent-default @success="onCmdPress" />
+    <Keypress key-event="keyup" :key-code="91" prevent-default @success="onCmdUp" />
     <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
@@ -40,6 +42,7 @@ import { tabs, models, mutations } from '~/shared/constants'
 
 export default {
   name: 'Home',
+  components: { Keypress: () => import('vue-keypress') },
   data () {
     return {
       currentFeesChecklistsTab: tabs.fees,
@@ -96,6 +99,12 @@ export default {
     },
     closeDeleteModal () {
       this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { delete: { showing: false, data: {} } } })
+    },
+    onCmdPress () {
+      this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
+    },
+    onCmdUp () {
+      this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
     }
   }
 }

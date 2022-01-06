@@ -1,5 +1,5 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown.prevent="onKeyPress" @keyup.prevent="onKeyUp">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
       <button
         ref="button"

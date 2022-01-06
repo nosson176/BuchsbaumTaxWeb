@@ -9878,6 +9878,11 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.npm.taobao.org/vue-hot-reload-api/download/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha1-UylVzB6yCKPZkLOp+acFdGV+CPI=
 
+vue-keypress@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.npmmirror.com/vue-keypress/download/vue-keypress-2.1.1.tgz#b766ab52c052b28e9ea1a732a5fde0432c45c76c"
+  integrity sha1-t2arUsBSso6eoacypf3gQyxFx2w=
+
 vue-loader@^15.9.7:
   version "15.9.8"
   resolved "https://registry.npmmirror.com/vue-loader/download/vue-loader-15.9.8.tgz#4b0f602afaf66a996be1e534fb9609dc4ab10e61"

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mt-1 relative" @keydown.prevent="onKeyPress">
+    <div class="mt-1 relative">
       <button
         type="button"
         class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"

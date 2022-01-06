@@ -1,6 +1,7 @@
 <template>
-  <Table v-if="isClientSelected" @keydown.prevent="onKeyDown">
+  <Table v-if="isClientSelected">
     <template #header>
+      <Keypress key-event="keyup" :key-code="9" prevent-default @success="onTabPress" />
       <TableHeader>
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
@@ -94,6 +95,7 @@ const columns = [
 
 export default {
   name: 'LogsTable',
+  components: { Keypress: () => import('vue-keypress') },
   props: {
     showArchived: {
       type: Boolean,
@@ -260,15 +262,13 @@ export default {
     isSelected (logId) {
       return this.selectedItems[logId]
     },
-    onKeyDown (e) {
-      if (e.key === 'Tab') {
-        const currentCell = this.editableId
-        const idArr = currentCell.split('-')
-        const columnIndex = columns.findIndex(col => col === idArr[1])
-        if (columnIndex < columns.length - 1) {
-          const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-          this.toggleEditable(nextCell, this.editableLogId)
-        }
+    onTabPress () {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableLogId)
       }
     }
   }
