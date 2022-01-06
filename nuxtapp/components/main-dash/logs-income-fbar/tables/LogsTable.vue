@@ -2,10 +2,10 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="xs table-header" />
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
+        <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-1">
             <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
@@ -39,10 +39,10 @@
         v-for="(log, idx) in displayedLogs"
         :key="log.id"
         :idx="idx"
-        :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete}"
+        :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete, 'selected': isSelected(log.id)}"
       >
         <div class="xs table-col">
-          <ToggleButton v-model="selectedItems[log.id]" @click="toggleSelected($event, log)" />
+          <div class="h-6 cursor-pointer" @click="toggleSelected(log)" />
         </div>
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />
@@ -178,6 +178,13 @@ export default {
       return !(this.employeeFilterValue === '')
     }
   },
+  created () {
+    if (this.logs) {
+      this.logs.forEach((log) => {
+        this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
+      })
+    }
+  },
   methods: {
     toggleEditable (id, logId) {
       this.editableLogId = logId
@@ -254,10 +261,12 @@ export default {
       returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
       return returnValue
     },
-    toggleSelected (newVal, log) {
-      console.log(newVal, log)
-      this.selectedItems = Object.assign(this.selectedItems, { [log.id]: newVal })
-      console.log(this.selectedItems)
+    toggleSelected (log) {
+      this.selectedItems[log.id] = !this.selectedItems[log.id]
+      this.selectedItems = Object.assign({}, this.selectedItems)
+    },
+    isSelected (logId) {
+      return this.selectedItems[logId]
     }
   }
 }
@@ -266,5 +275,9 @@ export default {
 <style scoped>
 .alarm {
   @apply bg-indigo-100;
+}
+
+.selected {
+  @apply bg-indigo-200;
 }
 </style>
