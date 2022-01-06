@@ -1,5 +1,5 @@
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="xs table-header">
@@ -220,6 +220,7 @@ export default {
       const defaultValues = {
         clientId
       }
+      // if()
       const log = Object.assign({}, defaultValues)
       this.$api.createLog(headers, { clientId, log })
         .then(async (data) => {
@@ -227,15 +228,6 @@ export default {
           this.newLogId = data.id
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
-    },
-    onKeyDown () {
-      const currentCell = this.editableId
-      const idArr = currentCell.split('-')
-      const columnIndex = columns.findIndex(col => col === idArr[1])
-      if (columnIndex < columns.length - 1) {
-        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-        this.toggleEditable(nextCell, this.editableLogId)
-      }
     },
     onBlur () {
       this.editableId = ''
@@ -267,6 +259,17 @@ export default {
     },
     isSelected (logId) {
       return this.selectedItems[logId]
+    },
+    onKeyDown (e) {
+      if (e.key === 'Tab') {
+        const currentCell = this.editableId
+        const idArr = currentCell.split('-')
+        const columnIndex = columns.findIndex(col => col === idArr[1])
+        if (columnIndex < columns.length - 1) {
+          const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+          this.toggleEditable(nextCell, this.editableLogId)
+        }
+      }
     }
   }
 }
