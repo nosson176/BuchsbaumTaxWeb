@@ -184,6 +184,9 @@ export default {
     },
     selectedLogIds () {
       return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    },
+    isCopyingLogs () {
+      return this.isCmdPressed && this.selectedLogIds.length > 0
     }
   },
   watch: {
@@ -236,11 +239,9 @@ export default {
       const defaultValues = {
         clientId: this.selectedClient.id
       }
-      if (this.isCmdPressed && this.selectedLogIds.length > 0) {
+      if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
-          const log = this.displayedLogs.find((log) => {
-            return log.id === Number(logId)
-          })
+          const log = this.displayedLogs.find(log => log.id === Number(logId))
           const newLog = Object.assign({}, log)
           await this.$api.createLog(this.headers, { log: newLog })
             .then(async (data) => {
@@ -253,16 +254,13 @@ export default {
         })
       } else {
         const log = Object.assign({}, defaultValues)
-        this.createLog(log)
+        this.$api.createLog(this.headers, { log })
+          .then(async (data) => {
+            await this.$api.getClientData(this.headers, this.selectedClient.id)
+            this.newLogId = data.id
+            this.toggleEditable(`0-${columns[0]}`, data.id)
+          })
       }
-    },
-    createLog (log) {
-      this.$api.createLog(this.headers, { log })
-        .then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newLogId = data.id
-          this.toggleEditable(`0-${columns[0]}`, data.id)
-        })
     },
     onBlur () {
       this.editableId = ''

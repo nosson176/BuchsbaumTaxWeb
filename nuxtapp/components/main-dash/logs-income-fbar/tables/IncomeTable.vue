@@ -5,6 +5,7 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
+        <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
@@ -73,8 +74,11 @@
         v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
-        :class="{'disabled': !income.include}"
+        :class="{'disabled': !income.include, 'selected': isSelected(income.id)}"
       >
+        <div class="xs table-col">
+          <div class="h-6 cursor-pointer" @click="toggleSelected(income)" />
+        </div>
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
           <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
@@ -188,11 +192,12 @@ export default {
       typeFilterValue: '',
       jobFilterValue: '',
       currencyFilterValue: '',
-      descriptionFilterValue: ''
+      descriptionFilterValue: '',
+      selectedItems: {}
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedIncomes () {
       const incomes = this.shownIncomes
         .filter(income => this.filterIncomes(income))
@@ -330,15 +335,28 @@ export default {
     },
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
+    },
+    isCmdPressed () {
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
+    },
+    selectedIncomeIds () {
+      return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    },
+    isCopyingIncomes () {
+      return this.isCmdPressed && this.selectedIncomeIds.length > 0
     }
   },
   watch: {
     selectedClient: {
       handler () {
         Object.assign(this.$data, this.$options.data.apply(this))
+        this.initSelectedItems()
       },
       deep: true
     }
+  },
+  created () {
+    this.initSelectedItems()
   },
   methods: {
     toggleEditable (id, incomeId) {
@@ -370,18 +388,31 @@ export default {
       if (!this.selectedClient) {
         return
       }
-      const headers = this.$api.getHeaders()
-      const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId
+        clientId: this.selectedClient.id
       }
-      const income = Object.assign({}, defaultValues)
-      this.$api.createIncome(headers, { income })
-        .then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newIncomeId = data.id
-          this.toggleEditable(`0-${columns[0]}`, data.id)
+      if (this.isCopyingIncomes) {
+        this.selectedIncomeIds.forEach(async (incomeId, idx) => {
+          const income = this.displayedIncomes.find(income => income.id === Number(incomeId))
+          const newIncome = Object.assign({}, income)
+          await this.$api.createIncome(this.headers, { income: newIncome })
+            .then(async (data) => {
+              if (this.selectedIncomeIds.length === idx + 1) {
+                await this.$api.getClientData(this.headers, this.selectedClient.id)
+                this.newIncomeId = data.id
+                this.toggleEditable(`0-${columns[0]}`, data.id)
+              }
+            })
         })
+      } else {
+        const income = Object.assign({}, defaultValues)
+        this.$api.createIncome(this.headers, { income })
+          .then(async (data) => {
+            await this.$api.getClientData(this.headers, this.selectedClient.id)
+            this.newIncomeId = data.id
+            this.toggleEditable(`0-${columns[0]}`, data.id)
+          })
+      }
     },
     onKeyDown () {
       const currentCell = this.editableId
@@ -405,11 +436,27 @@ export default {
       returnValue = this.filterByCurrency ? income.currency === this.currencyFilterValue && returnValue : returnValue
       returnValue = this.filterByDescription ? income.description === this.descriptionFilterValue && returnValue : returnValue
       return returnValue
+    },
+    toggleSelected (income) {
+      this.selectedItems[income.id] = !this.selectedItems[income.id]
+      this.selectedItems = Object.assign({}, this.selectedItems)
+    },
+    isSelected (incomeId) {
+      return this.selectedItems[incomeId]
+    },
+    initSelectedItems () {
+      if (this.incomeBreakdowns) {
+        this.incomeBreakdowns.forEach((income) => {
+          this.selectedItems = Object.assign(this.selectedItems, { [income.id]: false })
+        })
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-
+.selected {
+  @apply bg-indigo-200;
+}
 </style>
