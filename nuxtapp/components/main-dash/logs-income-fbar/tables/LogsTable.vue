@@ -180,7 +180,7 @@ export default {
       return !(this.employeeFilterValue === '')
     },
     isCmdPressed () {
-      return this.cmdPressed || this.cmdPressed.length !== 0
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
     selectedLogIds () {
       return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
