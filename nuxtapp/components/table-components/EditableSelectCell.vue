@@ -55,7 +55,7 @@
 <script>
 import { events } from '~/shared/constants'
 
-const MULT = 'MULT'
+const MULT = 'MULTI'
 
 export default {
   name: 'EditableSelectCell',
@@ -88,17 +88,13 @@ export default {
   computed: {
     computedValue: {
       get () {
-        if (this.multiple) {
-          let selected = []
-          if (this.splitOptions[0] === MULT) {
-            selected = this.splitOptions.slice(1)
-          } else {
-            selected = this.splitOptions
-          }
-          return selected
+        let selected = []
+        if (this.splitOptions[0] === MULT) {
+          selected = this.splitOptions.slice(1)
         } else {
-          return this.value
+          selected = this.splitOptions
         }
+        return selected
       },
       set (newVal) {
         this.$emit(events.input, newVal)
@@ -111,11 +107,7 @@ export default {
       return this.value.split('\u000B')
     },
     shownValue () {
-      if (this.multiple) {
-        return this.splitOptions[0]
-      } else {
-        return this.computedValue || this.placeholder
-      }
+      return this.splitOptions[0] || this.placeholder
     }
   },
   watch: {
@@ -133,11 +125,11 @@ export default {
   methods: {
     emitChange (value) {
       if (this.shiftActive) {
-        this.computedValue = this.computedValue.join('\u000B').concat('\u000B' + value)
+        this.computedValue.push(value)
       } else {
         this.computedValue = value
+        this.onBlur()
       }
-      this.onBlur()
     },
     isSelected ({ value }) {
       if (this.multiple) {
@@ -173,6 +165,10 @@ export default {
     onKeyUp (evt) {
       if (evt.key === 'Shift') {
         this.shiftActive = false
+        this.computedValue.unshift(MULT)
+        console.log(this.computedValue)
+        this.computedValue = this.computedValue.join('\u000B')
+        this.onBlur()
       }
     },
     onMouseOver (idx) {
