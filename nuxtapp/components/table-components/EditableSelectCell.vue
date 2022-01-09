@@ -24,7 +24,7 @@
         @blur="onBlur"
       >
         <li
-          v-for="(option, idx) in options"
+          v-for="(option, idx) in sortedOptions"
           :id="idx"
           :key="idx"
           ref="option"
@@ -108,6 +108,18 @@ export default {
     },
     shownValue () {
       return this.splitOptions[0] || this.placeholder
+    },
+    sortedOptions () {
+      const optionsCopy = [...this.options]
+      return optionsCopy.sort((a, b) => {
+        if (this.isSelected(a) && !this.isSelected(b)) {
+          return -1
+        }
+        if (!this.isSelected(a) && this.isSelected(b)) {
+          return 1
+        }
+        return 0
+      })
     }
   },
   watch: {
@@ -132,11 +144,7 @@ export default {
       }
     },
     isSelected ({ value }) {
-      if (this.multiple) {
-        return this.computedValue.includes(value)
-      } else {
-        return this.computedValue === value
-      }
+      return this.computedValue.includes(value)
     },
     onBlur () {
       this.showOptions = false
@@ -166,7 +174,6 @@ export default {
       if (evt.key === 'Shift') {
         this.shiftActive = false
         this.computedValue.unshift(MULT)
-        console.log(this.computedValue)
         this.computedValue = this.computedValue.join('\u000B')
         this.onBlur()
       }
