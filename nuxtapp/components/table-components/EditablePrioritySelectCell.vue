@@ -127,4 +127,36 @@ export default {
 .read-mode {
   @apply overflow-hidden overflow-ellipsis m-px outline-none;
 }
+
+.pink {
+  @apply bg-pink-500;
+}
+
+.green {
+  @apply bg-green-200;
+}
+
+.blue {
+  @apply bg-blue-200;
+}
+
+.yellow {
+  @apply bg-yellow-200;
+}
+
+.red {
+  @apply bg-red-500;
+}
+
+.orange {
+  @apply bg-yellow-500;
+}
+
+.light-pink {
+  @apply bg-pink-200;
+}
+
+.black {
+  @apply bg-black;
+}
 </style>

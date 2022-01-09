@@ -102,14 +102,14 @@ export const categories = Object.freeze({
 })
 
 export const priorityOptions = Object.freeze([
-  { color: 'bg-pink-500', value: 1 },
-  { color: 'bg-green-200', value: 2 },
-  { color: 'bg-blue-200', value: 3 },
-  { color: 'bg-yellow-200', value: 4 },
-  { color: 'bg-red-500', value: 5 },
-  { color: 'bg-yellow-500', value: 6 },
-  { color: 'bg-pink-200', value: 7 },
-  { color: 'bg-black', value: 8 }
+  { color: 'pink', value: 1 },
+  { color: 'green', value: 2 },
+  { color: 'blue', value: 3 },
+  { color: 'yellow', value: 4 },
+  { color: 'red', value: 5 },
+  { color: 'orange', value: 6 },
+  { color: 'light-pink', value: 7 },
+  { color: 'black', value: 8 }
 ])
 
 export const filingTypes = Object.freeze({
