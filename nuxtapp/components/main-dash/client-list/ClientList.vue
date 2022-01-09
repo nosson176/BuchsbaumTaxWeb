@@ -4,9 +4,9 @@
       <AddRowButton @click="onAddRowClick" />
     </div>
     <div
-      v-for="client in displayedClients"
+      v-for="(client, idx) in displayedClients"
       :ref="client.id"
-      :key="client.id"
+      :key="idx"
       class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
