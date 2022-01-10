@@ -129,3 +129,33 @@ export const currencySymbols = Object.freeze({
   us: '$',
   il: '₪'
 })
+
+export const searchOptions = Object.freeze([
+  { name: 'Default Search', value: '' },
+  { name: 'CLIENT::last_name', value: 'clients::last_name' },
+  { name: 'CLIENT::periodical', value: 'clients::periodical' },
+  { name: 'CLIENT::status', value: 'clients::status' },
+  { name: 'FEE::tax_year', value: 'fees::year' },
+  { name: 'FEE::notes', value: 'fees::notes' },
+  { name: 'CONTACT::address_or_number', value: 'contacts::main_detail' },
+  { name: 'CONTACT::city_or_account', value: 'contacts::secondary_detail' },
+  { name: 'CONTACT::state', value: 'contacts::state' },
+  { name: 'CONTACT::type', value: 'contacts::contact_type' },
+  { name: 'CONTACT::zip', value: 'contacts::zip' },
+  { name: 'CONTACT::memo', value: 'contacts::memo' },
+  { name: 'INCOME_BREAKDOWN::description', value: 'income_breakdowns::description' },
+  { name: 'LOG::employee_alarm', value: 'logs::alarm_user_name' },
+  { name: 'LOG::alarm_date', value: 'logs::alarm_date' },
+  { name: 'LOG::date_of_log', value: 'logs::log_date' },
+  { name: 'LOG::note', value: 'logs::note' },
+  { name: 'LOG::year_name', value: 'logs::years' },
+  { name: 'TAX_PERSONAL::first_name', value: 'tax_personals::first_name' },
+  { name: 'TAX_PERSONAL::informal', value: 'tax_personals::informal' },
+  { name: 'TAX_PERSONAL::last_name', value: 'tax_personals::last_name' },
+  { name: 'TAX_PERSONAL::ssn', value: 'tax_personals::ssn' },
+  { name: 'TAX_YEAR::year_name', value: 'tax_years::year' },
+  { name: 'TAX_YEAR::tax_form', value: 'filings::tax_form' },
+  { name: 'TAX_YEAR::comment', value: 'filings::memo' },
+  { name: 'TAX_YEAR::delivery', value: 'filings::delivery_contact' },
+  { name: 'TAX_YEAR::tax_state', value: 'filings::state' }
+])

@@ -21,14 +21,24 @@ export default ({ $axios, store, $toast, $router }, inject) => {
   }
 
   // GET
-  const getClientList = (headers, searchParam = '') => $axios.get(searchParam ? `clients/?q=${searchParam}` : 'clients/', { headers, loading: models.clients, store: models.clients })
-    .catch((e) => {
-      $toast.error('Error loading clients')
-      if (e.message === error.axios_401) {
-        signout()
-        $router.replace(routes.login)
-      }
-    })
+  const getClientList = (headers, searchParam = '', searchOption = '') => {
+    let endpoint = 'clients/'
+    if (searchParam && searchOption) {
+      endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
+    } else if (searchParam) {
+      endpoint = endpoint.concat(`?q=${searchParam}`)
+    } else if (searchOption) {
+      endpoint = endpoint.concat(`?field=${searchOption}`)
+    }
+    return $axios.get(endpoint, { headers, loading: models.clients, store: models.clients })
+      .catch((e) => {
+        $toast.error('Error loading clients')
+        if (e.message === error.axios_401) {
+          signout()
+          $router.replace(routes.login)
+        }
+      })
+  }
 
   const getClientData = (headers, id) => $axios.get(`/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient })
     .then(() => getClientsHistory(headers))
