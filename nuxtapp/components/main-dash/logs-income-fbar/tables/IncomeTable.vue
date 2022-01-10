@@ -5,7 +5,7 @@
         <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
           <div class="ml-1">
-            <EditableCheckBoxCell v-model="includeAll" @input="debounceUpdateAll" />
+            <EditableCheckBoxCell v-model="includeAll" @input="debounceUpdateIncludeAll" />
           </div>
         </div>
         <div class="table-header xs flex flex-col">
@@ -220,8 +220,8 @@ export default {
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
     },
-    debounceUpdateAll () {
-      return debounce(this.handleUpdateAll, 500)
+    debounceUpdateIncludeAll () {
+      return debounce(this.handleUpdateIncludeAll, 500)
     },
     categoryOptions () {
       return this.valueTypes.category.filter(category => category.show)
@@ -380,7 +380,7 @@ export default {
       const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
-    handleUpdateAll () {
+    handleUpdateIncludeAll () {
       this.displayedIncomes.forEach((income) => {
         income.include = this.includeAll
       })
