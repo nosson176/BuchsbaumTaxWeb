@@ -1,7 +1,6 @@
 <template>
-  <Table v-if="isClientSelected">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onTabPress">
     <template #header>
-      <Keypress key-event="keyup" :key-code="9" prevent-default @success="onTabPress" />
       <TableHeader>
         <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
@@ -95,7 +94,6 @@ const columns = [
 
 export default {
   name: 'LogsTable',
-  components: { Keypress: () => import('vue-keypress') },
   props: {
     showArchived: {
       type: Boolean,

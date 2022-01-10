@@ -1929,6 +1929,11 @@ acorn@^8.0.4:
   resolved "https://registry.npmmirror.com/acorn/download/acorn-8.7.0.tgz#90951fde0f8f09df93549481e5fc141445b791cf"
   integrity sha512-V/LGr1APy+PXIwKebEWrkZPwoeoF+w1jiOBUmuxuiUIaOHtob8Qc9BTrYo7VuI5fR8tqsy+buA2WFooR5olqvQ==
 
+add@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.npm.taobao.org/add/download/add-2.0.6.tgz#248f0a9f6e5a528ef2295dbeec30532130ae2235"
+  integrity sha1-JI8Kn25aUo7yKV2+7DBTITCuIjU=
+
 aggregate-error@^3.0.0:
   version "3.1.0"
   resolved "https://registry.npm.taobao.org/aggregate-error/download/aggregate-error-3.1.0.tgz?cache=0&sync_timestamp=1618681718392&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Faggregate-error%2Fdownload%2Faggregate-error-3.1.0.tgz#92670ff50f5359bdb7a3e0d40d0ec30c5737687a"
@@ -9809,6 +9814,13 @@ utils-merge@1.0.1:
   resolved "https://registry.npm.taobao.org/utils-merge/download/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
+v-hotkey@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.npmmirror.com/v-hotkey/download/v-hotkey-0.9.0.tgz#3e6c17128a2faa5f2a80a2f06f6c062b83c5d3e1"
+  integrity sha1-PmwXEoovql8qgKLwb2wGK4PF0+E=
+  dependencies:
+    core-js "^2.6.5"
+
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.3.0:
   version "2.3.0"
   resolved "https://registry.npm.taobao.org/v8-compile-cache/download/v8-compile-cache-2.3.0.tgz#2de19618c66dc247dcfb6f99338035d8245a2cee"
@@ -9877,11 +9889,6 @@ vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.npm.taobao.org/vue-hot-reload-api/download/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha1-UylVzB6yCKPZkLOp+acFdGV+CPI=
-
-vue-keypress@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.npmmirror.com/vue-keypress/download/vue-keypress-2.1.1.tgz#b766ab52c052b28e9ea1a732a5fde0432c45c76c"
-  integrity sha1-t2arUsBSso6eoacypf3gQyxFx2w=
 
 vue-loader@^15.9.7:
   version "15.9.8"
@@ -10259,6 +10266,11 @@ yargs@^17.2.1:
     string-width "^4.2.3"
     y18n "^5.0.5"
     yargs-parser "^21.0.0"
+
+yarn@^1.22.17:
+  version "1.22.17"
+  resolved "https://registry.npmmirror.com/yarn/download/yarn-1.22.17.tgz#bf910747d22497b573131f7341c0e1d15c74036c"
+  integrity sha512-H0p241BXaH0UN9IeH//RT82tl5PfNraVpSpEoW+ET7lmopNC61eZ+A+IDvU8FM6Go5vx162SncDL8J1ZjRBriQ==
 
 ylru@^1.2.0:
   version "1.2.1"
