@@ -2,7 +2,7 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="xs table-header">
+        <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
         <div class="table-header xs" />
@@ -128,7 +128,7 @@
         </div>
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
-        <div class="table-col xs" />
+        <div class="table-col w-6" />
         <div class="table-col xs" />
         <div class="table-col-primary xs" />
         <div class="table-col xs" />

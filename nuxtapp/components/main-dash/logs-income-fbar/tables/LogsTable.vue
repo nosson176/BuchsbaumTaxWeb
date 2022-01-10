@@ -3,7 +3,7 @@
     <template #header>
       <Keypress key-event="keyup" :key-code="9" prevent-default @success="onTabPress" />
       <TableHeader>
-        <div class="xs table-header">
+        <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
         <div class="xs table-header" />
