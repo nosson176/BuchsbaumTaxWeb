@@ -137,11 +137,25 @@ export default {
   methods: {
     emitChange (value) {
       if (this.shiftActive) {
-        this.computedValue.push(value)
+        const isSelected = this.computedValue.includes(value)
+        if (isSelected) {
+          this.removeValue(value)
+        } else {
+          this.addValue(value)
+        }
       } else {
         this.computedValue = value
         this.onBlur()
       }
+    },
+    removeValue (value) {
+      const index = this.computedValue.indexOf(value)
+      if (index > -1) {
+        this.computedValue.splice(index, 1)
+      }
+    },
+    addValue (value) {
+      this.computedValue.push(value)
     },
     isSelected ({ value }) {
       return this.computedValue.includes(value)
