@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="h-5 w-5 cursor-pointer bg-indigo-200 rounded-full" @click="emitClick" />
+    <div class="h-5 w-5 cursor-pointer hover:bg-gray-200" @click="emitClick" />
   </div>
 </template>
 
