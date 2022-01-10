@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col bg-blue-200 p-0.5">
+  <div class="flex flex-col bg-blue-200 px-0.5 py-1">
     <ViewArchivedHeader @change="emitChange" />
     <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
-    <SelectOption v-model="searchOptionValue" :shown-value="seachOptionName" :options="searchOptions" @input="debounceSearch" />
+    <HeaderSelectOption v-model="searchOptionValue" :shown-value="seachOptionName" :options="searchOptions" @input="debounceSearch" />
   </div>
 </template>
 
