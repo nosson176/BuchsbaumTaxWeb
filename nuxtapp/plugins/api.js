@@ -104,15 +104,19 @@ export default ({ $axios, store, $toast, $router }, inject) => {
       .catch(() => $toast.error('Error updating contact'))
       .finally(() => getClientData(headers, clientId))
 
-  const updateIncome = (headers, { clientId, incomeId }, income) =>
-    $axios.put(`/incomes/${incomeId}`, income, { headers })
+  const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
+    const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
+    $axios.put(endpoint, income, { headers })
       .catch(() => $toast.error('Error updating income'))
       .finally(() => getClientData(headers, clientId))
+  }
 
-  const updateFbar = (headers, { clientId, fbarId }, fbar) =>
-    $axios.put(`/fbar/${fbarId}`, fbar, { headers })
+  const updateFbar = (headers, { clientId, fbarId = '' }, fbar) => {
+    const endpoint = fbarId ? `/fbars/${fbarId}` : '/fbars'
+    return $axios.put(endpoint, fbar, { headers })
       .catch(() => $toast.error('Error updating fbar'))
       .finally(() => getClientData(headers, clientId))
+  }
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
     $axios.put(`/clients/fees/${feeId}`, fee, { headers })

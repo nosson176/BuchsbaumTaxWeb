@@ -2,8 +2,11 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="xs table-header">
+        <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
+          <div class="ml-1">
+            <EditableCheckBoxCell v-model="includeAll" @input="debounceUpdateAll" />
+          </div>
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
@@ -188,7 +191,8 @@ export default {
       typeFilterValue: '',
       jobFilterValue: '',
       currencyFilterValue: '',
-      descriptionFilterValue: ''
+      descriptionFilterValue: '',
+      includeAll: false
     }
   },
   computed: {
@@ -215,6 +219,9 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
+    },
+    debounceUpdateAll () {
+      return debounce(this.handleUpdateAll, 500)
     },
     categoryOptions () {
       return this.valueTypes.category.filter(category => category.show)
@@ -266,7 +273,12 @@ export default {
     amountUSDTotal () {
       return `$${formatAsNumber(Math.round(this.displayedIncomes
         .filter(income => income.include)
-        .reduce((acc, income) => income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD), 0)
+        .reduce((acc, income) => {
+          if (!income.amountUSD) {
+            return acc
+          }
+          return income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD)
+        }, 0)
       ))}`
     },
     filteredYearsOptions () {
@@ -335,9 +347,23 @@ export default {
   watch: {
     selectedClient: {
       handler () {
-        Object.assign(this.$data, this.$options.data.apply(this))
+        this.newIncomeId = NaN
+        this.editableId = ''
+        this.editableFbarId = ''
+        this.yearFilterValue = ''
+        this.categoryFilterValue = ''
+        this.groupFilterValue = ''
+        this.typeFilterValue = ''
+        this.jobFilterValue = ''
+        this.currencyFilterValue = ''
+        this.descriptionFilterValue = ''
       },
       deep: true
+    }
+  },
+  mounted () {
+    if (this.displayedIncomes) {
+      this.includeAll = this.displayedIncomes.every(income => income.include)
     }
   },
   methods: {
@@ -353,6 +379,12 @@ export default {
     handleUpdate () {
       const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
+    },
+    handleUpdateAll () {
+      this.displayedIncomes.forEach((income) => {
+        income.include = this.includeAll
+      })
+      this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {
@@ -372,9 +404,7 @@ export default {
       }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
-      const defaultValues = {
-        clientId
-      }
+      const defaultValues = { clientId }
       const income = Object.assign({}, defaultValues)
       this.$api.createIncome(headers, { income })
         .then(async (data) => {
