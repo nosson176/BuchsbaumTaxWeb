@@ -75,7 +75,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
   const createIncome = (headers, { income }) => $axios.post('/incomes', income, { headers })
     .catch(() => $toast.error('Error creating income'))
 
-  const createFbar = (headers, { fbar }) => $axios.post('/fbar', fbar, { headers })
+  const createFbar = (headers, { fbar }) => $axios.post('/fbars', fbar, { headers })
     .catch(() => $toast.error('Error creating fbar'))
 
   const createFee = (headers, { fee }) => $axios.post('/fees', fee, { headers })
@@ -120,7 +120,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
       .finally(() => getClientData(headers, clientId))
 
   const updateFbar = (headers, { clientId, fbarId }, fbar) =>
-    $axios.put(`/fbar/${fbarId}`, fbar, { headers })
+    $axios.put(`/fbars/${fbarId}`, fbar, { headers })
       .catch(() => $toast.error('Error updating fbar'))
       .finally(() => getClientData(headers, clientId))
 

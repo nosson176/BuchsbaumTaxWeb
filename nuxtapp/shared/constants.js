@@ -15,7 +15,8 @@ export const models = Object.freeze({
   token: 'token',
   users: 'users',
   valueTaxGroups: 'valueTaxGroups',
-  valueTypes: 'valueTypes'
+  valueTypes: 'valueTypes',
+  cmdPressed: 'cmdPressed'
 })
 
 // Store Mutations

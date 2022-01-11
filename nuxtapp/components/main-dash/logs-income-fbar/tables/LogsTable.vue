@@ -1,10 +1,11 @@
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
+  <Table v-if="isClientSelected" @keydown.tab.prevent="onTabPress">
     <template #header>
       <TableHeader>
-        <div class="xs table-header">
+        <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
+        <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-1">
             <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
@@ -38,8 +39,11 @@
         v-for="(log, idx) in displayedLogs"
         :key="log.id"
         :idx="idx"
-        :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete}"
+        :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete, 'selected': isSelected(log.id)}"
       >
+        <div class="table-col">
+          <ClickCell @click="toggleSelected(log)" />
+        </div>
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
@@ -102,11 +106,12 @@ export default {
       editableId: '',
       editableLogId: '',
       yearFilterValue: '',
-      employeeFilterValue: ''
+      employeeFilterValue: '',
+      selectedItems: {}
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
     displayedLogs () {
       const logs = this.shownLogs
         .filter(log => this.filterLogs(log))
@@ -171,6 +176,32 @@ export default {
     },
     filterByEmployee () {
       return !(this.employeeFilterValue === '')
+    },
+    isCmdPressed () {
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
+    },
+    selectedLogIds () {
+      return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    },
+    isCopyingLogs () {
+      return this.isCmdPressed && this.selectedLogIds.length > 0
+    }
+  },
+  watch: {
+    selectedClient (newClient) {
+      if (newClient) {
+        this.selectedItems = {}
+        this.logs.forEach((log) => {
+          this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
+        })
+      }
+    }
+  },
+  created () {
+    if (this.logs) {
+      this.logs.forEach((log) => {
+        this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
+      })
     }
   },
   methods: {
@@ -203,26 +234,30 @@ export default {
       if (!this.selectedClient) {
         return
       }
-      const headers = this.$api.getHeaders()
-      const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId
+        clientId: this.selectedClient.id
       }
-      const log = Object.assign({}, defaultValues)
-      this.$api.createLog(headers, { log })
-        .then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newLogId = data.id
-          this.toggleEditable(`0-${columns[0]}`, data.id)
+      if (this.isCopyingLogs) {
+        this.selectedLogIds.forEach(async (logId, idx) => {
+          const log = this.displayedLogs.find(log => log.id === Number(logId))
+          const newLog = Object.assign({}, log)
+          await this.$api.createLog(this.headers, { log: newLog })
+            .then(async (data) => {
+              if (this.selectedLogIds.length === idx + 1) {
+                await this.$api.getClientData(this.headers, this.selectedClient.id)
+                this.newLogId = data.id
+                this.toggleEditable(`0-${columns[0]}`, data.id)
+              }
+            })
         })
-    },
-    onKeyDown () {
-      const currentCell = this.editableId
-      const idArr = currentCell.split('-')
-      const columnIndex = columns.findIndex(col => col === idArr[1])
-      if (columnIndex < columns.length - 1) {
-        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-        this.toggleEditable(nextCell, this.editableLogId)
+      } else {
+        const log = Object.assign({}, defaultValues)
+        this.$api.createLog(this.headers, { log })
+          .then(async (data) => {
+            await this.$api.getClientData(this.headers, this.selectedClient.id)
+            this.newLogId = data.id
+            this.toggleEditable(`0-${columns[0]}`, data.id)
+          })
       }
     },
     onBlur () {
@@ -248,6 +283,22 @@ export default {
       returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
       return returnValue
+    },
+    toggleSelected (log) {
+      this.selectedItems[log.id] = !this.selectedItems[log.id]
+      this.selectedItems = Object.assign({}, this.selectedItems)
+    },
+    isSelected (logId) {
+      return this.selectedItems[logId]
+    },
+    onTabPress () {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex(col => col === idArr[1])
+      if (columnIndex < columns.length - 1) {
+        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableLogId)
+      }
     }
   }
 }
@@ -256,5 +307,9 @@ export default {
 <style scoped>
 .alarm {
   @apply bg-indigo-100;
+}
+
+.selected {
+  @apply bg-indigo-200;
 }
 </style>

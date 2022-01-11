@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-screen bg-gray-100">
+  <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
     <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
@@ -62,6 +62,18 @@ export default {
         showModal = this.modals.delete.showing
       }
       return showModal
+    },
+    keymap () {
+      return {
+        command: {
+          keydown: this.onCmdPress,
+          keyup: this.onCmdUp
+        },
+        windows: {
+          keydown: this.onCmdPress,
+          keyup: this.onCmdUp
+        }
+      }
     }
   },
   methods: {
@@ -96,6 +108,12 @@ export default {
     },
     closeDeleteModal () {
       this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { delete: { showing: false, data: {} } } })
+    },
+    onCmdPress () {
+      this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
+    },
+    onCmdUp () {
+      this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
     }
   }
 }
