@@ -4,8 +4,8 @@
       <TableHeader>
         <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
-          <div class="ml-1">
-            <EditableCheckBoxCell v-model="includeAll" @input="debounceUpdateIncludeAll" />
+          <div>
+            <HeaderSelectOption v-model="includeAll" :options="includeOptions" @input="handleUpdateIncludeAll" />
           </div>
         </div>
         <div class="table-header xs flex flex-col">
@@ -165,6 +165,12 @@ const docOptions = [
   { value: 'NEEDS' }
 ]
 
+const includeOptions = [
+  { value: '', name: '' },
+  { value: 'select', name: 'Select All' },
+  { value: 'deselect', name: 'Deselect All' }
+]
+
 export default {
   name: 'FbarTable',
   props: {
@@ -185,7 +191,7 @@ export default {
       jobFilterValue: '',
       currencyFilterValue: '',
       descriptionFilterValue: '',
-      includeAll: false
+      includeAll: ''
     }
   },
   computed: {
@@ -212,9 +218,6 @@ export default {
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
-    },
-    debounceUpdateIncludeAll () {
-      return debounce(this.handleUpdateIncludeAll, 500)
     },
     categoryOptions () {
       return this.valueTypes.category.filter(category => category.show)
@@ -340,28 +343,16 @@ export default {
     },
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
+    },
+    includeOptions () {
+      return includeOptions
     }
   },
   watch: {
     selectedClient: {
       handler () {
-        this.newFbarId = NaN
-        this.editableId = ''
-        this.editableFbarId = ''
-        this.yearFilterValue = ''
-        this.categoryFilterValue = ''
-        this.groupFilterValue = ''
-        this.typeFilterValue = ''
-        this.jobFilterValue = ''
-        this.currencyFilterValue = ''
-        this.descriptionFilterValue = ''
-      },
-      deep: true
-    }
-  },
-  mounted () {
-    if (this.displayedFbars) {
-      this.includeAll = this.displayedFbars.every(fbar => fbar.include)
+        Object.assign(this.$data, this.$options.data.apply(this))
+      }
     }
   },
   methods: {
@@ -380,7 +371,11 @@ export default {
     },
     handleUpdateIncludeAll () {
       this.displayedFbars.forEach((fbar) => {
-        fbar.include = this.includeAll
+        if (this.includeAll === 'select') {
+          fbar.include = true
+        } else if (this.includeAll === 'deselect') {
+          fbar.include = false
+        }
       })
       this.$api.updateFbar(this.headers, { clientId: this.clientId }, this.displayedFbars)
     },
