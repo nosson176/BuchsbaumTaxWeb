@@ -57,6 +57,10 @@ export default {
       }
     },
     showEdit (smartview) {
+      this.$store.commit(
+        mutations.setModelResponse,
+        { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
+      )
       console.log('showEdit', smartview)
     }
   }
