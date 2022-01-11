@@ -144,6 +144,11 @@ export default ({ $axios, store, $toast, $router }, inject) => {
       .catch(() => $toast.error('Error updating checklist'))
       .finally(() => getClientData(headers, clientId))
 
+  const updateSmartview = (headers, { smartviewId }, smartview) =>
+    $axios.put(`/smartviews/${smartviewId}`, smartview, { headers })
+      .catch(() => $toast.error('Error updating smartview'))
+      .finally(() => getSmartviews(headers))
+
   const api = {
     createChecklist,
     createClient,
@@ -174,6 +179,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
     updateFiling,
     updateIncome,
     updateLog,
+    updateSmartview,
     updateTaxPersonal,
     updateTaxYear
   }

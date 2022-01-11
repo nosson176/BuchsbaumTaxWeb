@@ -64,10 +64,6 @@ export default {
     options: {
       type: Array,
       default: () => []
-    },
-    shownValue: {
-      type: String,
-      default: ''
     }
   },
   data () {
@@ -83,6 +79,9 @@ export default {
       set (value) {
         this.$emit(events.input, value)
       }
+    },
+    shownValue () {
+      return this.options.find(option => option.value === this.value)?.name
     }
   },
   methods: {

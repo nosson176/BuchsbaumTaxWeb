@@ -61,7 +61,6 @@ export default {
         mutations.setModelResponse,
         { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
       )
-      console.log('showEdit', smartview)
     }
   }
 }

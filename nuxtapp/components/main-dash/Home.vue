@@ -30,7 +30,7 @@
       <Modal :showing="showDeleteModal">
         <DeleteCard @hide="closeDeleteModal" />
       </Modal>
-      <Modal :showing="showSmartviewEditModal">
+      <Modal :showing="showSmartviewEditModal" @hide="closeSmartviewEditModal">
         <SmartviewEditCard @hide="closeSmartviewEditModal" />
       </Modal>
     </div>
