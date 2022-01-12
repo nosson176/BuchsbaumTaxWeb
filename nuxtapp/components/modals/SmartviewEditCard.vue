@@ -7,9 +7,7 @@
         </div>
         <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
           <div class="flex justify-between">
-            <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">
-              <span class="capitalize">{{ smartview.name }}</span>
-            </h3>
+            <Input id="modal-title" v-model="name" class="text-lg leading-6 font-medium text-gray-900" @input="debounceUpdate" />
             <AddRowButton @click="addSmartViewLine" />
           </div>
           <div class="mt-2 border border-gray-200">
@@ -34,6 +32,7 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { events, models, mutations } from '~/shared/constants'
 
@@ -53,6 +52,17 @@ export default {
     },
     headers () {
       return this.$api.getHeaders()
+    },
+    name: {
+      get () {
+        return this.smartview.name
+      },
+      set (value) {
+        this.smartview.name = value
+      }
+    },
+    debounceUpdate () {
+      return debounce(this.postUpdate, 500)
     }
   },
   methods: {
