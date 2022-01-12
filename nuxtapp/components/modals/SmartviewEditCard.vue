@@ -1,16 +1,26 @@
 <template>
-  <div class="overflow-auto">
-    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+  <div>
+    <div class="bg-white px-4 pt-5 pb-4 overflow-auto sm:p-6 sm:pb-4">
       <div class="sm:flex sm:items-start">
         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
           <PenIcon class="text-indigo-600 h-6 w-6" />
         </div>
         <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
-          <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">
-            <span class="capitalize">{{ smartview.name }}</span>
-          </h3>
+          <div class="flex justify-between">
+            <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">
+              <span class="capitalize">{{ smartview.name }}</span>
+            </h3>
+            <AddRowButton @click="addSmartViewLine" />
+          </div>
           <div class="mt-2 border border-gray-200">
-            <SmartviewLine v-for="(line, idx) in smartview.smartviewLines" :key="idx" :line="line" :idx="idx" @input="updateSmartviewLine" />
+            <SmartviewLine
+              v-for="(line, idx) in smartview.smartviewLines"
+              :key="idx"
+              :line="line"
+              :idx="idx"
+              @input="updateSmartviewLine"
+              @delete="removeSmartviewLine"
+            />
           </div>
         </div>
       </div>
@@ -26,6 +36,13 @@
 <script>
 import { mapState } from 'vuex'
 import { events, models, mutations } from '~/shared/constants'
+
+const lineConstructor = {
+  groupNum: 0,
+  fieldName: '',
+  operator: '',
+  searchValue: ''
+}
 
 export default {
   name: 'SmartviewEditCard',
@@ -44,6 +61,17 @@ export default {
     },
     updateSmartviewLine (line) {
       this.smartview.smartviewLines[line.idx] = line.newVal
+      this.postUpdate()
+    },
+    addSmartViewLine () {
+      this.smartview.smartviewLines.push(Object.assign({}, lineConstructor))
+      this.postUpdate()
+    },
+    removeSmartviewLine (idx) {
+      this.smartview.smartviewLines.splice(idx, 1)
+      this.postUpdate()
+    },
+    postUpdate () {
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
         .then(() => {

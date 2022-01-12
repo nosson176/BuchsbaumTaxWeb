@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-12 gap-2 items-center px-1" :class="even ? 'bg-white' : 'bg-gray-100'">
+  <div class="grid grid-cols-12 gap-2 items-center px-1 h-8" :class="even ? 'bg-gray-50' : 'bg-gray-100'">
     <div class="col-span-1">
       <Input v-model="groupNum" />
     </div>
@@ -13,7 +13,7 @@
       <Input v-model="searchValue" />
     </div>
     <div class="col-span-1">
-      <DeleteButton />
+      <DeleteButton @click="emitDelete" />
     </div>
   </div>
 </template>
@@ -90,6 +90,11 @@ export default {
     },
     even () {
       return this.idx % 2 === 0
+    }
+  },
+  methods: {
+    emitDelete () {
+      this.$emit(events.delete, this.idx)
     }
   }
 }

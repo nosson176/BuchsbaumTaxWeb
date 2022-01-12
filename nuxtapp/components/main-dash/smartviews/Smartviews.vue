@@ -9,7 +9,7 @@
       @click="selectSmartview(smartview)"
     >
       <div class="flex items-center space-x-2">
-        <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
+        <PenIcon class="h-3 w-3" @click.prevent="showEdit(smartview)" />
         <span class="name">{{ smartview.name }}</span>
       </div>
       <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>

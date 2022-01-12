@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mt-1 relative" @blur="onBlur">
+    <div class="relative" @blur="onBlur">
       <button
         type="button"
         class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
