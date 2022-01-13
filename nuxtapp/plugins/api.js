@@ -93,6 +93,10 @@ export default ({ $axios, store, $toast, $router }, inject) => {
   const createClient = (headers, { client }) => $axios.post('/clients', client, { headers })
     .catch(() => $toast.error('Error creating client'))
 
+  const createSmartview = (headers, { smartview }) => $axios.post('/smartviews', smartview, { headers })
+    .catch(() => $toast.error('Error creating smartview'))
+    .finally(() => getSmartviews(headers))
+
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
     $axios.put(`/clients/${clientId}`, client, { headers })
@@ -158,6 +162,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
     createFiling,
     createIncome,
     createLog,
+    createSmartview,
     createTaxPersonal,
     createTaxYear,
     getAllClientFees,

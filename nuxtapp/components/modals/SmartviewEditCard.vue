@@ -7,10 +7,10 @@
         </div>
         <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
           <div class="flex justify-between">
-            <Input id="modal-title" v-model="name" class="text-lg leading-6 font-medium text-gray-900" @input="debounceUpdate" />
+            <Input id="modal-title" ref="name" v-model="name" class="text-lg leading-6 font-medium text-gray-900" />
             <AddRowButton @click="addSmartViewLine" />
           </div>
-          <div class="mt-2 border border-gray-200">
+          <div v-if="hasLines" class="mt-2 border border-gray-200">
             <SmartviewLine
               v-for="(line, idx) in smartview.smartviewLines"
               :key="idx"
@@ -24,6 +24,11 @@
       </div>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+      <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm" @click="handleUpdateCreate">
+        <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed" />
+        <span v-else-if="isNew" class="capitalize">Create</span>
+        <span v-else class="capitalize">Save</span>
+      </button>
       <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="emitHide">
         Cancel
       </button>
@@ -32,7 +37,6 @@
 </template>
 
 <script>
-import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { events, models, mutations } from '~/shared/constants'
 
@@ -45,6 +49,11 @@ const lineConstructor = {
 
 export default {
   name: 'SmartviewEditCard',
+  data () {
+    return {
+      isLoading: false
+    }
+  },
   computed: {
     ...mapState([models.modals, models.selectedClient]),
     smartview () {
@@ -58,11 +67,19 @@ export default {
         return this.smartview.name
       },
       set (value) {
-        this.smartview.name = value
+        this.$set(this.smartview, 'name', value)
       }
     },
-    debounceUpdate () {
-      return debounce(this.postUpdate, 500)
+    hasLines () {
+      return this.smartview.smartviewLines.length > 0
+    },
+    isNew () {
+      return this.smartview.id === undefined
+    }
+  },
+  mounted () {
+    if (this.isNew) {
+      this.$refs.name.$refs.input.focus()
     }
   },
   methods: {
@@ -71,25 +88,41 @@ export default {
     },
     updateSmartviewLine (line) {
       this.smartview.smartviewLines[line.idx] = line.newVal
-      this.postUpdate()
     },
     addSmartViewLine () {
-      this.smartview.smartviewLines.push(Object.assign({}, lineConstructor))
-      this.postUpdate()
+      this.smartview.smartviewLines.push(lineConstructor)
+      this.$set(this.smartview, 'smartviewLines', this.smartview.smartviewLines)
     },
     removeSmartviewLine (idx) {
       this.smartview.smartviewLines.splice(idx, 1)
-      this.postUpdate()
     },
-    postUpdate () {
+    async create () {
+      this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
+      await this.$api.createSmartview(this.headers, { smartview })
+      this.isLoading = false
+    },
+    async update () {
+      this.isLoading = true
+      const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
+      await this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
         .then(() => {
           this.$store.commit(
             mutations.setModelResponse,
             { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
           )
         })
+      this.isLoading = false
+    },
+    handleUpdateCreate () {
+      if (this.isLoading) {
+        return
+      }
+      if (this.isNew) {
+        this.create()
+      } else {
+        this.update()
+      }
     }
   }
 }

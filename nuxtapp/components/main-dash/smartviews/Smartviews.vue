@@ -9,8 +9,8 @@
       @click="selectSmartview(smartview)"
     >
       <div class="flex items-center space-x-2">
-        <PenIcon class="h-3 w-3" @click.prevent="showEdit(smartview)" />
-        <span class="name">{{ smartview.name }}</span>
+        <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
+        <span class="font-medium text-gray-900">{{ smartview.name }}</span>
       </div>
       <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
     </div>
@@ -89,13 +89,5 @@ export default {
 
 .smartview.selected span:hover {
   @apply text-white;
-}
-
-.smartview.name {
-  @apply font-medium text-gray-900;
-}
-
-.smartview.name:hover {
-  @apply bg-gray-400 text-gray-100;
 }
 </style>
