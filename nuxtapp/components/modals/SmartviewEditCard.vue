@@ -24,13 +24,17 @@
       </div>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-      <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm" @click="handleUpdateCreate">
+      <button :disabled="!smartviewIsValid" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm" :class="!smartviewIsValid ? 'cursor-not-allowed' : 'cursor-pointer'" @click="handleUpdateCreate">
         <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed" />
         <span v-else-if="isNew" class="capitalize">Create</span>
         <span v-else class="capitalize">Save</span>
       </button>
       <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="emitHide">
         Cancel
+      </button>
+      <div class="flex-grow" />
+      <button type="button" class="w-full inline-flex justify-center justify-self-start rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" @click="handleDelete">
+        <span class="capitalize">{{ smartview.archived ? 'Unarchive' : 'Archive' }}</span>
       </button>
     </div>
   </div>
@@ -75,6 +79,18 @@ export default {
     },
     isNew () {
       return this.smartview.id === undefined
+    },
+    smartviewIsValid () {
+      console.log(this.smartview.name !== '', this.smartviewLinesValid)
+      return this.smartview.name !== '' && this.smartviewLinesValid
+    },
+    smartviewLinesValid () {
+      console.log(this.smartview.smartviewLines.every((line) => {
+        return line.fieldName !== '' && line.operator !== '' && line.searchValue !== ''
+      }))
+      return this.smartview.smartviewLines.every((line) => {
+        return line.fieldName !== '' && line.operator !== '' && line.searchValue !== ''
+      })
     }
   },
   mounted () {
@@ -88,34 +104,36 @@ export default {
     },
     updateSmartviewLine (line) {
       this.smartview.smartviewLines[line.idx] = line.newVal
+      this.updateSmartview()
     },
     addSmartViewLine () {
       this.smartview.smartviewLines.push(lineConstructor)
-      this.$set(this.smartview, 'smartviewLines', this.smartview.smartviewLines)
+      this.updateSmartview()
     },
     removeSmartviewLine (idx) {
       this.smartview.smartviewLines.splice(idx, 1)
+      this.updateSmartview()
     },
-    async create () {
+    create () {
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      await this.$api.createSmartview(this.headers, { smartview })
-      this.isLoading = false
-    },
-    async update () {
-      this.isLoading = true
-      const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      await this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
+      this.$api.createSmartview(this.headers, { smartview })
         .then(() => {
-          this.$store.commit(
-            mutations.setModelResponse,
-            { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
-          )
+          this.isLoading = false
+          this.emitHide()
         })
-      this.isLoading = false
+    },
+    update () {
+      this.isLoading = true
+      const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
+      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
+        .then(() => {
+          this.isLoading = false
+          this.emitHide()
+        })
     },
     handleUpdateCreate () {
-      if (this.isLoading) {
+      if (this.isLoading || !this.smartviewIsValid) {
         return
       }
       if (this.isNew) {
@@ -123,6 +141,20 @@ export default {
       } else {
         this.update()
       }
+    },
+    handleDelete () {
+      this.smartview.archived = !this.smartview.archived
+      const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
+      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
+        .then(() => {
+          this.emitHide()
+        })
+    },
+    updateSmartview () {
+      this.$store.commit(
+        mutations.setModelResponse,
+        { model: models.modals, data: { smartview: { showing: true, data: this.smartview } } }
+      )
     }
   }
 }
