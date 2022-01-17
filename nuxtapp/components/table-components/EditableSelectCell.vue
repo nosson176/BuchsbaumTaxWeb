@@ -1,17 +1,14 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
-      <button
+      <input
         ref="button"
-        type="button"
+        v-model="inputValue"
+        type="text"
         tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
       >
-        <span class="block truncate mr-3">
-          {{ shownValue }}
-        </span>
-      </button>
       <ul
         v-if="showOptions && isEditable"
         ref="select"
@@ -24,7 +21,7 @@
         @blur="onBlur"
       >
         <li
-          v-for="(option, idx) in sortedOptions"
+          v-for="(option, idx) in filteredOptions"
           :id="idx"
           :key="idx"
           ref="option"
@@ -46,7 +43,7 @@
         </li>
       </ul>
     </div>
-    <span v-else class="cursor-pointer m-px" :class="computedValue ? '' : 'text-gray-400 italic'">
+    <span v-else class="cursor-pointer m-px" :class="computedValue[0] ? '' : 'text-gray-400 italic'">
       {{ shownValue }}
     </span>
   </div>
@@ -82,7 +79,8 @@ export default {
       showOptions: false,
       shiftActive: false,
       hoverIndex: 0,
-      mouseMode: false
+      mouseMode: false,
+      filterOptionsValue: ''
     }
   },
   computed: {
@@ -98,6 +96,14 @@ export default {
       },
       set (newVal) {
         this.$emit(events.input, newVal)
+      }
+    },
+    inputValue: {
+      get () {
+        return this.showOptions ? this.filterOptionsValue : this.shownValue
+      },
+      set (value) {
+        this.filterOptionsValue = value
       }
     },
     multiple () {
@@ -120,6 +126,11 @@ export default {
         }
         return 0
       })
+    },
+    filteredOptions () {
+      return this.sortedOptions.filter((option) => {
+        return option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+      })
     }
   },
   watch: {
@@ -129,7 +140,8 @@ export default {
       } else {
         this.showOptions = true
         await this.$nextTick(() => {
-          this.$refs.select.focus()
+          this.$refs.button.focus()
+          this.inputValue = ''
         })
       }
     }
