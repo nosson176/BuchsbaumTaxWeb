@@ -1,24 +1,21 @@
 <template>
   <div>
     <div class="mt-1 relative" @blur="onBlur">
-      <button
-        type="button"
-        class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-        aria-haspopup="listbox"
-        aria-expanded="true"
-        aria-labelledby="listbox-label"
-        @click="toggleShowOptions"
-      >
-        <span class="block truncate h-4">
-          {{ shownValue || computedValue }}
-        </span>
+      <div>
+        <input
+          ref="filter"
+          v-model="inputValue"
+          type="text"
+          class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          @click="toggleShowOptions"
+        >
         <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
           <!-- Heroicon name: solid/selector -->
           <svg class="h-3 w-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
         </span>
-      </button>
+      </div>
       <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <ul
           v-if="showOptions"
@@ -29,7 +26,7 @@
           aria-activedescendant="listbox-option-3"
         >
           <li
-            v-for="option in options"
+            v-for="option in filteredOptions"
             id="listbox-option-0"
             :key="option.id"
             class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
@@ -72,7 +69,8 @@ export default {
   },
   data () {
     return {
-      showOptions: false
+      showOptions: false,
+      filterOptionsValue: ''
     }
   },
   computed: {
@@ -82,6 +80,27 @@ export default {
       },
       set (value) {
         this.$emit(events.input, value)
+      }
+    },
+    inputValue: {
+      get () {
+        return this.showOptions ? this.filterOptionsValue : this.shownValue
+      },
+      set (value) {
+        this.filterOptionsValue = value
+      }
+    },
+    filteredOptions () {
+      return this.options.filter((option) => {
+        return option.name.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+      })
+    }
+  },
+  watch: {
+    showOptions (value) {
+      if (value) {
+        this.$refs.filter.focus()
+        this.inputValue = ''
       }
     }
   },
