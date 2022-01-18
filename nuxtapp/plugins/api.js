@@ -134,7 +134,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
     $axios.put(`/fees/${feeId}`, fee, { headers })
-      .then(() => $toast.success('Fee updated successfully'))
+      .catch(() => $toast.error('Error updating fee'))
       .finally(() => getClientData(headers, clientId))
 
   const updateFiling = (headers, { clientId, filingId }, filing) =>
