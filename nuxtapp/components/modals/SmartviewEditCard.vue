@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-white px-4 pt-5 pb-4 overflow-visible z-10 sm:p-6 sm:pb-4">
+    <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-80 sm:p-6 sm:pb-4">
       <div class="sm:flex sm:items-start">
         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
           <PenIcon class="text-indigo-600 h-6 w-6" />
@@ -10,7 +10,7 @@
             <Input id="modal-title" ref="name" v-model="name" class="text-lg leading-6 font-medium text-gray-900" />
             <AddRowButton @click="addSmartViewLine" />
           </div>
-          <div v-if="hasLines" class="mt-2 border border-gray-200">
+          <div v-if="hasLines" class="mt-4 shadow">
             <SmartviewLine
               v-for="(line, idx) in smartview.smartviewLines"
               :key="idx"

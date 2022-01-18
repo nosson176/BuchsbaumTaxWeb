@@ -44,7 +44,7 @@ export default {
     },
     groupNum: {
       get () {
-        return this.computedLine.groupNum
+        return this.computedLine.groupNum || ''
       },
       set (newVal) {
         this.computedLine = Object.assign({}, this.computedLine, { groupNum: newVal })
