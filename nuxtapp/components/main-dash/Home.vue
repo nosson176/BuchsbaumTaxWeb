@@ -30,6 +30,9 @@
       <Modal :showing="showDeleteModal">
         <DeleteCard @hide="closeDeleteModal" />
       </Modal>
+      <Modal :showing="showSmartviewEditModal" @hide="closeSmartviewEditModal">
+        <SmartviewEditCard @hide="closeSmartviewEditModal" />
+      </Modal>
     </div>
   </div>
 </template>
@@ -45,8 +48,6 @@ export default {
       currentFeesChecklistsTab: tabs.fees,
       currentLogsIncomeFbarTab: tabs.logs,
       currentPersonalsTab: tabs.tax_personals,
-      deleteId: '',
-      deleteType: '',
       showArchivedClients: false,
       showArchivedFeesChecklists: false,
       showArchivedLogsIncomeFbar: false,
@@ -57,11 +58,10 @@ export default {
   computed: {
     ...mapState([models.modals]),
     showDeleteModal () {
-      let showModal = false
-      if (this.modals.delete) {
-        showModal = this.modals.delete.showing
-      }
-      return showModal
+      return this.modals.delete?.showing
+    },
+    showSmartviewEditModal () {
+      return this.modals.smartview?.showing
     },
     keymap () {
       return {
@@ -101,13 +101,11 @@ export default {
     switchFeesChecklistsTab (tab) {
       this.currentFeesChecklistsTab = tab
     },
-    openDeleteModal ({ id, type }) {
-      this.showDeleteModal = true
-      this.deleteId = id
-      this.deleteType = type
-    },
     closeDeleteModal () {
       this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { delete: { showing: false, data: {} } } })
+    },
+    closeSmartviewEditModal () {
+      this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { smartview: { showing: false, data: {} } } })
     },
     onCmdPress () {
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })

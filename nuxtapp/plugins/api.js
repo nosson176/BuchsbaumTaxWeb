@@ -93,6 +93,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const createClient = (headers, { client }) => $axios.post('/clients', client, { headers })
     .catch(() => $toast.error('Error creating client'))
 
+  const createSmartview = (headers, { smartview }) => $axios.post('/smartviews', smartview, { headers })
+    .catch(() => $toast.error('Error creating smartview'))
+    .finally(() => getSmartviews(headers))
+
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
     $axios.put(`/clients/${clientId}`, client, { headers })
@@ -144,6 +148,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating checklist'))
       .finally(() => getClientData(headers, clientId))
 
+  const updateSmartview = (headers, { smartviewId }, smartview) =>
+    $axios.put(`/smartviews/${smartviewId}`, smartview, { headers })
+      .catch(() => $toast.error('Error updating smartview'))
+      .finally(() => getSmartviews(headers))
+
   const api = {
     createChecklist,
     createClient,
@@ -153,6 +162,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createFiling,
     createIncome,
     createLog,
+    createSmartview,
     createTaxPersonal,
     createTaxYear,
     getAllClientFees,
@@ -174,6 +184,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateFiling,
     updateIncome,
     updateLog,
+    updateSmartview,
     updateTaxPersonal,
     updateTaxYear
   }
