@@ -149,7 +149,9 @@ export default {
     },
     onEnterPress () {
       this.keyboardMode = true
-      this.setSelectOption(this.filteredOptions[this.selectedIdx] || this.computedValue)
+      if (this.hoverIndex > -1) {
+        this.setSelectOption(this.filteredOptions[this.selectedIdx] || this.computedValue)
+      }
       this.selectedIdx = -1
       this.keyboardMode = false
     },

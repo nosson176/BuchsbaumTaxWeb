@@ -8,6 +8,7 @@
         tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
+        @keyup="onInputKeyup($event.key)"
       >
       <ul
         v-if="showOptions && isEditable"
@@ -78,7 +79,7 @@ export default {
     return {
       showOptions: false,
       shiftActive: false,
-      hoverIndex: 0,
+      hoverIndex: -1,
       mouseMode: false,
       filterOptionsValue: ''
     }
@@ -146,6 +147,18 @@ export default {
       }
     }
   },
+  mounted () {
+    document.addEventListener('keydown', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftPress()
+      }
+    })
+    document.addEventListener('keyup', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftUp()
+      }
+    })
+  },
   methods: {
     emitChange (value) {
       if (this.shiftActive) {
@@ -179,29 +192,39 @@ export default {
     onButtonClick () {
       this.showOptions = !this.showOptions
     },
-    onKeyPress (evt) {
-      if (evt.key === 'Shift') {
-        this.shiftActive = true
-      } else if (evt.key === 'Enter') {
-        this.emitChange(this.options[this.hoverIndex].value)
-      } else if (evt.key === 'ArrowDown') {
-        if (this.hoverIndex < this.options.length - 1) {
-          this.hoverIndex++
-          this.scrollSelectedIntoView()
-        }
-      } else if (evt.key === 'ArrowUp') {
-        if (this.hoverIndex > 0) {
-          this.hoverIndex--
-          this.scrollSelectedIntoView()
-        }
+    onArrowDownPress () {
+      if (this.hoverIndex < this.filteredOptions.length - 1) {
+        this.hoverIndex++
+        this.scrollSelectedIntoView()
       }
     },
-    onKeyUp (evt) {
-      if (evt.key === 'Shift') {
-        this.shiftActive = false
-        this.computedValue.unshift(MULT)
-        this.computedValue = this.computedValue.join('\u000B')
-        this.onBlur()
+    onArrowUpPress () {
+      if (this.hoverIndex > 0) {
+        this.hoverIndex--
+        this.scrollSelectedIntoView()
+      }
+    },
+    onEnterPress () {
+      if (this.hoverIndex > -1) {
+        this.emitChange(this.filteredOptions[this.hoverIndex].value)
+      }
+    },
+    onShiftPress () {
+      this.shiftActive = true
+    },
+    onShiftUp () {
+      this.shiftActive = false
+      this.computedValue.unshift(MULT)
+      this.computedValue = this.computedValue.join('\u000B')
+      this.onBlur()
+    },
+    onInputKeyup (key) {
+      if (key === 'ArrowDown') {
+        this.onArrowDownPress()
+      } else if (key === 'ArrowUp') {
+        this.onArrowUpPress()
+      } else if (key === 'Enter') {
+        this.onEnterPress()
       }
     },
     onMouseOver (idx) {
