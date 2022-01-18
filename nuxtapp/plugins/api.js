@@ -1,7 +1,7 @@
 import { getCookieByKey, setCookieByKey } from '~/shared/cookie-utilities'
 import { COOKIE_KEY_SESSION_TOKEN, error, models, mutations, routes } from '~/shared/constants'
 
-export default ({ $axios, store, $toast, $router }, inject) => {
+export default ({ $axios, store, $toast, redirect }, inject) => {
   const getHeaders = () => {
     const headers = {}
     const token = getCookieByKey(COOKIE_KEY_SESSION_TOKEN)
@@ -35,7 +35,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
         $toast.error('Error loading clients')
         if (e.message === error.axios_401) {
           signout()
-          $router.replace(routes.login)
+          redirect({ name: routes.login })
         }
       })
   }
