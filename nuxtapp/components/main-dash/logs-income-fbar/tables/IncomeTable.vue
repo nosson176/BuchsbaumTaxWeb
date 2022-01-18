@@ -5,7 +5,7 @@
         <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
           <div>
-            <HeaderSelectOption v-model="includeAll" :options="includeOptions" @input="handleUpdateIncludeAll" />
+            <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
           </div>
         </div>
         <div class="table-header xs flex flex-col">
