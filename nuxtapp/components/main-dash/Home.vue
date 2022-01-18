@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-screen bg-gray-100">
+  <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
     <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
@@ -30,6 +30,9 @@
       <Modal :showing="showDeleteModal">
         <DeleteCard @hide="closeDeleteModal" />
       </Modal>
+      <Modal :showing="showSmartviewEditModal" @hide="closeSmartviewEditModal">
+        <SmartviewEditCard @hide="closeSmartviewEditModal" />
+      </Modal>
     </div>
   </div>
 </template>
@@ -45,8 +48,6 @@ export default {
       currentFeesChecklistsTab: tabs.fees,
       currentLogsIncomeFbarTab: tabs.logs,
       currentPersonalsTab: tabs.tax_personals,
-      deleteId: '',
-      deleteType: '',
       showArchivedClients: false,
       showArchivedFeesChecklists: false,
       showArchivedLogsIncomeFbar: false,
@@ -57,11 +58,22 @@ export default {
   computed: {
     ...mapState([models.modals]),
     showDeleteModal () {
-      let showModal = false
-      if (this.modals.delete) {
-        showModal = this.modals.delete.showing
+      return this.modals.delete?.showing
+    },
+    showSmartviewEditModal () {
+      return this.modals.smartview?.showing
+    },
+    keymap () {
+      return {
+        command: {
+          keydown: this.onCmdPress,
+          keyup: this.onCmdUp
+        },
+        windows: {
+          keydown: this.onCmdPress,
+          keyup: this.onCmdUp
+        }
       }
-      return showModal
     }
   },
   methods: {
@@ -89,13 +101,17 @@ export default {
     switchFeesChecklistsTab (tab) {
       this.currentFeesChecklistsTab = tab
     },
-    openDeleteModal ({ id, type }) {
-      this.showDeleteModal = true
-      this.deleteId = id
-      this.deleteType = type
-    },
     closeDeleteModal () {
       this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { delete: { showing: false, data: {} } } })
+    },
+    closeSmartviewEditModal () {
+      this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { smartview: { showing: false, data: {} } } })
+    },
+    onCmdPress () {
+      this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
+    },
+    onCmdUp () {
+      this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
     }
   }
 }

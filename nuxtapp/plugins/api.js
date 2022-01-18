@@ -21,14 +21,24 @@ export default ({ $axios, store, $toast, $router }, inject) => {
   }
 
   // GET
-  const getClientList = (headers, searchParam = '') => $axios.get(searchParam ? `clients/?q=${searchParam}` : 'clients/', { headers, loading: models.clients, store: models.clients })
-    .catch((e) => {
-      $toast.error('Error loading clients')
-      if (e.message === error.axios_401) {
-        signout()
-        $router.replace(routes.login)
-      }
-    })
+  const getClientList = (headers, searchParam = '', searchOption = '') => {
+    let endpoint = 'clients/'
+    if (searchParam && searchOption) {
+      endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
+    } else if (searchParam) {
+      endpoint = endpoint.concat(`?q=${searchParam}`)
+    } else if (searchOption) {
+      endpoint = endpoint.concat(`?field=${searchOption}`)
+    }
+    return $axios.get(endpoint, { headers, loading: models.clients, store: models.clients })
+      .catch((e) => {
+        $toast.error('Error loading clients')
+        if (e.message === error.axios_401) {
+          signout()
+          $router.replace(routes.login)
+        }
+      })
+  }
 
   const getClientData = (headers, id) => $axios.get(`/clients/${id}/data`, { headers, loading: models.selectedClient, store: models.selectedClient })
     .then(() => getClientsHistory(headers))
@@ -65,7 +75,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
   const createIncome = (headers, { income }) => $axios.post('/incomes', income, { headers })
     .catch(() => $toast.error('Error creating income'))
 
-  const createFbar = (headers, { fbar }) => $axios.post('/fbar', fbar, { headers })
+  const createFbar = (headers, { fbar }) => $axios.post('/fbars', fbar, { headers })
     .catch(() => $toast.error('Error creating fbar'))
 
   const createFee = (headers, { fee }) => $axios.post('/fees', fee, { headers })
@@ -82,6 +92,10 @@ export default ({ $axios, store, $toast, $router }, inject) => {
 
   const createClient = (headers, { client }) => $axios.post('/clients', client, { headers })
     .catch(() => $toast.error('Error creating client'))
+
+  const createSmartview = (headers, { smartview }) => $axios.post('/smartviews', smartview, { headers })
+    .catch(() => $toast.error('Error creating smartview'))
+    .finally(() => getSmartviews(headers))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
@@ -119,12 +133,12 @@ export default ({ $axios, store, $toast, $router }, inject) => {
   }
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
-    $axios.put(`/clients/fees/${feeId}`, fee, { headers })
+    $axios.put(`/fees/${feeId}`, fee, { headers })
       .then(() => $toast.success('Fee updated successfully'))
       .finally(() => getClientData(headers, clientId))
 
   const updateFiling = (headers, { clientId, filingId }, filing) =>
-    $axios.put(`/clients/filings/${filingId}`, filing, { headers })
+    $axios.put(`/filings/${filingId}`, filing, { headers })
       .catch(() => $toast.error('Error updating filing'))
       .finally(() => getClientData(headers, clientId))
 
@@ -134,9 +148,14 @@ export default ({ $axios, store, $toast, $router }, inject) => {
       .finally(() => getClientData(headers, clientId))
 
   const updateChecklist = (headers, { clientId, checklistId }, checklist) =>
-    $axios.put(`/clients/checklists/${checklistId}`, checklist, { headers })
+    $axios.put(`/checklists/${checklistId}`, checklist, { headers })
       .catch(() => $toast.error('Error updating checklist'))
       .finally(() => getClientData(headers, clientId))
+
+  const updateSmartview = (headers, { smartviewId }, smartview) =>
+    $axios.put(`/smartviews/${smartviewId}`, smartview, { headers })
+      .catch(() => $toast.error('Error updating smartview'))
+      .finally(() => getSmartviews(headers))
 
   const api = {
     createChecklist,
@@ -147,6 +166,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
     createFiling,
     createIncome,
     createLog,
+    createSmartview,
     createTaxPersonal,
     createTaxYear,
     getAllClientFees,
@@ -168,6 +188,7 @@ export default ({ $axios, store, $toast, $router }, inject) => {
     updateFiling,
     updateIncome,
     updateLog,
+    updateSmartview,
     updateTaxPersonal,
     updateTaxYear
   }

@@ -1,5 +1,5 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'" @keydown.prevent="onKeyPress" @keyup.prevent="onKeyUp">
+  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
       <button
         ref="button"
@@ -24,7 +24,7 @@
         @blur="onBlur"
       >
         <li
-          v-for="(option, idx) in options"
+          v-for="(option, idx) in sortedOptions"
           :id="idx"
           :key="idx"
           ref="option"
@@ -55,7 +55,7 @@
 <script>
 import { events } from '~/shared/constants'
 
-const MULT = 'MULT'
+const MULT = 'MULTI'
 
 export default {
   name: 'EditableSelectCell',
@@ -88,17 +88,13 @@ export default {
   computed: {
     computedValue: {
       get () {
-        if (this.multiple) {
-          let selected = []
-          if (this.splitOptions[0] === MULT) {
-            selected = this.splitOptions.slice(1)
-          } else {
-            selected = this.splitOptions
-          }
-          return selected
+        let selected = []
+        if (this.splitOptions[0] === MULT) {
+          selected = this.splitOptions.slice(1)
         } else {
-          return this.value
+          selected = this.splitOptions
         }
+        return selected
       },
       set (newVal) {
         this.$emit(events.input, newVal)
@@ -111,11 +107,19 @@ export default {
       return this.value.split('\u000B')
     },
     shownValue () {
-      if (this.multiple) {
-        return this.splitOptions[0]
-      } else {
-        return this.computedValue || this.placeholder
-      }
+      return this.splitOptions[0] || this.placeholder
+    },
+    sortedOptions () {
+      const optionsCopy = [...this.options]
+      return optionsCopy.sort((a, b) => {
+        if (this.isSelected(a) && !this.isSelected(b)) {
+          return -1
+        }
+        if (!this.isSelected(a) && this.isSelected(b)) {
+          return 1
+        }
+        return 0
+      })
     }
   },
   watch: {
@@ -133,18 +137,28 @@ export default {
   methods: {
     emitChange (value) {
       if (this.shiftActive) {
-        this.computedValue = this.computedValue.join('\u000B').concat('\u000B' + value)
+        const isSelected = this.computedValue.includes(value)
+        if (isSelected) {
+          this.removeValue(value)
+        } else {
+          this.addValue(value)
+        }
       } else {
         this.computedValue = value
+        this.onBlur()
       }
-      this.onBlur()
+    },
+    removeValue (value) {
+      const index = this.computedValue.indexOf(value)
+      if (index > -1) {
+        this.computedValue.splice(index, 1)
+      }
+    },
+    addValue (value) {
+      this.computedValue.push(value)
     },
     isSelected ({ value }) {
-      if (this.multiple) {
-        return this.computedValue.includes(value)
-      } else {
-        return this.computedValue === value
-      }
+      return this.computedValue.includes(value)
     },
     onBlur () {
       this.showOptions = false
@@ -173,6 +187,9 @@ export default {
     onKeyUp (evt) {
       if (evt.key === 'Shift') {
         this.shiftActive = false
+        this.computedValue.unshift(MULT)
+        this.computedValue = this.computedValue.join('\u000B')
+        this.onBlur()
       }
     },
     onMouseOver (idx) {

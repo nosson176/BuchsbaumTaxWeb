@@ -8,6 +8,7 @@
             <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
           </div>
         </div>
+        <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
@@ -73,8 +74,11 @@
         v-for="(fbar, idx) in displayedFbars"
         :key="fbar.id"
         :idx="idx"
-        :class="{'disabled': !fbar.include}"
+        :class="{'disabled': !fbar.include, 'selected': isSelected(fbar.id)}"
       >
+        <div class="table-col">
+          <ClickCell @click="toggleSelected(fbar)" />
+        </div>
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
           <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
@@ -127,6 +131,7 @@
         </div>
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
+        <div class="table-col w-6" />
         <div class="table-col xs" />
         <div class="table-col-primary xs" />
         <div class="table-col xs" />
@@ -191,11 +196,12 @@ export default {
       jobFilterValue: '',
       currencyFilterValue: '',
       descriptionFilterValue: '',
-      includeAll: ''
+      includeAll: '',
+      selectedItems: {}
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedFbars () {
       const fbars = this.shownFbars
         .filter(fbar => this.filterFbars(fbar))
@@ -346,14 +352,28 @@ export default {
     },
     includeOptions () {
       return includeOptions
+    },
+    isCmdPressed () {
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
+    },
+    selectedFbarIds () {
+      return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    },
+    isCopyingFbars () {
+      return this.isCmdPressed && this.selectedFbarIds.length > 0
     }
   },
   watch: {
     selectedClient: {
       handler () {
         Object.assign(this.$data, this.$options.data.apply(this))
-      }
+        this.initSelectedItems()
+      },
+      deep: true
     }
+  },
+  created () {
+    this.initSelectedItems()
   },
   methods: {
     toggleEditable (id, fbarId) {
@@ -395,18 +415,31 @@ export default {
       if (!this.selectedClient) {
         return
       }
-      const headers = this.$api.getHeaders()
-      const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId
+        clientId: this.selectedClient.id
       }
-      const fbar = Object.assign({}, defaultValues)
-      this.$api.createFbar(headers, { fbar })
-        .then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newFbarId = data.id
-          this.toggleEditable(`0-${columns[0]}`, data.id)
+      if (this.isCopyingFbars) {
+        this.selectedFbarIds.forEach(async (fbarId, idx) => {
+          const fbar = this.displayedFbars.find(fbar => fbar.id === Number(fbarId))
+          const newFbar = Object.assign({}, fbar)
+          await this.$api.createFbar(this.headers, { fbar: newFbar })
+            .then(async (data) => {
+              if (this.selectedFbarIds.length === idx + 1) {
+                await this.$api.getClientData(this.headers, this.selectedClient.id)
+                this.newFbarId = data.id
+                this.toggleEditable(`0-${columns[0]}`, data.id)
+              }
+            })
         })
+      } else {
+        const fbar = Object.assign({}, defaultValues)
+        this.$api.createFbar(this.headers, { fbar })
+          .then(async (data) => {
+            await this.$api.getClientData(this.headers, this.selectedClient.id)
+            this.newFbarId = data.id
+            this.toggleEditable(`0-${columns[0]}`, data.id)
+          })
+      }
     },
     onKeyDown () {
       const currentCell = this.editableId
@@ -430,11 +463,27 @@ export default {
       returnValue = this.filterByCurrency ? fbar.currency === this.currencyFilterValue && returnValue : returnValue
       returnValue = this.filterByDescription ? fbar.description === this.descriptionFilterValue && returnValue : returnValue
       return returnValue
+    },
+    toggleSelected (fbar) {
+      this.selectedItems[fbar.id] = !this.selectedItems[fbar.id]
+      this.selectedItems = Object.assign({}, this.selectedItems)
+    },
+    isSelected (fbarId) {
+      return this.selectedItems[fbarId]
+    },
+    initSelectedItems () {
+      if (this.fbarBreakdowns) {
+        this.fbarBreakdowns.forEach((fbar) => {
+          this.selectedItems = Object.assign(this.selectedItems, { [fbar.id]: false })
+        })
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-
+.selected {
+  @apply bg-indigo-200;
+}
 </style>

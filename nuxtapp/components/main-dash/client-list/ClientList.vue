@@ -4,9 +4,9 @@
       <AddRowButton @click="onAddRowClick" />
     </div>
     <div
-      v-for="client in displayedClients"
+      v-for="(client, idx) in displayedClients"
       :ref="client.id"
-      :key="client.id"
+      :key="idx"
       class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
@@ -39,7 +39,7 @@ export default {
     filteredClients () {
       return Object.fromEntries(Object.entries(this.clients)
         .filter(([key, client]) => this.showArchived === client.archived)
-        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds.includes(client.id) : true)
+        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true)
       )
     },
     hasSelectedSmartview () {

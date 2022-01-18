@@ -1,24 +1,32 @@
 <template>
-  <div class="flex flex-col bg-blue-200 p-0.5">
+  <div class="flex flex-col bg-blue-200 px-0.5 py-1">
     <ViewArchivedHeader @change="emitChange" />
     <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
+    <HeaderSelectOption v-model="searchOptionValue" :shown-value="seachOptionName" :options="searchOptions" @input="debounceSearch" />
   </div>
 </template>
 
 <script>
 import { debounce } from 'lodash'
-import { events } from '~/shared/constants'
+import { events, searchOptions } from '~/shared/constants'
 
 export default {
   name: 'ClientListHeader',
   data () {
     return {
-      searchInput: ''
+      searchInput: '',
+      searchOptionValue: ''
     }
   },
   computed: {
     debounceSearch () {
       return debounce(this.searchClients, 1000)
+    },
+    searchOptions () {
+      return searchOptions
+    },
+    seachOptionName () {
+      return this.searchOptions.find(option => option.value === this.searchOptionValue)?.name
     }
   },
   methods: {
@@ -27,7 +35,7 @@ export default {
     },
     searchClients () {
       const headers = this.$api.getHeaders()
-      this.$api.getClientList(headers, this.searchInput)
+      this.$api.getClientList(headers, this.searchInput, this.searchOptionValue)
     },
     clearSearch () {
       this.searchInput = ''
