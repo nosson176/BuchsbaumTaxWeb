@@ -2,8 +2,9 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header">
+        <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
+          <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
         </div>
         <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
@@ -167,6 +168,12 @@ const docOptions = [
   { value: 'NEEDS' }
 ]
 
+const includeOptions = [
+  { value: '', name: '' },
+  { value: 'select', name: 'Select All' },
+  { value: 'deselect', name: 'Deselect All' }
+]
+
 export default {
   name: 'FbarTable',
   props: {
@@ -187,6 +194,7 @@ export default {
       jobFilterValue: '',
       currencyFilterValue: '',
       descriptionFilterValue: '',
+      includeAll: '',
       selectedItems: {}
     }
   },
@@ -265,7 +273,12 @@ export default {
     amountUSDTotal () {
       return `$${formatAsNumber(Math.round(this.displayedFbars
         .filter(fbar => fbar.include)
-        .reduce((acc, fbar) => fbar.frequency ? (acc + fbar.amountUSD * fbar.frequency) : (acc + fbar.amountUSD), 0)
+        .reduce((acc, fbar) => {
+          if (!fbar.amountUSD) {
+            return acc
+          }
+          return fbar.frequency ? (acc + fbar.amountUSD * fbar.frequency) : (acc + fbar.amountUSD)
+        }, 0)
       ))}`
     },
     filteredYearOptions () {
@@ -335,6 +348,9 @@ export default {
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     },
+    includeOptions () {
+      return includeOptions
+    },
     isCmdPressed () {
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
@@ -370,6 +386,16 @@ export default {
     handleUpdate () {
       const fbar = this.displayedFbars.find(fbar => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+    },
+    handleUpdateIncludeAll () {
+      this.displayedFbars.forEach((fbar) => {
+        if (this.includeAll === 'select') {
+          fbar.include = true
+        } else if (this.includeAll === 'deselect') {
+          fbar.include = false
+        }
+      })
+      this.$api.updateFbar(this.headers, { clientId: this.clientId }, this.displayedFbars)
     },
     onDeleteClick (fbarId) {
       if (this.showArchived) {

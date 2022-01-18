@@ -2,8 +2,9 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header">
+        <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
+          <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
         </div>
         <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
@@ -174,6 +175,12 @@ const docOptions = [
   { value: 'NEEDS' }
 ]
 
+const includeOptions = [
+  { value: '', name: '' },
+  { value: 'select', name: 'Select All' },
+  { value: 'deselect', name: 'Deselect All' }
+]
+
 export default {
   name: 'IncomeTable',
   props: {
@@ -194,6 +201,7 @@ export default {
       jobFilterValue: '',
       currencyFilterValue: '',
       descriptionFilterValue: '',
+      includeAll: '',
       selectedItems: {}
     }
   },
@@ -272,7 +280,12 @@ export default {
     amountUSDTotal () {
       return `$${formatAsNumber(Math.round(this.displayedIncomes
         .filter(income => income.include)
-        .reduce((acc, income) => income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD), 0)
+        .reduce((acc, income) => {
+          if (!income.amountUSD) {
+            return acc
+          }
+          return income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD)
+        }, 0)
       ))}`
     },
     filteredYearsOptions () {
@@ -337,6 +350,9 @@ export default {
     isClientSelected () {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     },
+    includeOptions () {
+      return includeOptions
+    },
     isCmdPressed () {
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
@@ -372,6 +388,16 @@ export default {
     handleUpdate () {
       const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
+    },
+    handleUpdateIncludeAll () {
+      this.displayedIncomes.forEach((income) => {
+        if (this.includeAll === 'select') {
+          income.include = true
+        } else if (this.includeAll === 'deselect') {
+          income.include = false
+        }
+      })
+      this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
     },
     onDeleteClick (incomeId) {
       if (this.showArchived) {

@@ -1,8 +1,25 @@
 <template>
   <div>
     <div class="mt-1 relative">
-      <div>
+      <div v-if="menu">
+        <button
+          id="menu-button"
+          type="button"
+          class="bg-gray-100 ml-1 rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+          aria-expanded="true"
+          aria-haspopup="true"
+          @click="toggleShowOptions"
+        >
+          <span class="sr-only">Open options</span>
+          <!-- Heroicon name: solid/dots-vertical -->
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+          </svg>
+        </button>
+      </div>
+      <div v-else>
         <input
+
           ref="filter"
           v-model="inputValue"
           type="text"
@@ -18,40 +35,40 @@
           </svg>
         </span>
       </div>
-      <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
-        <ul
-          v-if="showOptions"
-          class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
-          tabindex="-1"
-          :class="short ? 'max-h-20' : 'max-h-60'"
-          role="listbox"
-          aria-labelledby="listbox-label"
-          aria-activedescendant="listbox-option-3"
-          @blur="onBlur"
-        >
-          <li
-            v-for="(option, idx) in filteredOptions"
-            id="listbox-option-0"
-            ref="li"
-            :key="option.id"
-            :class="selectedItem(idx)"
-            class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
-            role="option"
-            @click="setSelectOption(option)"
-          >
-            <span :class="[isSelected(option) ? 'font-semibold' : 'font-normal','block truncate']">
-              {{ option.name || option.value }}
-            </span>
-            <span v-if="isSelected(option)" class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4 hover:text-white">
-              <!-- Heroicon name: solid/check -->
-              <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            </span>
-          </li>
-        </ul>
-      </transition>
     </div>
+    <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <ul
+        v-if="showOptions"
+        class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
+        tabindex="-1"
+        :class="short ? 'max-h-20' : 'max-h-60'"
+        role="listbox"
+        aria-labelledby="listbox-label"
+        aria-activedescendant="listbox-option-3"
+        @blur="onBlur"
+      >
+        <li
+          v-for="(option, idx) in filteredOptions"
+          id="listbox-option-0"
+          ref="li"
+          :key="option.id"
+          :class="selectedItem(idx)"
+          class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
+          role="option"
+          @click="setSelectOption(option)"
+        >
+          <span :class="[isSelected(option) ? 'font-semibold' : 'font-normal','block truncate']">
+            {{ option.name || option.value }}
+          </span>
+          <span v-if="isSelected(option)" class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4 hover:text-white">
+            <!-- Heroicon name: solid/check -->
+            <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          </span>
+        </li>
+      </ul>
+    </transition>
   </div>
 </template>
 
@@ -67,6 +84,10 @@ export default {
     options: {
       type: Array,
       default: () => []
+    },
+    menu: {
+      type: Boolean,
+      default: false
     },
     short: {
       type: Boolean,
@@ -119,9 +140,12 @@ export default {
   },
   methods: {
     onInputClick () {
+      this.toggleShowOptions()
+      this.$refs.filter?.focus()
+    },
+    toggleShowOptions () {
       this.showOptions = !this.showOptions
-      this.selectedIdx = -1
-      this.$refs.filter.focus()
+      this.selectedIdx = this.showOptions ? 0 : -1
     },
     setSelectOption (option) {
       this.filterOptionsValue = option.value
@@ -132,7 +156,9 @@ export default {
       this.showOptions = false
     },
     isSelected (option) {
-      return option.value === this.computedValue
+      if (option.value) {
+        return option.value === this.computedValue
+      }
     },
     onArrowDownPress () {
       this.keyboardMode = true

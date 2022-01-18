@@ -118,23 +118,27 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating contact'))
       .finally(() => getClientData(headers, clientId))
 
-  const updateIncome = (headers, { clientId, incomeId }, income) =>
-    $axios.put(`/incomes/${incomeId}`, income, { headers })
+  const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
+    const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
+    $axios.put(endpoint, income, { headers })
       .catch(() => $toast.error('Error updating income'))
       .finally(() => getClientData(headers, clientId))
+  }
 
-  const updateFbar = (headers, { clientId, fbarId }, fbar) =>
-    $axios.put(`/fbars/${fbarId}`, fbar, { headers })
+  const updateFbar = (headers, { clientId, fbarId = '' }, fbar) => {
+    const endpoint = fbarId ? `/fbars/${fbarId}` : '/fbars'
+    return $axios.put(endpoint, fbar, { headers })
       .catch(() => $toast.error('Error updating fbar'))
       .finally(() => getClientData(headers, clientId))
+  }
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
-    $axios.put(`/clients/fees/${feeId}`, fee, { headers })
-      .then(() => $toast.success('Fee updated successfully'))
+    $axios.put(`/fees/${feeId}`, fee, { headers })
+      .catch(() => $toast.error('Error updating fee'))
       .finally(() => getClientData(headers, clientId))
 
   const updateFiling = (headers, { clientId, filingId }, filing) =>
-    $axios.put(`/clients/filings/${filingId}`, filing, { headers })
+    $axios.put(`/filings/${filingId}`, filing, { headers })
       .catch(() => $toast.error('Error updating filing'))
       .finally(() => getClientData(headers, clientId))
 
@@ -144,7 +148,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getClientData(headers, clientId))
 
   const updateChecklist = (headers, { clientId, checklistId }, checklist) =>
-    $axios.put(`/clients/checklists/${checklistId}`, checklist, { headers })
+    $axios.put(`/checklists/${checklistId}`, checklist, { headers })
       .catch(() => $toast.error('Error updating checklist'))
       .finally(() => getClientData(headers, clientId))
 
