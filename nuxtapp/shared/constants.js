@@ -160,3 +160,12 @@ export const searchOptions = Object.freeze([
   { name: 'TAX_YEAR::delivery', value: 'filings::delivery_contact' },
   { name: 'TAX_YEAR::tax_state', value: 'filings::state' }
 ])
+
+export const operators = Object.freeze([
+  { name: '=', value: '=' },
+  { name: '!=', value: '!=' },
+  { name: '>', value: '>' },
+  { name: '<', value: '<' },
+  { name: '>=', value: '>=' },
+  { name: '<=', value: '<=' }
+])
