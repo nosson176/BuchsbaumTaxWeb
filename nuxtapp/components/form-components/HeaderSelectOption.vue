@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mt-1 relative" @blur="onBlur">
+    <div class="relative" @blur="onBlur">
       <button
         type="button"
         class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -22,8 +22,9 @@
       <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <ul
           v-if="showOptions"
-          class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg max-h-60 rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
+          class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
           tabindex="-1"
+          :class="short ? 'max-h-20' : 'max-h-60'"
           role="listbox"
           aria-labelledby="listbox-label"
           aria-activedescendant="listbox-option-3"
@@ -65,9 +66,9 @@ export default {
       type: Array,
       default: () => []
     },
-    shownValue: {
-      type: String,
-      default: ''
+    short: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -83,6 +84,9 @@ export default {
       set (value) {
         this.$emit(events.input, value)
       }
+    },
+    shownValue () {
+      return this.options.find(option => option.value === this.value)?.name
     }
   },
   methods: {

@@ -4,11 +4,14 @@
       v-for="smartview in displayedSmartviews"
       :ref="smartview.id"
       :key="smartview.id"
-      class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between"
+      class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center hover:text-white hover:bg-gray-400"
       :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
       @click="selectSmartview(smartview)"
     >
-      <span class="font-medium text-gray-900">{{ smartview.name }}</span>
+      <div class="flex items-center space-x-2">
+        <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
+        <span class="font-medium text-gray-900">{{ smartview.name }}</span>
+      </div>
       <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
     </div>
   </div>
@@ -52,6 +55,12 @@ export default {
         this.selectedSmartviewId = smartview.id
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
       }
+    },
+    showEdit (smartview) {
+      this.$store.commit(
+        mutations.setModelResponse,
+        { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
+      )
     }
   }
 }
@@ -62,11 +71,23 @@ export default {
   @apply bg-white;
 }
 
+.smartview:nth-child(even):hover {
+  @apply bg-gray-400;
+}
+
 .smartview.selected {
   @apply bg-gray-700 text-gray-100;
 }
 
 .smartview.selected span {
+  @apply text-white;
+}
+
+.smartview.selected:hover {
+  @apply bg-gray-400 text-gray-100;
+}
+
+.smartview.selected span:hover {
   @apply text-white;
 }
 </style>

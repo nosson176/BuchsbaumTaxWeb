@@ -39,7 +39,7 @@ export default {
     filteredClients () {
       return Object.fromEntries(Object.entries(this.clients)
         .filter(([key, client]) => this.showArchived === client.archived)
-        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds.includes(client.id) : true)
+        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true)
       )
     },
     hasSelectedSmartview () {
