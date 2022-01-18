@@ -22,8 +22,9 @@
       <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <ul
           v-if="showOptions"
-          class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg max-h-60 rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
+          class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
           tabindex="-1"
+          :class="short ? 'max-h-20' : 'max-h-60'"
           role="listbox"
           aria-labelledby="listbox-label"
           aria-activedescendant="listbox-option-3"
@@ -64,6 +65,10 @@ export default {
     options: {
       type: Array,
       default: () => []
+    },
+    short: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

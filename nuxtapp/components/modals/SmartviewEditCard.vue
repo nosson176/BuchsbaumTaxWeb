@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-white px-4 pt-5 pb-4 overflow-auto sm:p-6 sm:pb-4">
+    <div class="bg-white px-4 pt-5 pb-4 overflow-visible z-10 sm:p-6 sm:pb-4">
       <div class="sm:flex sm:items-start">
         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
           <PenIcon class="text-indigo-600 h-6 w-6" />
@@ -81,13 +81,9 @@ export default {
       return this.smartview.id === undefined
     },
     smartviewIsValid () {
-      console.log(this.smartview.name !== '', this.smartviewLinesValid)
       return this.smartview.name !== '' && this.smartviewLinesValid
     },
     smartviewLinesValid () {
-      console.log(this.smartview.smartviewLines.every((line) => {
-        return line.fieldName !== '' && line.operator !== '' && line.searchValue !== ''
-      }))
       return this.smartview.smartviewLines.every((line) => {
         return line.fieldName !== '' && line.operator !== '' && line.searchValue !== ''
       })
