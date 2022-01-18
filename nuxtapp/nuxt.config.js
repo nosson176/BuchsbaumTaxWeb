@@ -40,7 +40,8 @@ export default {
     '@/plugins/axios.js',
     '@/plugins/api.js',
     '@/plugins/breakpoints-mixin.js',
-    '@/plugins/datePicker.client.js'
+    '@/plugins/datePicker.client.js',
+    '@/plugins/v-hotkey.client.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
