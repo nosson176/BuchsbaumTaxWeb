@@ -1,7 +1,24 @@
 <template>
   <div>
-    <div class="relative" @blur="onBlur">
+    <div class="mt-1 relative" @blur="onBlur">
+      <div v-if="menu">
+        <button
+          id="menu-button"
+          type="button"
+          class="bg-gray-100 ml-1 rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+          aria-expanded="true"
+          aria-haspopup="true"
+          @click="toggleShowOptions"
+        >
+          <span class="sr-only">Open options</span>
+          <!-- Heroicon name: solid/dots-vertical -->
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+          </svg>
+        </button>
+      </div>
       <button
+        v-else
         type="button"
         class="bg-white text-xs text-gray-900 relative w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
         aria-haspopup="listbox"
@@ -66,6 +83,10 @@ export default {
       type: Array,
       default: () => []
     },
+    menu: {
+      type: Boolean,
+      default: false
+    },
     short: {
       type: Boolean,
       default: false
@@ -101,7 +122,9 @@ export default {
       this.showOptions = false
     },
     isSelected (option) {
-      return option.value === this.computedValue
+      if (option.value) {
+        return option.value === this.computedValue
+      }
     }
   }
 }
