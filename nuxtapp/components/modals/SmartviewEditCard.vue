@@ -92,6 +92,7 @@ export default {
   mounted () {
     if (this.isNew) {
       this.$refs.name.$refs.input.focus()
+      this.addSmartViewLine()
     }
   },
   methods: {
