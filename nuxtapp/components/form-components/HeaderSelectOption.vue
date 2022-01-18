@@ -1,13 +1,14 @@
 <template>
   <div>
-    <div class="mt-1 relative" @blur="onBlur">
+    <div class="mt-1 relative">
       <div>
         <input
           ref="filter"
           v-model="inputValue"
           type="text"
           class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-          @click="toggleShowOptions"
+          @keyup="onInputKeyup($event.key)"
+          @click="onInputClick"
         >
         <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
           <!-- Heroicon name: solid/selector -->
@@ -24,11 +25,14 @@
           role="listbox"
           aria-labelledby="listbox-label"
           aria-activedescendant="listbox-option-3"
+          @blur="onBlur"
         >
           <li
-            v-for="option in filteredOptions"
+            v-for="(option, idx) in filteredOptions"
             id="listbox-option-0"
+            ref="li"
             :key="option.id"
+            :class="selectedItem(idx)"
             class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
             role="option"
             @click="setSelectOption(option)"
@@ -52,7 +56,7 @@
 <script>
 import { events } from '~/shared/constants'
 export default {
-  name: 'SelectOption',
+  name: 'HeaderSelectOption',
   props: {
     value: {
       type: String,
@@ -70,7 +74,9 @@ export default {
   data () {
     return {
       showOptions: false,
-      filterOptionsValue: ''
+      filterOptionsValue: '',
+      selectedIdx: -1,
+      keyboardMode: false
     }
   },
   computed: {
@@ -92,7 +98,9 @@ export default {
     },
     filteredOptions () {
       return this.options.filter((option) => {
-        return option.name.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        const nameFilter = option.name?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        const valueFilter = option.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        return nameFilter || valueFilter
       })
     }
   },
@@ -105,10 +113,13 @@ export default {
     }
   },
   methods: {
-    toggleShowOptions () {
+    onInputClick () {
       this.showOptions = !this.showOptions
+      this.selectedIdx = -1
+      this.$refs.filter.focus()
     },
     setSelectOption (option) {
+      this.filterOptionsValue = option.value
       this.computedValue = option.value
       this.showOptions = false
     },
@@ -117,11 +128,50 @@ export default {
     },
     isSelected (option) {
       return option.value === this.computedValue
+    },
+    onArrowDownPress () {
+      this.keyboardMode = true
+      if (!this.showOptions) {
+        this.showOptions = true
+      } else if (this.selectedIdx < this.filteredOptions.length - 1) {
+        this.selectedIdx++
+        this.$refs.li[this.selectedIdx]?.scrollIntoView()
+      }
+    },
+    onArrowUpPress () {
+      this.keyboardMode = true
+      if (!this.showOptions) {
+        this.showOptions = true
+      } else if (this.selectedIdx > 0) {
+        this.selectedIdx--
+        this.$refs.li[this.selectedIdx]?.scrollIntoView()
+      }
+    },
+    onEnterPress () {
+      this.keyboardMode = true
+      this.setSelectOption(this.filteredOptions[this.selectedIdx] || this.computedValue)
+      this.selectedIdx = -1
+      this.keyboardMode = false
+    },
+    onInputKeyup (key) {
+      if (key === 'ArrowDown') {
+        this.onArrowDownPress()
+      } else if (key === 'ArrowUp') {
+        this.onArrowUpPress()
+      } else if (key === 'Enter') {
+        this.onEnterPress()
+      }
+    },
+    selectedItem (idx) {
+      const keyboardHover = this.keyboardMode && this.selectedIdx === idx
+      return { keyboardHover }
     }
   }
 }
 </script>
 
 <style scoped>
-
+.keyboardHover {
+  @apply text-white bg-indigo-600;
+}
 </style>
