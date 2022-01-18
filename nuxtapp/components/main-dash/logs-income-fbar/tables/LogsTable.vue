@@ -21,7 +21,9 @@
         <div class="table-header sm">
           Alarm
         </div>
-        <div class="table-header xs" />
+        <div class="table-header xs flex justify-center">
+          <button type="button" class="w-3 h-3 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="setAlarmFilter" />
+        </div>
         <div class="table-header xs">
           Time
         </div>
@@ -61,10 +63,10 @@
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon
-            v-if="log.alarmComplete || isTodayOrPast(log.alarmDate)"
+            v-if="log.alarmDate"
             tabindex="0"
             class="cursor-pointer"
-            :class="isTodayOrPast(log.alarmDate) && !log.alarmComplete ? 'text-gray-400' : 'text-green-500'"
+            :class="log.alarmComplete ? 'text-green-500': 'text-gray-400'"
           />
         </div>
         <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
@@ -92,6 +94,8 @@ const columns = [
   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
 ]
 
+const alarmStatusValues = ['', true, false]
+
 export default {
   name: 'LogsTable',
   props: {
@@ -107,7 +111,9 @@ export default {
       editableLogId: '',
       yearFilterValue: '',
       employeeFilterValue: '',
-      selectedItems: {}
+      selectedItems: {},
+      filterByAlarmStatusValue: '',
+      filterByAlarmStatusIndex: 0
     }
   },
   computed: {
@@ -185,6 +191,9 @@ export default {
     },
     isCopyingLogs () {
       return this.isCmdPressed && this.selectedLogIds.length > 0
+    },
+    filterByAlarmStatus () {
+      return !(this.filterByAlarmStatusValue === '')
     }
   },
   watch: {
@@ -279,9 +288,11 @@ export default {
       this.debounceUpdate()
     },
     filterLogs (log) {
+      const hasAlarm = log.alarmDate
       let returnValue = true
       returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
+      returnValue = this.filterByAlarmStatus ? log.alarmComplete === this.filterByAlarmStatusValue && hasAlarm && returnValue : returnValue
       return returnValue
     },
     toggleSelected (log) {
@@ -299,6 +310,10 @@ export default {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
+    },
+    setAlarmFilter () {
+      this.filterByAlarmStatusIndex = (this.filterByAlarmStatusIndex + 1) % 3
+      this.filterByAlarmStatusValue = alarmStatusValues[this.filterByAlarmStatusIndex]
     }
   }
 }
