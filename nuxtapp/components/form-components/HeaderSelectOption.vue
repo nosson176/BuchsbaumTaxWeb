@@ -5,7 +5,7 @@
         <button
           id="menu-button"
           type="button"
-          class="bg-gray-100 rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+          class="bg-gray-100 ml-1 rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
           aria-expanded="true"
           aria-haspopup="true"
           @click="toggleShowOptions"
@@ -122,7 +122,9 @@ export default {
       this.showOptions = false
     },
     isSelected (option) {
-      return option.value === this.computedValue
+      if (option.value) {
+        return option.value === this.computedValue
+      }
     }
   }
 }
