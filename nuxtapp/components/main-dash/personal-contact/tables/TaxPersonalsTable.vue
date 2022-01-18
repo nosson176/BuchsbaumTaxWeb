@@ -197,7 +197,8 @@ export default {
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
-        lastName: this.selectedClient.lastName
+        lastName: this.selectedClient.lastName,
+        include: true
       }
       const personal = Object.assign({}, defaultValues)
       this.$api.createTaxPersonal(this.headers, { personal })

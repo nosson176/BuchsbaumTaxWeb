@@ -1,17 +1,15 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
-      <button
+      <input
         ref="button"
-        type="button"
+        v-model="inputValue"
+        type="text"
         tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
+        @keyup="onInputKeyup($event.key)"
       >
-        <span class="block truncate mr-3">
-          {{ shownValue }}
-        </span>
-      </button>
       <ul
         v-if="showOptions && isEditable"
         ref="select"
@@ -24,7 +22,7 @@
         @blur="onBlur"
       >
         <li
-          v-for="(option, idx) in sortedOptions"
+          v-for="(option, idx) in filteredOptions"
           :id="idx"
           :key="idx"
           ref="option"
@@ -46,7 +44,7 @@
         </li>
       </ul>
     </div>
-    <span v-else class="cursor-pointer m-px" :class="computedValue ? '' : 'text-gray-400 italic'">
+    <span v-else class="cursor-pointer m-px" :class="computedValue[0] ? '' : 'text-gray-400 italic'">
       {{ shownValue }}
     </span>
   </div>
@@ -81,8 +79,9 @@ export default {
     return {
       showOptions: false,
       shiftActive: false,
-      hoverIndex: 0,
-      mouseMode: false
+      hoverIndex: -1,
+      mouseMode: false,
+      filterOptionsValue: ''
     }
   },
   computed: {
@@ -98,6 +97,14 @@ export default {
       },
       set (newVal) {
         this.$emit(events.input, newVal)
+      }
+    },
+    inputValue: {
+      get () {
+        return this.showOptions ? this.filterOptionsValue : this.shownValue
+      },
+      set (value) {
+        this.filterOptionsValue = value
       }
     },
     multiple () {
@@ -120,6 +127,11 @@ export default {
         }
         return 0
       })
+    },
+    filteredOptions () {
+      return this.sortedOptions.filter((option) => {
+        return option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+      })
     }
   },
   watch: {
@@ -129,10 +141,23 @@ export default {
       } else {
         this.showOptions = true
         await this.$nextTick(() => {
-          this.$refs.select.focus()
+          this.$refs.button.focus()
+          this.inputValue = ''
         })
       }
     }
+  },
+  mounted () {
+    document.addEventListener('keydown', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftPress()
+      }
+    })
+    document.addEventListener('keyup', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftUp()
+      }
+    })
   },
   methods: {
     emitChange (value) {
@@ -167,29 +192,39 @@ export default {
     onButtonClick () {
       this.showOptions = !this.showOptions
     },
-    onKeyPress (evt) {
-      if (evt.key === 'Shift') {
-        this.shiftActive = true
-      } else if (evt.key === 'Enter') {
-        this.emitChange(this.options[this.hoverIndex].value)
-      } else if (evt.key === 'ArrowDown') {
-        if (this.hoverIndex < this.options.length - 1) {
-          this.hoverIndex++
-          this.scrollSelectedIntoView()
-        }
-      } else if (evt.key === 'ArrowUp') {
-        if (this.hoverIndex > 0) {
-          this.hoverIndex--
-          this.scrollSelectedIntoView()
-        }
+    onArrowDownPress () {
+      if (this.hoverIndex < this.filteredOptions.length - 1) {
+        this.hoverIndex++
+        this.scrollSelectedIntoView()
       }
     },
-    onKeyUp (evt) {
-      if (evt.key === 'Shift') {
-        this.shiftActive = false
-        this.computedValue.unshift(MULT)
-        this.computedValue = this.computedValue.join('\u000B')
-        this.onBlur()
+    onArrowUpPress () {
+      if (this.hoverIndex > 0) {
+        this.hoverIndex--
+        this.scrollSelectedIntoView()
+      }
+    },
+    onEnterPress () {
+      if (this.hoverIndex > -1) {
+        this.emitChange(this.filteredOptions[this.hoverIndex].value)
+      }
+    },
+    onShiftPress () {
+      this.shiftActive = true
+    },
+    onShiftUp () {
+      this.shiftActive = false
+      this.computedValue.unshift(MULT)
+      this.computedValue = this.computedValue.join('\u000B')
+      this.onBlur()
+    },
+    onInputKeyup (key) {
+      if (key === 'ArrowDown') {
+        this.onArrowDownPress()
+      } else if (key === 'ArrowUp') {
+        this.onArrowUpPress()
+      } else if (key === 'Enter') {
+        this.onEnterPress()
       }
     },
     onMouseOver (idx) {

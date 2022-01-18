@@ -416,7 +416,8 @@ export default {
         return
       }
       const defaultValues = {
-        clientId: this.selectedClient.id
+        clientId: this.selectedClient.id,
+        include: true
       }
       if (this.isCopyingIncomes) {
         this.selectedIncomeIds.forEach(async (incomeId, idx) => {
