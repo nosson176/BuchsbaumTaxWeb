@@ -21,8 +21,8 @@
         <div class="table-header sm">
           Alarm
         </div>
-        <div class="table-header xs flex justify-center">
-          <button type="button" class="w-3 h-3 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="setAlarmFilter" />
+        <div class="table-header xs">
+          <button type="button" class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" @click="setAlarmFilter" />
         </div>
         <div class="table-header xs">
           Time
@@ -64,8 +64,8 @@
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon
             v-if="log.alarmDate"
+            class="h-5 w-5 cursor-pointer"
             tabindex="0"
-            class="cursor-pointer"
             :class="log.alarmComplete ? 'text-green-500': 'text-gray-400'"
           />
         </div>
@@ -198,6 +198,7 @@ export default {
   },
   watch: {
     selectedClient (newClient) {
+      Object.assign(this.$data, this.$options.data.apply(this))
       if (newClient) {
         this.selectedItems = {}
         this.logs.forEach((log) => {
