@@ -4,7 +4,7 @@
       <Input v-model="groupNum" />
     </div>
     <div class="col-span-5">
-      <HeaderSelectOption v-model="fieldName" short :options="searchOptions" />
+      <HeaderSelectOption v-model="fieldName" short :options="smartviewOptions" />
     </div>
     <div class="col-span-2">
       <HeaderSelectOption v-model="operator" short :options="operators" />
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { events, searchOptions, operators } from '~/shared/constants'
+import { events, smartviewOptions, operators } from '~/shared/constants'
 
 export default {
   name: 'SmartviewLine',
@@ -74,16 +74,8 @@ export default {
         this.computedLine = Object.assign({}, this.computedLine, { searchValue: newVal })
       }
     },
-    searchOptions () {
-      return searchOptions.map((option) => {
-        if (option.value) {
-          return {
-            name: option.name,
-            value: option.name
-          }
-        }
-        return {}
-      })
+    smartviewOptions () {
+      return smartviewOptions
     },
     operators () {
       return operators
