@@ -110,12 +110,6 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedPersonals () {
       const personals = this.filteredPersonals
-      const newPersonalIdx = personals?.findIndex(personal => personal.id === this.newPersonalId)
-      if (newPersonalIdx > -1) {
-        const tempPersonal = personals[newPersonalIdx]
-        personals.splice(newPersonalIdx, 1)
-        personals.unshift(tempPersonal)
-      }
       return searchArrOfObjs(personals, this.searchInput)
     },
     filteredPersonals () {
@@ -197,15 +191,14 @@ export default {
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
-        lastName: this.selectedClient.lastName,
+        lastName: this.selectedClient.lastName.replace(/[0-9]/g, ''),
         include: true
       }
       const personal = Object.assign({}, defaultValues)
       this.$api.createTaxPersonal(this.headers, { personal })
         .then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newPersonalId = data.id
-          this.toggleEditable(`0-${columns[0]}`, data.id)
+          this.toggleEditable(`${this.displayedPersonals.length - 1}-${columns[0]}`, data.id)
         })
     },
     onKeyDown () {

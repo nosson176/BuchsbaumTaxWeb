@@ -133,7 +133,7 @@ export default {
   watch: {
     showOptions (value) {
       if (value) {
-        this.$refs.filter.focus()
+        this.$refs.filter?.focus()
         this.inputValue = ''
       }
     }

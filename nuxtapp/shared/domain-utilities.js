@@ -57,14 +57,16 @@ const isNotificationValid = (notification) => {
 const sortByCategory = (a, b) => {
   if (
     (a.category === categories.secondary && b.category === categories.primary) ||
-          (a.category === categories.dependant && b.category === categories.primary) ||
-          (a.category === categories.dependant && b.category === categories.secondary)
+      (a.category === categories.dependant && b.category === categories.primary) ||
+      (a.category === categories.dependant && b.category === categories.secondary) ||
+      (!a.category && b.category)
   ) {
     return 1
   } else if (
     (a.category === categories.primary && b.category === categories.secondary) ||
-          (a.category === categories.primary && b.category === categories.dependant) ||
-          (a.category === categories.secondary && b.category === categories.dependant)
+      (a.category === categories.primary && b.category === categories.dependant) ||
+      (a.category === categories.secondary && b.category === categories.dependant) ||
+      (a.category && !b.category)
   ) {
     return -1
   } else {
