@@ -161,6 +161,47 @@ export const searchOptions = Object.freeze([
   { name: 'TAX_YEAR::tax_state', value: 'filings::state' }
 ])
 
+export const smartviewOptions = Object.freeze([
+  { name: 'CLIENT::id', value: 'CLIENT::id' },
+  { name: 'CLIENT::owes_status', value: 'CLIENT::owes_status' },
+  { name: 'CLIENT::periodical', value: 'CLIENT::periodical' },
+  { name: 'CLIENT::status', value: 'CLIENT::status' },
+  { name: 'CONTACT::city', value: 'CONTACT::city' },
+  { name: 'CONTACT::state', value: 'CONTACT::state' },
+  { name: 'CONTACT::type', value: 'CONTACT::type' },
+  { name: 'FEE::fee_type', value: 'FEE::fee_type' },
+  { name: 'FEE::status', value: 'FEE::status' },
+  { name: 'FEE::status_detail', value: 'FEE::status_detail' },
+  { name: 'FEE::tax_year', value: 'FEE::tax_year' },
+  { name: 'INCOME_BREAKDOWN::currency', value: 'INCOME_BREAKDOWN::currency' },
+  { name: 'LOG::alarm_complete', value: 'LOG::alarm_complete' },
+  { name: 'LOG::alarm_date', value: 'LOG::alarm_date' },
+  { name: 'LOG::employee_alarm', value: 'LOG::employee_alarm' },
+  { name: 'LOG::date_of_log', value: 'LOG::date_of_log' },
+  { name: 'TAX_PERSONAL::category', value: 'TAX_PERSONAL::category' },
+  { name: 'TAX_PERSONAL::ssn', value: 'TAX_PERSONAL::ssn' },
+  { name: 'TAX_YEAR::comment', value: 'TAX_YEAR::comment' },
+  { name: 'TAX_YEAR::date_filed', value: 'TAX_YEAR::date_filed' },
+  { name: 'TAX_YEAR::extension_form', value: 'TAX_YEAR::extension_form' },
+  { name: 'TAX_YEAR::extension_status', value: 'TAX_YEAR::extension_status' },
+  { name: 'TAX_YEAR::FBAR_status', value: 'TAX_YEAR::FBAR_status' },
+  { name: 'TAX_YEAR::FBAR_status_detail', value: 'TAX_YEAR::FBAR_status_detail' },
+  { name: 'TAX_YEAR::file_type', value: 'TAX_YEAR::file_type' },
+  { name: 'TAX_YEAR::IRS_HISTORY', value: 'TAX_YEAR::IRS_HISTORY' },
+  { name: 'TAX_YEAR::owes_federal', value: 'TAX_YEAR::owes_federal' },
+  { name: 'TAX_YEAR::paid_federal', value: 'TAX_YEAR::paid_federal' },
+  { name: 'TAX_YEAR::state_status_detail', value: 'TAX_YEAR::state_status_detail' },
+  { name: 'TAX_YEAR::tax_form', value: 'TAX_YEAR::tax_form' },
+  { name: 'TAX_YEAR::tax_year_status_detail', value: 'TAX_YEAR::tax_year_status_detail' },
+  { name: 'TAX_YEAR::tax_year_status_federal', value: 'TAX_YEAR::tax_year_status_federal' },
+  { name: 'TAX_YEAR::tax_year_status_state', value: 'TAX_YEAR::tax_year_status_state' },
+  { name: 'TAX_YEAR::year_name', value: 'TAX_YEAR::year_name' },
+  { name: 'TAX_YEAR::delivery', value: 'TAX_YEAR::delivery' },
+  { name: 'TAX_YEAR::tax_state', value: 'TAX_YEAR::tax_state' },
+  { name: 'CLIENT_FLAGS::flag_name', value: 'CLIENT_FLAGS::flag_name' },
+  { name: 'CLIENT_FLAGS::user_name', value: 'CLIENT_FLAGS::user_name' }
+])
+
 export const operators = Object.freeze([
   { name: '=', value: '=' },
   { name: '!=', value: '!=' },
