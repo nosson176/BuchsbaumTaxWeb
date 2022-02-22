@@ -42,6 +42,11 @@
         :idx="idx"
         :class="{'disabled': !personal.include}"
       >
+        <div class="table-col">
+          <ClickCell>
+            {{ idx+1 }}
+          </ClickCell>
+        </div>
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, personal.id)">
           <EditableCheckBoxCell v-model="personal.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
         </div>
