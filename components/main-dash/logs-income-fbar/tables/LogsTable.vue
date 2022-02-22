@@ -44,7 +44,9 @@
         :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete, 'selected': isSelected(log.id)}"
       >
         <div class="table-col">
-          <ClickCell @click="toggleSelected(log)" />
+          <ClickCell @click="toggleSelected(log)">
+            {{ idx+1 }}
+          </ClickCell>
         </div>
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @input="debounceUpdate" @blur="onBlur" />

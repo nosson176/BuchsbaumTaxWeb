@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="h-5 w-5 cursor-pointer hover:bg-gray-200" @click="emitClick" />
+    <div class="h-5 w-5 cursor-pointer hover:bg-gray-200" @click="emitClick">
+      <slot />
+    </div>
   </div>
 </template>
 
