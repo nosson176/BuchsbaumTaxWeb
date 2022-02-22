@@ -1,5 +1,8 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
       <input
         ref="button"
@@ -19,7 +22,6 @@
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
-        @blur="onBlur"
       >
         <li
           v-for="(option, idx) in filteredOptions"
