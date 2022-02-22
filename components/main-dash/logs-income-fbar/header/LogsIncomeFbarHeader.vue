@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { events, models, mutations, tableGroups, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarHeader',
@@ -18,9 +19,15 @@ export default {
       activeTab: tabs.logs
     }
   },
+  computed: {
+    ...mapState([models.selectedClient])
+  },
   watch: {
     searchInput (searchInput) {
       this.searchInputUpdate(searchInput)
+    },
+    selectedClient (newVal) {
+      this.emitTabClick(tabs.logs)
     }
   },
   methods: {

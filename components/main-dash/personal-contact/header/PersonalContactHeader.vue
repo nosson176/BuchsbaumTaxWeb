@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { events, models, mutations, tableGroups, tabs } from '~/shared/constants'
 export default {
   name: 'PersonalContactHeader',
@@ -16,12 +17,17 @@ export default {
     return {
       searchInput: '',
       activeTab: tabs.tax_personals
-
     }
+  },
+  computed: {
+    ...mapState([models.selectedClient])
   },
   watch: {
     searchInput (searchInput) {
       this.searchInputUpdate(searchInput)
+    },
+    selectedClient (newVal) {
+      this.emitTabClick(tabs.contact)
     }
   },
   methods: {
