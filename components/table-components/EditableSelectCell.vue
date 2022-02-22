@@ -116,20 +116,8 @@ export default {
     shownValue () {
       return this.splitOptions[0] || this.placeholder
     },
-    sortedOptions () {
-      const optionsCopy = [...this.options]
-      return optionsCopy.sort((a, b) => {
-        if (this.isSelected(a) && !this.isSelected(b)) {
-          return -1
-        }
-        if (!this.isSelected(a) && this.isSelected(b)) {
-          return 1
-        }
-        return 0
-      })
-    },
     filteredOptions () {
-      return this.sortedOptions.filter((option) => {
+      return this.options.filter((option) => {
         return option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
       })
     }
