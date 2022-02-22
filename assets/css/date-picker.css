@@ -1,9 +1,9 @@
-.mx-icon-left:before,
-.mx-icon-right:before,
-.mx-icon-double-left:before,
-.mx-icon-double-right:before,
-.mx-icon-double-left:after,
-.mx-icon-double-right:after {
+.mx-icon-left::before,
+.mx-icon-right::before,
+.mx-icon-double-left::before,
+.mx-icon-double-right::before,
+.mx-icon-double-left::after,
+.mx-icon-double-right::after {
   content: "";
   position: relative;
   top: -1px;
@@ -23,17 +23,17 @@
   transform: rotate(-45deg) scale(0.7);
 }
 
-.mx-icon-double-left:after {
+.mx-icon-double-left::after {
   left: -4px;
 }
 
-.mx-icon-double-right:before {
+.mx-icon-double-right::before {
   left: 4px;
 }
 
-.mx-icon-right:before,
-.mx-icon-double-right:before,
-.mx-icon-double-right:after {
+.mx-icon-right::before,
+.mx-icon-double-right::before,
+.mx-icon-double-right::after {
   -webkit-transform: rotate(135deg) scale(0.7);
   transform: rotate(135deg) scale(0.7);
 }
@@ -71,16 +71,6 @@
   height: 100%;
 }
 
-.mx-scrollbar:hover .mx-scrollbar-track {
-  opacity: 1;
-}
-
-.mx-scrollbar-wrap {
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
 .mx-scrollbar-track {
   position: absolute;
   top: 2px;
@@ -92,6 +82,16 @@
   opacity: 0;
   -webkit-transition: opacity 0.24s ease-out;
   transition: opacity 0.24s ease-out;
+}
+
+.mx-scrollbar:hover .mx-scrollbar-track {
+  opacity: 1;
+}
+
+.mx-scrollbar-wrap {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .mx-scrollbar-track .mx-scrollbar-thumb {
@@ -110,13 +110,17 @@
   opacity: 1;
   -webkit-transform: scaleY(1);
   transform: scaleY(1);
-  -webkit-transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+  -webkit-transition:
+    opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
     -webkit-transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+  transition:
+    opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
     -webkit-transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+  transition:
+    transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
     opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+  transition:
+    transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
     opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
     -webkit-transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   -webkit-transform-origin: center top;
@@ -153,8 +157,29 @@
   position: relative;
 }
 
+.mx-icon-calendar,
+.mx-icon-clear {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 16px;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.5);
+  vertical-align: middle;
+}
+
+.mx-icon-clear {
+  cursor: pointer;
+}
+
 .mx-input-wrapper .mx-icon-clear {
   display: none;
+}
+
+.mx-icon-clear:hover {
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .mx-input-wrapper:hover .mx-icon-clear {
@@ -167,11 +192,12 @@
 
 .mx-input {
   @apply text-xs;
+
   display: inline-block;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   width: 100%;
-  padding: 0px 4px;
+  padding: 0 4px;
   padding-left: 4px;
   line-height: 1.4;
   text-align: center;
@@ -203,31 +229,16 @@
   display: none;
 }
 
-.mx-icon-calendar,
-.mx-icon-clear {
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  font-size: 16px;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.5);
-  vertical-align: middle;
-}
-
-.mx-icon-clear {
-  cursor: pointer;
-}
-
-.mx-icon-clear:hover {
-  color: rgba(0, 0, 0, 0.8);
-}
-
 .mx-datepicker-main {
-  font: 14px/1.5 "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei",
+  font:
+    14px/1.5 "Helvetica Neue",
+    Helvetica,
+    Arial,
+    "Microsoft Yahei",
     sans-serif;
+
   @apply text-gray-400;
+
   background-color: #fff;
   border: 1px solid #e8e8e8;
 }
@@ -334,7 +345,7 @@
   margin: 0 2px;
 }
 
-.mx-calendar-decade-separator:after {
+.mx-calendar-decade-separator::after {
   content: "~";
 }
 
@@ -355,6 +366,7 @@
 
 .mx-calendar-content .cell.active {
   @apply bg-indigo-700;
+
   color: #fff;
 }
 
@@ -506,11 +518,13 @@
 
 .mx-time-column .mx-time-item:hover {
   @apply text-gray-400;
+
   background-color: #f3f9fe;
 }
 
 .mx-time-column .mx-time-item.active {
   @apply text-indigo-300;
+
   background-color: transparent;
   font-weight: 700;
 }
@@ -530,11 +544,13 @@
 
 .mx-time-option:hover {
   @apply text-gray-400;
+
   background-color: #f3f9fe;
 }
 
 .mx-time-option.active {
   @apply text-indigo-300;
+
   background-color: transparent;
   font-weight: 700;
 }
