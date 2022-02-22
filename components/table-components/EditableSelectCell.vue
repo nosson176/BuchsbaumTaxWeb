@@ -130,7 +130,11 @@ export default {
     },
     filteredOptions () {
       return this.sortedOptions.filter((option) => {
-        return option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        if (option.value) {
+          return option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        } else {
+          return false
+        }
       })
     }
   },
