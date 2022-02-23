@@ -17,7 +17,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-start-4 text-gray-100 flex justify-center" @click="setEditable('periodical')">
+      <div class="col-start-4 text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
         <EditableSelectCell
           v-model="periodical"
           :options="periodicalOptions"
@@ -26,7 +26,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-start-5">
+      <div class="col-start-5 text-sm">
         {{ formattedCreatedDate }}
       </div>
     </div>
