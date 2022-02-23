@@ -43,7 +43,7 @@
         :idx="idx"
         :class="{'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete, 'selected': isSelected(log.id)}"
       >
-        <div class="table-col">
+        <div class="table-col bg-gray-200">
           <ClickCell @click="toggleSelected(log)">
             {{ idx+1 }}
           </ClickCell>

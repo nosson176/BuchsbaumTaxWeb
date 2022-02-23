@@ -34,7 +34,7 @@
         :idx="idx"
         :class="{'disabled': !contact.enabled}"
       >
-        <div class="table-col">
+        <div class="table-col bg-gray-200">
           <ClickCell>
             {{ idx+1 }}
           </ClickCell>
