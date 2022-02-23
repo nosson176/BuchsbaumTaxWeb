@@ -235,6 +235,7 @@ export default {
     },
     handleUpdate () {
       const log = this.displayedLogs.find(log => log.id === this.editableLogId)
+      console.log(log)
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
     },
     onDeleteClick (logId) {
