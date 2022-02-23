@@ -74,7 +74,7 @@
         :idx="idx"
         :class="{'disabled': !fbar.include, 'selected': isSelected(fbar.id)}"
       >
-        <div class="table-col bg-gray-200">
+        <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(fbar)">
             {{ idx+1 }}
           </ClickCell>

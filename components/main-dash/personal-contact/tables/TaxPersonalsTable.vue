@@ -42,7 +42,7 @@
         :idx="idx"
         :class="{'disabled': !personal.include}"
       >
-        <div class="table-col bg-gray-200">
+        <div class="table-col bg-gray-200 mr-1">
           <ClickCell>
             {{ idx+1 }}
           </ClickCell>

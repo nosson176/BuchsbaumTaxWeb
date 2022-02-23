@@ -77,7 +77,7 @@
         :idx="idx"
         :class="{'disabled': !income.include, 'selected': isSelected(income.id)}"
       >
-        <div class="table-col bg-gray-200">
+        <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(income)">
             {{ idx+1 }}
           </ClickCell>
