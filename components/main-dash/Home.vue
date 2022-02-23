@@ -3,7 +3,7 @@
     <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
-        <ClientListHeader @change="toggleShowArchivedClients" />
+        <ClientListHeader :show-archived="showArchivedClients" @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
