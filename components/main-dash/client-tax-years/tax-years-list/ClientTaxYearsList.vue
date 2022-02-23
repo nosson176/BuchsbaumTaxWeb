@@ -61,6 +61,14 @@ export default {
           data: this.displayedTaxYearData.slice(0, 4).map(taxYear => taxYear.id)
         })
       }
+    },
+    showArchived: {
+      handler () {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.shownTaxYears,
+          data: this.displayedTaxYearData.slice(0, 4).map(taxYear => taxYear.id)
+        })
+      }
     }
   },
   methods: {
