@@ -7,18 +7,19 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { events, searchOptions } from '~/shared/constants'
+import { events, models, mutations, searchOptions } from '~/shared/constants'
 
 export default {
   name: 'ClientListHeader',
   data () {
     return {
-      searchInput: '',
       searchOptionValue: ''
     }
   },
   computed: {
+    ...mapState([models.clientSearchValue]),
     debounceSearch () {
       return debounce(this.searchClients, 1000)
     },
@@ -27,6 +28,15 @@ export default {
     },
     seachOptionName () {
       return this.searchOptions.find(option => option.value === this.searchOptionValue)?.name
+    },
+    searchInput: {
+      get () {
+        return this.clientSearchValue.length > 0 ? this.clientSearchValue : ''
+      },
+      set (value) {
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+        this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: value })
+      }
     }
   },
   methods: {
