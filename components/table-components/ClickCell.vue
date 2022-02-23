@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="h-5 w-5 cursor-pointer hover:bg-gray-200" @click="emitClick" />
+    <div class="flex items-center justify-center h-5 w-5 cursor-pointer text-xs font-extralight hover:bg-gray-400 hover:text-white" @click="emitClick">
+      <slot />
+    </div>
   </div>
 </template>
 

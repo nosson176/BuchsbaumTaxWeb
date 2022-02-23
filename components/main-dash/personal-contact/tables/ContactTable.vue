@@ -2,9 +2,10 @@
   <Table @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="xs table-header">
+        <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
+        <div class="xs table-header" />
         <div class="table-header normal">
           Type
         </div>
@@ -33,6 +34,11 @@
         :idx="idx"
         :class="{'disabled': !contact.enabled}"
       >
+        <div class="table-col bg-gray-200 mr-1">
+          <ClickCell>
+            {{ idx+1 }}
+          </ClickCell>
+        </div>
         <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
           <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)" @input="debounceUpdate" />
         </div>

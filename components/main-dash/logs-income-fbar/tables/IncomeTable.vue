@@ -77,8 +77,10 @@
         :idx="idx"
         :class="{'disabled': !income.include, 'selected': isSelected(income.id)}"
       >
-        <div class="table-col">
-          <ClickCell @click="toggleSelected(income)" />
+        <div class="table-col bg-gray-200 mr-1">
+          <ClickCell @click="toggleSelected(income)">
+            {{ idx+1 }}
+          </ClickCell>
         </div>
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
           <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />

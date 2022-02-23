@@ -74,8 +74,10 @@
         :idx="idx"
         :class="{'disabled': !fbar.include, 'selected': isSelected(fbar.id)}"
       >
-        <div class="table-col">
-          <ClickCell @click="toggleSelected(fbar)" />
+        <div class="table-col bg-gray-200 mr-1">
+          <ClickCell @click="toggleSelected(fbar)">
+            {{ idx+1 }}
+          </ClickCell>
         </div>
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
           <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />

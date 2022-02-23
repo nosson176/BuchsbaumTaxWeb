@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <div class="mt-1 relative">
       <div v-if="menu">
         <button
@@ -26,7 +29,6 @@
           class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-1 pr-4 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
           @keyup="onInputKeyup($event.key)"
           @click="onInputClick"
-          @blur="onBlur"
         >
         <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
           <!-- Heroicon name: solid/selector -->
