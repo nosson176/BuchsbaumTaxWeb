@@ -8,9 +8,9 @@
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
         <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
       </div>
-      <div class="col-start-3 font-semibold text-gray-100 flex justify-center" @click="setEditable('status')">
+      <div class="col-start-3 font-bold text-white flex justify-center text-2xl" @click="setEditable('status')">
         <EditableSelectCell
-          v-model="status"
+          v-model="statusValue"
           :options="statusOptions"
           :is-editable="isEditable('status')"
           @blur="onBlur"
@@ -79,7 +79,7 @@ export default {
         this.selectedClientCopy.lastName = newVal
       }
     },
-    status: {
+    statusValue: {
       get () {
         return this.selectedClientCopy.status
       },
