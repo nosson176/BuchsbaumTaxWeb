@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col bg-blue-200 px-0.5 py-1">
-    <div class="flex items-center justify-between">
-      <ViewArchivedHeader @change="emitChange" />
+    <ViewArchivedHeader @change="emitChange" />
+    <div class="flex items-center justify-between space-x-1">
+      <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
       <span v-if="clientCount" class="text-xs mt-1 p-1 font-semibold text-indigo-600 bg-blue-100 rounded">{{ clientCount }}</span>
     </div>
-    <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
     <HeaderSelectOption v-model="searchOptionValue" :shown-value="seachOptionName" :options="searchOptions" @input="debounceSearch" />
   </div>
 </template>
@@ -48,9 +48,12 @@ export default {
       }
     },
     clientCount () {
-      return Object.entries(this.clients)
-        .filter(([key, client]) => this.showArchived === client.archived)
-        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true).length
+      if (this.searchInput) {
+        return Object.entries(this.clients)
+          .filter(([key, client]) => this.showArchived === client.archived).length
+      } else {
+        return 0
+      }
     },
     hasSelectedSmartview () {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
