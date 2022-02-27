@@ -17,7 +17,7 @@
                 @input="debounceUpdate"
               />
             </div>
-            <div @click="setEditable('year')">
+            <div :class="isRedBG ? 'bg-red-100' : ''" @click="setEditable('year')">
               <EditableSelectCell
                 v-model="year"
                 placeholder="Year"
@@ -280,6 +280,9 @@ export default {
     },
     currencySymbols () {
       return currencySymbols
+    },
+    isRedBG () {
+      return this.year === 'ITIN'
     }
   },
   watch: {
