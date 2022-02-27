@@ -65,7 +65,7 @@
         <div :id="`${idx}-dateOfBirth`" class="table-col sm" @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)">
           <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
-        <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
+        <div :id="`${idx}-ssn`" class="normal table-col" :class="isRedBG(personal.ssn) ? 'bg-red-100' : ''" @click="toggleEditable(`${idx}-ssn`, personal.id)">
           <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" @blur="onBlur" />
         </div>
         <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
@@ -217,6 +217,9 @@ export default {
     },
     onBlur () {
       this.editableId = ''
+    },
+    isRedBG (ssn) {
+      return ssn.charAt(0) === '9'
     }
   }
 }
