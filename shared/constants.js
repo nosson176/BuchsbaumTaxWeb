@@ -88,6 +88,7 @@ export const notification = Object.freeze({
 // Tabs
 export const tabs = Object.freeze({
   checklists: 'checklists',
+  clients: 'clients',
   contact: 'contact',
   fbar: 'fbar',
   fees: 'fees',
