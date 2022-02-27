@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-evenly items-center h-10 z-10 shadow">
-      <SelectOption shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
+      <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
     </div>
   </div>
 </template>
