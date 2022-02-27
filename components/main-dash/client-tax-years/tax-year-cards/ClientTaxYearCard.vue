@@ -1,9 +1,9 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-80 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-64 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
-        <h3 class="text-lg leading-6 font-medium text-gray-900 w-full">
-          <div class="w-full" @click="toggleEditable('year', yearData.id)">
+        <h3 class="text-2xl leading-6 font-semibold text-gray-900 w-full">
+          <div class="w-full flex justify-center" @click="toggleEditable('year', yearData.id)">
             <EditableSelectCell v-model="year" :options="yearOptions" :is-editable="isEditable('year')" @blur="onBlur" @input="debounceUpdate" />
           </div>
         </h3>
