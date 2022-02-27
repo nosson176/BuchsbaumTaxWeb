@@ -75,7 +75,7 @@ export default {
   computed: {
     computedValue: {
       get () {
-        return this.value
+        return this.value || ''
       },
       set (newVal) {
         if (newVal) {
