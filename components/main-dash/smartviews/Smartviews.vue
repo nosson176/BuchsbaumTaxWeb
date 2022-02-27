@@ -29,11 +29,6 @@ export default {
       default: false
     }
   },
-  data () {
-    return {
-      selectedSmartviewId: NaN
-    }
-  },
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews () {
@@ -44,15 +39,17 @@ export default {
       } else {
         return []
       }
+    },
+    selectedSmartviewId () {
+      return this.selectedSmartview?.id
     }
   },
   methods: {
     selectSmartview (smartview) {
+      this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
       if (this.selectedSmartviewId === smartview.id) {
-        this.selectedSmartviewId = NaN
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
       } else {
-        this.selectedSmartviewId = smartview.id
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
       }
     },
