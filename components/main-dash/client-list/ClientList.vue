@@ -7,18 +7,23 @@
       v-for="(client, idx) in displayedClients"
       :ref="client.id"
       :key="idx"
-      class="text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
+      class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
-      <span class="font-medium text-gray-900 ">{{ client.lastName }}</span> {{ client.displayName }}
+      <div class="w-full">
+        <span class="font-medium text-gray-900 ">{{ client.lastName }}</span> {{ client.displayName }}
+      </div>
+      <div class="w-5" @click.stop>
+        <DeleteButton @click="archiveClient(client)" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -39,8 +44,7 @@ export default {
     filteredClients () {
       return Object.fromEntries(Object.entries(this.clients)
         .filter(([key, client]) => this.showArchived === client.archived)
-        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true)
-      )
+        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true))
     },
     hasSelectedSmartview () {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
@@ -81,6 +85,19 @@ export default {
         if (selectedClientRef) {
           selectedClientRef[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
         }
+      }
+    },
+    archiveClient (client) {
+      if (this.showArchived) {
+        const clientCopy = Object.assign({}, client)
+        clientCopy.archived = false
+        this.$api.updateClient(this.headers, { clientId: client.id, client: clientCopy })
+          .then(() => this.$api.getClientList(this.headers))
+      } else {
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: client.id, type: tabs.clients } } } }
+        )
       }
     }
   }

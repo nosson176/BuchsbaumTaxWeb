@@ -41,7 +41,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.modals]),
+    ...mapState([models.selectedClient, models.modals, models.clients]),
     clientId () {
       return this.selectedClient.id
     },
@@ -81,6 +81,9 @@ export default {
     isTypeFee () {
       return this.type === tabs.fees
     },
+    isTypeClient () {
+      return this.type === tabs.clients
+    },
     logs () {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
@@ -101,6 +104,9 @@ export default {
     },
     fees () {
       return JSON.parse(JSON.stringify(this.selectedClient.fees))
+    },
+    clientsCopy () {
+      return JSON.parse(JSON.stringify(this.clients))
     },
     updatedLog () {
       const log = this.logs.find(log => log.id === this.id)
@@ -137,6 +143,12 @@ export default {
       fee.archived = !fee.archived
       return fee
     },
+    updatedClient () {
+      const client = Object.values(this.clientsCopy)
+        .find(client => client.id === this.id)
+      client.archived = !client.archived
+      return client
+    },
     updatedItem () {
       let item = null
       if (this.isTypeLog) {
@@ -153,6 +165,8 @@ export default {
         item = this.updatedTaxYear
       } else if (this.isTypeFee) {
         item = this.updatedFee
+      } else if (this.isTypeClient) {
+        item = this.updatedClient
       }
       return item
     }
@@ -174,6 +188,8 @@ export default {
         this.updateTaxYear()
       } else if (this.isTypeFee) {
         this.updateFee()
+      } else if (this.isTypeClient) {
+        this.updateClient()
       }
     },
     emitHide () {
@@ -181,33 +197,38 @@ export default {
     },
     updateLog () {
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
-        .finally(() => this.updateClient())
+        .finally(() => this.updateClientSideData())
     },
     updateIncome () {
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
-        .finally(() => this.updateClient())
+        .finally(() => this.updateClientSideData())
     },
     updateFbar () {
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
-        .finally(() => this.updateClient())
+        .finally(() => this.updateClientSideData())
     },
     updateContact () {
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
-        .finally(() => this.updateClient())
+        .finally(() => this.updateClientSideData())
     },
     updateTaxPersonal () {
       this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
-        .finally(() => this.updateClient())
+        .finally(() => this.updateClientSideData())
     },
     updateTaxYear () {
       this.$api.updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
-        .finally(() => this.updateClient())
+        .finally(() => this.updateClientSideData())
     },
     updateFee () {
       this.$api.updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
-        .then(() => this.updateClient())
+        .then(() => this.updateClientSideData())
     },
     updateClient () {
+      this.$api.updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
+        .then(() => this.$api.getClientList(this.headers))
+        .then(() => this.updateClientSideData())
+    },
+    updateClientSideData () {
       this.isLoading = false
       this.emitHide()
     }
