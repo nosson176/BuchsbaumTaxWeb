@@ -1,12 +1,20 @@
 <template>
   <div>
-    <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
+    <div
+      class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4"
+    >
       <div class="ml-auto">
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
       </div>
-      <div class="ml-auto">
+      <div class="ml-auto flex space-x-4 items-center">
+        <a href="#">
+          <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </a>
+        <a href="#">
+          <ValuesIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </a>
         <nuxt-link :to="homeRoute">
-          <HomeIcon class="w-8 h-8 cursor-pointer" />
+          <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
       </div>
     </div>
@@ -56,7 +64,11 @@ export default {
 </script>
 
 <style scoped>
-a.nuxt-link-active {
-  @apply w-8 h-8 text-indigo-500;
+a.nuxt-link-active svg {
+  @apply text-indigo-500 w-8;
+}
+
+a.nuxt-link-active svg:hover {
+  @apply text-indigo-500 scale-100;
 }
 </style>
