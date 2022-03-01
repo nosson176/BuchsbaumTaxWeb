@@ -5,33 +5,15 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="sm table-header">
-          Cat
-        </div>
-        <div class="normal table-header">
-          First
-        </div>
-        <div class="xs table-header">
-          M
-        </div>
-        <div class="normal table-header">
-          Last
-        </div>
-        <div class="sm table-header">
-          DOB
-        </div>
-        <div class="normal table-header">
-          SSN
-        </div>
-        <div class="sm table-header">
-          Informal
-        </div>
-        <div class="sm table-header">
-          Relation
-        </div>
-        <div class="sm table-header">
-          Lang
-        </div>
+        <div class="sm table-header">Cat</div>
+        <div class="normal table-header">First</div>
+        <div class="xs table-header">M</div>
+        <div class="normal table-header">Last</div>
+        <div class="sm table-header">DOB</div>
+        <div class="normal table-header">SSN</div>
+        <div class="sm table-header">Informal</div>
+        <div class="sm table-header">Relation</div>
+        <div class="sm table-header">Lang</div>
         <div class="xs table-header" />
       </TableHeader>
     </template>
@@ -40,42 +22,133 @@
         v-for="(personal, idx) in displayedPersonals"
         :key="personal.id"
         :idx="idx"
-        :class="{'disabled': !personal.include}"
+        :class="{ 'disabled': !personal.include }"
       >
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell>
-            {{ idx+1 }}
-          </ClickCell>
+          <ClickCell>{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, personal.id)">
-          <EditableCheckBoxCell v-model="personal.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-include`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-include`, personal.id)"
+        >
+          <EditableCheckBoxCell
+            v-model="personal.include"
+            :is-editable="isEditable(`${idx}-include`)"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-category`" class="sm table-col-primary" @click="toggleEditable(`${idx}-category`, personal.id)">
-          <EditableSelectCell v-model="personal.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-category`"
+          class="sm table-col-primary"
+          @click="toggleEditable(`${idx}-category`, personal.id)"
+        >
+          <EditableSelectCell
+            v-model="personal.category"
+            :is-editable="isEditable(`${idx}-category`)"
+            :options="categoryOptions"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-firstName`" class="normal table-col" @click="toggleEditable(`${idx}-firstName`, personal.id)">
-          <EditableInputCell v-model="personal.firstName" :is-editable="isEditable(`${idx}-firstName`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-firstName`"
+          class="normal table-col"
+          @click="toggleEditable(`${idx}-firstName`, personal.id)"
+        >
+          <EditableInputCell
+            v-model="personal.firstName"
+            :is-editable="isEditable(`${idx}-firstName`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-middleInitial`" class="xs table-col" @click="toggleEditable(`${idx}-middleInitial`, personal.id)">
-          <EditableInputCell v-model="personal.middleInitial" :is-editable="isEditable(`${idx}-middleInitial`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-middleInitial`"
+          class="xs table-col"
+          @click="toggleEditable(`${idx}-middleInitial`, personal.id)"
+        >
+          <EditableInputCell
+            v-model="personal.middleInitial"
+            :is-editable="isEditable(`${idx}-middleInitial`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-lastName`" class="normal table-col" @click="toggleEditable(`${idx}-lastName`, personal.id)">
-          <EditableInputCell v-model="personal.lastName" :is-editable="isEditable(`${idx}-lastName`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-lastName`"
+          class="normal table-col"
+          @click="toggleEditable(`${idx}-lastName`, personal.id)"
+        >
+          <EditableInputCell
+            v-model="personal.lastName"
+            :is-editable="isEditable(`${idx}-lastName`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-dateOfBirth`" class="table-col sm" @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)">
-          <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-dateOfBirth`"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)"
+        >
+          <EditableDateCell
+            v-model="personal.dateOfBirth"
+            :is-editable="isEditable(`${idx}-dateOfBirth`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
-          <EditableInputCell v-model="personal.ssn" :is-editable="isEditable(`${idx}-ssn`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-ssn`"
+          class="normal table-col"
+          @click="toggleEditable(`${idx}-ssn`, personal.id)"
+        >
+          <EditableInputCell
+            v-model="personal.ssn"
+            :class="isRedBG(personal.ssn) ? 'text-red-500' : ''"
+            :is-editable="isEditable(`${idx}-ssn`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
-          <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-informal`"
+          class="sm table-col"
+          @click="toggleEditable(`${idx}-informal`, personal.id)"
+        >
+          <EditableInputCell
+            v-model="personal.informal"
+            :is-editable="isEditable(`${idx}-informal`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-relation`" class="sm table-col" @click="toggleEditable(`${idx}-relation`, personal.id)">
-          <EditableSelectCell v-model="personal.relation" :is-editable="isEditable(`${idx}-relation`)" :options="relationOptions" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-relation`"
+          class="sm table-col"
+          @click="toggleEditable(`${idx}-relation`, personal.id)"
+        >
+          <EditableSelectCell
+            v-model="personal.relation"
+            :is-editable="isEditable(`${idx}-relation`)"
+            :options="relationOptions"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-language`" class="sm table-col" @click="toggleEditable(`${idx}-language`, personal.id)">
-          <EditableSelectCell v-model="personal.language" :is-editable="isEditable(`${idx}-language`)" :options="languageOptions" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-language`"
+          class="sm table-col"
+          @click="toggleEditable(`${idx}-language`, personal.id)"
+        >
+          <EditableSelectCell
+            v-model="personal.language"
+            :is-editable="isEditable(`${idx}-language`)"
+            :options="languageOptions"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(personal.id)" />
@@ -217,6 +290,9 @@ export default {
     },
     onBlur () {
       this.editableId = ''
+    },
+    isRedBG (ssn) {
+      return ssn.charAt(0) === '9'
     }
   }
 }

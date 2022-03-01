@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100" :class="classObj">
+    <div
+      class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100"
+      :class="classObj"
+    >
       <div class="flex h-full flex-col space-y-1.5 justify-center">
         <div class="flex justify-end pt-1">
           <DeleteButton small @click="onDeleteClick()" />
@@ -20,6 +23,7 @@
             <div @click="setEditable('year')">
               <EditableSelectCell
                 v-model="year"
+                :class="isRedBG ? 'text-red-500' : ''"
                 placeholder="Year"
                 :is-editable="isEditable('year')"
                 :options="yearOptions"
@@ -121,7 +125,13 @@
           </div>
         </div>
         <div @click="setEditable('notes')">
-          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" @input="debounceUpdate" />
+          <EditableInput
+            v-model="notes"
+            placeholder="Notes"
+            :is-editable="isEditable('notes')"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
       </div>
     </div>
@@ -280,6 +290,9 @@ export default {
     },
     currencySymbols () {
       return currencySymbols
+    },
+    isRedBG () {
+      return this.year === 'ITIN'
     }
   },
   watch: {
