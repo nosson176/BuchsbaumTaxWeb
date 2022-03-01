@@ -19,6 +19,34 @@ $ yarn generate
 
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
+---
+
+## Project Specific:
+
+#### `Some insight into the architecture`
+
+**_The Tables_**
+To manage with the flexibility needed in this project for the table cells the tables are essentially `flexbox` and we have the cells have an `edit-mode` and a `read-mode` which is toggled on click.
+
+**_The Store/API_**
+Using injection into the Axios requests (see `plugins/axios.js` and the `axios` settings in `nuxt.config` files) we send the `model` we would like to mutate in the request to handle the store but just making the request in the `plugins/api.js` file
+
+#### `Icons`
+
+We used [HeroIcons](https://heroicons.com/) as SVGs as our Icons
+
+#### `Design`
+
+Most of the design is based on [TailwindUI](https://tailwindui.com/) (at least that was the inspiration)
+
+#### `Plugins`
+
+- [vue2-datepicker](https://github.com/mengxiong10/vue2-datepicker)
+- [v-hotkey](https://github.com/Dafrok/v-hotkey)
+- [v-tooltip](https://github.com/Akryum/floating-vue)
+
+---
+
 ## Special Directories
 
 You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
@@ -40,7 +68,6 @@ More information about the usage of this directory in [the documentation](https:
 Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a sidebar or have distinct layouts for mobile and desktop.
 
 More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
-
 
 ### `pages`
 
