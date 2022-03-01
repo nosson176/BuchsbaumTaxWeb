@@ -1,14 +1,29 @@
 <template>
   <div>
-    <div class="bg-gray-800 text-white w-full flex justify-evenly items-center h-10 z-10 shadow">
-      <SelectOption shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
+    <div
+      class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4"
+    >
+      <div class="ml-auto">
+        <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
+      </div>
+      <div class="ml-auto flex space-x-4 items-center">
+        <a href="#">
+          <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </a>
+        <a href="#">
+          <ValuesIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </a>
+        <nuxt-link :to="homeRoute">
+          <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </nuxt-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, routes } from '~/shared/constants'
 
 export default {
   name: 'Header',
@@ -29,6 +44,11 @@ export default {
     },
     clientsHistoryLoaded () {
       return !Array.isArray(this.clientsHistory.length) || !this.clientsHistory.length.length
+    },
+    homeRoute () {
+      return {
+        name: routes.home
+      }
     }
   },
   methods: {
@@ -44,5 +64,11 @@ export default {
 </script>
 
 <style scoped>
+a.nuxt-link-active svg {
+  @apply text-indigo-500 w-8;
+}
 
+a.nuxt-link-active svg:hover {
+  @apply text-indigo-500 scale-100;
+}
 </style>
