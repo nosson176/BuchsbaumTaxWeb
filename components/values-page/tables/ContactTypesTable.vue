@@ -44,7 +44,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     contactTypes () {
-      return this.valueTypes.contact_type.filter(type => type.show);
+      return JSON.parse(JSON.stringify(this.valueTypes.contact_type.filter(type => type.show)));
     }
   },
   methods: {
