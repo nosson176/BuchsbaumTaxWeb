@@ -69,11 +69,11 @@ export default {
 </script>
 
 <style scoped>
-a.nuxt-link-active svg {
+a.nuxt-link-exact-active svg {
   @apply text-indigo-500 w-8;
 }
 
-a.nuxt-link-active svg:hover {
+a.nuxt-link-exact-active svg:hover {
   @apply text-indigo-500 scale-100;
 }
 </style>

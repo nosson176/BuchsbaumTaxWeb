@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen flex flex-col">
+    <Header />
     <Values />
   </div>
 </template>

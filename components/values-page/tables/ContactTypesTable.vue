@@ -18,7 +18,7 @@
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
         <div class="table-col">
-          <EditableCheckBoxCell />
+          <EditableCheckBoxCell v-model="type.include" />
         </div>
         <div class="table-col w-full" @click="toggleEditable(type.id)">
           <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" />
@@ -44,7 +44,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     contactTypes () {
-      return this.valueTypes.contact_type;
+      return this.valueTypes.contact_type.filter(type => type.show);
     }
   },
   methods: {
