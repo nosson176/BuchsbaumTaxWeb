@@ -1,6 +1,6 @@
 <template>
   <div class="h-full w-full flex flex-col">
-    <ValueTabs />
+    <ValueTabs :active-tab="activeTab" @click="setActiveTab" />
     <div>
       <ValueTable />
     </div>
@@ -9,18 +9,22 @@
 
 <script>
 import { mapState } from 'vuex';
-import { models } from '~/shared/constants';
+import { models, valueTabs } from '~/shared/constants';
 export default {
   name: "ValuesEditorSection",
   data () {
-    return {};
+    return {
+      activeTab: valueTabs[0]
+    }
   },
   computed: {
     ...mapState([models.valueTypes])
   },
-  mounted () {
-    console.log(this.valueTypes)
-  },
+  methods: {
+    setActiveTab (tab) {
+      this.activeTab = tab;
+    }
+  }
 };
 </script>
 

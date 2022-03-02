@@ -225,3 +225,15 @@ export const operators = Object.freeze([
   { name: '>=', value: '>=' },
   { name: '<=', value: '<=' },
 ])
+
+export const valueTabs = Object.freeze([
+  { name: 'Checklist', value: 'checklist' },
+  { name: 'Client', value: 'client' },
+  { name: 'Clockspot', value: 'clockspot' },
+  { name: 'Contact', value: 'contact' },
+  { name: 'Fee', value: 'fee' },
+  { name: 'Inc./Fbar Breakdown', value: 'inc_fbar_breakdown' },
+  { name: 'Shared', value: 'shared' },
+  { name: 'Tax Personal', value: 'tax_personal' },
+  { name: 'Tax Year', value: 'tax_year' },
+])
