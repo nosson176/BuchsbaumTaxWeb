@@ -1,9 +1,7 @@
 <template>
-  <div class="h-full w-full flex flex-col">
+  <div class="h-full w-7/10 flex flex-col">
     <ValueTabs :active-tab="activeTab" @click="setActiveTab" />
-    <div>
-      <ValueTable />
-    </div>
+    <ValueTable :active-tab="activeTab" />
   </div>
 </template>
 
