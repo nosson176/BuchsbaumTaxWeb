@@ -10,9 +10,9 @@
         <a href="#">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </a>
-        <a href="#">
+        <nuxt-link :to="valuesRoute">
           <ValuesIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
-        </a>
+        </nuxt-link>
         <nuxt-link :to="homeRoute">
           <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -47,7 +47,12 @@ export default {
     },
     homeRoute () {
       return {
-        name: routes.home
+        name: routes.root
+      }
+    },
+    valuesRoute () {
+      return {
+        name: routes.values
       }
     }
   },
