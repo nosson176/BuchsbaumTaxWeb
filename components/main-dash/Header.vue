@@ -7,9 +7,9 @@
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
       </div>
       <div class="ml-auto flex space-x-4 items-center">
-        <a href="#">
+        <nuxt-link :to="usersRoute">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
-        </a>
+        </nuxt-link>
         <a href="#">
           <ValuesIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </a>
@@ -48,6 +48,11 @@ export default {
     homeRoute () {
       return {
         name: routes.home
+      }
+    },
+    usersRoute () {
+      return {
+        name: routes.users
       }
     }
   },

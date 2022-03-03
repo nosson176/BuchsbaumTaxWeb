@@ -1,23 +1,15 @@
 <template>
-  <div></div>
+  <div>{{ user }}</div>
 </template>
 
 <script>
 export default {
   name: 'UserDetails',
-
-  data () {
-    return {
-
-    };
-  },
-
-  mounted () {
-
-  },
-
-  methods: {
-
+  props: {
+    user: {
+      type: Object,
+      default: () => null,
+    }
   },
 };
 </script>
