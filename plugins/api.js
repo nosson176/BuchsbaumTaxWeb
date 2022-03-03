@@ -173,8 +173,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error creating smartview'))
       .finally(() => getSmartviews(headers))
 
-  const createValue = (headers, { value }) =>
-    $axios.post('/values', value, { headers })
+  const createValueType = (headers, { value }) =>
+    $axios
+      .post('/values', value, { headers })
+      .then(() => getValueTypes(headers))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
@@ -264,7 +266,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createFiling,
     createIncome,
     createLog,
-    createValue,
+    createValueType,
     createSmartview,
     createTaxPersonal,
     createTaxYear,

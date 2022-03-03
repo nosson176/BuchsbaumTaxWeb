@@ -34,6 +34,7 @@
 <script>
 import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
+import { valueTypeValueConstructor } from '~/shared/constructors'
 export default {
   name: "ContactTypesTable",
   data () {
@@ -45,6 +46,9 @@ export default {
     ...mapState([models.valueTypes]),
     contactTypes () {
       return JSON.parse(JSON.stringify(this.valueTypes.contact_type.filter(type => type.show)));
+    },
+    headers () {
+      return this.$api.getHeaders();
     }
   },
   methods: {
@@ -55,8 +59,11 @@ export default {
       return this.editableId === id;
     },
     deleteValue (valueId) {
-      const headers = this.$api.getHeaders();
-      this.$api.deleteValueType(headers, { valueId });
+      this.$api.deleteValueType(this.headers, { valueId });
+    },
+    onAddRowClick () {
+      const value = Object.assign({}, valueTypeValueConstructor, { key: 'contact_type', value: '' });
+      this.$api.createValueType(this.headers, { value });
     },
   }
 };
