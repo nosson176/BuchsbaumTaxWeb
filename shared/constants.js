@@ -17,13 +17,13 @@ export const models = Object.freeze({
   valueTaxGroups: 'valueTaxGroups',
   valueTypes: 'valueTypes',
   cmdPressed: 'cmdPressed',
-  clientSearchValue: 'clientSearchValue'
+  clientSearchValue: 'clientSearchValue',
 })
 
 // Store Mutations
 export const mutations = Object.freeze({
   setModelResponse: 'setModelResponse',
-  setLoading: 'setLoading'
+  setLoading: 'setLoading',
 })
 
 // Route names
@@ -35,7 +35,8 @@ export const routes = Object.freeze({
   resetPassword: 'reset-password',
   root: 'index',
   signup: 'signup',
-  terms: 'terms'
+  terms: 'terms',
+  users: 'users',
 })
 
 // Meta Tags
@@ -47,7 +48,7 @@ export const meta = Object.freeze({
   og_image: 'og:image',
   hid_og_image: 'og-image',
   og_description: 'og:description',
-  hid_og_description: 'og-description'
+  hid_og_description: 'og-description',
 })
 
 export const COOKIE_KEY_SESSION_TOKEN = 'btax-session-token'
@@ -57,7 +58,7 @@ export const BACKEND_MAX_INTEGER = 2147483647
 export const error = Object.freeze({
   axios_401: 'Request failed with status code 401',
   email_already_exists: 'Email already exists',
-  generic_signup_error: 'Generic signup error'
+  generic_signup_error: 'Generic signup error',
 })
 
 // Events
@@ -72,17 +73,17 @@ export const events = Object.freeze({
   keypress: 'keypress',
   keyup: 'keyup',
   resize: 'resize',
-  submit: 'submit'
+  submit: 'submit',
 })
 
 export const dateformat = Object.freeze({
   client: 'M/d/yy',
-  server: 'yyyy-MM-dd'
+  server: 'yyyy-MM-dd',
 })
 
 // Notification Types
 export const notification = Object.freeze({
-  alert: 'alert'
+  alert: 'alert',
 })
 
 // Tabs
@@ -95,13 +96,13 @@ export const tabs = Object.freeze({
   income: 'income',
   logs: 'logs',
   tax_personals: 'tax-personals',
-  tax_years: 'tax-years'
+  tax_years: 'tax-years',
 })
 
 export const categories = Object.freeze({
   primary: 'PRI.',
   secondary: 'SEC.',
-  dependant: 'DEP.'
+  dependant: 'DEP.',
 })
 
 export const priorityOptions = Object.freeze([
@@ -112,25 +113,25 @@ export const priorityOptions = Object.freeze([
   { color: 'red', value: 5 },
   { color: 'orange', value: 6 },
   { color: 'light-pink', value: 7 },
-  { color: 'black', value: 8 }
+  { color: 'black', value: 8 },
 ])
 
 export const filingTypes = Object.freeze({
   federal: 'federal',
   state: 'state',
   fbar: 'fbar',
-  ext: 'ext'
+  ext: 'ext',
 })
 
 export const tableGroups = Object.freeze({
   feesChecklists: 'feesChecklists',
   logsIncomeFbar: 'logsIncomeFbar',
-  personalContact: 'personalContact'
+  personalContact: 'personalContact',
 })
 
 export const currencySymbols = Object.freeze({
   us: '$',
-  il: '₪'
+  il: '₪',
 })
 
 export const searchOptions = Object.freeze([
@@ -146,7 +147,10 @@ export const searchOptions = Object.freeze([
   { name: 'CONTACT::type', value: 'contacts::contact_type' },
   { name: 'CONTACT::zip', value: 'contacts::zip' },
   { name: 'CONTACT::memo', value: 'contacts::memo' },
-  { name: 'INCOME_BREAKDOWN::description', value: 'income_breakdowns::description' },
+  {
+    name: 'INCOME_BREAKDOWN::description',
+    value: 'income_breakdowns::description',
+  },
   { name: 'LOG::employee_alarm', value: 'logs::alarm_user_name' },
   { name: 'LOG::alarm_date', value: 'logs::alarm_date' },
   { name: 'LOG::date_of_log', value: 'logs::log_date' },
@@ -160,7 +164,7 @@ export const searchOptions = Object.freeze([
   { name: 'TAX_YEAR::tax_form', value: 'filings::tax_form' },
   { name: 'TAX_YEAR::comment', value: 'filings::memo' },
   { name: 'TAX_YEAR::delivery', value: 'filings::delivery_contact' },
-  { name: 'TAX_YEAR::tax_state', value: 'filings::state' }
+  { name: 'TAX_YEAR::tax_state', value: 'filings::state' },
 ])
 
 export const smartviewOptions = Object.freeze([
@@ -187,21 +191,36 @@ export const smartviewOptions = Object.freeze([
   { name: 'TAX_YEAR::extension_form', value: 'TAX_YEAR::extension_form' },
   { name: 'TAX_YEAR::extension_status', value: 'TAX_YEAR::extension_status' },
   { name: 'TAX_YEAR::FBAR_status', value: 'TAX_YEAR::FBAR_status' },
-  { name: 'TAX_YEAR::FBAR_status_detail', value: 'TAX_YEAR::FBAR_status_detail' },
+  {
+    name: 'TAX_YEAR::FBAR_status_detail',
+    value: 'TAX_YEAR::FBAR_status_detail',
+  },
   { name: 'TAX_YEAR::file_type', value: 'TAX_YEAR::file_type' },
   { name: 'TAX_YEAR::IRS_HISTORY', value: 'TAX_YEAR::IRS_HISTORY' },
   { name: 'TAX_YEAR::owes_federal', value: 'TAX_YEAR::owes_federal' },
   { name: 'TAX_YEAR::paid_federal', value: 'TAX_YEAR::paid_federal' },
-  { name: 'TAX_YEAR::state_status_detail', value: 'TAX_YEAR::state_status_detail' },
+  {
+    name: 'TAX_YEAR::state_status_detail',
+    value: 'TAX_YEAR::state_status_detail',
+  },
   { name: 'TAX_YEAR::tax_form', value: 'TAX_YEAR::tax_form' },
-  { name: 'TAX_YEAR::tax_year_status_detail', value: 'TAX_YEAR::tax_year_status_detail' },
-  { name: 'TAX_YEAR::tax_year_status_federal', value: 'TAX_YEAR::tax_year_status_federal' },
-  { name: 'TAX_YEAR::tax_year_status_state', value: 'TAX_YEAR::tax_year_status_state' },
+  {
+    name: 'TAX_YEAR::tax_year_status_detail',
+    value: 'TAX_YEAR::tax_year_status_detail',
+  },
+  {
+    name: 'TAX_YEAR::tax_year_status_federal',
+    value: 'TAX_YEAR::tax_year_status_federal',
+  },
+  {
+    name: 'TAX_YEAR::tax_year_status_state',
+    value: 'TAX_YEAR::tax_year_status_state',
+  },
   { name: 'TAX_YEAR::year_name', value: 'TAX_YEAR::year_name' },
   { name: 'TAX_YEAR::delivery', value: 'TAX_YEAR::delivery' },
   { name: 'TAX_YEAR::tax_state', value: 'TAX_YEAR::tax_state' },
   { name: 'CLIENT_FLAGS::flag_name', value: 'CLIENT_FLAGS::flag_name' },
-  { name: 'CLIENT_FLAGS::user_name', value: 'CLIENT_FLAGS::user_name' }
+  { name: 'CLIENT_FLAGS::user_name', value: 'CLIENT_FLAGS::user_name' },
 ])
 
 export const operators = Object.freeze([
@@ -210,5 +229,5 @@ export const operators = Object.freeze([
   { name: '>', value: '>' },
   { name: '<', value: '<' },
   { name: '>=', value: '>=' },
-  { name: '<=', value: '<=' }
+  { name: '<=', value: '<=' },
 ])
