@@ -9,12 +9,13 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(user, index) in users" :key="user.id" :idx="index">
-        <div
-          class="table-col w-full cursor-pointer"
-          :class="isUserSelected(user.id) ? 'bg-gray-700 text-gray-100' : ''"
-          @click="setSelected(user)"
-        >
+      <TableRow
+        v-for="(user, index) in users"
+        :key="user.id"
+        :idx="index"
+        :class="isUserSelected(user.id) ? 'selected' : 'row'"
+      >
+        <div class="table-col w-full cursor-pointer" @click="setSelected(user)">
           {{ user.username }}
           <span class="font-light">({{ user.userType }})</span>
         </div>
@@ -42,7 +43,6 @@ export default {
   },
   methods: {
     setSelected (user) {
-      console.log(user);
       this.$emit(events.click, user.id);
     },
     isUserSelected (userId) {
@@ -55,4 +55,14 @@ export default {
 </script>
 
 <style scoped>
+.selected,
+.selected.even,
+.row:hover {
+  @apply bg-gray-700;
+}
+
+.selected .table-col,
+.row .table-col:hover {
+  @apply text-gray-100;
+}
 </style>
