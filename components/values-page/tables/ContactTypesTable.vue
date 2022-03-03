@@ -24,7 +24,7 @@
           <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" />
         </div>
         <div class="table-col">
-          <DeleteButton />
+          <DeleteButton @click="deleteValue(type.id)" />
         </div>
       </TableRow>
     </template>
@@ -53,6 +53,10 @@ export default {
     },
     isEditable (id) {
       return this.editableId === id;
+    },
+    deleteValue (valueId) {
+      const headers = this.$api.getHeaders();
+      this.$api.deleteValueType(headers, { valueId });
     },
   }
 };

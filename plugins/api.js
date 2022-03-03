@@ -247,6 +247,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating smartview'))
       .finally(() => getSmartviews(headers))
 
+  // DELETE
+  const deleteValueType = (headers, { valueId }) => {
+    $axios
+      .delete(`/values/${valueId}`, { headers })
+      .catch(() => $toast.error('Error deleting value'))
+      .finally(() => getValueTypes(headers))
+  }
+
   const api = {
     createChecklist,
     createClient,
@@ -260,6 +268,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createSmartview,
     createTaxPersonal,
     createTaxYear,
+    deleteValueType,
     getAllClientFees,
     getAllUsers,
     getClientData,
