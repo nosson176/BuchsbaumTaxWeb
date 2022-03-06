@@ -173,7 +173,6 @@ export default {
       this.$emit(events.change, user);
     },
     toggleEditable (field) {
-      console.log(field);
       this.editable = this.editable === field ? '' : field;
     },
     onBlur () {
