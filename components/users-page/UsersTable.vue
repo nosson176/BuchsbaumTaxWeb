@@ -12,6 +12,7 @@
       <TableRow
         v-for="(user, index) in users"
         :key="user.id"
+        class="px-2"
         :idx="index"
         :class="isUserSelected(user.id) ? 'selected' : 'row'"
       >
