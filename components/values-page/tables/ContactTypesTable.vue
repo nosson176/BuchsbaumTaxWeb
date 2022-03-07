@@ -8,7 +8,7 @@
         <div class="table-header">
           <CheckBoxWithEyeIcon />
         </div>
-        <div class="table-header w-full">Name</div>
+        <div class="table-header w-full ml-1">Name</div>
         <div class="table-header"></div>
       </TableHeader>
     </template>

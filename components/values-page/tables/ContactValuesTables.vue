@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full grid grid-cols-4 grid-rows-2 border border-indigo-500">
+  <div class="w-full h-full grid grid-cols-4 grid-rows-2 border border-indigo-500 p-2">
     <ContactTypesTable />
   </div>
 </template>
