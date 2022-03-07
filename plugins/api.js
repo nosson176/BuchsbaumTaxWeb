@@ -249,6 +249,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating smartview'))
       .finally(() => getSmartviews(headers))
 
+  const updateValueType = (headers, { valueId }, value) =>
+    $axios
+      .put(`/values/${valueId}`, value, { headers })
+      .catch(() => $toast.error('Error updating value type'))
+      .finally(() => getValueTypes(headers))
+
   // DELETE
   const deleteValueType = (headers, { valueId }) => {
     $axios
@@ -293,6 +299,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateSmartview,
     updateTaxPersonal,
     updateTaxYear,
+    updateValueType,
   }
 
   // Inject to context as $api
