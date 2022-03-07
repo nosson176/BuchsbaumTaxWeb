@@ -1,7 +1,6 @@
 import { getCookieByKey, setCookieByKey } from '~/shared/cookie-utilities'
 import {
   COOKIE_KEY_SESSION_TOKEN,
-  error,
   models,
   mutations,
   routes,
@@ -29,6 +28,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       model: models.token,
       data: { token },
     })
+    redirect({ name: routes.login })
   }
 
   // GET
@@ -49,10 +49,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch((e) => {
         $toast.error('Error loading clients')
-        if (e.message === error.axios_401) {
-          signout()
-          redirect({ name: routes.login })
-        }
       })
   }
 
