@@ -252,12 +252,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getValueTypes(headers))
 
   // DELETE
-  const deleteValueType = (headers, { valueId }) => {
+  const deleteValueType = (headers, { valueId }) =>
     $axios
       .delete(`/values/${valueId}`, { headers })
       .catch(() => $toast.error('Error deleting value'))
       .finally(() => getValueTypes(headers))
-  }
 
   const api = {
     createChecklist,

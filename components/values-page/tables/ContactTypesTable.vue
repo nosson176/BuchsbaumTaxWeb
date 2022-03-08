@@ -31,6 +31,9 @@
           <DeleteButton @click="deleteValue(type.id)" />
         </div>
       </TableRow>
+      <Modal :showing="showDelete" @hide="closeDeleteModal">
+        <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
+      </Modal>
     </template>
   </Table>
 </template>
@@ -44,8 +47,10 @@ export default {
   name: "ContactTypesTable",
   data () {
     return {
-      editableId: null
-    }
+      editableId: null,
+      showDelete: false,
+      deleteId: ''
+    };
   },
   computed: {
     ...mapState([models.valueTypes]),
@@ -56,7 +61,7 @@ export default {
       return this.$api.getHeaders();
     },
     debounceUpdate () {
-      return debounce(this.handleUpdate, 500)
+      return debounce(this.handleUpdate, 500);
     },
   },
   methods: {
@@ -67,17 +72,29 @@ export default {
       return this.editableId === id;
     },
     deleteValue (valueId) {
-      this.$api.deleteValueType(this.headers, { valueId });
+      this.deleteId = valueId;
+      this.showDelete = true;
     },
     onAddRowClick () {
-      const value = Object.assign({}, valueTypeValueConstructor, { key: 'contact_type', value: '' });
+      const value = Object.assign({}, valueTypeValueConstructor, { key: "contact_type", value: "" });
       this.$api.createValueType(this.headers, { value });
     },
     handleUpdate () {
-      const value = Object.values(this.contactTypes).find(type => type.id === this.editableId)
-      this.$api.updateValueType(this.headers, { valueId: value.id }, value)
+      const value = Object.values(this.contactTypes).find(type => type.id === this.editableId);
+      this.$api.updateValueType(this.headers, { valueId: value.id }, value);
     },
-  }
+    deleteItem () {
+      this.$api.deleteValueType(this.headers, { valueId: this.deleteId })
+        .then(() => {
+          this.showDelete = false;
+          this.deleteId = '';
+        });
+    },
+    closeDeleteModal () {
+      this.showDelete = false;
+      this.deleteId = '';
+    },
+  },
 };
 </script>
 
