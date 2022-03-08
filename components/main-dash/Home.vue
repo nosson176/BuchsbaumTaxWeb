@@ -1,26 +1,40 @@
 <template>
   <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
-    <Header />
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
         <ClientListHeader :show-archived="showArchivedClients" @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
-        <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
-        <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
+        <FeesChecklistsHeader
+          @change="toggleShowArchivedFeesChecklists"
+          @click="switchFeesChecklistsTab"
+        />
+        <FeesChecklistsBody
+          :show-archived="showArchivedFeesChecklists"
+          :current-tab="currentFeesChecklistsTab"
+        />
       </div>
       <div class="shadow rounded flex flex-col smart-views bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
-        <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
-        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
+        <LogsIncomeFbarHeader
+          @change="toggleShowArchivedLogsIncomeFbar"
+          @click="switchLogsIncomeFbarTab"
+        />
+        <LogsIncomeFbarBody
+          :show-archived="showArchivedLogsIncomeFbar"
+          :current-tab="currentLogsIncomeFbarTab"
+        />
       </div>
       <div class="shadow rounded flex flex-col personal-contact bg-white">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+        <PersonalContactBody
+          :show-archived="showArchivedPersonals"
+          :current-tab="currentPersonalsTab"
+        />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
       <div class="bg-white shadow-md rounded-t flex flex-col-reverse client-tax-years">

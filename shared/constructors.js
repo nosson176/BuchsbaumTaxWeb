@@ -1,4 +1,4 @@
-import { NOTIFICATION_TYPE_ALERT } from '@/shared/constants'
+import { notification } from '@/shared/constants'
 
 const logConstructor = () => {
   return {
@@ -14,7 +14,7 @@ const logConstructor = () => {
     note: '',
     secondsSpent: NaN,
     archived: false,
-    alerted: false
+    alerted: false,
   }
 }
 
@@ -22,20 +22,43 @@ const notificationConstructor = () => {
   return {
     type: '',
     time: 0,
-    message: ''
+    message: '',
   }
 }
 
 const errorNotificationConstructor = () => {
   return {
-    type: NOTIFICATION_TYPE_ALERT,
+    type: notification.alert,
     time: 5000,
-    message: 'Error occurred'
+    message: 'Error occurred',
+  }
+}
+
+const valueTypeValueConstructor = () => {
+  return {
+    key: '',
+    sortOrder: 0,
+    value: 'TEST',
+    show: true,
+    include: true,
+  }
+}
+
+const valueTypeValueWithParentConstructor = () => {
+  return {
+    key: '',
+    sortOrder: 0,
+    value: 'TEST',
+    show: true,
+    include: true,
+    parentId: 0,
   }
 }
 
 export {
   logConstructor,
   notificationConstructor,
-  errorNotificationConstructor
+  errorNotificationConstructor,
+  valueTypeValueConstructor,
+  valueTypeValueWithParentConstructor,
 }
