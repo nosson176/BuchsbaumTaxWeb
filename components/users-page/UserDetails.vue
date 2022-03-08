@@ -24,11 +24,7 @@
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Last Name</dt>
               <dd class="mt-1 text-sm text-gray-900">
-                <EditableInput
-                  v-model="lastName"
-                  :is-editable="isFirstNameEditable"
-                  @blur="onBlur"
-                />
+                <EditableInput v-model="lastName" :is-editable="isLastNameEditable" @blur="onBlur" />
               </dd>
             </div>
           </dl>
@@ -49,7 +45,7 @@
               <dd class="mt-1 text-sm text-gray-900">
                 <EditableInput
                   v-model="secondsInDay"
-                  :is-editable="isFirstNameEditable"
+                  :is-editable="isSecondsInDayEditable"
                   @blur="onBlur"
                 />
               </dd>
@@ -166,6 +162,16 @@ export default {
     isTypeEditable () {
       return this.editable === 'type';
     },
+    isFirstNameEditable () {
+      return this.editable === 'firstName';
+    },
+    isLastNameEditable () {
+      return this.editable === 'lastName';
+    },
+    isSecondsInDayEditable () {
+      return this.editable === 'secondsInDay';
+    },
+
   },
   methods: {
     updateUser (newVal) {
