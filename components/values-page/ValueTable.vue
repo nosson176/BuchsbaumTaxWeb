@@ -4,6 +4,7 @@
     <ClientValueTables v-if="isClientTabActive" />
     <ContactValueTables v-if="isContactsTabActive" />
     <IncFbarValueTables v-if="isIncFbarTabActive" />
+    <SharedValueTables v-if="isSharedTabActive" />
   </div>
 </template>
 
@@ -29,6 +30,9 @@ export default {
     },
     isIncFbarTabActive () {
       return this.activeTab?.value === tabs.values.inc_fbar_breakdown;
+    },
+    isSharedTabActive () {
+      return this.activeTab?.value === tabs.values.shared;
     }
   },
 }
