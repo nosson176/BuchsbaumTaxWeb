@@ -1,8 +1,17 @@
 <template>
   <ValuesTableGrid>
-    <FeeTypesTable />
-    <FeeStatusTable @click="setSelectedStatus" />
-    <FeeStatusDetailsTable :status="selectedStatus" />
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Type</span>
+      <FeeTypesTable />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Status</span>
+      <FeeStatusTable @click="setSelectedStatus" />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Status Detail</span>
+      <FeeStatusDetailsTable :status="selectedStatus" />
+    </div>
   </ValuesTableGrid>
 </template>
 

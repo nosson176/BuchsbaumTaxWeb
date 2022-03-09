@@ -1,14 +1,41 @@
 <template>
   <ValuesTableGrid>
-    <TaxYearStatusTable @click="setSelectedTaxYearStatus" />
-    <TaxYearStatusDetailsTable :status="selectedTaxYearStatus" />
-    <TaxYearTaxFormsTable />
-    <TaxYearFileTypesTable />
-    <TaxYearFbarStatusTable @click="setSelectedTaxYearFbarStatus" />
-    <TaxYearFbarStatusDetailsTable :status="selectedTaxYearFbarStatus" />
-    <TaxYearFbarFilingsTable />
-    <TaxYearStateStatusTable @click="setSelectedTaxYearStateStatus" />
-    <TaxYearStateStatusDetailsTable :status="selectedTaxYearStateStatus" />
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Tax Year Status</span>
+      <TaxYearStatusTable @click="setSelectedTaxYearStatus" />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Tax Year Status Detail</span>
+      <TaxYearStatusDetailsTable :status="selectedTaxYearStatus" />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Tax Form</span>
+      <TaxYearTaxFormsTable />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">File Type</span>
+      <TaxYearFileTypesTable />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Fbar Status</span>
+      <TaxYearFbarStatusTable @click="setSelectedTaxYearFbarStatus" />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Fbar Status Detail</span>
+      <TaxYearFbarStatusDetailsTable :status="selectedTaxYearFbarStatus" />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Fbar Filing</span>
+      <TaxYearFbarFilingsTable />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">State Status</span>
+      <TaxYearStateStatusTable @click="setSelectedTaxYearStateStatus" />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">State Status Detail</span>
+      <TaxYearStateStatusDetailsTable :status="selectedTaxYearStateStatus" />
+    </div>
   </ValuesTableGrid>
 </template>
 
