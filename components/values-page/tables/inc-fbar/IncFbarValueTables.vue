@@ -1,6 +1,8 @@
 <template>
   <ValuesTableGrid>
     <IncFbarJobsTable />
+    <IncFbarPartsTable />
+    <IncFbarCurrenciesTable />
   </ValuesTableGrid>
 </template>
 
