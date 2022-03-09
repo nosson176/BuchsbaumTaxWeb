@@ -1,10 +1,12 @@
 <template>
   <div class="w-full h-full">
-    <ContactValuesTables v-if="isContactsTabActive" />
+    <ChecklistTables v-if="isChecklistsTabActive" />
+    <ContactTables v-if="isContactsTabActive" />
   </div>
 </template>
 
 <script>
+import { tabs } from '~/shared/constants';
 export default {
   name: "ValueTable",
   props: {
@@ -14,10 +16,13 @@ export default {
     }
   },
   computed: {
+    isChecklistsTabActive () {
+      return this.activeTab?.value === tabs.values.checklist;
+    },
     isContactsTabActive () {
-      return this.activeTab.value === "contact";
+      return this.activeTab?.value === tabs.values.contact;
     }
-  }
+  },
 }
 </script>
 

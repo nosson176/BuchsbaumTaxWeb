@@ -91,6 +91,16 @@ export const tabs = Object.freeze({
   logs: 'logs',
   tax_personals: 'tax-personals',
   tax_years: 'tax-years',
+  values: {
+    checklist: 'checklist',
+    client: 'client',
+    clockspot: 'clockspot',
+    contact: 'contact',
+    inc_fbar_breakdown: 'inc-fbar-breakdown',
+    shared: 'shared',
+    tax_personal: 'tax-personal',
+    tax_year: 'tax-year',
+  },
 })
 
 export const categories = Object.freeze({
