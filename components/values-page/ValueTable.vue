@@ -5,6 +5,7 @@
     <ContactValueTables v-if="isContactsTabActive" />
     <IncFbarValueTables v-if="isIncFbarTabActive" />
     <SharedValueTables v-if="isSharedTabActive" />
+    <TaxPersonalValueTables v-if="isTaxPersonalTabActive" />
   </div>
 </template>
 
@@ -33,7 +34,10 @@ export default {
     },
     isSharedTabActive () {
       return this.activeTab?.value === tabs.values.shared;
-    }
+    },
+    isTaxPersonalTabActive () {
+      return this.activeTab?.value === tabs.values.tax_personal;
+    },
   },
 }
 </script>
