@@ -10,15 +10,20 @@
 export default {
   name: 'IndexPage',
   async fetch () {
-    const headers = this.$api.getHeaders()
-    await this.$api.getClientList(headers)
-    await this.$api.getValueTypes(headers)
-    await this.$api.getAllUsers(headers)
-    await this.$api.getValueTaxGroups(headers)
-    await this.$api.getAllClientFees(headers)
-    await this.$api.getClientsHistory(headers)
-    await this.$api.getSmartviews(headers)
-
+    await this.$api.getClientList(this.headers)
+  },
+  computed: {
+    headers () {
+      return this.$api.getHeaders()
+    }
+  },
+  async created () {
+    await this.$api.getValueTypes(this.headers)
+    await this.$api.getAllUsers(this.headers)
+    await this.$api.getValueTaxGroups(this.headers)
+    await this.$api.getAllClientFees(this.headers)
+    await this.$api.getClientsHistory(this.headers)
+    await this.$api.getSmartviews(this.headers)
   }
 }
 </script>
