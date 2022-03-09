@@ -13,9 +13,14 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(type, idx) in feeStatus" :key="idx" class="pr-1">
+      <TableRow
+        v-for="(type, idx) in feeStatus"
+        :key="idx"
+        class="pr-1"
+        :class="isSelected(type) ? 'selected' : ''"
+      >
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
+          <ClickCell @click="toggleSelected(type)">{{ idx + 1 }}</ClickCell>
         </div>
         <div class="table-col">
           <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
@@ -29,7 +34,7 @@
             :is-editable="isEditable(type.id)"
             @input="debounceUpdate"
           />
-          <span class="bg-gray-100">{{ detailCount(type.id) }}</span>
+          <span class="pr-1">{{ detailCount(type.id) }}</span>
         </div>
         <div class="table-col">
           <DeleteButton @click="deleteValue(type.id)" />
@@ -45,7 +50,7 @@
 <script>
 import { debounce } from 'lodash';
 import { mapState } from 'vuex';
-import { models } from '~/shared/constants';
+import { events, models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
 const TABLE_TYPE = 'fee_status';
@@ -57,7 +62,8 @@ export default {
     return {
       editableId: null,
       showDelete: false,
-      deleteId: ''
+      deleteId: '',
+      selectedId: null
     };
   },
   computed: {
@@ -108,9 +114,19 @@ export default {
     detailCount (id) {
       return this.feeStatusDetail.filter(type => type.parentId === id).length;
     },
+    toggleSelected (type) {
+      this.$emit(events.click, type);
+      this.selectedId = type.id
+    },
+    isSelected (type) {
+      return this.selectedId === type.id;
+    }
   },
 };
 </script>
 
 <style scoped>
+.selected {
+  @apply bg-indigo-200;
+}
 </style>

@@ -15,7 +15,7 @@
     <template #body>
       <TableRow v-for="(type, idx) in sharedYearNames" :key="idx" class="pr-1">
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
+          <ClickCell>{{ idx + 1 }}</ClickCell>
         </div>
         <div class="table-col">
           <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
