@@ -16,7 +16,11 @@ export default {
   },
   methods: {
     setSelectedStatus (status) {
-      this.selectedStatus = status;
+      if (this.selectedStatus?.id === status.id) {
+        this.selectedStatus = null;
+      } else {
+        this.selectedStatus = status;
+      }
     },
   },
 };
