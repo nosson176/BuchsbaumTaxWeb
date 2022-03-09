@@ -58,7 +58,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     clientStatus () {
-      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE].filter(type => type.show)));
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]));
     },
     headers () {
       return this.$api.getHeaders();

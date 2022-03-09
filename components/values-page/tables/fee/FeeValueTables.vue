@@ -1,6 +1,7 @@
 <template>
   <ValuesTableGrid>
     <FeeTypesTable />
+    <FeeStatusTable />
   </ValuesTableGrid>
 </template>
 

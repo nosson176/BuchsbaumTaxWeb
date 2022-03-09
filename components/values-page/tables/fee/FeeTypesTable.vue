@@ -44,7 +44,7 @@ import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
-const TABLE_TYPE = 'contact_type';
+const TABLE_TYPE = 'fee_type';
 
 export default {
   name: "FeeTypesTable",
@@ -58,7 +58,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     feeTypes () {
-      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE].filter(type => type.show)));
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]));
     },
     headers () {
       return this.$api.getHeaders();

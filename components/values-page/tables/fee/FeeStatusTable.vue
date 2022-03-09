@@ -13,19 +13,23 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(type, idx) in sharedYearNames" :key="idx" class="pr-1">
+      <TableRow v-for="(type, idx) in feeStatus" :key="idx" class="pr-1">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
         <div class="table-col">
           <EditableCheckBoxCell v-model="type.include" @input="debounceUpdate" />
         </div>
-        <div class="table-col w-full" @click="toggleEditable(type.id)">
+        <div
+          class="table-col w-full flex justify-between items-center"
+          @click="toggleEditable(type.id)"
+        >
           <EditableInput
             v-model="type.value"
             :is-editable="isEditable(type.id)"
             @input="debounceUpdate"
           />
+          <span class="bg-gray-100">{{ detailCount(type.id) }}</span>
         </div>
         <div class="table-col">
           <DeleteButton @click="deleteValue(type.id)" />
@@ -44,10 +48,11 @@ import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
-const TABLE_TYPE = 'year_name';
+const TABLE_TYPE = 'fee_status';
+const SECONDARY_TABLE_TYPE = 'fee_status_detail';
 
 export default {
-  name: "SharedYearNamesTable",
+  name: "FeeStatusTable",
   data () {
     return {
       editableId: null,
@@ -57,8 +62,11 @@ export default {
   },
   computed: {
     ...mapState([models.valueTypes]),
-    sharedYearNames () {
+    feeStatus () {
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]));
+    },
+    feeStatusDetail () {
+      return JSON.parse(JSON.stringify(this.valueTypes[SECONDARY_TABLE_TYPE]));
     },
     headers () {
       return this.$api.getHeaders();
@@ -83,7 +91,7 @@ export default {
       this.$api.createValueType(this.headers, { value });
     },
     handleUpdate () {
-      const value = Object.values(this.sharedYearNames).find(type => type.id === this.editableId);
+      const value = Object.values(this.feeStatus).find(type => type.id === this.editableId);
       this.$api.updateValueType(this.headers, { valueId: value.id }, value);
     },
     deleteItem () {
@@ -96,6 +104,9 @@ export default {
     closeDeleteModal () {
       this.showDelete = false;
       this.deleteId = '';
+    },
+    detailCount (id) {
+      return this.feeStatusDetail.filter(type => type.parentId === id).length;
     },
   },
 };
