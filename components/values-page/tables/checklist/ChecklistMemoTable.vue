@@ -44,7 +44,7 @@ import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
 export default {
-  name: "ChecklistMemoTypesTable",
+  name: "ChecklistMemoTable",
   data () {
     return {
       editableId: null,

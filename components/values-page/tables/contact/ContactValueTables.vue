@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'ContactTables',
+  name: 'ContactValueTables',
 };
 </script>
 

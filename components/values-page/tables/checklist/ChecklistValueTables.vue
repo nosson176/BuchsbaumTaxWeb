@@ -1,12 +1,12 @@
 <template>
   <ValuesTableGrid>
-    <ChecklistMemoTypesTable />
+    <ChecklistMemoTable />
   </ValuesTableGrid>
 </template>
 
 <script>
 export default {
-  name: 'ChecklistTables',
+  name: 'ChecklistValueTables',
 };
 </script>
 

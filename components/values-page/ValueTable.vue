@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full">
-    <ChecklistTables v-if="isChecklistsTabActive" />
-    <ContactTables v-if="isContactsTabActive" />
+    <ChecklistValueTables v-if="isChecklistsTabActive" />
+    <ContactValueTables v-if="isContactsTabActive" />
   </div>
 </template>
 

@@ -1,24 +1,24 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <Header />
-    <Home />
+    <p v-if="$fetchState.pending">Fetching Data...</p>
+    <Home v-else />
   </div>
 </template>
 
 <script>
 export default {
   name: 'IndexPage',
-  created () {
+  async fetch () {
     const headers = this.$api.getHeaders()
-    this.$api.getClientList(headers)
-      .then(() => {
-        this.$api.getValueTypes(headers)
-        this.$api.getAllUsers(headers)
-        this.$api.getValueTaxGroups(headers)
-        this.$api.getAllClientFees(headers)
-        this.$api.getClientsHistory(headers)
-        this.$api.getSmartviews(headers)
-      })
+    await this.$api.getClientList(headers)
+    await this.$api.getValueTypes(headers)
+    await this.$api.getAllUsers(headers)
+    await this.$api.getValueTaxGroups(headers)
+    await this.$api.getAllClientFees(headers)
+    await this.$api.getClientsHistory(headers)
+    await this.$api.getSmartviews(headers)
+
   }
 }
 </script>
