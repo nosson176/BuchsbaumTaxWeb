@@ -18,7 +18,7 @@
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
         <div class="table-col">
-          <EditableCheckBoxCell v-model="type.include" @input="debounceUpdate" />
+          <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
         </div>
         <div class="table-col w-full" @click="toggleEditable(type.id)">
           <EditableInput
