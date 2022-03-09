@@ -7,6 +7,7 @@
     <IncFbarValueTables v-if="isIncFbarTabActive" />
     <SharedValueTables v-if="isSharedTabActive" />
     <TaxPersonalValueTables v-if="isTaxPersonalTabActive" />
+    <TaxYearValueTables v-if="isTaxYearTabActive" />
   </div>
 </template>
 
@@ -41,6 +42,9 @@ export default {
     },
     isTaxPersonalTabActive () {
       return this.activeTab?.value === tabs.values.tax_personal;
+    },
+    isTaxYearTabActive () {
+      return this.activeTab?.value === tabs.values.tax_year;
     },
   },
 }
