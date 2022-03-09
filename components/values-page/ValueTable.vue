@@ -3,6 +3,7 @@
     <ChecklistValueTables v-if="isChecklistsTabActive" />
     <ClientValueTables v-if="isClientTabActive" />
     <ContactValueTables v-if="isContactsTabActive" />
+    <IncFbarValueTables v-if="isIncFbarTabActive" />
   </div>
 </template>
 
@@ -25,6 +26,9 @@ export default {
     },
     isContactsTabActive () {
       return this.activeTab?.value === tabs.values.contact;
+    },
+    isIncFbarTabActive () {
+      return this.activeTab?.value === tabs.values.inc_fbar_breakdown;
     }
   },
 }
