@@ -1,6 +1,7 @@
 <template>
   <ValuesTableGrid>
     <ClientStatusTable />
+    <ClientOwesStatusTable />
   </ValuesTableGrid>
 </template>
 

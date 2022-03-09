@@ -13,7 +13,7 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(type, idx) in contactTypes" :key="idx" class="pr-1">
+      <TableRow v-for="(type, idx) in clientStatus" :key="idx" class="pr-1">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
@@ -44,10 +44,10 @@ import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
-const TABLE_TYPE = 'contact_type';
+const TABLE_TYPE = 'status'
 
 export default {
-  name: "ContactTypesTable",
+  name: "ClientStatusTable",
   data () {
     return {
       editableId: null,
@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     ...mapState([models.valueTypes]),
-    contactTypes () {
+    clientStatus () {
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE].filter(type => type.show)));
     },
     headers () {
@@ -83,7 +83,7 @@ export default {
       this.$api.createValueType(this.headers, { value });
     },
     handleUpdate () {
-      const value = Object.values(this.contactTypes).find(type => type.id === this.editableId);
+      const value = Object.values(this.clientStatus).find(type => type.id === this.editableId);
       this.$api.updateValueType(this.headers, { valueId: value.id }, value);
     },
     deleteItem () {

@@ -1,6 +1,7 @@
 <template>
   <div class="w-full h-full">
     <ChecklistValueTables v-if="isChecklistsTabActive" />
+    <ClientValueTables v-if="isClientTabActive" />
     <ContactValueTables v-if="isContactsTabActive" />
   </div>
 </template>
@@ -18,6 +19,9 @@ export default {
   computed: {
     isChecklistsTabActive () {
       return this.activeTab?.value === tabs.values.checklist;
+    },
+    isClientTabActive () {
+      return this.activeTab?.value === tabs.values.client;
     },
     isContactsTabActive () {
       return this.activeTab?.value === tabs.values.contact;

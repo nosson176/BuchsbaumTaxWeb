@@ -43,6 +43,9 @@ import { debounce } from 'lodash';
 import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
+
+const TABLE_TYPE = 'checklist_memo';
+
 export default {
   name: "ChecklistMemoTable",
   data () {
@@ -55,7 +58,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     checklistMemo () {
-      return JSON.parse(JSON.stringify(this.valueTypes.checklist_memo.filter(type => type.show)));
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE].filter(type => type.show)));
     },
     headers () {
       return this.$api.getHeaders();
@@ -76,7 +79,7 @@ export default {
       this.showDelete = true;
     },
     onAddRowClick () {
-      const value = Object.assign({}, valueTypeValueConstructor, { key: "checklist_memo", value: "" });
+      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: "" });
       this.$api.createValueType(this.headers, { value });
     },
     handleUpdate () {
