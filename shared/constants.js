@@ -96,6 +96,7 @@ export const tabs = Object.freeze({
     client: 'client',
     clockspot: 'clockspot',
     contact: 'contact',
+    fee: 'fee',
     inc_fbar_breakdown: 'inc_fbar_breakdown',
     shared: 'shared',
     tax_personal: 'tax_personal',

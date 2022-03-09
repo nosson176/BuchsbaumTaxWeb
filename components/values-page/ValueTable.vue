@@ -3,6 +3,7 @@
     <ChecklistValueTables v-if="isChecklistsTabActive" />
     <ClientValueTables v-if="isClientTabActive" />
     <ContactValueTables v-if="isContactsTabActive" />
+    <FeeValueTables v-if="isFeesTabActive" />
     <IncFbarValueTables v-if="isIncFbarTabActive" />
     <SharedValueTables v-if="isSharedTabActive" />
     <TaxPersonalValueTables v-if="isTaxPersonalTabActive" />
@@ -28,6 +29,9 @@ export default {
     },
     isContactsTabActive () {
       return this.activeTab?.value === tabs.values.contact;
+    },
+    isFeesTabActive () {
+      return this.activeTab?.value === tabs.values.fee;
     },
     isIncFbarTabActive () {
       return this.activeTab?.value === tabs.values.inc_fbar_breakdown;
