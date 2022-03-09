@@ -2,6 +2,7 @@
   <ValuesTableGrid>
     <ClientStatusTable />
     <ClientOwesStatusTable />
+    <ClientPeriodicalTable />
   </ValuesTableGrid>
 </template>
 
