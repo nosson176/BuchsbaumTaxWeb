@@ -61,7 +61,7 @@
           class="table-col sm"
           @click="toggleEditable(`${idx}-years`, log.id)"
         >
-          <Tooltip :disabled="!splitYears(log.years)" trigger="hover">
+          <Tooltip :disabled="!splitYears(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell
               v-model="log.years"
               :is-editable="isEditable(`${idx}-years`)"
