@@ -1,14 +1,18 @@
 <template>
   <div class="header">
     <div v-if="selectedClientCopy" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
-      <div class="col-start-1 font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">
-        {{ lastName }}
-      </div>
+      <div
+        class="col-start-1 font-bold text-2xl cursor-pointer"
+        @click="openEditNameDialogue"
+      >{{ lastName }}</div>
       <div class="col-start-2">
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
         <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
       </div>
-      <div class="col-start-3 font-bold text-white flex justify-center text-2xl" @click="setEditable('status')">
+      <div
+        class="col-start-3 font-bold text-white flex justify-center text-2xl"
+        @click="setEditable('status')"
+      >
         <EditableSelectCell
           v-model="statusValue"
           :options="statusOptions"
@@ -17,7 +21,10 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-start-4 text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
+      <div
+        class="col-start-4 text-gray-100 flex text-sm justify-center"
+        @click="setEditable('periodical')"
+      >
         <EditableSelectCell
           v-model="periodical"
           :options="periodicalOptions"
@@ -26,12 +33,24 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-start-5 text-sm">
-        {{ formattedCreatedDate }}
+      <div class="col-start-5 text-sm">{{ formattedCreatedDate }}</div>
+      <div v-if="isArchived" class="col-start-7 place-self-end">
+        <button
+          type="button"
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+          @click="handleDelete"
+        >
+          <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed" />
+          <span v-else class="capitalize">Delete</span>
+        </button>
       </div>
     </div>
     <Modal :showing="showEditNameDialogue">
-      <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
+      <SubmitCard
+        :loading="isLastNameUpdateLoading"
+        @hide="closeEditNameDialogue"
+        @submit="handleUpdate"
+      >
         <FormInput ref="lastNameInput" v-model="lastName" label="Lastname" />
       </SubmitCard>
     </Modal>
@@ -50,7 +69,8 @@ export default {
     return {
       editingId: '',
       showEditNameDialogue: false,
-      isLastNameUpdateLoading: false
+      isLastNameUpdateLoading: false,
+      isLoading: false,
     }
   },
   computed: {
@@ -109,7 +129,10 @@ export default {
         Object.values(this.clients)
           .map(client => client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client)
       )))
-    }
+    },
+    isArchived () {
+      return this.selectedClientCopy.archived
+    },
   },
   watch: {
     showEditNameDialogue: {
@@ -142,15 +165,21 @@ export default {
     },
     closeEditNameDialogue () {
       this.showEditNameDialogue = false
-    }
+    },
+    async handleDelete () {
+      this.isLoading = true
+      const headers = this.$api.getHeaders()
+      await this.$api.deleteClient(headers, { clientId: this.selectedClientCopy.id })
+      this.isLoading = false
+    },
   }
 }
 </script>
 
 <style scoped>
-  .header {
-    @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center z-10 shadow;
+.header {
+  @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center z-10 shadow;
 
-    min-height: 4rem;
-  }
+  min-height: 4rem;
+}
 </style>
