@@ -1,5 +1,5 @@
 <template>
-  <div ref="div" tabindex="0" :class="showEditMode ? 'edit-mode' : 'read-mode'">
+  <div ref="div" :class="showEditMode ? 'edit-mode' : 'read-mode'">
     <input
       v-if="showEditMode"
       ref="input"
@@ -10,7 +10,7 @@
       tabindex="0"
       :placeholder="placeholder"
       @blur="onBlur"
-    >
+    />
     <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
   </div>
 </template>

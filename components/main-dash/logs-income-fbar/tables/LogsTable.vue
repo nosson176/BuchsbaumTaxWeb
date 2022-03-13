@@ -52,7 +52,6 @@
         >
           <EditablePrioritySelectCell
             v-model="log.priority"
-            tabindex="0"
             :is-editable="isEditable(`${idx}-priority`)"
             @input="debounceUpdate"
             @blur="onBlur"
@@ -67,7 +66,6 @@
           <Tooltip trigger="hover">
             <EditableSelectCell
               v-model="log.years"
-              tabindex="0"
               :is-editable="isEditable(`${idx}-years`)"
               :options="yearOptions"
               @input="debounceUpdate"
@@ -90,7 +88,6 @@
         >
           <EditableTextAreaCell
             v-model="log.note"
-            tabindex="0"
             :is-editable="isEditable(`${idx}-note`)"
             @input="debounceUpdate"
             @blur="onBlur"
@@ -131,7 +128,6 @@
         >
           <CheckIcon
             v-if="log.alarmDate"
-            tabindex="0"
             class="h-5 w-5 cursor-pointer"
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
           />
@@ -144,7 +140,6 @@
         >
           <EditableDateCell
             v-model="log.alarmTime"
-            tabindex="0"
             type="time"
             :is-editable="isEditable(`${idx}-alarmTime`)"
             @input="debounceUpdate"
@@ -159,7 +154,6 @@
         >
           <EditableSelectCell
             v-model="log.alarmUserName"
-            tabindex="0"
             :is-editable="isEditable(`${idx}-alarmUserName`)"
             :options="userOptions"
             @input="debounceUpdate"
@@ -167,7 +161,7 @@
           />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
-          <DeleteButton tabindex="0" small @click="onDeleteClick(log.id)" />
+          <DeleteButton small @click="onDeleteClick(log.id)" />
         </div>
       </TableRow>
     </template>
@@ -307,14 +301,12 @@ export default {
   },
   methods: {
     toggleEditable (id, logId) {
-      console.log('toggleEditable', id, logId)
       this.editableLogId = logId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
     },
     isEditable (id) {
-      console.log('isEditable ', { id }, this.editableId)
       return this.editableId === id
     },
     handleUpdate () {
@@ -402,7 +394,10 @@ export default {
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-        console.log(nextCell)
+        this.toggleEditable(nextCell, this.editableLogId)
+      } else if (columnIndex === columns.length - 1) {
+        const row = Number(idArr[0]) + 1
+        const nextCell = `${row}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
     },
