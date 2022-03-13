@@ -13,12 +13,12 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(type, idx) in contactTypes" :key="idx" class="pr-1">
+      <TableRow v-for="(type, idx) in taxYearFbarFilings" :key="idx" class="pr-1">
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
+          <ClickCell>{{ idx + 1 }}</ClickCell>
         </div>
         <div class="table-col">
-          <EditableCheckBoxCell v-model="type.include" @input="debounceUpdate" />
+          <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
         </div>
         <div class="table-col w-full" @click="toggleEditable(type.id)">
           <EditableInput
@@ -43,8 +43,11 @@ import { debounce } from 'lodash';
 import { mapState } from 'vuex';
 import { models } from '~/shared/constants';
 import { valueTypeValueConstructor } from '~/shared/constructors'
+
+const TABLE_TYPE = 'fbar_filing';
+
 export default {
-  name: "ContactTypesTable",
+  name: "TaxYearFbarFilingsTable",
   data () {
     return {
       editableId: null,
@@ -54,8 +57,8 @@ export default {
   },
   computed: {
     ...mapState([models.valueTypes]),
-    contactTypes () {
-      return JSON.parse(JSON.stringify(this.valueTypes.contact_type.filter(type => type.show)));
+    taxYearFbarFilings () {
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]));
     },
     headers () {
       return this.$api.getHeaders();
@@ -76,11 +79,11 @@ export default {
       this.showDelete = true;
     },
     onAddRowClick () {
-      const value = Object.assign({}, valueTypeValueConstructor, { key: "contact_type", value: "" });
+      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: "" });
       this.$api.createValueType(this.headers, { value });
     },
     handleUpdate () {
-      const value = Object.values(this.contactTypes).find(type => type.id === this.editableId);
+      const value = Object.values(this.taxYearFbarFilings).find(type => type.id === this.editableId);
       this.$api.updateValueType(this.headers, { valueId: value.id }, value);
     },
     deleteItem () {

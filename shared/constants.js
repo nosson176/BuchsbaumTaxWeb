@@ -91,7 +91,30 @@ export const tabs = Object.freeze({
   logs: 'logs',
   tax_personals: 'tax-personals',
   tax_years: 'tax-years',
+  values: {
+    checklist: 'checklist',
+    client: 'client',
+    clockspot: 'clockspot',
+    contact: 'contact',
+    fee: 'fee',
+    inc_fbar_breakdown: 'inc_fbar_breakdown',
+    shared: 'shared',
+    tax_personal: 'tax_personal',
+    tax_year: 'tax_year',
+  },
 })
+
+export const valueTabs = Object.freeze([
+  { name: 'Checklist', value: 'checklist' },
+  { name: 'Client', value: 'client' },
+  { name: 'Clockspot', value: 'clockspot' },
+  { name: 'Contact', value: 'contact' },
+  { name: 'Fee', value: 'fee' },
+  { name: 'Inc./Fbar Breakdown', value: 'inc_fbar_breakdown' },
+  { name: 'Shared', value: 'shared' },
+  { name: 'Tax Personal', value: 'tax_personal' },
+  { name: 'Tax Year', value: 'tax_year' },
+])
 
 export const categories = Object.freeze({
   primary: 'PRI.',
@@ -224,16 +247,4 @@ export const operators = Object.freeze([
   { name: '<', value: '<' },
   { name: '>=', value: '>=' },
   { name: '<=', value: '<=' },
-])
-
-export const valueTabs = Object.freeze([
-  { name: 'Checklist', value: 'checklist' },
-  { name: 'Client', value: 'client' },
-  { name: 'Clockspot', value: 'clockspot' },
-  { name: 'Contact', value: 'contact' },
-  { name: 'Fee', value: 'fee' },
-  { name: 'Inc./Fbar Breakdown', value: 'inc_fbar_breakdown' },
-  { name: 'Shared', value: 'shared' },
-  { name: 'Tax Personal', value: 'tax_personal' },
-  { name: 'Tax Year', value: 'tax_year' },
 ])
