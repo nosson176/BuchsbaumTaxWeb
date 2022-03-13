@@ -172,6 +172,7 @@
         </div>
         <div
           :id="`${idx}-amount`"
+          tabindex="-1"
           class="table-col sm"
           @click="toggleEditable(`${idx}-amount`, income.id)"
         >
@@ -199,6 +200,7 @@
         <div
           :id="`${idx}-frequency`"
           class="table-col xs"
+          tabindex="-1"
           @click="toggleEditable(`${idx}-frequency`, income.id)"
         >
           <EditableInputCell
@@ -222,6 +224,7 @@
         <div
           :id="`${idx}-documents`"
           class="table-col xs"
+          tabindex="-1"
           @click="toggleEditable(`${idx}-documents`, income.id)"
         >
           <EditableSelectCell
@@ -234,6 +237,7 @@
         </div>
         <div
           :id="`${idx}-description`"
+          tabindex="-1"
           class="table-col lg"
           @click="toggleEditable(`${idx}-description`, income.id)"
         >
@@ -246,6 +250,7 @@
         </div>
         <div
           :id="`${idx}-depend`"
+          tabindex="-1"
           class="table-col sm"
           @click="toggleEditable(`${idx}-depend`, income.id)"
         >
@@ -289,7 +294,7 @@ import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
-  'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
+  'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', 'documents', 'description', 'depend', 'delete'
 ]
 
 const docOptions = [
@@ -499,6 +504,7 @@ export default {
   },
   methods: {
     toggleEditable (id, incomeId) {
+      console.log('toggleEditable', id, incomeId)
       this.editableIncomeId = incomeId
       if (!(this.editableId === id)) {
         this.editableId = id
