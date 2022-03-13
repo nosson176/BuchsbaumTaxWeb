@@ -159,7 +159,7 @@ export default {
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-        this.setEditable(nextCell, this.editableChecklistId)
+        this.toggleEditable(nextCell, this.editableChecklistId)
       } else if (columnIndex === columns.length - 1) {
         const row = Number(idArr[0]) + 1
         const nextCell = `${row}-${columns[0]}`
