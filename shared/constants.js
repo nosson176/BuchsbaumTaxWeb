@@ -30,6 +30,7 @@ export const mutations = Object.freeze({
 export const routes = Object.freeze({
   login: 'login',
   root: 'index',
+  users: 'users',
   values: 'values',
 })
 
