@@ -12,7 +12,10 @@
         <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
         <span class="font-medium text-gray-900">{{ smartview.name }}</span>
       </div>
-      <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
+      <div class="flex space-x-1">
+        <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
+        <DeleteButton @click="archiveSmartview(smartview)" />
+      </div>
     </div>
   </div>
 </template>
@@ -22,7 +25,7 @@ import { mapState } from 'vuex'
 import { models, mutations } from '~/shared/constants'
 
 export default {
-  name: 'Smartviews',
+  name: "Smartviews",
   props: {
     showArchived: {
       type: Boolean,
@@ -33,33 +36,39 @@ export default {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews () {
       if (this.smartviews) {
-        return Object.fromEntries(Object.entries(this.smartviews)
-          .filter(([key, smartview]) => this.showArchived === smartview.archived
-          ))
-      } else {
-        return []
+        return Object.fromEntries(Object.entries(JSON.parse(JSON.stringify(this.smartviews)))
+          .filter(([key, smartview]) => this.showArchived === smartview.archived));
+      }
+      else {
+        return [];
       }
     },
     selectedSmartviewId () {
-      return this.selectedSmartview?.id
+      return this.selectedSmartview?.id;
+    },
+    headers () {
+      return this.$api.getHeaders()
     }
   },
   methods: {
     selectSmartview (smartview) {
-      this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
+      this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] });
       if (this.selectedSmartviewId === smartview.id) {
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
-      } else {
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] });
+      }
+      else {
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview });
       }
     },
     showEdit (smartview) {
-      this.$store.commit(
-        mutations.setModelResponse,
-        { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
-      )
+      this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { smartview: { showing: true, data: smartview } } });
+    },
+    archiveSmartview (smartview) {
+      smartview.archived = !smartview.archived
+      this.$api.updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
+        .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
     }
-  }
+  },
 }
 </script>
 
