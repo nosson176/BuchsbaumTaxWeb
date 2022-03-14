@@ -504,7 +504,6 @@ export default {
   },
   methods: {
     toggleEditable (id, incomeId) {
-      console.log('toggleEditable', id, incomeId)
       this.editableIncomeId = incomeId
       if (!(this.editableId === id)) {
         this.editableId = id

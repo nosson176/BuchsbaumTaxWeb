@@ -46,7 +46,6 @@
         </div>
         <div
           :id="`${idx}-priority`"
-          tabindex="-1"
           class="table-col xs"
           @click="toggleEditable(`${idx}-priority`, log.id)"
         >
@@ -59,11 +58,10 @@
         </div>
         <div
           :id="`${idx}-years`"
-          tabindex="-1"
           class="table-col sm"
           @click="toggleEditable(`${idx}-years`, log.id)"
         >
-          <Tooltip trigger="hover">
+          <Tooltip :disabled="!splitYears(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell
               v-model="log.years"
               :is-editable="isEditable(`${idx}-years`)"
@@ -74,7 +72,7 @@
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
-                  <span v-if="splitYears(log.years).length === 1 || index">{{ year }}</span>
+                  <span v-if="splitYears(log.years).length >= 1 || index">{{ year }}</span>
                 </li>
               </ul>
             </template>
@@ -82,7 +80,6 @@
         </div>
         <div
           :id="`${idx}-note`"
-          tabindex="-1"
           class="table-col xxl"
           @click="toggleEditable(`${idx}-note`, log.id)"
         >
@@ -95,7 +92,6 @@
         </div>
         <div
           :id="`${idx}-logDate`"
-          tabindex="-1"
           class="table-col sm"
           @click="toggleEditable(`${idx}-logDate`, log.id)"
         >
@@ -108,7 +104,6 @@
         </div>
         <div
           :id="`${idx}-alarmDate`"
-          tabindex="-1"
           class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id)"
         >
@@ -120,12 +115,7 @@
             @blur="onBlur"
           />
         </div>
-        <div
-          :id="`${idx}-alarmComplete`"
-          tabindex="-1"
-          class="table-col xs"
-          @click="toggleComplete(log)"
-        >
+        <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon
             v-if="log.alarmDate"
             class="h-5 w-5 cursor-pointer"
@@ -134,7 +124,6 @@
         </div>
         <div
           :id="`${idx}-alarmTime`"
-          tabindex="-1"
           class="table-col xs"
           @click="toggleEditable(`${idx}-alarmTime`, log.id)"
         >
@@ -148,7 +137,6 @@
         </div>
         <div
           :id="`${idx}-alarmUserName`"
-          tabindex="-1"
           class="table-col sm"
           @click="toggleEditable(`${idx}-alarmUserName`, log.id)"
         >
@@ -406,7 +394,7 @@ export default {
       this.filterByAlarmStatusValue = alarmStatusValues[this.filterByAlarmStatusIndex]
     },
     splitYears (years) {
-      return years.split('\u000B')
+      return years?.split('\u000B')
     }
   }
 }

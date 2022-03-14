@@ -1,5 +1,8 @@
 <template>
   <div tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <date-picker
       v-if="isEditable"
       ref="input"
@@ -69,17 +72,16 @@ export default {
     }
   },
   updated () {
-    console.log('EditableDateCell updated', this.isEditable)
     if (this.isEditable) {
       this.$refs.input.focus()
     }
-    // if (!this.showPicker) {
-    //   this.$emit(events.blur)
-    // }
   },
   methods: {
     onFocus () {
       this.showPicker = true
+    },
+    onBlur () {
+      this.$emit(events.blur);
     }
   }
 }
