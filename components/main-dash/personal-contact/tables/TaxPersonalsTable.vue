@@ -286,6 +286,10 @@ export default {
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editablePersonalId)
+      } else if (columnIndex === columns.length - 1) {
+        const row = Number(idArr[0]) + 1
+        const nextCell = `${row}-${columns[0]}`
+        this.toggleEditable(nextCell, this.editablePersonalId)
       }
     },
     onBlur () {

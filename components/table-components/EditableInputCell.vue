@@ -1,5 +1,8 @@
 <template>
-  <div ref="div" tabindex="0" :class="showEditMode ? 'edit-mode' : 'read-mode'">
+  <div ref="div" :class="showEditMode ? 'edit-mode' : 'read-mode'">
+    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <input
       v-if="showEditMode"
       ref="input"
@@ -9,8 +12,7 @@
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full"
       tabindex="0"
       :placeholder="placeholder"
-      @blur="onBlur"
-    >
+    />
     <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
   </div>
 </template>

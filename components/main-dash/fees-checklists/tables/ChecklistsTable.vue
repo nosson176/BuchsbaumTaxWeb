@@ -5,29 +5,49 @@
         <div class="xs table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="table-header xs">
-          T
-        </div>
-        <div class="table-header lg">
-          Memo
-        </div>
+        <div class="table-header xs">T</div>
+        <div class="table-header lg">Memo</div>
         <div class="table-header xs" />
       </TableHeader>
     </template>
     <template #body>
-      <TableRow
-        v-for="(checklist,idx) in displayedChecklists"
-        :key="checklist.id"
-        :idx="idx"
-      >
-        <div :id="`${idx}-finished`" class="table-col xs" @click="toggleEditable(`${idx}-finished`, checklist.id)">
-          <EditableCheckBoxCell v-model="checklist.finished" :is-editable="isEditable(`${idx}-finished`)" @input="debounceUpdate" @blur="onBlur" />
+      <TableRow v-for="(checklist, idx) in displayedChecklists" :key="checklist.id" :idx="idx">
+        <div
+          :id="`${idx}-finished`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-finished`, checklist.id)"
+        >
+          <EditableCheckBoxCell
+            v-model="checklist.finished"
+            :is-editable="isEditable(`${idx}-finished`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-translate`" class="table-col xs" @click="toggleEditable(`${idx}-translate`, checklist.id)">
-          <EditableCheckBoxCell v-model="checklist.translate" :is-editable="isEditable(`${idx}-translate`)" @input="debounceUpdate" @blur="onBlur" />
+        <div
+          :id="`${idx}-translate`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-translate`, checklist.id)"
+        >
+          <EditableCheckBoxCell
+            v-model="checklist.translate"
+            :is-editable="isEditable(`${idx}-translate`)"
+            @input="debounceUpdate"
+            @blur="onBlur"
+          />
         </div>
-        <div :id="`${idx}-memo`" class="table-col lg" @click="toggleEditable(`${idx}-memo`, checklist.id)">
-          <EditableSelectCell v-model="checklist.memo" :options="memoOptions" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-memo`"
+          class="table-col lg"
+          @click="toggleEditable(`${idx}-memo`, checklist.id)"
+        >
+          <EditableSelectCell
+            v-model="checklist.memo"
+            :options="memoOptions"
+            :is-editable="isEditable(`${idx}-memo`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(checklist.id)" />
@@ -139,7 +159,11 @@ export default {
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
-        this.setEditable(nextCell, this.editableChecklistId)
+        this.toggleEditable(nextCell, this.editableChecklistId)
+      } else if (columnIndex === columns.length - 1) {
+        const row = Number(idArr[0]) + 1
+        const nextCell = `${row}-${columns[0]}`
+        this.toggleEditable(nextCell, this.editableChecklistId)
       }
     }
   }
@@ -147,5 +171,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

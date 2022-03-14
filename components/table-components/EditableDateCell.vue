@@ -1,19 +1,19 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+  <div tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
     <date-picker
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
+      tabindex="0"
       :value-type="valueType"
       :format="format"
+      autofocus
       :type="type"
       :open.sync="showPicker"
       @focus="onFocus"
     >
       <template #header="{ emit }">
-        <button class="mx-btn mx-btn-text" @click="emit(new Date())">
-          Today
-        </button>
+        <button class="mx-btn mx-btn-text" @click="emit(new Date())">Today</button>
       </template>
     </date-picker>
     <span v-else class="cursor-pointer">{{ displayedValue }}</span>
@@ -69,12 +69,13 @@ export default {
     }
   },
   updated () {
+    console.log('EditableDateCell updated', this.isEditable)
     if (this.isEditable) {
       this.$refs.input.focus()
     }
-    if (!this.showPicker) {
-      this.$emit(events.blur)
-    }
+    // if (!this.showPicker) {
+    //   this.$emit(events.blur)
+    // }
   },
   methods: {
     onFocus () {

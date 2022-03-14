@@ -119,7 +119,6 @@
           <CheckIcon
             v-if="log.alarmDate"
             class="h-5 w-5 cursor-pointer"
-            tabindex="0"
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
           />
         </div>
@@ -149,7 +148,7 @@
             @blur="onBlur"
           />
         </div>
-        <div :id="`${idx}-delete`" class="table-col xs">
+        <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(log.id)" />
         </div>
       </TableRow>
@@ -165,7 +164,7 @@ import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
-  'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmComplete', 'alarmTime', 'alarmUserName', 'delete'
+  'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete'
 ]
 
 const alarmStatusValues = ['', true, false]
@@ -383,6 +382,10 @@ export default {
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableLogId)
+      } else if (columnIndex === columns.length - 1) {
+        const row = Number(idArr[0]) + 1
+        const nextCell = `${row}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
     },

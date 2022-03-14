@@ -4,69 +4,72 @@
       <TableHeader>
         <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
-          <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
+          <HeaderSelectOption
+            v-model="includeAll"
+            menu
+            :options="includeOptions"
+            @input="handleUpdateIncludeAll"
+          />
         </div>
         <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
+            <span>Year</span>
+            <DeleteButton small @click="yearFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearsOptions" />
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Cat</span> <DeleteButton small @click="categoryFilterValue = ''" />
+            <span>Cat</span>
+            <DeleteButton small @click="categoryFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoriesOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Group</span> <DeleteButton small @click="groupFilterValue = ''" />
+            <span>Group</span>
+            <DeleteButton small @click="groupFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupsOptions" />
         </div>
-        <div class="table-header xs">
-          Ex
-        </div>
+        <div class="table-header xs">Ex</div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Type</span> <DeleteButton small @click="typeFilterValue = ''" />
+            <span>Type</span>
+            <DeleteButton small @click="typeFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypesOptions" />
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Job</span> <DeleteButton small @click="jobFilterValue = ''" />
+            <span>Job</span>
+            <DeleteButton small @click="jobFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobsOptions" />
         </div>
-        <div class="table-header sm">
-          Amt
-        </div>
+        <div class="table-header sm">Amt</div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Curr</span> <DeleteButton small @click="currencyFilterValue = ''" />
+            <span>Curr</span>
+            <DeleteButton small @click="currencyFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrenciesOptions" />
         </div>
-        <div class="table-header xs">
-          X
-        </div>
-        <div class="table-header sm">
-          $
-        </div>
-        <div class="table-header xs">
-          Doc
-        </div>
+        <div class="table-header xs">X</div>
+        <div class="table-header sm">$</div>
+        <div class="table-header xs">Doc</div>
         <div class="table-header lg flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Description</span> <DeleteButton small @click="descriptionFilterValue = ''" />
+            <span>Description</span>
+            <DeleteButton small @click="descriptionFilterValue = ''" />
           </div>
-          <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionsOptions" />
+          <HeaderSelectOption
+            v-model="descriptionFilterValue"
+            :options="filteredDescriptionsOptions"
+          />
         </div>
-        <div class="table-header sm">
-          Depend
-        </div>
+        <div class="table-header sm">Depend</div>
         <div class="table-header xs" />
       </TableHeader>
     </template>
@@ -75,42 +78,137 @@
         v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
-        :class="{'disabled': !income.include, 'selected': isSelected(income.id)}"
+        :class="{ 'disabled': !income.include, 'selected': isSelected(income.id) }"
       >
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(income)">
-            {{ idx+1 }}
-          </ClickCell>
+          <ClickCell @click="toggleSelected(income)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
-          <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-include`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-include`, income.id)"
+        >
+          <EditableCheckBoxCell
+            v-model="income.include"
+            :is-editable="isEditable(`${idx}-include`)"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-years`" class="table-col-primary xs" @click="toggleEditable(`${idx}-years`, income.id)">
-          <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-years`"
+          class="table-col-primary xs"
+          @click="toggleEditable(`${idx}-years`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.years"
+            :is-editable="isEditable(`${idx}-years`)"
+            :options="yearNameOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, income.id)">
-          <EditableSelectCell v-model="income.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-category`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-category`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.category"
+            :is-editable="isEditable(`${idx}-category`)"
+            :options="categoryOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-taxGroup`" class="table-col sm" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
-          <EditableSelectCell v-model="income.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)" :options="taxGroupOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-taxGroup`"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-taxGroup`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.taxGroup"
+            :is-editable="isEditable(`${idx}-taxGroup`)"
+            :options="taxGroupOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-exclusion`" class="table-col xs" @click="toggleEditable(`${idx}-exclusion`, income.id)">
-          <EditableCheckBoxCell v-model="income.exclusion" :is-editable="isEditable(`${idx}-exclusion`)" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-exclusion`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-exclusion`, income.id)"
+        >
+          <EditableCheckBoxCell
+            v-model="income.exclusion"
+            :is-editable="isEditable(`${idx}-exclusion`)"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, income.id)">
-          <EditableSelectCell v-model="income.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-taxType`"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-taxType`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.taxType"
+            :is-editable="isEditable(`${idx}-taxType`)"
+            :options="taxTypeOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, income.id)">
-          <EditableSelectCell v-model="income.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-job`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-job`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.job"
+            :is-editable="isEditable(`${idx}-job`)"
+            :options="jobOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-amount`" class="table-col sm" @click="toggleEditable(`${idx}-amount`, income.id)">
-          <EditableInputCell v-model="income.amount" :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-amount`"
+          tabindex="-1"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-amount`, income.id)"
+        >
+          <EditableInputCell
+            v-model="income.amount"
+            :is-editable="isEditable(`${idx}-amount`)"
+            currency
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, income.id)">
-          <EditableSelectCell v-model="income.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-currency`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-currency`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.currency"
+            :is-editable="isEditable(`${idx}-currency`)"
+            :options="currencyOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, income.id)">
-          <EditableInputCell v-model="income.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-frequency`"
+          class="table-col xs"
+          tabindex="-1"
+          @click="toggleEditable(`${idx}-frequency`, income.id)"
+        >
+          <EditableInputCell
+            v-model="income.frequency"
+            :is-editable="isEditable(`${idx}-frequency`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, income.id)">
           <EditableInputCell
@@ -123,14 +221,45 @@
             @input="debounceUpdate"
           />
         </div>
-        <div :id="`${idx}-documents`" class="table-col xs" @click="toggleEditable(`${idx}-documents`, income.id)">
-          <EditableSelectCell v-model="income.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-documents`"
+          class="table-col xs"
+          tabindex="-1"
+          @click="toggleEditable(`${idx}-documents`, income.id)"
+        >
+          <EditableSelectCell
+            v-model="income.documents"
+            :is-editable="isEditable(`${idx}-documents`)"
+            :options="docOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, income.id)">
-          <EditableInputCell v-model="income.description" :is-editable="isEditable(`${idx}-description`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-description`"
+          tabindex="-1"
+          class="table-col lg"
+          @click="toggleEditable(`${idx}-description`, income.id)"
+        >
+          <EditableInputCell
+            v-model="income.description"
+            :is-editable="isEditable(`${idx}-description`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, income.id)">
-          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-depend`"
+          tabindex="-1"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-depend`, income.id)"
+        >
+          <EditableInputCell
+            v-model="income.depend"
+            :is-editable="isEditable(`${idx}-depend`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(income.id)" />
@@ -145,14 +274,10 @@
         <div class="table-col xs" />
         <div class="table-col sm" />
         <div class="table-col xs" />
-        <div class="sm table-col-primary">
-          {{ amountTotal }}
-        </div>
+        <div class="sm table-col-primary">{{ amountTotal }}</div>
         <div class="table-col xs" />
         <div class="table-col xs" />
-        <div class="table-col-primary sm">
-          {{ amountUSDTotal }}
-        </div>
+        <div class="table-col-primary sm">{{ amountUSDTotal }}</div>
         <div class="table-col xs" />
         <div class="table-col lg" />
         <div class="table-col sm" />
@@ -169,7 +294,7 @@ import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
-  'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', '$', 'documents', 'description', 'depend', 'delete'
+  'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', 'documents', 'description', 'depend', 'delete'
 ]
 
 const docOptions = [
@@ -379,6 +504,7 @@ export default {
   },
   methods: {
     toggleEditable (id, incomeId) {
+      console.log('toggleEditable', id, incomeId)
       this.editableIncomeId = incomeId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -450,6 +576,10 @@ export default {
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableIncomeId)
+      } else if (columnIndex === columns.length - 1) {
+        const row = Number(idArr[0]) + 1
+        const nextCell = `${row}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableIncomeId)
       }
     },
