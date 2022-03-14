@@ -22,7 +22,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: "Smartviews",
@@ -64,9 +64,16 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { smartview: { showing: true, data: smartview } } });
     },
     archiveSmartview (smartview) {
-      smartview.archived = !smartview.archived
-      this.$api.updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
-        .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
+      if (this.showArchived) {
+        smartview.archived = false
+        this.$api.updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
+          .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
+      } else {
+        this.$store.commit(
+          mutations.setModelResponse,
+          { model: models.modals, data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews } } } }
+        )
+      }
     }
   },
 }
