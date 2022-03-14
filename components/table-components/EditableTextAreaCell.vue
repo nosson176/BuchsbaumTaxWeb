@@ -1,18 +1,23 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <textarea
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
       tabindex="0"
       class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full"
-      @blur="onBlur"
       @keydown.tab.prevent
       @input="onInput"
     />
-    <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
-      {{ computedValue || placeholder }}
-    </span>
+    <span
+      v-else
+      tabindex="0"
+      class="cursor-pointer"
+      :class="computedValue ? '' : 'text-gray-400 italic'"
+    >{{ computedValue || placeholder }}</span>
   </div>
 </template>
 

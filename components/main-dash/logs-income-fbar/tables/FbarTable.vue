@@ -4,66 +4,71 @@
       <TableHeader>
         <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
-          <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
+          <HeaderSelectOption
+            v-model="includeAll"
+            menu
+            :options="includeOptions"
+            @input="handleUpdateIncludeAll"
+          />
         </div>
         <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Year</span> <DeleteButton small @click="yearFilterValue = ''" />
+            <span>Year</span>
+            <DeleteButton small @click="yearFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Cat</span> <DeleteButton small @click="categoryFilterValue = ''" />
+            <span>Cat</span>
+            <DeleteButton small @click="categoryFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="categoryFilterValue" :options="filteredCategoryOptions" />
         </div>
-        <div class="table-header  sm flex flex-col">
+        <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Group</span> <DeleteButton small @click="groupFilterValue = ''" />
+            <span>Group</span>
+            <DeleteButton small @click="groupFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="groupFilterValue" :options="filteredGroupOptions" />
         </div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Type</span> <DeleteButton small @click="typeFilterValue = ''" />
+            <span>Type</span>
+            <DeleteButton small @click="typeFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Job</span> <DeleteButton small @click="jobFilterValue = ''" />
+            <span>Job</span>
+            <DeleteButton small @click="jobFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="jobFilterValue" :options="filteredJobOptions" />
         </div>
-        <div class="table-header sm">
-          Amt
-        </div>
+        <div class="table-header sm">Amt</div>
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Curr</span> <DeleteButton small @click="currencyFilterValue = ''" />
+            <span>Curr</span>
+            <DeleteButton small @click="currencyFilterValue = ''" />
           </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
-        <div class="table-header xs">
-          X
-        </div>
-        <div class="table-header sm">
-          $
-        </div>
-        <div class="table-header xs">
-          Doc
-        </div>
+        <div class="table-header xs">X</div>
+        <div class="table-header sm">$</div>
+        <div class="table-header xs">Doc</div>
         <div class="table-header lg flex flex-col">
           <div class="flex items-center space-x-0.5">
-            <span>Description</span> <DeleteButton small @click="descriptionFilterValue = ''" />
+            <span>Description</span>
+            <DeleteButton small @click="descriptionFilterValue = ''" />
           </div>
-          <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
+          <HeaderSelectOption
+            v-model="descriptionFilterValue"
+            :options="filteredDescriptionOptions"
+          />
         </div>
-        <div class="table-header sm">
-          Depend
-        </div>
+        <div class="table-header sm">Depend</div>
         <div class="table-header xs" />
       </TableHeader>
     </template>
@@ -72,39 +77,120 @@
         v-for="(fbar, idx) in displayedFbars"
         :key="fbar.id"
         :idx="idx"
-        :class="{'disabled': !fbar.include, 'selected': isSelected(fbar.id)}"
+        :class="{ 'disabled': !fbar.include, 'selected': isSelected(fbar.id) }"
       >
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(fbar)">
-            {{ idx+1 }}
-          </ClickCell>
+          <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
-          <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-include`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-include`, fbar.id)"
+        >
+          <EditableCheckBoxCell
+            v-model="fbar.include"
+            :is-editable="isEditable(`${idx}-include`)"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-years`" class="table-col-primary xs" @click="toggleEditable(`${idx}-years`, fbar.id)">
-          <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-years`"
+          class="table-col-primary xs"
+          @click="toggleEditable(`${idx}-years`, fbar.id)"
+        >
+          <EditableSelectCell
+            v-model="fbar.years"
+            :is-editable="isEditable(`${idx}-years`)"
+            :options="yearNameOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
-          <EditableSelectCell v-model="fbar.category" :is-editable="isEditable(`${idx}-category`)" :options="categoryOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-category`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-category`, fbar.id)"
+        >
+          <EditableSelectCell
+            v-model="fbar.category"
+            :is-editable="isEditable(`${idx}-category`)"
+            :options="categoryOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-taxGroup`" class="table-col sm" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
-          <EditableSelectCell v-model="fbar.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)" :options="taxGroupOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-taxGroup`"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-taxGroup`, fbar.id)"
+        >
+          <EditableSelectCell
+            v-model="fbar.taxGroup"
+            :is-editable="isEditable(`${idx}-taxGroup`)"
+            :options="taxGroupOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
-          <EditableSelectCell v-model="fbar.taxType" :is-editable="isEditable(`${idx}-taxType`)" :options="taxTypeOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-taxType`"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-taxType`, fbar.id)"
+        >
+          <EditableSelectCell
+            v-model="fbar.taxType"
+            :is-editable="isEditable(`${idx}-taxType`)"
+            :options="taxTypeOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, fbar.id)">
-          <EditableSelectCell v-model="fbar.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions" @blur="onBlur" @input="debounceUpdate" />
+          <EditableSelectCell
+            v-model="fbar.job"
+            :is-editable="isEditable(`${idx}-job`)"
+            :options="jobOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
-          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-amount`"
+          class="sm table-col"
+          @click="toggleEditable(`${idx}-amount`, fbar.id)"
+        >
+          <EditableInputCell
+            v-model="fbar.amount"
+            :is-editable="isEditable(`${idx}-amount`)"
+            currency
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, fbar.id)">
-          <EditableSelectCell v-model="fbar.currency" :is-editable="isEditable(`${idx}-currency`)" :options="currencyOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-currency`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-currency`, fbar.id)"
+        >
+          <EditableSelectCell
+            v-model="fbar.currency"
+            :is-editable="isEditable(`${idx}-currency`)"
+            :options="currencyOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, fbar.id)">
-          <EditableInputCell v-model="fbar.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-frequency`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-frequency`, fbar.id)"
+        >
+          <EditableInputCell
+            v-model="fbar.frequency"
+            :is-editable="isEditable(`${idx}-frequency`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id)">
           <EditableInputCell
@@ -117,14 +203,42 @@
             @input="debounceUpdate"
           />
         </div>
-        <div :id="`${idx}-documents`" class="table-col xs" @click="toggleEditable(`${idx}-documents`, fbar.id)">
-          <EditableSelectCell v-model="fbar.documents" :is-editable="isEditable(`${idx}-documents`)" :options="docOptions" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-documents`"
+          class="table-col xs"
+          @click="toggleEditable(`${idx}-documents`, fbar.id)"
+        >
+          <EditableSelectCell
+            v-model="fbar.documents"
+            :is-editable="isEditable(`${idx}-documents`)"
+            :options="docOptions"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, fbar.id)">
-          <EditableInputCell v-model="fbar.description" :is-editable="isEditable(`${idx}-description`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-description`"
+          class="table-col lg"
+          @click="toggleEditable(`${idx}-description`, fbar.id)"
+        >
+          <EditableInputCell
+            v-model="fbar.description"
+            :is-editable="isEditable(`${idx}-description`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
-        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id)">
-          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" @input="debounceUpdate" />
+        <div
+          :id="`${idx}-depend`"
+          class="table-col sm"
+          @click="toggleEditable(`${idx}-depend`, fbar.id)"
+        >
+          <EditableInputCell
+            v-model="fbar.depend"
+            :is-editable="isEditable(`${idx}-depend`)"
+            @blur="onBlur"
+            @input="debounceUpdate"
+          />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(fbar.id)" />
@@ -138,14 +252,10 @@
         <div class="table-col sm" />
         <div class="table-col sm" />
         <div class="table-col xs" />
-        <div class="sm table-col-primary">
-          {{ amountTotal }}
-        </div>
+        <div class="sm table-col-primary">{{ amountTotal }}</div>
         <div class="table-col xs" />
         <div class="table-col xs" />
-        <div class="table-col-primary sm">
-          {{ amountUSDTotal }}
-        </div>
+        <div class="table-col-primary sm">{{ amountUSDTotal }}</div>
         <div class="table-col xs" />
         <div class="table-col lg" />
         <div class="table-col sm" />
@@ -448,6 +558,10 @@ export default {
       const columnIndex = columns.findIndex(col => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        this.toggleEditable(nextCell, this.editableFbarId)
+      } else if (columnIndex === columns.length - 1) {
+        const row = Number(idArr[0]) + 1
+        const nextCell = `${row}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableFbarId)
       }
     },
