@@ -133,6 +133,9 @@ export default {
     isArchived () {
       return this.selectedClientCopy.archived
     },
+    headers () {
+      return this.$api.getHeaders()
+    }
   },
   watch: {
     showEditNameDialogue: {
@@ -156,9 +159,8 @@ export default {
       this.editingId = ''
     },
     handleUpdate () {
-      const headers = this.$api.getHeaders()
       const client = this.selectedClientCopy
-      this.$api.updateClient(headers, { clientId: client.id, client })
+      this.$api.updateClient(this.headers, { clientId: client.id, client })
     },
     openEditNameDialogue () {
       this.showEditNameDialogue = true
@@ -167,9 +169,11 @@ export default {
       this.showEditNameDialogue = false
     },
     async handleDelete () {
+      if (this.isLoading) {
+        return
+      }
       this.isLoading = true
-      const headers = this.$api.getHeaders()
-      await this.$api.deleteClient(headers, { clientId: this.selectedClientCopy.id })
+      await this.$api.deleteClient(this.headers, { clientId: this.selectedClientCopy.id })
       this.isLoading = false
     },
   }

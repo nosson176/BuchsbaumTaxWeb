@@ -258,6 +258,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error deleting value'))
       .finally(() => getValueTypes(headers))
 
+  const deleteClient = (headers, { clientId }) =>
+    $axios
+      .delete(`/clients/${clientId}`, { headers })
+      .catch(() => $toast.error('Error deleting client'))
+      .finally(() => getClientList(headers))
+
   const api = {
     createChecklist,
     createClient,
@@ -272,6 +278,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createTaxPersonal,
     createTaxYear,
     deleteValueType,
+    deleteClient,
     getAllClientFees,
     getAllUsers,
     getClientData,
