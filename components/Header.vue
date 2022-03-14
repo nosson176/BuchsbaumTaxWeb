@@ -4,7 +4,12 @@
       class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4"
     >
       <div class="ml-auto">
-        <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
+        <Dropdown
+          v-if="showHistoryDropdown"
+          shown-value="History"
+          :options="mappedClientHistory"
+          @input="getSelectedClient"
+        />
       </div>
       <div class="ml-auto flex space-x-4 items-center">
         <nuxt-link :to="usersRoute">
@@ -59,6 +64,9 @@ export default {
       return {
         name: routes.users
       }
+    },
+    showHistoryDropdown () {
+      return this.$route.name === routes.root
     }
   },
   methods: {
