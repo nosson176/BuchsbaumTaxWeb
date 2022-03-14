@@ -26,8 +26,10 @@ export default {
     searchInput (searchInput) {
       this.searchInputUpdate(searchInput)
     },
-    selectedClient (newVal) {
-      this.emitTabClick(tabs.logs)
+    selectedClient (newVal, oldVal) {
+      if (newVal.id !== oldVal.id) {
+        this.emitTabClick(tabs.logs)
+      }
     }
   },
   methods: {
@@ -50,5 +52,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

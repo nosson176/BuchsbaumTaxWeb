@@ -18,7 +18,7 @@
     <template #body>
       <TableRow
         v-for="(contact, idx) in displayedContacts"
-        :key="contact.id"
+        :key="idx"
         :idx="idx"
         :class="{ 'disabled': !contact.enabled }"
       >

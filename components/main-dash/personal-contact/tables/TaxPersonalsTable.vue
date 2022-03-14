@@ -296,7 +296,7 @@ export default {
       this.editableId = ''
     },
     isRedBG (ssn) {
-      return ssn.charAt(0) === '9'
+      return ssn?.charAt(0) === '9'
     }
   }
 }
