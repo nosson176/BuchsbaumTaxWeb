@@ -69,7 +69,6 @@ export default {
     }
   },
   updated () {
-    console.log('EditableDateCell updated', this.isEditable)
     if (this.isEditable) {
       this.$refs.input.focus()
     }
