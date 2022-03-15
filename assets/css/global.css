@@ -1,3 +1,5 @@
+@import 'handsontable/dist/handsontable.full.css';
+
 .table-header {
   @apply px-px py-1 text-left text-xs font-medium text-gray-500 uppercase;
 }

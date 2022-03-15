@@ -1,165 +1,12 @@
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent="onTabPress">
-    <template #header>
-      <TableHeader>
-        <div class="table-header">
-          <AddRowButton @click="onAddRowClick" />
-        </div>
-        <div class="xs table-header" />
-        <div class="table-header sm flex flex-col">
-          <div class="flex items-center space-x-1">
-            <span>Year</span>
-            <DeleteButton small @click="yearFilterValue = ''" />
-          </div>
-          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
-        </div>
-        <div class="table-header xxl">Note</div>
-        <div class="table-header sm">Date</div>
-        <div class="table-header sm">Alarm</div>
-        <div class="table-header xs">
-          <button
-            type="button"
-            class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            @click="setAlarmFilter"
-          />
-        </div>
-        <div class="table-header xs">Time</div>
-        <div class="table-header sm flex flex-col">
-          <div class="flex items-center space-x-0.5">
-            <span>Emp</span>
-            <DeleteButton small @click="employeeFilterValue = ''" />
-          </div>
-          <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
-        </div>
-        <div class="table-header xs" />
-      </TableHeader>
-    </template>
-    <template #body>
-      <TableRow
-        v-for="(log, idx) in displayedLogs"
-        :key="log.id"
-        :idx="idx"
-        :class="{ 'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete, 'selected': isSelected(log.id) }"
-      >
-        <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
-        </div>
-        <div
-          :id="`${idx}-priority`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-priority`, log.id)"
-        >
-          <EditablePrioritySelectCell
-            v-model="log.priority"
-            :is-editable="isEditable(`${idx}-priority`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
-        <div
-          :id="`${idx}-years`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-years`, log.id)"
-        >
-          <Tooltip :disabled="!splitYears(log.years) || isEditable(`${idx}-years`)" trigger="hover">
-            <EditableSelectCell
-              v-model="log.years"
-              :is-editable="isEditable(`${idx}-years`)"
-              :options="yearOptions"
-              @input="debounceUpdate"
-              @blur="onBlur"
-            />
-            <template #popper>
-              <ul>
-                <li v-for="(year, index) in splitYears(log.years)" :key="index">
-                  <span v-if="splitYears(log.years).length >= 1 || index">{{ year }}</span>
-                </li>
-              </ul>
-            </template>
-          </Tooltip>
-        </div>
-        <div
-          :id="`${idx}-note`"
-          class="table-col xxl"
-          @click="toggleEditable(`${idx}-note`, log.id)"
-        >
-          <EditableTextAreaCell
-            v-model="log.note"
-            :is-editable="isEditable(`${idx}-note`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
-        <div
-          :id="`${idx}-logDate`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-logDate`, log.id)"
-        >
-          <EditableDateCell
-            v-model="log.logDate"
-            :is-editable="isEditable(`${idx}-logDate`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
-        <div
-          :id="`${idx}-alarmDate`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-alarmDate`, log.id)"
-        >
-          <EditableDateCell
-            v-model="log.alarmDate"
-            type="date"
-            :is-editable="isEditable(`${idx}-alarmDate`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
-        <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
-          <CheckIcon
-            v-if="log.alarmDate"
-            class="h-5 w-5 cursor-pointer"
-            :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
-          />
-        </div>
-        <div
-          :id="`${idx}-alarmTime`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-alarmTime`, log.id)"
-        >
-          <EditableDateCell
-            v-model="log.alarmTime"
-            type="time"
-            :is-editable="isEditable(`${idx}-alarmTime`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
-        <div
-          :id="`${idx}-alarmUserName`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-alarmUserName`, log.id)"
-        >
-          <EditableSelectCell
-            v-model="log.alarmUserName"
-            :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
-        <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(log.id)" />
-        </div>
-      </TableRow>
-    </template>
-  </Table>
+  <hot-table ref="table" :settings="hotSettings"></hot-table>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { isToday, isPast, parseISO } from 'date-fns'
+import { HotTable } from '@handsontable/vue';
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
@@ -171,6 +18,9 @@ const alarmStatusValues = ['', true, false]
 
 export default {
   name: 'LogsTable',
+  components: {
+    HotTable
+  },
   props: {
     showArchived: {
       type: Boolean,
@@ -179,14 +29,16 @@ export default {
   },
   data () {
     return {
-      newLogId: NaN,
-      editableId: '',
-      editableLogId: '',
-      yearFilterValue: '',
-      employeeFilterValue: '',
-      selectedItems: {},
-      filterByAlarmStatusValue: '',
-      filterByAlarmStatusIndex: 0
+      hotSettings: {
+        colWidths: [],
+        colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
+        columns: [
+
+        ],
+        filters: true,
+        rowHeaders: true,
+        licenseKey: "non-commercial-and-evaluation",
+      }
     }
   },
   computed: {
