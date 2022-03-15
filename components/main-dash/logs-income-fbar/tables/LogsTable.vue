@@ -44,7 +44,7 @@ export default {
         licenseKey: "non-commercial-and-evaluation",
         width: '100%',
         height: '100%',
-        colWidths: [50, 50, 60, 600, 110, 110, 60, 60, 50],
+        colWidths: [50, 50, 60, 600, 110, 110, 60, 85, 50],
         columns: [
           {
             type: 'checkbox'
@@ -75,7 +75,10 @@ export default {
             timeFormat: 'h:mm:ss a',
             correctFormat: true
           },
-          {},
+          {
+            type: 'dropdown',
+            source: this.userOptions,
+          },
           {},
         ],
       }
@@ -143,7 +146,7 @@ export default {
     userOptions () {
       return Object.values(this.users).map((user) => {
         return { value: user.username }
-      })
+      }).map(user => user.value)
     },
     searchInput () {
       return this.search?.[tableGroups.logsIncomeFbar]
