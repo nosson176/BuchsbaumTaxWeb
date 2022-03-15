@@ -35,16 +35,7 @@ export default {
     return {
       hotSettings: {
         data: this.mappedLogs,
-        colWidths: [],
         colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
-        columns: [
-          {},
-          {
-            type: 'dropdown',
-            source: this.yearOptions,
-          },
-        ],
-        filters: true,
         rowHeaders: true,
         licenseKey: "non-commercial-and-evaluation",
       }
@@ -74,6 +65,32 @@ export default {
       } else {
         return null
       }
+    },
+    mappedLogs () {
+      console.log(this.shownLogs?.map(log => {
+        return [
+          log.priority,
+          log.years,
+          log.note,
+          log.logDate,
+          log.alarmDate,
+          log.alarmTime,
+          log.alarmUserName,
+          log.id,
+        ]
+      }))
+      return this.shownLogs?.map(log => {
+        return [
+          log.priority,
+          log.years,
+          log.note || '',
+          log.logDate || '',
+          log.alarmDate || '',
+          log.alarmTime || '',
+          log.alarmUserName || '',
+          log.id,
+        ]
+      })
     },
     debounceUpdate () {
       return debounce(this.handleUpdate, 500)
@@ -145,12 +162,13 @@ export default {
       }
     }
   },
-  created () {
-    if (this.logs) {
-      this.logs.forEach((log) => {
-        this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
-      })
-    }
+  mounted () {
+    console.log(this.mappedLogs)
+    // if (this.logs) {
+    //   this.logs.forEach((log) => {
+    //     this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
+    //   })
+    // }
   },
   methods: {
     toggleEditable (id, logId) {

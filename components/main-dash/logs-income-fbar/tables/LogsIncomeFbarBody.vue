@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-grow overflow-hidden">
+  <div class="flex flex-grow overflow-hidden w-full h-full">
     <LogsTable v-if="showLogs" :show-archived="showArchived" />
     <IncomeTable v-else-if="showIncome" :show-archived="showArchived" />
     <FbarTable v-else-if="showFbar" :show-archived="showArchived" />
@@ -35,5 +35,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
