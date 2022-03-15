@@ -44,7 +44,7 @@ export default {
         licenseKey: "non-commercial-and-evaluation",
         width: '100%',
         height: '100%',
-        colWidths: [50, 50, 60, 600, 65, 65, 60, 60, 50],
+        colWidths: [50, 50, 60, 600, 110, 110, 60, 60, 50],
         columns: [
           {
             type: 'checkbox'
