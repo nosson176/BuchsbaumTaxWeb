@@ -34,10 +34,16 @@ export default {
   data () {
     return {
       hotSettings: {
-        data: this.mappedLogs,
+        data: [[
+          '', '', '', '', '', '', '', ''
+        ]
+        ],
         colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
         rowHeaders: true,
         licenseKey: "non-commercial-and-evaluation",
+        width: '100%',
+        height: '100%',
+        colWidths: [50, 60, 600, 60, 60, 60, 60, 50],
       }
     }
   },
@@ -67,18 +73,6 @@ export default {
       }
     },
     mappedLogs () {
-      console.log(this.shownLogs?.map(log => {
-        return [
-          log.priority,
-          log.years,
-          log.note,
-          log.logDate,
-          log.alarmDate,
-          log.alarmTime,
-          log.alarmUserName,
-          log.id,
-        ]
-      }))
       return this.shownLogs?.map(log => {
         return [
           log.priority,
@@ -162,13 +156,41 @@ export default {
       }
     }
   },
+  updated () {
+    this.$refs.table.hotInstance.updateSettings({
+      data: this.mappedLogs,
+      columns: [
+        {},
+        {
+          type: 'dropdown',
+          source: this.yearOptions,
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      ],
+    });
+  },
   mounted () {
-    console.log(this.mappedLogs)
-    // if (this.logs) {
-    //   this.logs.forEach((log) => {
-    //     this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
-    //   })
-    // }
+    this.$refs.table.hotInstance.updateSettings({
+      data: this.mappedLogs,
+      columns: [
+        {},
+        {
+          type: 'dropdown',
+          source: this.yearOptions,
+        },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      ],
+    });
   },
   methods: {
     toggleEditable (id, logId) {
