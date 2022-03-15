@@ -7,8 +7,12 @@ import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { isToday, isPast, parseISO } from 'date-fns'
 import { HotTable } from '@handsontable/vue';
+import { registerAllModules } from 'handsontable/registry';
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
+
+// register Handsontable's modules
+registerAllModules();
 
 const columns = [
   'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete'
@@ -19,7 +23,7 @@ const alarmStatusValues = ['', true, false]
 export default {
   name: 'LogsTable',
   components: {
-    HotTable
+    HotTable,
   },
   props: {
     showArchived: {
@@ -30,10 +34,15 @@ export default {
   data () {
     return {
       hotSettings: {
+        data: this.mappedLogs,
         colWidths: [],
         colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
         columns: [
-
+          {},
+          {
+            type: 'dropdown',
+            source: this.yearOptions,
+          },
         ],
         filters: true,
         rowHeaders: true,
@@ -52,7 +61,11 @@ export default {
         logs.splice(newLogIdx, 1)
         logs.unshift(tempLog)
       }
-      return searchArrOfObjs(logs, this.searchInput)
+      return searchArrOfObjs(logs, this.searchInput).map(log => {
+        log.alarmDate = log.alarmDate ? parseISO(log.alarmDate) : null
+        log.logDate = log.logDate ? parseISO(log.logDate) : null
+        return log
+      })
     },
     shownLogs () {
       if (this.logs) {
@@ -66,7 +79,7 @@ export default {
       return debounce(this.handleUpdate, 500)
     },
     yearOptions () {
-      return this.valueTypes.year_name.filter(year => year.show)
+      return this.valueTypes.year_name.filter(year => year.show).map(year => year.value)
     },
     headers () {
       return this.$api.getHeaders()
