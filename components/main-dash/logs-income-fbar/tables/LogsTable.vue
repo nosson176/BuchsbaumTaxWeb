@@ -8,6 +8,7 @@ import { debounce } from 'lodash'
 import { isToday, isPast, parseISO } from 'date-fns'
 import { HotTable } from '@handsontable/vue';
 import { registerAllModules } from 'handsontable/registry';
+import { textRenderer } from 'handsontable/renderers/textRenderer';
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
@@ -35,15 +36,48 @@ export default {
     return {
       hotSettings: {
         data: [[
-          '', '', '', '', '', '', '', ''
+          '', '', '', '', '', '', '', '', ''
         ]
         ],
-        colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
+        colHeaders: ['', 'Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
         rowHeaders: true,
         licenseKey: "non-commercial-and-evaluation",
         width: '100%',
         height: '100%',
-        colWidths: [50, 60, 600, 60, 60, 60, 60, 50],
+        colWidths: [50, 50, 60, 600, 65, 65, 60, 60, 50],
+        columns: [
+          {
+            type: 'checkbox'
+          },
+          {},
+          {
+            type: 'dropdown',
+            source: this.yearOptions,
+          },
+          {
+            renderer (instance, td, row, col, prop, value, cellProperties) {
+              textRenderer.apply(this, arguments);
+              td.innerHTML = `<div class="truncate">${value}</div>`
+            }
+          },
+          {
+            type: 'date',
+            dateFormat: 'MM/DD/YYYY',
+            correctFormat: true,
+          },
+          {
+            type: 'date',
+            dateFormat: 'MM/DD/YYYY',
+            correctFormat: true,
+          },
+          {
+            type: 'time',
+            timeFormat: 'h:mm:ss a',
+            correctFormat: true
+          },
+          {},
+          {},
+        ],
       }
     }
   },
@@ -75,6 +109,7 @@ export default {
     mappedLogs () {
       return this.shownLogs?.map(log => {
         return [
+          log.include,
           log.priority,
           log.years,
           log.note || '',
@@ -159,37 +194,11 @@ export default {
   updated () {
     this.$refs.table.hotInstance.updateSettings({
       data: this.mappedLogs,
-      columns: [
-        {},
-        {
-          type: 'dropdown',
-          source: this.yearOptions,
-        },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-      ],
     });
   },
   mounted () {
     this.$refs.table.hotInstance.updateSettings({
       data: this.mappedLogs,
-      columns: [
-        {},
-        {
-          type: 'dropdown',
-          source: this.yearOptions,
-        },
-        {},
-        {},
-        {},
-        {},
-        {},
-        {},
-      ],
     });
   },
   methods: {
