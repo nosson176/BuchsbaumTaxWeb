@@ -13,18 +13,26 @@
           <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">First Name</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('type')">
+              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('firstName')">
                 <EditableInput
                   v-model="firstName"
-                  :is-editable="isFirstNameEditable"
+                  placeholder="First Name"
+                  :is-editable="isEditable('firstName')"
                   @blur="onBlur"
+                  @input="debounceUpdate"
                 />
               </dd>
             </div>
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Last Name</dt>
-              <dd class="mt-1 text-sm text-gray-900">
-                <EditableInput v-model="lastName" :is-editable="isLastNameEditable" @blur="onBlur" />
+              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('lastName')">
+                <EditableInput
+                  v-model="lastName"
+                  placeholder="Last Name"
+                  :is-editable="isEditable('lastName')"
+                  @blur="onBlur"
+                  @input="debounceUpdate"
+                />
               </dd>
             </div>
           </dl>
@@ -34,19 +42,22 @@
               <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('type')">
                 <EditableSelectCell
                   v-model="userType"
-                  :is-editable="isTypeEditable"
+                  :is-editable="isEditable('type')"
                   :options="[]"
                   @blur="onBlur"
+                  @input="debounceUpdate"
                 />
               </dd>
             </div>
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Seconds in Day</dt>
-              <dd class="mt-1 text-sm text-gray-900">
+              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('secondsInDay')">
                 <EditableInput
                   v-model="secondsInDay"
-                  :is-editable="isSecondsInDayEditable"
+                  placeholder="Seconds in Day"
+                  :is-editable="isEditable('secondsInDay')"
                   @blur="onBlur"
+                  @input="debounceUpdate"
                 />
               </dd>
             </div>
@@ -54,7 +65,7 @@
           <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Selectable</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('type')">
+              <dd class="mt-1 text-sm text-gray-900">
                 <EditableCheckBoxCell v-model="selectable" />
               </dd>
             </div>
@@ -68,7 +79,7 @@
           <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Notify of Logins</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('type')">
+              <dd class="mt-1 text-sm text-gray-900">
                 <EditableCheckBoxCell v-model="notifyOfLogins" />
               </dd>
             </div>
@@ -80,6 +91,7 @@
 </template>
 
 <script>
+import { debounce } from 'lodash';
 import { events } from '~/shared/constants';
 export default {
   name: "UserDetails",
@@ -105,7 +117,7 @@ export default {
     },
     firstName: {
       get () {
-        return this.user?.firstName;
+        return this.user?.firstName || '';
       },
       set (firstName) {
         this.updateUser({ firstName });
@@ -113,7 +125,7 @@ export default {
     },
     lastName: {
       get () {
-        return this.user?.lastName;
+        return this.user?.lastName || '';
       },
       set (lastName) {
         this.updateUser({ lastName });
@@ -121,7 +133,7 @@ export default {
     },
     userType: {
       get () {
-        return this.user?.userType;
+        return this.user?.userType || '';
       },
       set (userType) {
         this.updateUser({ userType });
@@ -129,7 +141,7 @@ export default {
     },
     secondsInDay: {
       get () {
-        return this.user?.secondsInDay;
+        return this.user?.secondsInDay || '';
       },
       set (secondsInDay) {
         this.updateUser({ secondsInDay });
@@ -159,19 +171,9 @@ export default {
         this.updateUser({ notifyOfLogins });
       }
     },
-    isTypeEditable () {
-      return this.editable === 'type';
-    },
-    isFirstNameEditable () {
-      return this.editable === 'firstName';
-    },
-    isLastNameEditable () {
-      return this.editable === 'lastName';
-    },
-    isSecondsInDayEditable () {
-      return this.editable === 'secondsInDay';
-    },
-
+    debounceUpdate () {
+      return debounce(this.updateUser, 500);
+    }
   },
   methods: {
     updateUser (newVal) {
@@ -180,9 +182,13 @@ export default {
     },
     toggleEditable (field) {
       this.editable = this.editable === field ? '' : field;
+      console.log(this.editable);
     },
     onBlur () {
       this.toggleEditable('');
+    },
+    isEditable (field) {
+      return this.editable === field;
     }
   }
 };
