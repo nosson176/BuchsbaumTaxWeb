@@ -198,11 +198,13 @@ export default {
     this.$refs.table.hotInstance.updateSettings({
       data: this.mappedLogs,
     });
+    this.$nextTick(() => this.$refs.table.hotInstance.validateCells());
   },
   mounted () {
     this.$refs.table.hotInstance.updateSettings({
       data: this.mappedLogs,
     });
+    this.$nextTick(() => this.$refs.table.hotInstance.validateCells());
   },
   methods: {
     toggleEditable (id, logId) {
