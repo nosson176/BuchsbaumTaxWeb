@@ -55,7 +55,7 @@
           </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
-        <div class="table-header xs">X</div>
+        <div class="table-header xs text-center">X</div>
         <div class="table-header sm">$</div>
         <div class="table-header xs">Doc</div>
         <div class="table-header xl flex flex-col">

@@ -2,7 +2,7 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header xs flex flex-col">
+        <div class="table-header w-6 flex flex-col">
           <AddRowButton @click="onAddRowClick" />
           <HeaderSelectOption
             v-model="includeAll"
@@ -11,7 +11,7 @@
             @input="handleUpdateIncludeAll"
           />
         </div>
-        <div class="table-header xs" />
+        <div class="table-header w-6" />
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Year</span>
@@ -56,10 +56,10 @@
           </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrenciesOptions" />
         </div>
-        <div class="table-header xs">X</div>
+        <div class="table-header xs text-center">X</div>
         <div class="table-header sm">$</div>
         <div class="table-header xs">Doc</div>
-        <div class="table-header lg flex flex-col">
+        <div class="table-header xl flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Description</span>
             <DeleteButton small @click="descriptionFilterValue = ''" />
@@ -80,12 +80,12 @@
         :idx="idx"
         :class="{ 'disabled': !income.include, 'selected': isSelected(income.id) }"
       >
-        <div class="table-col bg-gray-200 mr-1">
+        <div class="table-col bg-gray-200 w-6">
           <ClickCell @click="toggleSelected(income)">{{ idx + 1 }}</ClickCell>
         </div>
         <div
           :id="`${idx}-include`"
-          class="table-col xs"
+          class="table-col w-6"
           @click="toggleEditable(`${idx}-include`, income.id)"
         >
           <EditableCheckBoxCell
@@ -238,7 +238,7 @@
         <div
           :id="`${idx}-description`"
           tabindex="-1"
-          class="table-col lg"
+          class="table-col xl"
           @click="toggleEditable(`${idx}-description`, income.id)"
         >
           <EditableInputCell
@@ -267,7 +267,7 @@
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
         <div class="table-col w-6" />
-        <div class="table-col xs" />
+        <div class="table-col w-6" />
         <div class="table-col-primary xs" />
         <div class="table-col xs" />
         <div class="table-col sm" />
@@ -279,7 +279,7 @@
         <div class="table-col xs" />
         <div class="table-col-primary sm">{{ amountUSDTotal }}</div>
         <div class="table-col xs" />
-        <div class="table-col lg" />
+        <div class="table-col xl" />
         <div class="table-col sm" />
         <div class="table-col xs" />
       </TableRow>
