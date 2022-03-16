@@ -36,19 +36,16 @@ export default {
     return {
       hotSettings: {
         data: [[
-          '', '', '', '', '', '', '', '', ''
+          '', '', '', '', '', '', '', ''
         ]
         ],
-        colHeaders: ['', 'Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
+        colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
         rowHeaders: true,
         licenseKey: "non-commercial-and-evaluation",
         width: '100%',
         height: '100%',
-        colWidths: [50, 50, 60, 600, 110, 110, 60, 85, 50],
+        colWidths: [50, 60, 600, 110, 110, 60, 85, 50],
         columns: [
-          {
-            type: 'checkbox'
-          },
           {},
           {
             type: 'dropdown',
@@ -81,7 +78,13 @@ export default {
           },
           {},
         ],
-      }
+        afterChange: () => {
+          if (this.tableRef) {
+            console.log(this.tableRef.getSourceData())
+          }
+        }
+      },
+      tableRef: null,
     }
   },
   computed: {
@@ -112,7 +115,6 @@ export default {
     mappedLogs () {
       return this.shownLogs?.map(log => {
         return [
-          log.include,
           log.priority,
           log.years,
           log.note || '',
@@ -201,6 +203,7 @@ export default {
     this.$nextTick(() => this.$refs.table.hotInstance.validateCells());
   },
   mounted () {
+    this.tableRef = this.$refs.table.hotInstance
     this.$refs.table.hotInstance.updateSettings({
       data: this.mappedLogs,
     });
