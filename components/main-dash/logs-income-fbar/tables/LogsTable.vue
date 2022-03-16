@@ -270,9 +270,9 @@ export default {
     }
   },
   watch: {
-    selectedClient (newClient) {
-      Object.assign(this.$data, this.$options.data.apply(this))
-      if (newClient) {
+    selectedClient (newClient, oldClient) {
+      if (newClient.id !== oldClient.id) {
+        Object.assign(this.$data, this.$options.data.apply(this))
         this.selectedItems = {}
         this.logs.forEach((log) => {
           this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
