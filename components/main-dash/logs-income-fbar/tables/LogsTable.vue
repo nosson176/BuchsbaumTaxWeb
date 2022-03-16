@@ -5,7 +5,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { isToday, isPast, parseISO } from 'date-fns'
+import { isToday, isPast, parseISO, format } from 'date-fns'
 import { HotTable } from '@handsontable/vue';
 import { registerAllModules } from 'handsontable/registry';
 import { textRenderer } from 'handsontable/renderers/textRenderer';
@@ -42,46 +42,57 @@ export default {
         colHeaders: ['Priority', 'Years', 'Note', 'Log Date', 'Alarm Date', 'Alarm Time', 'Alarm User', ''],
         rowHeaders: true,
         licenseKey: "non-commercial-and-evaluation",
+        manualColumnResize: true,
+        manualRowResize: true,
         width: '100%',
         height: '100%',
         colWidths: [50, 60, 600, 110, 110, 60, 85, 50],
+        rowHeights: 20,
         columns: [
-          {},
           {
+            data: 'priority',
+          },
+          {
+            data: 'years',
             type: 'dropdown',
             source: this.yearOptions,
           },
           {
+            data: 'note',
             renderer (instance, td, row, col, prop, value, cellProperties) {
               textRenderer.apply(this, arguments);
               td.innerHTML = `<div class="truncate">${value}</div>`
             }
           },
           {
+            data: 'logDate',
             type: 'date',
             dateFormat: 'MM/DD/YYYY',
             correctFormat: true,
           },
           {
+            data: 'alarmDate',
             type: 'date',
             dateFormat: 'MM/DD/YYYY',
             correctFormat: true,
           },
           {
+            data: 'alarmTime',
             type: 'time',
             timeFormat: 'h:mm:ss a',
             correctFormat: true
           },
           {
+            data: 'alarmUserName',
             type: 'dropdown',
             source: this.userOptions,
           },
-          {},
+          {
+            data: 'id',
+          },
         ],
-        afterChange: () => {
-          if (this.tableRef) {
-            console.log(this.tableRef.getSourceData())
-          }
+        afterChange: (change, source) => {
+          this.updateLog(change, source)
         }
       },
       tableRef: null,
@@ -111,23 +122,6 @@ export default {
       } else {
         return null
       }
-    },
-    mappedLogs () {
-      return this.shownLogs?.map(log => {
-        return [
-          log.priority,
-          log.years,
-          log.note || '',
-          log.logDate || '',
-          log.alarmDate || '',
-          log.alarmTime || '',
-          log.alarmUserName || '',
-          log.id,
-        ]
-      })
-    },
-    debounceUpdate () {
-      return debounce(this.handleUpdate, 500)
     },
     yearOptions () {
       return this.valueTypes.year_name.filter(year => year.show).map(year => year.value)
@@ -197,19 +191,29 @@ export default {
     }
   },
   updated () {
+    this.tableRef = this.$refs.table.hotInstance
     this.$refs.table.hotInstance.updateSettings({
-      data: this.mappedLogs,
+      data: this.shownLogs,
     });
     this.$nextTick(() => this.$refs.table.hotInstance.validateCells());
   },
   mounted () {
     this.tableRef = this.$refs.table.hotInstance
     this.$refs.table.hotInstance.updateSettings({
-      data: this.mappedLogs,
+      data: this.shownLogs,
     });
     this.$nextTick(() => this.$refs.table.hotInstance.validateCells());
   },
   methods: {
+    updateLog (change, source) {
+      if (this.tableRef && change && source === 'edit') {
+        const rowThatHasBeenChanged = change[0][0];
+
+        const sourceRow = this.tableRef.getSourceDataAtRow(rowThatHasBeenChanged);
+        const debounceUpdate = debounce(this.handleUpdate, 500)
+        debounceUpdate(sourceRow.id)
+      }
+    },
     toggleEditable (id, logId) {
       this.editableLogId = logId
       if (!(this.editableId === id)) {
@@ -219,9 +223,12 @@ export default {
     isEditable (id) {
       return this.editableId === id
     },
-    handleUpdate () {
-      const log = this.displayedLogs.find(log => log.id === this.editableLogId)
-      this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
+    handleUpdate (id) {
+      const log = this.shownLogs.find(log => log.id === id)
+      log.alarmDate = log.alarmDate ? format(new Date(log.alarmDate), 'yyyy-MM-dd') : null
+      log.logDate = log.logDate ? format(new Date(log.logDate), 'yyyy-MM-dd') : null
+      log.alarmTime = log.alarmTime ? format(new Date(log.alarmTime), 'HH:mm:ss') : null
+      this.$api.updateLog(this.headers, { clientId: this.clientId, logId: id }, log)
     },
     onDeleteClick (logId) {
       if (this.showArchived) {
