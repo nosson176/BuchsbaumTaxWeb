@@ -14,16 +14,19 @@
         :key="user.id"
         class="px-2"
         :idx="index"
-        :class="isUserSelected(user.id) ? 'selected' : 'row'"
+        :class="isUserSelected(user) ? 'selected' : 'row'"
       >
         <div class="table-col w-full cursor-pointer" @click="setSelected(user)">
           {{ user.username }}
           <span class="font-light">({{ user.userType }})</span>
         </div>
         <div class="table-col">
-          <DeleteButton />
+          <DeleteButton @click="deleteUser(user.id)" />
         </div>
       </TableRow>
+      <Modal :showing="showDelete" @hide="closeDeleteModal">
+        <DeleteType @hide="closeDeleteModal" @delete="completeDelete" />
+      </Modal>
     </template>
   </Table>
 </template>
@@ -40,16 +43,46 @@ export default {
     userId: {
       type: Number,
       default: 0
+    },
+  },
+  data () {
+    return {
+      deleteId: null,
+      showDelete: false,
+    };
+  },
+  computed: {
+    headers () {
+      return this.$api.getHeaders();
     }
   },
   methods: {
     setSelected (user) {
       this.$emit(events.click, user.id);
     },
-    isUserSelected (userId) {
-      return userId === this.userId;
+    isUserSelected ({ id }) {
+      return id === this.userId;
     },
     onAddRowClick () {
+      const user = {
+        username: '',
+        firstName: '',
+        lastName: '',
+        userType: '',
+        notifyOfLogins: false,
+      };
+      this.$api.createUser(this.headers, { user });
+    },
+    deleteUser (userId) {
+      this.deleteId = userId;
+      this.showDelete = true;
+    },
+    completeDelete () {
+      this.$api.deleteUser(this.headers, { userId: this.deleteId });
+      this.showDelete = false;
+    },
+    closeDeleteModal () {
+      this.showDelete = false;
     }
   }
 }

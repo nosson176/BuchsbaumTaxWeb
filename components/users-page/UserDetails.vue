@@ -13,52 +13,28 @@
           <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">First Name</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('firstName')">
-                <EditableInput
-                  v-model="firstName"
-                  placeholder="First Name"
-                  :is-editable="isEditable('firstName')"
-                  @blur="onBlur"
-                  @input="debounceUpdate"
-                />
+              <dd class="mt-1 text-sm text-gray-900">
+                <input v-model="firstName" placeholder="First Name" />
               </dd>
             </div>
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Last Name</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('lastName')">
-                <EditableInput
-                  v-model="lastName"
-                  placeholder="Last Name"
-                  :is-editable="isEditable('lastName')"
-                  @blur="onBlur"
-                  @input="debounceUpdate"
-                />
+              <dd class="mt-1 text-sm text-gray-900">
+                <input v-model="lastName" placeholder="Last Name" />
               </dd>
             </div>
           </dl>
           <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Privelage Set</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('type')">
-                <EditableSelectCell
-                  v-model="userType"
-                  :is-editable="isEditable('type')"
-                  :options="[]"
-                  @blur="onBlur"
-                  @input="debounceUpdate"
-                />
+              <dd class="mt-1 text-sm text-gray-900">
+                <SelectOption v-model="userType" label="User Type" :options="['user', 'admin']" />
               </dd>
             </div>
             <div class="sm:col-span-1">
               <dt class="text-sm font-medium text-gray-500">Seconds in Day</dt>
-              <dd class="mt-1 text-sm text-gray-900" @click="toggleEditable('secondsInDay')">
-                <EditableInput
-                  v-model="secondsInDay"
-                  placeholder="Seconds in Day"
-                  :is-editable="isEditable('secondsInDay')"
-                  @blur="onBlur"
-                  @input="debounceUpdate"
-                />
+              <dd class="mt-1 text-sm text-gray-900">
+                <input v-model="secondsInDay" placeholder="Seconds in Day" />
               </dd>
             </div>
           </dl>
@@ -91,8 +67,6 @@
 </template>
 
 <script>
-import { debounce } from 'lodash';
-import { events } from '~/shared/constants';
 export default {
   name: "UserDetails",
   props: {
@@ -171,25 +145,15 @@ export default {
         this.updateUser({ notifyOfLogins });
       }
     },
-    debounceUpdate () {
-      return debounce(this.updateUser, 500);
+    headers () {
+      return this.$api.getHeaders();
     }
   },
   methods: {
     updateUser (newVal) {
       const user = Object.assign({}, this.user, newVal);
-      this.$emit(events.change, user);
+      this.$api.updateUser(this.headers, { userId: user.id }, user)
     },
-    toggleEditable (field) {
-      this.editable = this.editable === field ? '' : field;
-      console.log(this.editable);
-    },
-    onBlur () {
-      this.toggleEditable('');
-    },
-    isEditable (field) {
-      return this.editable === field;
-    }
   }
 };
 </script>
