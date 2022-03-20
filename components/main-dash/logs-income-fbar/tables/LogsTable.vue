@@ -7,7 +7,7 @@
         </div>
         <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
-          <div class="flex items-center space-x-1">
+          <div class="flex items-center space-x-0.5">
             <span>Year</span>
             <DeleteButton small @click="yearFilterValue = ''" />
           </div>

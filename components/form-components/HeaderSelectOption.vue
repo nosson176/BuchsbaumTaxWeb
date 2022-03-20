@@ -31,7 +31,7 @@
       <div v-else>
         <input
           ref="filter"
-          v-model="inputValue"
+          v-model="computedValue"
           type="text"
           class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-0.5 pr-0.5 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
           @keyup="onInputKeyup($event.key)"
@@ -147,13 +147,6 @@ export default {
       },
       set (value) {
         this.$emit(events.input, value)
-      }
-    },
-    inputValue: {
-      get () {
-        return this.filterOptionsValue
-      },
-      set (value) {
         this.filterOptionsValue = value
       }
     },
@@ -172,7 +165,7 @@ export default {
     showOptions (value) {
       if (value) {
         this.$refs.filter?.focus()
-        this.inputValue = ''
+        this.computedValue = ''
       }
     },
     selectedClient (newVal, oldVal) {
