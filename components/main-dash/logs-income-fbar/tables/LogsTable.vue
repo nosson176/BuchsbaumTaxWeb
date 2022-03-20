@@ -61,10 +61,7 @@
           class="table-col sm"
           @click="toggleEditable(`${idx}-years`, log.id)"
         >
-          <Tooltip
-            :disabled="!(splitYears(log.years).length > 1) || isEditable(`${idx}-years`)"
-            trigger="hover"
-          >
+          <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell
               v-model="log.years"
               :is-editable="isEditable(`${idx}-years`)"
@@ -75,7 +72,7 @@
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
-                  <span v-if="splitYears(log.years).length >= 1 && index">{{ year }}</span>
+                  <span v-if="isMult(log.years) && index">{{ year }}</span>
                 </li>
               </ul>
             </template>
@@ -398,7 +395,10 @@ export default {
     },
     splitYears (years) {
       return years?.split('\u000B')
-    }
+    },
+    isMult (year) {
+      return year?.includes('\u000B')
+    },
   }
 }
 </script>
