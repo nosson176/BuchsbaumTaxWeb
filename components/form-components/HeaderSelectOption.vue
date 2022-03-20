@@ -165,12 +165,11 @@ export default {
     showOptions (value) {
       if (value) {
         this.$refs.filter?.focus()
-        this.computedValue = ''
       }
     },
     selectedClient (newVal, oldVal) {
       if (newVal.id !== oldVal.id) {
-        this.filterOptionsValue = ''
+        this.computedValue = ''
       }
     }
   },
