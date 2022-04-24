@@ -7,7 +7,7 @@
         </div>
         <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
-          <div class="flex items-center space-x-1">
+          <div class="flex items-center space-x-0.5">
             <span>Year</span>
             <DeleteButton small @click="yearFilterValue = ''" />
           </div>
@@ -61,7 +61,7 @@
           class="table-col sm"
           @click="toggleEditable(`${idx}-years`, log.id)"
         >
-          <Tooltip :disabled="!splitYears(log.years) || isEditable(`${idx}-years`)" trigger="hover">
+          <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell
               v-model="log.years"
               :is-editable="isEditable(`${idx}-years`)"
@@ -72,7 +72,7 @@
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
-                  <span v-if="splitYears(log.years).length >= 1 || index">{{ year }}</span>
+                  <span v-if="isMult(log.years) && index">{{ year }}</span>
                 </li>
               </ul>
             </template>
@@ -270,9 +270,9 @@ export default {
     }
   },
   watch: {
-    selectedClient (newClient) {
-      Object.assign(this.$data, this.$options.data.apply(this))
-      if (newClient) {
+    selectedClient (newClient, oldClient) {
+      if (newClient.id !== oldClient.id) {
+        Object.assign(this.$data, this.$options.data.apply(this))
         this.selectedItems = {}
         this.logs.forEach((log) => {
           this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
@@ -395,7 +395,10 @@ export default {
     },
     splitYears (years) {
       return years?.split('\u000B')
-    }
+    },
+    isMult (year) {
+      return year?.includes('\u000B')
+    },
   }
 }
 </script>
