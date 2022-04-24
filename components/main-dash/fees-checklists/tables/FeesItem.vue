@@ -148,136 +148,136 @@ export default {
   props: {
     fee: {
       type: Object,
-      required: true
+      required: true,
     },
     idx: {
       type: Number,
-      default: NaN
+      default: NaN,
     },
     isNew: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      editable: ''
+      editable: '',
     }
   },
   computed: {
     ...mapState([models.valueTypes, models.selectedClient]),
-    classObj () {
+    classObj() {
       const even = this.idx % 2 === 0
       return { even }
     },
-    formModel () {
+    formModel() {
       return {
-        ...this.fee
+        ...this.fee,
       }
     },
-    count () {
+    count() {
       return this.idx + 1
     },
     feeType: {
-      get () {
+      get() {
         return this.formModel.feeType
       },
-      set (newValue) {
+      set(newValue) {
         this.formModel.feeType = newValue
-      }
+      },
     },
     year: {
-      get () {
+      get() {
         return this.formModel.year
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.year = newVal
-      }
+      },
     },
     status: {
-      get () {
+      get() {
         return this.formModel.status
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.status = newVal
-      }
+      },
     },
     statusDetail: {
-      get () {
+      get() {
         return this.formModel.statusDetail
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.statusDetail = newVal
-      }
+      },
     },
     manualAmount: {
-      get () {
+      get() {
         return this.formModel.manualAmount
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.manualAmount = newVal
-      }
+      },
     },
     paidAmount: {
-      get () {
+      get() {
         return this.formModel.paidAmount
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.paidAmount = newVal
-      }
+      },
     },
     dateFee: {
-      get () {
+      get() {
         return this.formModel.dateFee
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.dateFee = newVal
-      }
+      },
     },
     rate: {
-      get () {
+      get() {
         return this.formModel.rate
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.rate = newVal
-      }
+      },
     },
     notes: {
-      get () {
+      get() {
         return this.formModel.notes
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.notes = newVal
-      }
+      },
     },
     include: {
-      get () {
+      get() {
         return this.formModel.include
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.include = newVal
-      }
+      },
     },
     sum: {
-      get () {
+      get() {
         return this.formModel.sum
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.sum = newVal
-      }
+      },
     },
-    yearOptions () {
-      return this.valueTypes.year_name.filter(year => year.show)
+    yearOptions() {
+      return this.valueTypes.year_name.filter((year) => year.show)
     },
-    feeTypeOptions () {
-      return this.valueTypes.fee_type.filter(feeType => feeType.show)
+    feeTypeOptions() {
+      return this.valueTypes.fee_type.filter((feeType) => feeType.show)
     },
-    feeStatusOptions () {
-      return this.valueTypes.fee_status.filter(feeStatus => feeStatus.show)
+    feeStatusOptions() {
+      return this.valueTypes.fee_status.filter((feeStatus) => feeStatus.show)
     },
-    feeStatusDetailOptions () {
+    feeStatusDetailOptions() {
       return this.valueTypes.fee_status_detail.filter((feeStatusDetail) => {
-        const parentId = this.feeStatusOptions.find(statusOption => statusOption.value === this.formModel.status)?.id
+        const parentId = this.feeStatusOptions.find((statusOption) => statusOption.value === this.formModel.status)?.id
         if (this.formModel.status) {
           return feeStatusDetail.parentId === parentId
         } else {
@@ -285,43 +285,43 @@ export default {
         }
       })
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
-    currencySymbols () {
+    currencySymbols() {
       return currencySymbols
     },
-    isRedBG () {
+    isRedBG() {
       return this.year === 'ITIN'
-    }
+    },
   },
   watch: {
     fee: {
-      handler () {
+      handler() {
         if (this.isNew) {
           this.editable = 'feeType'
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
-    setEditable (field) {
+    setEditable(field) {
       this.editable = field
     },
-    isEditable (field) {
+    isEditable(field) {
       return this.editable === field
     },
-    onBlur () {
+    onBlur() {
       this.editable = ''
     },
-    handleUpdate () {
+    handleUpdate() {
       this.$emit(events.input, this.formModel)
     },
-    onDeleteClick () {
+    onDeleteClick() {
       this.$emit(events.delete, this.fee.id)
-    }
-  }
+    },
+  },
 }
 </script>
 

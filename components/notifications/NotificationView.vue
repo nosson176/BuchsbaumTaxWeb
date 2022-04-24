@@ -19,39 +19,34 @@
 </template>
 
 <script>
-import {
-  models,
-  mutations,
-  notification
-} from '~/shared/constants'
+import { models, mutations, notification } from '~/shared/constants'
 
 export default {
   name: 'NotificationView',
   props: {
     type: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
-    isNotificationTypeAlert () {
+    isNotificationTypeAlert() {
       return this.type === notification.alert
     },
-    notificationBackground () {
+    notificationBackground() {
       if (this.isNotificationTypeAlert) {
         return ['bg-red-100']
       } else {
         return ['bg-indigo-100']
       }
-    }
+    },
   },
   methods: {
-    closeSelf () {
+    closeSelf() {
       this.$store.commit(mutations.setModelResponse, { model: models.notifier, data: null })
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

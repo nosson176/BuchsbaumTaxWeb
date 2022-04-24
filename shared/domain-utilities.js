@@ -42,12 +42,14 @@ const isFieldEmpty = (str) => {
 }
 
 const isAddressFormValid = (addressFormModel) => {
-  return isAddressPhoneValid(addressFormModel.phone.input) &&
+  return (
+    isAddressPhoneValid(addressFormModel.phone.input) &&
     isAddressAddressValid(addressFormModel.address.input) &&
     isAddressCityValid(addressFormModel.city.input) &&
     isAddressPostalCodeValid(addressFormModel.postalCode.input) &&
     isAddressCountryValid(addressFormModel.country.input) &&
     isAddressNameValid(addressFormModel.name.input)
+  )
 }
 
 const isNotificationValid = (notification) => {
@@ -57,16 +59,16 @@ const isNotificationValid = (notification) => {
 const sortByCategory = (a, b) => {
   if (
     (a.category === categories.secondary && b.category === categories.primary) ||
-      (a.category === categories.dependant && b.category === categories.primary) ||
-      (a.category === categories.dependant && b.category === categories.secondary) ||
-      (!a.category && b.category)
+    (a.category === categories.dependant && b.category === categories.primary) ||
+    (a.category === categories.dependant && b.category === categories.secondary) ||
+    (!a.category && b.category)
   ) {
     return 1
   } else if (
     (a.category === categories.primary && b.category === categories.secondary) ||
-      (a.category === categories.primary && b.category === categories.dependant) ||
-      (a.category === categories.secondary && b.category === categories.dependant) ||
-      (a.category && !b.category)
+    (a.category === categories.primary && b.category === categories.dependant) ||
+    (a.category === categories.secondary && b.category === categories.dependant) ||
+    (a.category && !b.category)
   ) {
     return -1
   } else {
@@ -74,8 +76,8 @@ const sortByCategory = (a, b) => {
   }
 }
 
-const formatDateForClient = date => format(parseISO(date), dateformat.client)
-const formatDateForServer = date => formatISO(parse(date, dateformat.client, new Date()))
+const formatDateForClient = (date) => format(parseISO(date), dateformat.client)
+const formatDateForServer = (date) => formatISO(parse(date, dateformat.client, new Date()))
 
 export {
   isNameValid,
@@ -94,5 +96,5 @@ export {
   isFieldEmpty,
   sortByCategory,
   formatDateForClient,
-  formatDateForServer
+  formatDateForServer,
 }

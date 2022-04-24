@@ -1,12 +1,7 @@
 <template>
   <div>
     <div>
-      <FormInput
-        id="example-form-string-input"
-        v-model="stringProp"
-        placeholder="example placeholder"
-        valid
-      />
+      <FormInput id="example-form-string-input" v-model="stringProp" placeholder="example placeholder" valid />
     </div>
     <div>
       <FormInput
@@ -29,36 +24,34 @@ export default {
   props: {
     value: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   computed: {
     ...mapGetters([]),
     stringProp: {
-      get () {
+      get() {
         return this.value.stringProp
       },
-      set (stringProp) {
+      set(stringProp) {
         this.emitInput({ ...this.value, stringProp })
-      }
+      },
     },
     numberProp: {
-      get () {
+      get() {
         return this.value.numberProp
       },
-      set (numberProp) {
+      set(numberProp) {
         this.emitInput({ ...this.value, numberProp })
-      }
-    }
+      },
+    },
   },
   methods: {
-    emitInput (payload) {
+    emitInput(payload) {
       this.$emit(events.input, payload)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

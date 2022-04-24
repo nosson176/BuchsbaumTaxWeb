@@ -9,30 +9,30 @@ import { models, mutations, events } from '~/shared/constants'
 export default {
   name: 'ResizeWatcher',
   computed: {
-    debouncedHandleResize () {
+    debouncedHandleResize() {
       return debounce(this.handleResize, 150)
-    }
+    },
   },
-  beforeDestroy () {
+  beforeDestroy() {
     this.unbindEventListeners()
   },
-  mounted () {
+  mounted() {
     this.initialize()
   },
   methods: {
-    initialize () {
+    initialize() {
       this.$store.commit(mutations.setModelResponse, { model: models.appWidth, data: window.innerWidth })
       this.bindEventListeners()
     },
-    bindEventListeners () {
+    bindEventListeners() {
       window.addEventListener(events.resize, this.debouncedHandleResize)
     },
-    unbindEventListeners () {
+    unbindEventListeners() {
       window.removeEventListener(events.resize, this.debouncedHandleResize)
     },
-    handleResize (evt) {
+    handleResize(evt) {
       this.$store.commit(mutations.setModelResponse, { model: models.appWidth, data: evt.target.innerWidth })
-    }
-  }
+    },
+  },
 }
 </script>

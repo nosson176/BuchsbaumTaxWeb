@@ -11,23 +11,21 @@
 import { events } from '~/shared/constants'
 export default {
   name: 'ViewArchivedHeader',
-  data () {
+  data() {
     return {
-      viewActive: true
+      viewActive: true,
     }
   },
   methods: {
-    toggleView () {
+    toggleView() {
       this.viewActive = !this.viewActive
       this.emitChange()
     },
-    emitChange () {
+    emitChange() {
       this.$emit(events.change)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

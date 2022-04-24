@@ -6,10 +6,8 @@
 
 <script>
 export default {
-  name: 'TableHeader'
+  name: 'TableHeader',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -12,7 +12,7 @@
       @click="selectClient(client)"
     >
       <div class="w-full">
-        <span class="font-medium text-gray-900 ">{{ client.lastName }}</span> {{ client.displayName }}
+        <span class="font-medium text-gray-900">{{ client.lastName }}</span> {{ client.displayName }}
       </div>
       <div class="w-5" @click.stop>
         <DeleteButton @click="archiveClient(client)" />
@@ -30,55 +30,57 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return { selectedClientId: NaN }
   },
   computed: {
     ...mapState([models.clients, models.selectedClient, models.selectedSmartview]),
-    displayedClients () {
+    displayedClients() {
       return this.filteredClients
     },
-    filteredClients () {
-      return Object.fromEntries(Object.entries(this.clients)
-        .filter(([key, client]) => this.showArchived === client.archived)
-        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true))
+    filteredClients() {
+      return Object.fromEntries(
+        Object.entries(this.clients)
+          .filter(([key, client]) => this.showArchived === client.archived)
+          .filter(([key, client]) =>
+            this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true
+          )
+      )
     },
-    hasSelectedSmartview () {
+    hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
-    }
+    },
   },
   watch: {
-    selectedClient () {
+    selectedClient() {
       this.scrollClientIntoView()
-    }
+    },
   },
   methods: {
-    selectClient ({ id }) {
+    selectClient({ id }) {
       this.selectedClientId = id
       const headers = this.headers
       this.$api.getClientData(headers, id)
     },
-    onAddRowClick () {
+    onAddRowClick() {
       const defaultValues = {
-        lastName: 'New Client'
+        lastName: 'New Client',
       }
       const client = Object.assign({}, defaultValues)
-      this.$api.createClient(this.headers, { client })
-        .then((data) => {
-          this.$api.getClientData(this.headers, data.id)
-            .then(async () => {
-              await this.$api.getClientList(this.headers)
-              this.scrollClientIntoView()
-            })
+      this.$api.createClient(this.headers, { client }).then((data) => {
+        this.$api.getClientData(this.headers, data.id).then(async () => {
+          await this.$api.getClientList(this.headers)
+          this.scrollClientIntoView()
         })
+      })
     },
-    scrollClientIntoView () {
+    scrollClientIntoView() {
       if (this.selectedClient) {
         this.selectedClientId = this.selectedClient.id
         const selectedClientRef = this.$refs[this.selectedClient.id]
@@ -87,20 +89,21 @@ export default {
         }
       }
     },
-    archiveClient (client) {
+    archiveClient(client) {
       if (this.showArchived) {
         const clientCopy = Object.assign({}, client)
         clientCopy.archived = false
-        this.$api.updateClient(this.headers, { clientId: client.id, client: clientCopy })
+        this.$api
+          .updateClient(this.headers, { clientId: client.id, client: clientCopy })
           .then(() => this.$api.getClientList(this.headers))
       } else {
-        this.$store.commit(
-          mutations.setModelResponse,
-          { model: models.modals, data: { delete: { showing: true, data: { id: client.id, type: tabs.clients } } } }
-        )
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: client.id, type: tabs.clients } } },
+        })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

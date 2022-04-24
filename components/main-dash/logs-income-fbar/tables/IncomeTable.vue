@@ -4,12 +4,7 @@
       <TableHeader>
         <div class="table-header xs flex flex-col">
           <AddRowButton @click="onAddRowClick" />
-          <HeaderSelectOption
-            v-model="includeAll"
-            menu
-            :options="includeOptions"
-            @input="handleUpdateIncludeAll"
-          />
+          <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
         </div>
         <div class="table-header xs" />
         <div class="table-header xs flex flex-col">
@@ -64,10 +59,7 @@
             <span>Description</span>
             <DeleteButton small @click="descriptionFilterValue = ''" />
           </div>
-          <HeaderSelectOption
-            v-model="descriptionFilterValue"
-            :options="filteredDescriptionsOptions"
-          />
+          <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionsOptions" />
         </div>
         <div class="table-header sm">Depend</div>
         <div class="table-header xs" />
@@ -78,27 +70,19 @@
         v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
-        :class="{ 'disabled': !income.include, 'selected': isSelected(income.id) }"
+        :class="{ disabled: !income.include, selected: isSelected(income.id) }"
       >
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(income)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div
-          :id="`${idx}-include`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-include`, income.id)"
-        >
+        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, income.id)">
           <EditableCheckBoxCell
             v-model="income.include"
             :is-editable="isEditable(`${idx}-include`)"
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-years`"
-          class="table-col-primary xs"
-          @click="toggleEditable(`${idx}-years`, income.id)"
-        >
+        <div :id="`${idx}-years`" class="table-col-primary xs" @click="toggleEditable(`${idx}-years`, income.id)">
           <EditableSelectCell
             v-model="income.years"
             :is-editable="isEditable(`${idx}-years`)"
@@ -107,11 +91,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-category`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-category`, income.id)"
-        >
+        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, income.id)">
           <EditableSelectCell
             v-model="income.category"
             :is-editable="isEditable(`${idx}-category`)"
@@ -120,11 +100,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-taxGroup`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-taxGroup`, income.id)"
-        >
+        <div :id="`${idx}-taxGroup`" class="table-col sm" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
           <EditableSelectCell
             v-model="income.taxGroup"
             :is-editable="isEditable(`${idx}-taxGroup`)"
@@ -133,22 +109,14 @@
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-exclusion`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-exclusion`, income.id)"
-        >
+        <div :id="`${idx}-exclusion`" class="table-col xs" @click="toggleEditable(`${idx}-exclusion`, income.id)">
           <EditableCheckBoxCell
             v-model="income.exclusion"
             :is-editable="isEditable(`${idx}-exclusion`)"
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-taxType`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-taxType`, income.id)"
-        >
+        <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, income.id)">
           <EditableSelectCell
             v-model="income.taxType"
             :is-editable="isEditable(`${idx}-taxType`)"
@@ -157,11 +125,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-job`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-job`, income.id)"
-        >
+        <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, income.id)">
           <EditableSelectCell
             v-model="income.job"
             :is-editable="isEditable(`${idx}-job`)"
@@ -184,11 +148,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div
-          :id="`${idx}-currency`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-currency`, income.id)"
-        >
+        <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, income.id)">
           <EditableSelectCell
             v-model="income.currency"
             :is-editable="isEditable(`${idx}-currency`)"
@@ -294,18 +254,28 @@ import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
-  'include', 'years', 'category', 'taxGroup', 'exclusion', 'taxType', 'job', 'amount', 'currency', 'frequency', 'documents', 'description', 'depend', 'delete'
+  'include',
+  'years',
+  'category',
+  'taxGroup',
+  'exclusion',
+  'taxType',
+  'job',
+  'amount',
+  'currency',
+  'frequency',
+  'documents',
+  'description',
+  'depend',
+  'delete',
 ]
 
-const docOptions = [
-  { value: 'HAS' },
-  { value: 'NEEDS' }
-]
+const docOptions = [{ value: 'HAS' }, { value: 'NEEDS' }]
 
 const includeOptions = [
   { value: '', name: '' },
   { value: 'select', name: 'Select All' },
-  { value: 'deselect', name: 'Deselect All' }
+  { value: 'deselect', name: 'Deselect All' },
 ]
 
 export default {
@@ -313,10 +283,10 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
       editableId: '',
       newIncomeId: NaN,
@@ -329,15 +299,14 @@ export default {
       currencyFilterValue: '',
       descriptionFilterValue: '',
       includeAll: '',
-      selectedItems: {}
+      selectedItems: {},
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
-    displayedIncomes () {
-      const incomes = this.shownIncomes
-        .filter(income => this.filterIncomes(income))
-      const newIncomeIdx = incomes?.findIndex(income => income.id === this.newIncomeId)
+    displayedIncomes() {
+      const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
+      const newIncomeIdx = incomes?.findIndex((income) => income.id === this.newIncomeId)
       if (newIncomeIdx > -1) {
         const tempIncome = incomes[newIncomeIdx]
         incomes.splice(newIncomeIdx, 1)
@@ -345,178 +314,189 @@ export default {
       }
       return searchArrOfObjs(incomes, this.searchInput)
     },
-    shownIncomes () {
+    shownIncomes() {
       if (this.incomeBreakdowns) {
         return this.incomeBreakdowns
-          .filter(income => this.showArchived === income.archived)
+          .filter((income) => this.showArchived === income.archived)
           .sort((a, b) => b.years - a.years)
       } else {
         return null
       }
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
-    categoryOptions () {
-      return this.valueTypes.category.filter(category => category.show)
+    categoryOptions() {
+      return this.valueTypes.category.filter((category) => category.show)
     },
-    yearNameOptions () {
-      return this.valueTypes.year_name.filter(yearName => yearName.show)
+    yearNameOptions() {
+      return this.valueTypes.year_name.filter((yearName) => yearName.show)
     },
-    taxTypeOptions () {
-      return this.valueTypes.tax_type.filter(taxType => taxType.show && taxType.parentId === this.editableIncomeTaxGroupId)
+    taxTypeOptions() {
+      return this.valueTypes.tax_type.filter(
+        (taxType) => taxType.show && taxType.parentId === this.editableIncomeTaxGroupId
+      )
     },
-    editableIncomeTaxGroupId () {
-      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
-      const taxGroup = this.taxGroupOptions.find(taxGroup => taxGroup.value === income?.taxGroup)
+    editableIncomeTaxGroupId() {
+      const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
+      const taxGroup = this.taxGroupOptions.find((taxGroup) => taxGroup.value === income?.taxGroup)
       return taxGroup?.id
     },
-    jobOptions () {
-      return this.valueTypes.job.filter(job => job.show)
+    jobOptions() {
+      return this.valueTypes.job.filter((job) => job.show)
     },
-    currencyOptions () {
-      return this.valueTypes.currency.filter(currency => currency.show)
+    currencyOptions() {
+      return this.valueTypes.currency.filter((currency) => currency.show)
     },
-    taxGroupOptions () {
-      return Object.values(this.valueTaxGroups).filter(taxGroup => taxGroup.show)
+    taxGroupOptions() {
+      return Object.values(this.valueTaxGroups).filter((taxGroup) => taxGroup.show)
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
     },
-    clientId () {
+    clientId() {
       return this.selectedClient.id
     },
-    incomeBreakdowns () {
+    incomeBreakdowns() {
       if (this.selectedClient.incomeBreakdowns) {
         return JSON.parse(JSON.stringify(this.selectedClient.incomeBreakdowns))
       } else {
         return null
       }
     },
-    searchInput () {
+    searchInput() {
       return this.search?.[tableGroups.logsIncomeFbar]
     },
-    docOptions () {
+    docOptions() {
       return docOptions
     },
-    amountTotal () {
-      return formatAsNumber(this.displayedIncomes
-        .filter(income => income.include)
-        .reduce((acc, income) => income.frequency ? (acc + income.amount * income.frequency) : (acc + income.amount), 0))
+    amountTotal() {
+      return formatAsNumber(
+        this.displayedIncomes
+          .filter((income) => income.include)
+          .reduce((acc, income) => (income.frequency ? acc + income.amount * income.frequency : acc + income.amount), 0)
+      )
     },
-    amountUSDTotal () {
-      return `$${formatAsNumber(Math.round(this.displayedIncomes
-        .filter(income => income.include)
-        .reduce((acc, income) => {
-          if (!income.amountUSD) {
-            return acc
-          }
-          return income.frequency ? (acc + income.amountUSD * income.frequency) : (acc + income.amountUSD)
-        }, 0)
-      ))}`
+    amountUSDTotal() {
+      return `$${formatAsNumber(
+        Math.round(
+          this.displayedIncomes
+            .filter((income) => income.include)
+            .reduce((acc, income) => {
+              if (!income.amountUSD) {
+                return acc
+              }
+              return income.frequency ? acc + income.amountUSD * income.frequency : acc + income.amountUSD
+            }, 0)
+        )
+      )}`
     },
-    filteredYearsOptions () {
-      const options = this.yearNameOptions
-        .filter(yearName => this.shownIncomes.find(income => income.years === yearName.value))
+    filteredYearsOptions() {
+      const options = this.yearNameOptions.filter((yearName) =>
+        this.shownIncomes.find((income) => income.years === yearName.value)
+      )
       return options
     },
-    filteredCategoriesOptions () {
-      const options = this.categoryOptions
-        .filter(category => this.shownIncomes.find(income => income.category === category.value))
+    filteredCategoriesOptions() {
+      const options = this.categoryOptions.filter((category) =>
+        this.shownIncomes.find((income) => income.category === category.value)
+      )
       return options
     },
-    filteredGroupsOptions () {
-      const options = this.taxGroupOptions
-        .filter(taxGroup => this.shownIncomes.find(income => income.taxGroup === taxGroup.value))
+    filteredGroupsOptions() {
+      const options = this.taxGroupOptions.filter((taxGroup) =>
+        this.shownIncomes.find((income) => income.taxGroup === taxGroup.value)
+      )
       return options
     },
-    filteredTypesOptions () {
-      const options = this.valueTypes.tax_type
-        .filter(taxType => taxType.show && this.shownIncomes.find(income => income.taxType === taxType.value))
+    filteredTypesOptions() {
+      const options = this.valueTypes.tax_type.filter(
+        (taxType) => taxType.show && this.shownIncomes.find((income) => income.taxType === taxType.value)
+      )
       return options
     },
-    filteredJobsOptions () {
-      const options = this.jobOptions
-        .filter(job => this.shownIncomes.find(income => income.job === job.value))
+    filteredJobsOptions() {
+      const options = this.jobOptions.filter((job) => this.shownIncomes.find((income) => income.job === job.value))
       return options
     },
-    filteredCurrenciesOptions () {
-      const options = this.currencyOptions
-        .filter(currency => this.shownIncomes.find(income => income.currency === currency.value))
+    filteredCurrenciesOptions() {
+      const options = this.currencyOptions.filter((currency) =>
+        this.shownIncomes.find((income) => income.currency === currency.value)
+      )
       return options
     },
-    filteredDescriptionsOptions () {
+    filteredDescriptionsOptions() {
       const options = this.shownIncomes
-        .filter(income => income.description)
-        .map(income => income.description)
+        .filter((income) => income.description)
+        .map((income) => income.description)
         .filter((description, idx, arr) => arr.indexOf(description) === idx)
-        .map(description => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
+        .map((description) => ({ id: description, include: true, show: true, sortOrder: 0, value: description }))
       return options
     },
-    filterByYear () {
+    filterByYear() {
       return !(this.yearFilterValue === '')
     },
-    filterByCategory () {
+    filterByCategory() {
       return !(this.categoryFilterValue === '')
     },
-    filterByGroup () {
+    filterByGroup() {
       return !(this.groupFilterValue === '')
     },
-    filterByType () {
+    filterByType() {
       return !(this.typeFilterValue === '')
     },
-    filterByJob () {
+    filterByJob() {
       return !(this.jobFilterValue === '')
     },
-    filterByCurrency () {
+    filterByCurrency() {
       return !(this.currencyFilterValue === '')
     },
-    filterByDescription () {
+    filterByDescription() {
       return !(this.descriptionFilterValue === '')
     },
-    isClientSelected () {
+    isClientSelected() {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     },
-    includeOptions () {
+    includeOptions() {
       return includeOptions
     },
-    isCmdPressed () {
+    isCmdPressed() {
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
-    selectedIncomeIds () {
-      return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    selectedIncomeIds() {
+      return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
-    isCopyingIncomes () {
+    isCopyingIncomes() {
       return this.isCmdPressed && this.selectedIncomeIds.length > 0
-    }
+    },
   },
   watch: {
     selectedClient: {
-      handler () {
+      handler() {
         Object.assign(this.$data, this.$options.data.apply(this))
         this.initSelectedItems()
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
-  created () {
+  created() {
     this.initSelectedItems()
   },
   methods: {
-    toggleEditable (id, incomeId) {
+    toggleEditable(id, incomeId) {
       this.editableIncomeId = incomeId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
     },
-    isEditable (id) {
+    isEditable(id) {
       return this.editableId === id
     },
-    handleUpdate () {
-      const income = this.displayedIncomes.find(income => income.id === this.editableIncomeId)
+    handleUpdate() {
+      const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
-    handleUpdateIncludeAll () {
+    handleUpdateIncludeAll() {
       this.displayedIncomes.forEach((income) => {
         if (this.includeAll === 'select') {
           income.include = true
@@ -526,53 +506,51 @@ export default {
       })
       this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
     },
-    onDeleteClick (incomeId) {
+    onDeleteClick(incomeId) {
       if (this.showArchived) {
-        const income = this.displayedIncomes.find(income => income.id === incomeId)
+        const income = this.displayedIncomes.find((income) => income.id === incomeId)
         income.archived = false
         this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
       } else {
-        this.$store.commit(
-          mutations.setModelResponse,
-          { model: models.modals, data: { delete: { showing: true, data: { id: incomeId, type: tabs.income } } } }
-        )
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: incomeId, type: tabs.income } } },
+        })
       }
     },
-    onAddRowClick () {
+    onAddRowClick() {
       if (!this.selectedClient) {
         return
       }
       const defaultValues = {
         clientId: this.selectedClient.id,
-        include: true
+        include: true,
       }
       if (this.isCopyingIncomes) {
         this.selectedIncomeIds.forEach(async (incomeId, idx) => {
-          const income = this.displayedIncomes.find(income => income.id === Number(incomeId))
+          const income = this.displayedIncomes.find((income) => income.id === Number(incomeId))
           const newIncome = Object.assign({}, income)
-          await this.$api.createIncome(this.headers, { income: newIncome })
-            .then(async (data) => {
-              if (this.selectedIncomeIds.length === idx + 1) {
-                await this.$api.getClientData(this.headers, this.selectedClient.id)
-                this.newIncomeId = data.id
-                this.toggleEditable(`0-${columns[0]}`, data.id)
-              }
-            })
+          await this.$api.createIncome(this.headers, { income: newIncome }).then(async (data) => {
+            if (this.selectedIncomeIds.length === idx + 1) {
+              await this.$api.getClientData(this.headers, this.selectedClient.id)
+              this.newIncomeId = data.id
+              this.toggleEditable(`0-${columns[0]}`, data.id)
+            }
+          })
         })
       } else {
         const income = Object.assign({}, defaultValues)
-        this.$api.createIncome(this.headers, { income })
-          .then(async (data) => {
-            await this.$api.getClientData(this.headers, this.selectedClient.id)
-            this.newIncomeId = data.id
-            this.toggleEditable(`0-${columns[0]}`, data.id)
-          })
+        this.$api.createIncome(this.headers, { income }).then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newIncomeId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
+        })
       }
     },
-    onKeyDown () {
+    onKeyDown() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
-      const columnIndex = columns.findIndex(col => col === idArr[1])
+      const columnIndex = columns.findIndex((col) => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableIncomeId)
@@ -582,10 +560,10 @@ export default {
         this.toggleEditable(nextCell, this.editableIncomeId)
       }
     },
-    onBlur () {
+    onBlur() {
       this.editableId = ''
     },
-    filterIncomes (income) {
+    filterIncomes(income) {
       let returnValue = true
       returnValue = this.filterByYear ? income.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByCategory ? income.category === this.categoryFilterValue && returnValue : returnValue
@@ -593,24 +571,26 @@ export default {
       returnValue = this.filterByType ? income.taxType === this.typeFilterValue && returnValue : returnValue
       returnValue = this.filterByJob ? income.job === this.jobFilterValue && returnValue : returnValue
       returnValue = this.filterByCurrency ? income.currency === this.currencyFilterValue && returnValue : returnValue
-      returnValue = this.filterByDescription ? income.description === this.descriptionFilterValue && returnValue : returnValue
+      returnValue = this.filterByDescription
+        ? income.description === this.descriptionFilterValue && returnValue
+        : returnValue
       return returnValue
     },
-    toggleSelected (income) {
+    toggleSelected(income) {
       this.selectedItems[income.id] = !this.selectedItems[income.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },
-    isSelected (incomeId) {
+    isSelected(incomeId) {
       return this.selectedItems[incomeId]
     },
-    initSelectedItems () {
+    initSelectedItems() {
       if (this.incomeBreakdowns) {
         this.incomeBreakdowns.forEach((income) => {
           this.selectedItems = Object.assign(this.selectedItems, { [income.id]: false })
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

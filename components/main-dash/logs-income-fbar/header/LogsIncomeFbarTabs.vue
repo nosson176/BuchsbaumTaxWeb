@@ -1,14 +1,8 @@
 <template>
   <div class="flex space-x-2 justify-center">
-    <Tab :active="isLogsActive" :count="logsCount" @click="setTabLogs">
-      Logs
-    </Tab>
-    <Tab :active="isIncomeActive" :count="incomeCount" @click="setTabIncome">
-      Income
-    </Tab>
-    <Tab :active="isFbarActive" :count="fbarCount" @click="setTabFbar">
-      Fbar
-    </Tab>
+    <Tab :active="isLogsActive" :count="logsCount" @click="setTabLogs"> Logs </Tab>
+    <Tab :active="isIncomeActive" :count="incomeCount" @click="setTabIncome"> Income </Tab>
+    <Tab :active="isFbarActive" :count="fbarCount" @click="setTabFbar"> Fbar </Tab>
   </div>
 </template>
 
@@ -20,44 +14,42 @@ export default {
   props: {
     activeTab: {
       type: String,
-      default: tabs.logs
-    }
+      default: tabs.logs,
+    },
   },
   computed: {
     ...mapState([models.selectedClient]),
-    isLogsActive () {
+    isLogsActive() {
       return this.activeTab === tabs.logs
     },
-    isIncomeActive () {
+    isIncomeActive() {
       return this.activeTab === tabs.income
     },
-    isFbarActive () {
+    isFbarActive() {
       return this.activeTab === tabs.fbar
     },
-    logsCount () {
-      return this.selectedClient?.logs?.filter(log => !log.archived).length
+    logsCount() {
+      return this.selectedClient?.logs?.filter((log) => !log.archived).length
     },
-    incomeCount () {
-      return this.selectedClient?.incomeBreakdowns?.filter(income => !income.archived).length
+    incomeCount() {
+      return this.selectedClient?.incomeBreakdowns?.filter((income) => !income.archived).length
     },
-    fbarCount () {
-      return this.selectedClient?.fbarBreakdowns?.filter(fbar => !fbar.archived).length
-    }
+    fbarCount() {
+      return this.selectedClient?.fbarBreakdowns?.filter((fbar) => !fbar.archived).length
+    },
   },
   methods: {
-    setTabLogs () {
+    setTabLogs() {
       this.$emit(events.click, tabs.logs)
     },
-    setTabIncome () {
+    setTabIncome() {
       this.$emit(events.click, tabs.income)
     },
-    setTabFbar () {
+    setTabFbar() {
       this.$emit(events.click, tabs.fbar)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

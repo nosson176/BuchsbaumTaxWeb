@@ -7,7 +7,7 @@
       type="checkbox"
       class="h-3 w-3 pointer-events-none focus:ring-indigo-500 text-indigo-600 border-gray-300 rounded"
       :disabled="disabled"
-    >
+    />
     <label :for="id" class="" />
   </div>
 </template>
@@ -18,23 +18,22 @@ export default {
   props: {
     id: {
       type: String,
-      default: ''
+      default: '',
     },
     name: {
       type: String,
-      default: ''
+      default: '',
     },
     checked: {
       type: Boolean,
-      default: false
+      default: false,
     },
     disabled: {
       type: Boolean,
-      default: false
-    }
-  }
+      default: false,
+    },
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

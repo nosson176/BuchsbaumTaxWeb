@@ -20,16 +20,15 @@ export default {
   props: {
     small: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   methods: {
-    emitClick () {
+    emitClick() {
       this.$emit(events.click)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

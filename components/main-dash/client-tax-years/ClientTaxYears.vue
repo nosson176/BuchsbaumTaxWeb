@@ -18,22 +18,20 @@ import { models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYears',
-  data () {
+  data() {
     return {
-      showArchived: false
+      showArchived: false,
     }
   },
   computed: {
-    ...mapState([models.selectedClient])
+    ...mapState([models.selectedClient]),
   },
   methods: {
-    toggleArchivedYears () {
+    toggleArchivedYears() {
       this.showArchived = !this.showArchived
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

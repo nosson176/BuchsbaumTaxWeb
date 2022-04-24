@@ -12,24 +12,22 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
+      default: false,
     },
     currentTab: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
-    showFees () {
+    showFees() {
       return this.currentTab === tabs.fees
     },
-    showChecklists () {
+    showChecklists() {
       return this.currentTab === tabs.checklists
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

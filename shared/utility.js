@@ -5,14 +5,14 @@ const delayPromConstructor = (ms) => {
 const formatAsUSCurrency = (s) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
   }).format(s)
 }
 
 const formatAsILCurrency = (s) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'ILS'
+    currency: 'ILS',
   }).format(s)
 }
 
@@ -28,7 +28,7 @@ const getAppUniqueId = () => {
 }
 
 const downloadFile = (data, filename, mime, bom) => {
-  const blobData = (typeof bom !== 'undefined') ? [bom, data] : [data]
+  const blobData = typeof bom !== 'undefined' ? [bom, data] : [data]
   const blob = new Blob(blobData, { type: mime || 'application/octet-stream' })
   if (typeof window.navigator.msSaveBlob !== 'undefined') {
     // IE workaround for "HTML7007: One or more blob URLs were
@@ -37,7 +37,10 @@ const downloadFile = (data, filename, mime, bom) => {
     // the URL has been freed."
     window.navigator.msSaveBlob(blob, filename)
   } else {
-    const blobURL = (window.URL && window.URL.createObjectURL) ? window.URL.createObjectURL(blob) : window.webkitURL.createObjectURL(blob)
+    const blobURL =
+      window.URL && window.URL.createObjectURL
+        ? window.URL.createObjectURL(blob)
+        : window.webkitURL.createObjectURL(blob)
     const tempLink = document.createElement('a')
     tempLink.style.display = 'none'
     tempLink.href = blobURL
@@ -102,12 +105,17 @@ const capitalizeFirstLetter = (string) => {
  * @param {string} locale - [optional] the locale that the number is represented in. Omit this parameter to use the current locale.
  */
 const parseLocaleNumber = (stringNumber, locale) => {
-  const thousandSeparator = Intl.NumberFormat(locale).format(11111).replace(/\p{Number}/gu, '')
-  const decimalSeparator = Intl.NumberFormat(locale).format(1.1).replace(/\p{Number}/gu, '')
+  const thousandSeparator = Intl.NumberFormat(locale)
+    .format(11111)
+    .replace(/\p{Number}/gu, '')
+  const decimalSeparator = Intl.NumberFormat(locale)
+    .format(1.1)
+    .replace(/\p{Number}/gu, '')
 
-  return parseFloat(stringNumber
-    .replace(new RegExp('\\' + thousandSeparator, 'g'), '')
-    .replace(new RegExp('\\' + decimalSeparator), '.')
+  return parseFloat(
+    stringNumber
+      .replace(new RegExp('\\' + thousandSeparator, 'g'), '')
+      .replace(new RegExp('\\' + decimalSeparator), '.')
   )
 }
 
@@ -121,5 +129,5 @@ export {
   getOrdinalNum,
   searchArrOfObjs,
   capitalizeFirstLetter,
-  parseLocaleNumber
+  parseLocaleNumber,
 }

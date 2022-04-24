@@ -26,32 +26,32 @@ export default {
   props: {
     value: {
       type: [String, Number],
-      default: ''
+      default: '',
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     currency: {
       type: Boolean,
-      default: false
+      default: false,
     },
     readonly: {
       type: Boolean,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
-      default: ''
+      default: '',
     },
     rounded: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         if (this.rounded) {
           return this.value ? formatAsNumber(Math.round(this.value)) : ''
         } else if (this.currency) {
@@ -59,15 +59,15 @@ export default {
         }
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
+      },
     },
-    showEditMode () {
+    showEditMode() {
       return this.isEditable && !this.readonly
-    }
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       if (this.readonly) {
         this.$refs.div.focus()
@@ -77,13 +77,13 @@ export default {
     }
   },
   methods: {
-    formatAsCurrency (amount) {
+    formatAsCurrency(amount) {
       return formatAsNumber(amount)
     },
-    onBlur () {
+    onBlur() {
       this.$emit(events.blur)
-    }
-  }
+    },
+  },
 }
 </script>
 

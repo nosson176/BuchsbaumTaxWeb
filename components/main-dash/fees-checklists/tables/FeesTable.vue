@@ -24,22 +24,22 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      newFeeId: NaN
+      newFeeId: NaN,
     }
   },
   computed: {
     ...mapState([models.selectedClient]),
-    headers () {
+    headers() {
       return this.$api.getHeaders()
     },
-    displayedFees () {
+    displayedFees() {
       const fees = this.filteredFees
-      const newFeeIdx = fees?.findIndex(fee => fee.id === this.newFeeId)
+      const newFeeIdx = fees?.findIndex((fee) => fee.id === this.newFeeId)
       if (newFeeIdx > -1) {
         const tempFee = fees[newFeeIdx]
         fees.splice(newFeeIdx, 1)
@@ -47,58 +47,55 @@ export default {
       }
       return searchArrOfObjs(fees, this.searchInput)
     },
-    filteredFees () {
+    filteredFees() {
       if (this.fees) {
-        return this.fees
-          .filter(fee => this.showArchived === fee.archived)
-          .sort((a, b) => b.years - a.years)
+        return this.fees.filter((fee) => this.showArchived === fee.archived).sort((a, b) => b.years - a.years)
       } else {
         return null
       }
     },
-    fees () {
+    fees() {
       if (this.selectedClient?.fees) {
         return JSON.parse(JSON.stringify(this.selectedClient.fees))
       } else {
         return null
       }
     },
-    searchInput () {
+    searchInput() {
       return this.search?.[tableGroups.feesChecklists]
-    }
+    },
   },
   methods: {
-    handleUpdateFee (editedFee) {
+    handleUpdateFee(editedFee) {
       this.$api.updateFee(this.headers, { clientId: this.selectedClient.id, feeId: editedFee.id }, editedFee)
     },
-    onAddRowClick () {
+    onAddRowClick() {
       if (!this.selectedClient) {
         return
       }
       const clientId = this.selectedClient.id
       const defaultValues = {
-        clientId
+        clientId,
       }
       const fee = Object.assign({}, defaultValues)
-      this.$api.createFee(this.headers, { clientId, fee })
-        .then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newFeeId = data.id
-        })
+      this.$api.createFee(this.headers, { clientId, fee }).then(async (data) => {
+        await this.$api.getClientData(this.headers, this.selectedClient.id)
+        this.newFeeId = data.id
+      })
     },
-    onDeleteClick (feeId) {
+    onDeleteClick(feeId) {
       if (this.showArchived) {
-        const fee = this.displayedFees.find(fee => fee.id === feeId)
+        const fee = this.displayedFees.find((fee) => fee.id === feeId)
         fee.archived = false
         this.$api.updateFee(this.headers, { clientId: this.selectedClient.id, feeId }, fee)
       } else {
-        this.$store.commit(
-          mutations.setModelResponse,
-          { model: models.modals, data: { delete: { showing: true, data: { id: feeId, type: tabs.fees } } } }
-        )
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: feeId, type: tabs.fees } } },
+        })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

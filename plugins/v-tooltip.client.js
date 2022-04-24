@@ -6,9 +6,9 @@ const options = {
   themes: {
     'info-tooltip': {
       $extend: 'tooltip',
-      $resetCss: true
-    }
-  }
+      $resetCss: true,
+    },
+  },
 }
 
 Vue.use(FloatingVue, options)

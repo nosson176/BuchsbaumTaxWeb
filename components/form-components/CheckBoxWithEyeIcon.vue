@@ -7,7 +7,7 @@
         type="checkbox"
         name="show"
         class="opacity-0 h-3 w-3 col-start-1 row-start-1 col-span-1 row-span-1 cursor-pointer"
-      >
+      />
       <div
         class="h-4 w-4 col-start-1 row-start-1 col-span-1 row-span-1"
         :class="computedValue ? 'text-indigo-600' : 'text-gray-400'"
@@ -27,27 +27,25 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
-    }
+      },
+    },
   },
   methods: {
-    onClick () {
+    onClick() {
       this.computedValue = !this.computedValue
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

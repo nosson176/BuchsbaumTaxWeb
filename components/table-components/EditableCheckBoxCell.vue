@@ -7,7 +7,7 @@
       autofocus
       type="checkbox"
       class="h-3 w-3 text-indigo-600 border-gray-300 rounded cursor-pointer outline-none"
-    >
+    />
   </div>
 </template>
 
@@ -18,33 +18,31 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isEditable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
-    }
+      },
+    },
   },
   watch: {
-    isEditable (newValue) {
+    isEditable(newValue) {
       if (newValue) {
         this.$refs.checkbox.focus()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

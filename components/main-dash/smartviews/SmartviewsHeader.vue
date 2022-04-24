@@ -13,32 +13,30 @@ const smartviewConstructor = {
   name: '',
   sortNumber: 1,
   archived: false,
-  smartviewLines: []
+  smartviewLines: [],
 }
 
 export default {
   name: 'SmartviewsHeader',
   computed: {
     ...mapState([models.smartviews]),
-    headers () {
+    headers() {
       return this.$api.getHeaders()
-    }
+    },
   },
   methods: {
-    emitChange () {
+    emitChange() {
       this.$emit(events.change)
     },
-    addSmartview () {
+    addSmartview() {
       const smartview = smartviewConstructor
-      this.$store.commit(
-        mutations.setModelResponse,
-        { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
-      )
-    }
-  }
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.modals,
+        data: { smartview: { showing: true, data: smartview } },
+      })
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
