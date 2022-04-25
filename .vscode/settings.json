@@ -1,6 +1,16 @@
 {
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "editor.formatOnSave": true,
-  "vetur.validation.template": false,
+  "eslint.enable": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.validate": [
+    "javascript",
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   }

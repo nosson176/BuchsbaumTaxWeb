@@ -2,11 +2,11 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header xs flex flex-col">
+        <div class="table-header w-6 flex flex-col">
           <AddRowButton @click="onAddRowClick" />
           <HeaderSelectOption v-model="includeAll" menu :options="includeOptions" @input="handleUpdateIncludeAll" />
         </div>
-        <div class="table-header xs" />
+        <div class="table-header w-6" />
         <div class="table-header xs flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Year</span>
@@ -35,7 +35,7 @@
           </div>
           <HeaderSelectOption v-model="typeFilterValue" :options="filteredTypeOptions" />
         </div>
-        <div class="table-header xs flex flex-col">
+        <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Job</span>
             <DeleteButton small @click="jobFilterValue = ''" />
@@ -50,10 +50,10 @@
           </div>
           <HeaderSelectOption v-model="currencyFilterValue" :options="filteredCurrencyOptions" />
         </div>
-        <div class="table-header xs">X</div>
+        <div class="table-header xs text-center">X</div>
         <div class="table-header sm">$</div>
         <div class="table-header xs">Doc</div>
-        <div class="table-header lg flex flex-col">
+        <div class="table-header xl flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Description</span>
             <DeleteButton small @click="descriptionFilterValue = ''" />
@@ -71,10 +71,10 @@
         :idx="idx"
         :class="{ disabled: !fbar.include, selected: isSelected(fbar.id) }"
       >
-        <div class="table-col bg-gray-200 mr-1">
+        <div class="table-col w-6 bg-gray-200">
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, fbar.id)">
+        <div :id="`${idx}-include`" class="table-col w-6 p-1" @click="toggleEditable(`${idx}-include`, fbar.id)">
           <EditableCheckBoxCell
             v-model="fbar.include"
             :is-editable="isEditable(`${idx}-include`)"
@@ -117,7 +117,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, fbar.id)">
+        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
           <EditableSelectCell
             v-model="fbar.job"
             :is-editable="isEditable(`${idx}-job`)"
@@ -172,7 +172,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div :id="`${idx}-description`" class="table-col lg" @click="toggleEditable(`${idx}-description`, fbar.id)">
+        <div :id="`${idx}-description`" class="table-col xl" @click="toggleEditable(`${idx}-description`, fbar.id)">
           <EditableInputCell
             v-model="fbar.description"
             :is-editable="isEditable(`${idx}-description`)"
@@ -194,18 +194,18 @@
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
         <div class="table-col w-6" />
-        <div class="table-col xs" />
+        <div class="table-col w-6" />
         <div class="table-col-primary xs" />
         <div class="table-col xs" />
         <div class="table-col sm" />
         <div class="table-col sm" />
-        <div class="table-col xs" />
+        <div class="table-col sm" />
         <div class="sm table-col-primary">{{ amountTotal }}</div>
         <div class="table-col xs" />
         <div class="table-col xs" />
         <div class="table-col-primary sm">{{ amountUSDTotal }}</div>
         <div class="table-col xs" />
-        <div class="table-col lg" />
+        <div class="table-col xl" />
         <div class="table-col sm" />
         <div class="table-col xs" />
       </TableRow>
@@ -444,12 +444,11 @@ export default {
     },
   },
   watch: {
-    selectedClient: {
-      handler() {
+    selectedClient(newClient, oldClient) {
+      if (newClient.id !== oldClient.id) {
         Object.assign(this.$data, this.$options.data.apply(this))
         this.initSelectedItems()
-      },
-      deep: true,
+      }
     },
   },
   created() {
