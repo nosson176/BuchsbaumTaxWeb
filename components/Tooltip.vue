@@ -4,7 +4,7 @@ import { PopperWrapper } from 'floating-vue'
 export default {
   ...PopperWrapper,
   name: 'Tooltip',
-  vPopperTheme: 'info-tooltip'
+  vPopperTheme: 'info-tooltip',
 }
 </script>
 
@@ -16,5 +16,4 @@ export default {
 .v-popper--theme-info-tooltip .v-popper__arrow-outer {
   @apply border-blue-100;
 }
-
 </style>

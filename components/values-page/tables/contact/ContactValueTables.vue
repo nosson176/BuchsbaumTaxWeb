@@ -10,8 +10,7 @@
 <script>
 export default {
   name: 'ContactValueTables',
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

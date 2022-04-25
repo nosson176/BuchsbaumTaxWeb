@@ -13,43 +13,42 @@ import { mapState } from 'vuex'
 import { events, models, mutations, tableGroups, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarHeader',
-  data () {
+  data() {
     return {
       searchInput: '',
-      activeTab: tabs.logs
+      activeTab: tabs.logs,
     }
   },
   computed: {
-    ...mapState([models.selectedClient])
+    ...mapState([models.selectedClient]),
   },
   watch: {
-    searchInput (searchInput) {
+    searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
     },
-    selectedClient (newVal, oldVal) {
+    selectedClient(newVal, oldVal) {
       if (newVal.id !== oldVal.id) {
         this.emitTabClick(tabs.logs)
       }
-    }
+    },
   },
   methods: {
-    emitChange () {
+    emitChange() {
       this.$emit(events.change)
     },
-    emitTabClick (tab) {
+    emitTabClick(tab) {
       this.searchInput = ''
       this.activeTab = tab
       this.$emit(events.click, tab)
     },
-    searchInputUpdate (searchInput) {
-      this.$store.commit(
-        mutations.setModelResponse,
-        { model: models.search, data: { [tableGroups.logsIncomeFbar]: searchInput } }
-      )
-    }
-  }
+    searchInputUpdate(searchInput) {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.search,
+        data: { [tableGroups.logsIncomeFbar]: searchInput },
+      })
+    },
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

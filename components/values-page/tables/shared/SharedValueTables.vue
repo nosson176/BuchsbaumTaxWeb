@@ -17,9 +17,8 @@
 
 <script>
 export default {
-  name: "SharedValueTables",
-};
+  name: 'SharedValueTables',
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

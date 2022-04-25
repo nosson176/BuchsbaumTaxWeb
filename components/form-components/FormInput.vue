@@ -12,7 +12,7 @@
       :placeholder="placeholder"
       class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
       :class="classObj"
-    >
+    />
   </div>
 </template>
 
@@ -25,97 +25,96 @@ export default {
   props: {
     value: {
       type: [String, Number],
-      default: ''
+      default: '',
     },
     id: {
       type: String,
-      default: ''
+      default: '',
     },
     name: {
       type: String,
-      default: ''
+      default: '',
     },
     type: {
       type: String,
-      default: 'text'
+      default: 'text',
     },
     autocomplete: {
       type: String,
-      default: ''
+      default: '',
     },
     placeholder: {
       type: String,
-      default: ''
+      default: '',
     },
     required: {
       type: Boolean,
-      default: true
+      default: true,
     },
     valid: {
       type: Boolean,
-      default: true
+      default: true,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     label: {
       type: String,
-      default: ''
+      default: '',
     },
     first: {
       type: Boolean,
-      default: false
+      default: false,
     },
     last: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      touched: false
+      touched: false,
     }
   },
   computed: {
     ...mapGetters([]),
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newValue) {
+      set(newValue) {
         this.$emit(events.input, newValue)
-      }
+      },
     },
-    shouldShowValidation () {
+    shouldShowValidation() {
       return !this.valid && this.touched
     },
-    classObj () {
+    classObj() {
       const invalid = this.shouldShowValidation
       const first = this.first
       const last = this.last
       return { invalid, first, last }
-    }
-
+    },
   },
   methods: {
-    onBlur () {
+    onBlur() {
       this.touched = true
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-  input.invalid {
-    @apply border-2 border-red-500;
-  }
+input.invalid {
+  @apply border-2 border-red-500;
+}
 
-  input.first {
-    @apply rounded-t-md;
-  }
+input.first {
+  @apply rounded-t-md;
+}
 
-  input.last {
-    @apply rounded-b-md;
-  }
+input.last {
+  @apply rounded-b-md;
+}
 </style>

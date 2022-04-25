@@ -18,22 +18,21 @@
 <script>
 export default {
   name: 'FeeValueTables',
-  data () {
+  data() {
     return {
       selectedStatus: null,
     }
   },
   methods: {
-    setSelectedStatus (status) {
+    setSelectedStatus(status) {
       if (this.selectedStatus?.id === status.id) {
-        this.selectedStatus = null;
+        this.selectedStatus = null
       } else {
-        this.selectedStatus = status;
+        this.selectedStatus = status
       }
     },
   },
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

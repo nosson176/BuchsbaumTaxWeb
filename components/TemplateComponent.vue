@@ -7,16 +7,14 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'TemplateComponent',
-  data () {
+  data() {
     return {}
   },
   computed: {
-    ...mapGetters([])
+    ...mapGetters([]),
   },
-  methods: {}
+  methods: {},
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

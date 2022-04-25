@@ -39,16 +39,12 @@
         v-for="(log, idx) in displayedLogs"
         :key="log.id"
         :idx="idx"
-        :class="{ 'alarm': isTodayOrPast(log.alarmDate) && !log.alarmComplete, 'selected': isSelected(log.id) }"
+        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete, selected: isSelected(log.id) }"
       >
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div
-          :id="`${idx}-priority`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-priority`, log.id)"
-        >
+        <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
           <EditablePrioritySelectCell
             v-model="log.priority"
             :is-editable="isEditable(`${idx}-priority`)"
@@ -56,11 +52,7 @@
             @blur="onBlur"
           />
         </div>
-        <div
-          :id="`${idx}-years`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-years`, log.id)"
-        >
+        <div :id="`${idx}-years`" class="table-col sm" @click="toggleEditable(`${idx}-years`, log.id)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell
               v-model="log.years"
@@ -78,11 +70,7 @@
             </template>
           </Tooltip>
         </div>
-        <div
-          :id="`${idx}-note`"
-          class="table-col xxl"
-          @click="toggleEditable(`${idx}-note`, log.id)"
-        >
+        <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
           <EditableTextAreaCell
             v-model="log.note"
             :is-editable="isEditable(`${idx}-note`)"
@@ -90,11 +78,7 @@
             @blur="onBlur"
           />
         </div>
-        <div
-          :id="`${idx}-logDate`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-logDate`, log.id)"
-        >
+        <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
           <EditableDateCell
             v-model="log.logDate"
             :is-editable="isEditable(`${idx}-logDate`)"
@@ -102,11 +86,7 @@
             @blur="onBlur"
           />
         </div>
-        <div
-          :id="`${idx}-alarmDate`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-alarmDate`, log.id)"
-        >
+        <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
           <EditableDateCell
             v-model="log.alarmDate"
             type="date"
@@ -122,11 +102,7 @@
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
           />
         </div>
-        <div
-          :id="`${idx}-alarmTime`"
-          class="table-col xs"
-          @click="toggleEditable(`${idx}-alarmTime`, log.id)"
-        >
+        <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
           <EditableDateCell
             v-model="log.alarmTime"
             type="time"
@@ -135,11 +111,7 @@
             @blur="onBlur"
           />
         </div>
-        <div
-          :id="`${idx}-alarmUserName`"
-          class="table-col sm"
-          @click="toggleEditable(`${idx}-alarmUserName`, log.id)"
-        >
+        <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
           <EditableSelectCell
             v-model="log.alarmUserName"
             :is-editable="isEditable(`${idx}-alarmUserName`)"
@@ -163,9 +135,7 @@ import { isToday, isPast, parseISO } from 'date-fns'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
-const columns = [
-  'priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete'
-]
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -174,10 +144,10 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
       newLogId: NaN,
       editableId: '',
@@ -186,15 +156,14 @@ export default {
       employeeFilterValue: '',
       selectedItems: {},
       filterByAlarmStatusValue: '',
-      filterByAlarmStatusIndex: 0
+      filterByAlarmStatusIndex: 0,
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
-    displayedLogs () {
-      const logs = this.shownLogs
-        .filter(log => this.filterLogs(log))
-      const newLogIdx = logs?.findIndex(contact => contact.id === this.newLogId)
+    displayedLogs() {
+      const logs = this.shownLogs.filter((log) => this.filterLogs(log))
+      const newLogIdx = logs?.findIndex((contact) => contact.id === this.newLogId)
       if (newLogIdx > -1) {
         const tempLog = logs[newLogIdx]
         logs.splice(newLogIdx, 1)
@@ -202,75 +171,72 @@ export default {
       }
       return searchArrOfObjs(logs, this.searchInput)
     },
-    shownLogs () {
+    shownLogs() {
       if (this.logs) {
-        return this.logs
-          .filter(log => this.showArchived === log.archived)
+        return this.logs.filter((log) => this.showArchived === log.archived)
       } else {
         return null
       }
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
-    yearOptions () {
-      return this.valueTypes.year_name.filter(year => year.show)
+    yearOptions() {
+      return this.valueTypes.year_name.filter((year) => year.show)
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
     },
-    clientId () {
+    clientId() {
       return this.selectedClient.id
     },
-    logs () {
+    logs() {
       if (this.selectedClient.logs) {
         return JSON.parse(JSON.stringify(this.selectedClient.logs))
       } else {
         return null
       }
     },
-    userOptions () {
+    userOptions() {
       return Object.values(this.users).map((user) => {
         return { value: user.username }
       })
     },
-    searchInput () {
+    searchInput() {
       return this.search?.[tableGroups.logsIncomeFbar]
     },
-    isClientSelected () {
+    isClientSelected() {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     },
-    filteredYearOptions () {
-      const options = this.yearOptions
-        .filter(yearName => this.shownLogs?.find(log => log.years === yearName.value))
+    filteredYearOptions() {
+      const options = this.yearOptions.filter((yearName) => this.shownLogs?.find((log) => log.years === yearName.value))
       return options
     },
-    filteredUserOptions () {
-      const options = this.userOptions
-        .filter(user => this.shownLogs?.find(log => log.alarmUserName === user.value))
+    filteredUserOptions() {
+      const options = this.userOptions.filter((user) => this.shownLogs?.find((log) => log.alarmUserName === user.value))
       return options
     },
-    filterByYear () {
+    filterByYear() {
       return !(this.yearFilterValue === '')
     },
-    filterByEmployee () {
+    filterByEmployee() {
       return !(this.employeeFilterValue === '')
     },
-    isCmdPressed () {
+    isCmdPressed() {
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
-    selectedLogIds () {
-      return Object.keys(this.selectedItems).filter(id => this.selectedItems[id])
+    selectedLogIds() {
+      return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
-    isCopyingLogs () {
+    isCopyingLogs() {
       return this.isCmdPressed && this.selectedLogIds.length > 0
     },
-    filterByAlarmStatus () {
+    filterByAlarmStatus() {
       return !(this.filterByAlarmStatusValue === '')
-    }
+    },
   },
   watch: {
-    selectedClient (newClient, oldClient) {
+    selectedClient(newClient, oldClient) {
       if (newClient.id !== oldClient.id) {
         Object.assign(this.$data, this.$options.data.apply(this))
         this.selectedItems = {}
@@ -278,9 +244,9 @@ export default {
           this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
         })
       }
-    }
+    },
   },
-  created () {
+  created() {
     if (this.logs) {
       this.logs.forEach((log) => {
         this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
@@ -288,69 +254,67 @@ export default {
     }
   },
   methods: {
-    toggleEditable (id, logId) {
+    toggleEditable(id, logId) {
       this.editableLogId = logId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
     },
-    isEditable (id) {
+    isEditable(id) {
       return this.editableId === id
     },
-    handleUpdate () {
-      const log = this.displayedLogs.find(log => log.id === this.editableLogId)
+    handleUpdate() {
+      const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
     },
-    onDeleteClick (logId) {
+    onDeleteClick(logId) {
       if (this.showArchived) {
-        const log = this.displayedLogs.find(log => log.id === logId)
+        const log = this.displayedLogs.find((log) => log.id === logId)
         log.archived = false
         this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
       } else {
-        this.$store.commit(
-          mutations.setModelResponse,
-          { model: models.modals, data: { delete: { showing: true, data: { id: logId, type: tabs.logs } } } }
-        )
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: logId, type: tabs.logs } } },
+        })
       }
     },
-    onAddRowClick () {
+    onAddRowClick() {
       if (!this.selectedClient) {
         return
       }
       const defaultValues = {
-        clientId: this.selectedClient.id
+        clientId: this.selectedClient.id,
       }
       if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
-          const log = this.displayedLogs.find(log => log.id === Number(logId))
+          const log = this.displayedLogs.find((log) => log.id === Number(logId))
           const newLog = Object.assign({}, log)
-          await this.$api.createLog(this.headers, { log: newLog })
-            .then(async (data) => {
-              if (this.selectedLogIds.length === idx + 1) {
-                await this.$api.getClientData(this.headers, this.selectedClient.id)
-                this.newLogId = data.id
-                this.toggleEditable(`0-${columns[0]}`, data.id)
-              }
-            })
+          await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
+            if (this.selectedLogIds.length === idx + 1) {
+              await this.$api.getClientData(this.headers, this.selectedClient.id)
+              this.newLogId = data.id
+              this.toggleEditable(`0-${columns[0]}`, data.id)
+            }
+          })
         })
       } else {
         const log = Object.assign({}, defaultValues)
-        this.$api.createLog(this.headers, { log })
-          .then(async (data) => {
-            await this.$api.getClientData(this.headers, this.selectedClient.id)
-            this.newLogId = data.id
-            this.toggleEditable(`0-${columns[0]}`, data.id)
-          })
+        this.$api.createLog(this.headers, { log }).then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.newLogId = data.id
+          this.toggleEditable(`0-${columns[0]}`, data.id)
+        })
       }
     },
-    onBlur () {
+    onBlur() {
       this.editableId = ''
     },
-    isTodayOrPast (date) {
+    isTodayOrPast(date) {
       const parsedDate = parseISO(date)
       return isToday(parsedDate) || isPast(parsedDate)
     },
-    toggleComplete (log) {
+    toggleComplete(log) {
       if (!this.isTodayOrPast(log.alarmDate) && !log.alarmComplete) {
         return
       } else if (log.alarmComplete) {
@@ -361,25 +325,27 @@ export default {
       this.editableLogId = log.id
       this.debounceUpdate()
     },
-    filterLogs (log) {
+    filterLogs(log) {
       const hasAlarm = log.alarmDate
       let returnValue = true
       returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
       returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
-      returnValue = this.filterByAlarmStatus ? log.alarmComplete === this.filterByAlarmStatusValue && hasAlarm && returnValue : returnValue
+      returnValue = this.filterByAlarmStatus
+        ? log.alarmComplete === this.filterByAlarmStatusValue && hasAlarm && returnValue
+        : returnValue
       return returnValue
     },
-    toggleSelected (log) {
+    toggleSelected(log) {
       this.selectedItems[log.id] = !this.selectedItems[log.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },
-    isSelected (logId) {
+    isSelected(logId) {
       return this.selectedItems[logId]
     },
-    onTabPress () {
+    onTabPress() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
-      const columnIndex = columns.findIndex(col => col === idArr[1])
+      const columnIndex = columns.findIndex((col) => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
@@ -389,17 +355,17 @@ export default {
         this.toggleEditable(nextCell, this.editableLogId)
       }
     },
-    setAlarmFilter () {
+    setAlarmFilter() {
       this.filterByAlarmStatusIndex = (this.filterByAlarmStatusIndex + 1) % 3
       this.filterByAlarmStatusValue = alarmStatusValues[this.filterByAlarmStatusIndex]
     },
-    splitYears (years) {
+    splitYears(years) {
       return years?.split('\u000B')
     },
-    isMult (year) {
+    isMult(year) {
       return year?.includes('\u000B')
     },
-  }
+  },
 }
 </script>
 

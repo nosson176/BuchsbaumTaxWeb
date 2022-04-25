@@ -6,35 +6,20 @@
         <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
-        <FeesChecklistsHeader
-          @change="toggleShowArchivedFeesChecklists"
-          @click="switchFeesChecklistsTab"
-        />
-        <FeesChecklistsBody
-          :show-archived="showArchivedFeesChecklists"
-          :current-tab="currentFeesChecklistsTab"
-        />
+        <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
+        <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
       </div>
       <div class="shadow rounded flex flex-col smart-views bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
-        <LogsIncomeFbarHeader
-          @change="toggleShowArchivedLogsIncomeFbar"
-          @click="switchLogsIncomeFbarTab"
-        />
-        <LogsIncomeFbarBody
-          :show-archived="showArchivedLogsIncomeFbar"
-          :current-tab="currentLogsIncomeFbarTab"
-        />
+        <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact bg-white">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody
-          :show-archived="showArchivedPersonals"
-          :current-tab="currentPersonalsTab"
-        />
+        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
       <div class="bg-white shadow-md rounded-t flex flex-col-reverse client-tax-years">
@@ -57,7 +42,7 @@ import { tabs, models, mutations } from '~/shared/constants'
 
 export default {
   name: 'Home',
-  data () {
+  data() {
     return {
       currentFeesChecklistsTab: tabs.fees,
       currentLogsIncomeFbarTab: tabs.logs,
@@ -66,68 +51,74 @@ export default {
       showArchivedFeesChecklists: false,
       showArchivedLogsIncomeFbar: false,
       showArchivedPersonals: false,
-      showArchivedSmartviews: false
+      showArchivedSmartviews: false,
     }
   },
   computed: {
     ...mapState([models.modals]),
-    showDeleteModal () {
+    showDeleteModal() {
       return this.modals.delete?.showing
     },
-    showSmartviewEditModal () {
+    showSmartviewEditModal() {
       return this.modals.smartview?.showing
     },
-    keymap () {
+    keymap() {
       return {
         command: {
           keydown: this.onCmdPress,
-          keyup: this.onCmdUp
+          keyup: this.onCmdUp,
         },
         windows: {
           keydown: this.onCmdPress,
-          keyup: this.onCmdUp
-        }
+          keyup: this.onCmdUp,
+        },
       }
-    }
+    },
   },
   methods: {
-    toggleShowArchivedClients () {
+    toggleShowArchivedClients() {
       this.showArchivedClients = !this.showArchivedClients
     },
-    toggleShowArchivedPersonals () {
+    toggleShowArchivedPersonals() {
       this.showArchivedPersonals = !this.showArchivedPersonals
     },
-    toggleShowArchivedSmartviews () {
+    toggleShowArchivedSmartviews() {
       this.showArchivedSmartviews = !this.showArchivedSmartviews
     },
-    switchPersonalsTab (tab) {
+    switchPersonalsTab(tab) {
       this.currentPersonalsTab = tab
     },
-    toggleShowArchivedLogsIncomeFbar () {
+    toggleShowArchivedLogsIncomeFbar() {
       this.showArchivedLogsIncomeFbar = !this.showArchivedLogsIncomeFbar
     },
-    toggleShowArchivedFeesChecklists () {
+    toggleShowArchivedFeesChecklists() {
       this.showArchivedFeesChecklists = !this.showArchivedFeesChecklists
     },
-    switchLogsIncomeFbarTab (tab) {
+    switchLogsIncomeFbarTab(tab) {
       this.currentLogsIncomeFbarTab = tab
     },
-    switchFeesChecklistsTab (tab) {
+    switchFeesChecklistsTab(tab) {
       this.currentFeesChecklistsTab = tab
     },
-    closeDeleteModal () {
-      this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { delete: { showing: false, data: {} } } })
+    closeDeleteModal() {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.modals,
+        data: { delete: { showing: false, data: {} } },
+      })
     },
-    closeSmartviewEditModal () {
-      this.$store.commit(mutations.setModelResponse, { model: models.modals, data: { smartview: { showing: false, data: {} } } })
+    closeSmartviewEditModal() {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.modals,
+        data: { smartview: { showing: false, data: {} } },
+      })
     },
-    onCmdPress () {
+    onCmdPress() {
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
     },
-    onCmdUp () {
+    onCmdUp() {
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
-    }
-  }
+    },
+  },
 }
 </script>
 

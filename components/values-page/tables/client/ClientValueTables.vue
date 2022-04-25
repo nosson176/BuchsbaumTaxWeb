@@ -18,8 +18,7 @@
 <script>
 export default {
   name: 'ClientValueTables',
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

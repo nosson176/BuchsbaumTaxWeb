@@ -12,12 +12,9 @@
       @keydown.tab.prevent
       @input="onInput"
     />
-    <span
-      v-else
-      tabindex="0"
-      class="cursor-pointer"
-      :class="computedValue ? '' : 'text-gray-400 italic'"
-    >{{ computedValue || placeholder }}</span>
+    <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">{{
+      computedValue || placeholder
+    }}</span>
   </div>
 </template>
 
@@ -29,42 +26,42 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
-    }
+      },
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       this.$refs.input.focus()
-      this.$refs.input.setAttribute('style', 'height:' + (this.$refs.input.scrollHeight) + 'px;overflow-y:hidden;')
+      this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px;overflow-y:hidden;')
     }
   },
   methods: {
-    onBlur () {
+    onBlur() {
       this.$emit(events.blur)
     },
-    onInput () {
+    onInput() {
       this.$refs.input.style.height = 'auto'
-      this.$refs.input.style.height = (this.scrollHeight) + 'px'
-    }
-  }
+      this.$refs.input.style.height = this.scrollHeight + 'px'
+    },
+  },
 }
 </script>
 

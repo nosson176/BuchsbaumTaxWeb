@@ -8,9 +8,9 @@
 <script>
 export default {
   name: 'UsersPage',
-  created () {
+  created() {
     const headers = this.$api.getHeaders()
     this.$api.getAllUsers(headers)
-  }
+  },
 }
 </script>

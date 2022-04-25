@@ -1,10 +1,4 @@
-import {
-  COOKIE_KEY_SESSION_TOKEN,
-  error,
-  models,
-  mutations,
-  routes,
-} from '~/shared/constants'
+import { COOKIE_KEY_SESSION_TOKEN, error, models, mutations, routes } from '~/shared/constants'
 import { setCookieByKey } from '~/shared/cookie-utilities'
 
 export default function ({ $axios, store, redirect }) {

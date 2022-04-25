@@ -26,72 +26,70 @@ export default {
   props: {
     line: {
       type: Object,
-      required: true
+      required: true,
     },
     idx: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   computed: {
     computedLine: {
-      get () {
+      get() {
         return this.line
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, { newVal, idx: this.idx })
-      }
+      },
     },
     groupNum: {
-      get () {
+      get() {
         return this.computedLine.groupNum || ''
       },
-      set (newVal) {
+      set(newVal) {
         this.computedLine = Object.assign({}, this.computedLine, { groupNum: newVal })
-      }
+      },
     },
     fieldName: {
-      get () {
+      get() {
         return this.computedLine.fieldName
       },
-      set (newVal) {
+      set(newVal) {
         this.computedLine = Object.assign({}, this.computedLine, { fieldName: newVal })
-      }
+      },
     },
     operator: {
-      get () {
+      get() {
         return this.computedLine.operator
       },
-      set (newVal) {
+      set(newVal) {
         this.computedLine = Object.assign({}, this.computedLine, { operator: newVal })
-      }
+      },
     },
     searchValue: {
-      get () {
+      get() {
         return this.computedLine.searchValue
       },
-      set (newVal) {
+      set(newVal) {
         this.computedLine = Object.assign({}, this.computedLine, { searchValue: newVal })
-      }
+      },
     },
-    smartviewOptions () {
+    smartviewOptions() {
       return smartviewOptions
     },
-    operators () {
+    operators() {
       return operators
     },
-    even () {
+    even() {
       return this.idx % 2 === 0
-    }
+    },
   },
   methods: {
-    emitDelete () {
+    emitDelete() {
       this.$emit(events.delete, this.idx)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

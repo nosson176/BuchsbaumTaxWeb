@@ -26,45 +26,45 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     placeholder: {
       type: String,
-      default: ''
+      default: '',
     },
     resize: {
       type: Boolean,
-      default: false
+      default: false,
     },
     rows: {
       type: Number,
-      default: 3
-    }
+      default: 3,
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
-    }
+      },
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       this.$refs.input.focus()
     }
   },
   methods: {
-    onBlur () {
+    onBlur() {
       this.$emit(events.blur)
-    }
-  }
+    },
+  },
 }
 </script>
 

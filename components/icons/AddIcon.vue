@@ -8,10 +8,8 @@
 
 <script>
 export default {
-  name: 'AddIcon'
+  name: 'AddIcon',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

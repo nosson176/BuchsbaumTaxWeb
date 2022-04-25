@@ -9,9 +9,11 @@
         class="focus:ring-indigo-500 focus:border-indigo-500 block w-full py-0.5 pr-10 sm:text-sm border-gray-300 rounded-full"
         :placeholder="placeholder"
         @focus="onFocus"
-      >
+      />
       <div class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" @click="onClearClick">
-        <div class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center">
+        <div
+          class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center"
+        >
           <CloseIcon class="w-3 h-3" />
         </div>
       </div>
@@ -27,47 +29,45 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     id: {
       type: String,
-      default: 'search-input'
+      default: 'search-input',
     },
     name: {
       type: String,
-      default: 'search-input'
+      default: 'search-input',
     },
     activeTab: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
+      },
     },
-    placeholder () {
+    placeholder() {
       const tabName = capitalizeFirstLetter(this.activeTab.replace('-', ' '))
       return `Search ${tabName}`
-    }
+    },
   },
   methods: {
-    onClearClick () {
+    onClearClick() {
       this.computedValue = ''
       this.$emit(events.click)
     },
-    onFocus () {
+    onFocus() {
       this.onClearClick()
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

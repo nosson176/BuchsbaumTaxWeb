@@ -8,21 +8,14 @@
 export default {
   name: 'ValuesTableGrid',
 
-  data () {
-    return {
-
-    };
+  data() {
+    return {}
   },
 
-  mounted () {
+  mounted() {},
 
-  },
-
-  methods: {
-
-  },
-};
+  methods: {},
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

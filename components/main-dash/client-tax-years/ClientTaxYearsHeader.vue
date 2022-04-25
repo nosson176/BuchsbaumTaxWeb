@@ -46,25 +46,25 @@ import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
   name: 'ClientTaxYearsHeader',
-  data () {
+  data() {
     return {
       editingId: '',
       showEditNameDialogue: false,
-      isLastNameUpdateLoading: false
+      isLastNameUpdateLoading: false,
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.clients]),
-    selectedClientCopy () {
+    selectedClientCopy() {
       return JSON.parse(JSON.stringify(this.selectedClient))
     },
-    primaryPersonal () {
-      return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
+    primaryPersonal() {
+      return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.primary)[0]
     },
-    secondaryPersonal () {
-      return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.secondary)[0]
+    secondaryPersonal() {
+      return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.secondary)[0]
     },
-    formattedCreatedDate () {
+    formattedCreatedDate() {
       if (this.selectedClientCopy.created) {
         return formatDateForClient(this.selectedClientCopy.created)
       } else {
@@ -72,85 +72,90 @@ export default {
       }
     },
     lastName: {
-      get () {
+      get() {
         return this.selectedClientCopy.lastName
       },
-      set (newVal) {
+      set(newVal) {
         this.selectedClientCopy.lastName = newVal
-      }
+      },
     },
     statusValue: {
-      get () {
+      get() {
         return this.selectedClientCopy.status
       },
-      set (newVal) {
+      set(newVal) {
         this.selectedClientCopy.status = newVal
-      }
+      },
     },
     periodical: {
-      get () {
+      get() {
         return this.selectedClientCopy.periodical
       },
-      set (newVal) {
+      set(newVal) {
         this.selectedClientCopy.periodical = newVal
-      }
+      },
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
-    statusOptions () {
+    statusOptions() {
       return this.valueTypes.status || []
     },
-    periodicalOptions () {
+    periodicalOptions() {
       return this.valueTypes.periodical || []
     },
-    clientsCopy () {
-      return JSON.parse(JSON.stringify(Object.assign(
-        Object.values(this.clients)
-          .map(client => client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client)
-      )))
-    }
+    clientsCopy() {
+      return JSON.parse(
+        JSON.stringify(
+          Object.assign(
+            Object.values(this.clients).map((client) =>
+              client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client
+            )
+          )
+        )
+      )
+    },
   },
   watch: {
     showEditNameDialogue: {
-      handler (newVal) {
+      handler(newVal) {
         if (newVal) {
           this.$nextTick(() => {
             this.$refs.lastNameInput.$refs.input.focus()
           })
         }
-      }
-    }
+      },
+    },
   },
   methods: {
-    setEditable (editingId) {
+    setEditable(editingId) {
       this.editingId = editingId
     },
-    isEditable (editingId) {
+    isEditable(editingId) {
       return this.editingId === editingId
     },
-    onBlur () {
+    onBlur() {
       this.editingId = ''
     },
-    handleUpdate () {
+    handleUpdate() {
       const headers = this.$api.getHeaders()
       const client = this.selectedClientCopy
       this.$api.updateClient(headers, { clientId: client.id, client })
     },
-    openEditNameDialogue () {
+    openEditNameDialogue() {
       this.showEditNameDialogue = true
     },
-    closeEditNameDialogue () {
+    closeEditNameDialogue() {
       this.showEditNameDialogue = false
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-  .header {
-    @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center z-10 shadow;
+.header {
+  @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center z-10 shadow;
 
-    min-height: 4rem;
-  }
+  min-height: 4rem;
+}
 </style>

@@ -13,27 +13,25 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
+      default: false,
     },
     currentTab: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
-    showLogs () {
+    showLogs() {
       return this.currentTab === tabs.logs
     },
-    showIncome () {
+    showIncome() {
       return this.currentTab === tabs.income
     },
-    showFbar () {
+    showFbar() {
       return this.currentTab === tabs.fbar
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

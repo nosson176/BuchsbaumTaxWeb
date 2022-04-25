@@ -26,26 +26,26 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
-    displayedSmartviews () {
+    displayedSmartviews() {
       if (this.smartviews) {
-        return Object.fromEntries(Object.entries(this.smartviews)
-          .filter(([key, smartview]) => this.showArchived === smartview.archived
-          ))
+        return Object.fromEntries(
+          Object.entries(this.smartviews).filter(([key, smartview]) => this.showArchived === smartview.archived)
+        )
       } else {
         return []
       }
     },
-    selectedSmartviewId () {
+    selectedSmartviewId() {
       return this.selectedSmartview?.id
-    }
+    },
   },
   methods: {
-    selectSmartview (smartview) {
+    selectSmartview(smartview) {
       this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
       if (this.selectedSmartviewId === smartview.id) {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
@@ -53,13 +53,13 @@ export default {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
       }
     },
-    showEdit (smartview) {
-      this.$store.commit(
-        mutations.setModelResponse,
-        { model: models.modals, data: { smartview: { showing: true, data: smartview } } }
-      )
-    }
-  }
+    showEdit(smartview) {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.modals,
+        data: { smartview: { showing: true, data: smartview } },
+      })
+    },
+  },
 }
 </script>
 

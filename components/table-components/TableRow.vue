@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center bg-gray-50" :class="idx % 2 === 0 ? 'even': ''">
+  <div class="flex items-center bg-gray-50" :class="idx % 2 === 0 ? 'even' : ''">
     <slot />
   </div>
 </template>
@@ -10,9 +10,9 @@ export default {
   props: {
     idx: {
       type: Number,
-      default: 0
-    }
-  }
+      default: 0,
+    },
+  },
 }
 </script>
 

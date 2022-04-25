@@ -9,7 +9,7 @@
     :placeholder="placeholder"
     size="1"
     @blur="onBlur"
-  >
+  />
 </template>
 
 <script>
@@ -20,31 +20,29 @@ export default {
   props: {
     value: {
       type: [String, Number],
-      default: ''
+      default: '',
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
-    }
+      },
+    },
   },
   methods: {
-    onBlur () {
+    onBlur() {
       this.$emit(events.blur)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
