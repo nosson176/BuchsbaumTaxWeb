@@ -9,12 +9,7 @@
         </div>
         <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
           <div class="flex justify-between">
-            <Input
-              id="modal-title"
-              ref="name"
-              v-model="name"
-              class="text-lg leading-6 font-medium text-gray-900"
-            />
+            <Input id="modal-title" ref="name" v-model="name" class="text-lg leading-6 font-medium text-gray-900" />
             <AddRowButton @click="addSmartViewLine" />
           </div>
           <div v-if="hasLines" class="mt-4 shadow">
@@ -46,7 +41,9 @@
         type="button"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         @click="emitHide"
-      >Cancel</button>
+      >
+        Cancel
+      </button>
       <div class="flex-grow" />
       <button
         type="button"
@@ -67,94 +64,92 @@ const lineConstructor = {
   groupNum: 0,
   fieldName: '',
   operator: '',
-  searchValue: ''
+  searchValue: '',
 }
 
 export default {
   name: 'SmartviewEditCard',
-  data () {
+  data() {
     return {
-      isLoading: false
+      isLoading: false,
     }
   },
   computed: {
     ...mapState([models.modals, models.selectedClient]),
-    smartview () {
+    smartview() {
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
     },
     name: {
-      get () {
+      get() {
         return this.smartview.name
       },
-      set (value) {
+      set(value) {
         this.$set(this.smartview, 'name', value)
-      }
+      },
     },
-    hasLines () {
+    hasLines() {
       return this.smartview.smartviewLines.length > 0
     },
-    isNew () {
+    isNew() {
       return this.smartview.id === undefined
     },
-    smartviewIsValid () {
+    smartviewIsValid() {
       return this.smartview.name !== '' && this.smartviewLinesValid
     },
-    smartviewLinesValid () {
+    smartviewLinesValid() {
       return this.smartview.smartviewLines.every((line) => {
         return line.fieldName !== '' && line.operator !== '' && line.searchValue !== ''
       })
-    }
+    },
   },
-  mounted () {
+  mounted() {
     if (this.isNew) {
       this.$refs.name.$refs.input.focus()
       this.addSmartViewLine()
     }
   },
   methods: {
-    emitHide () {
+    emitHide() {
       this.$emit(events.hide)
     },
-    updateSmartviewLine (line) {
+    updateSmartviewLine(line) {
       this.smartview.smartviewLines[line.idx] = line.newVal
       this.updateSmartview()
     },
-    addSmartViewLine () {
+    addSmartViewLine() {
       this.smartview.smartviewLines.push(lineConstructor)
       this.updateSmartview()
     },
-    removeSmartviewLine (idx) {
+    removeSmartviewLine(idx) {
       this.smartview.smartviewLines.splice(idx, 1)
       this.updateSmartview()
     },
-    create () {
+    create() {
       if (this.isLoading) {
         return
       }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      this.$api.createSmartview(this.headers, { smartview })
-        .then(() => {
-          this.isLoading = false
-          this.emitHide()
-        })
+      this.$api.createSmartview(this.headers, { smartview }).then(() => {
+        this.isLoading = false
+        this.emitHide()
+      })
     },
-    update () {
+    update() {
       if (this.isLoading) {
         return
       }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview)
-        .then(() => {
-          this.isLoading = false
-          this.emitHide()
-        })
+      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then(() => {
+        this.isLoading = false
+        this.emitHide()
+      })
     },
-    handleUpdateCreate () {
+    handleUpdateCreate() {
       if (this.isLoading || !this.smartviewIsValid) {
         return
       }
@@ -164,27 +159,25 @@ export default {
         this.update()
       }
     },
-    handleDelete () {
+    handleDelete() {
       if (this.isLoading) {
         return
       }
       this.isLoading = true
-      this.$api.deleteSmartview(this.headers, { smartviewId: this.smartview.id })
-        .then(() => {
-          this.isLoading = false
-          this.emitHide()
-          this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
-        })
+      this.$api.deleteSmartview(this.headers, { smartviewId: this.smartview.id }).then(() => {
+        this.isLoading = false
+        this.emitHide()
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+      })
     },
-    updateSmartview () {
-      this.$store.commit(
-        mutations.setModelResponse,
-        { model: models.modals, data: { smartview: { showing: true, data: this.smartview } } }
-      )
-    }
-  }
+    updateSmartview() {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.modals,
+        data: { smartview: { showing: true, data: this.smartview } },
+      })
+    },
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

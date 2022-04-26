@@ -1,5 +1,8 @@
 <template>
-  <div ref="div" tabindex="0" :class="showEditMode ? 'edit-mode' : 'read-mode'">
+  <div ref="div" :class="showEditMode ? 'edit-mode' : 'read-mode'">
+    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <input
       v-if="showEditMode"
       ref="input"
@@ -9,8 +12,7 @@
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full"
       tabindex="0"
       :placeholder="placeholder"
-      @blur="onBlur"
-    >
+    />
     <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
   </div>
 </template>
@@ -24,32 +26,32 @@ export default {
   props: {
     value: {
       type: [String, Number],
-      default: ''
+      default: '',
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     currency: {
       type: Boolean,
-      default: false
+      default: false,
     },
     readonly: {
       type: Boolean,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
-      default: ''
+      default: '',
     },
     rounded: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         if (this.rounded) {
           return this.value ? formatAsNumber(Math.round(this.value)) : ''
         } else if (this.currency) {
@@ -57,15 +59,15 @@ export default {
         }
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
+      },
     },
-    showEditMode () {
+    showEditMode() {
       return this.isEditable && !this.readonly
-    }
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       if (this.readonly) {
         this.$refs.div.focus()
@@ -75,13 +77,13 @@ export default {
     }
   },
   methods: {
-    formatAsCurrency (amount) {
+    formatAsCurrency(amount) {
       return formatAsNumber(amount)
     },
-    onBlur () {
+    onBlur() {
       this.$emit(events.blur)
-    }
-  }
+    },
+  },
 }
 </script>
 

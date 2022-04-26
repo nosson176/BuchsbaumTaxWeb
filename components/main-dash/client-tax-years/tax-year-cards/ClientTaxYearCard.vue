@@ -4,7 +4,13 @@
       <div class="p-2 flex justify-between z-10 w-full">
         <h3 class="text-2xl leading-6 font-semibold text-gray-900 w-full">
           <div class="w-full flex justify-center" @click="toggleEditable('year', yearData.id)">
-            <EditableSelectCell v-model="year" :options="yearOptions" :is-editable="isEditable('year')" @blur="onBlur" @input="debounceUpdate" />
+            <EditableSelectCell
+              v-model="year"
+              :options="yearOptions"
+              :is-editable="isEditable('year')"
+              @blur="onBlur"
+              @input="debounceUpdate"
+            />
           </div>
         </h3>
       </div>
@@ -32,73 +38,71 @@ export default {
   props: {
     yearData: {
       type: Object,
-      default: () => null
-    }
+      default: () => null,
+    },
   },
-  data () {
+  data() {
     return {
       activeFilingType: filingTypes.federal,
       editableId: '',
-      editableYearId: ''
+      editableYearId: '',
     }
   },
   computed: {
     ...mapState([models.selectedClient]),
     year: {
-      get () {
+      get() {
         return this.yearData.year
       },
-      set (newVal) {
+      set(newVal) {
         this.yearCopy.year = newVal
-      }
+      },
     },
-    yearCopy () {
+    yearCopy() {
       return Object.assign({}, this.yearData)
     },
-    filings () {
+    filings() {
       return this.yearData.filings
     },
-    displayedFilingInfo () {
-      return this.filings.filter(filing => filing.filingType === this.activeFilingType)[0]
+    displayedFilingInfo() {
+      return this.filings.filter((filing) => filing.filingType === this.activeFilingType)[0]
     },
-    yearOptions () {
-      return this.$store.state.valueTypes.year_name.filter(year => year.show)
+    yearOptions() {
+      return this.$store.state.valueTypes.year_name.filter((year) => year.show)
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
-    }
+    },
   },
   methods: {
-    setActiveFilingType (filingType) {
+    setActiveFilingType(filingType) {
       this.activeFilingType = filingType
     },
-    updateOnClient () {
+    updateOnClient() {
       const headers = this.$api.getHeaders()
       this.$api.getClientData(headers, this.selectedClient.id)
     },
-    toggleEditable (field, id) {
+    toggleEditable(field, id) {
       this.editableYearId = id
       if (!(this.editableId === field)) {
         this.editableId = field
       }
     },
-    isEditable (id) {
+    isEditable(id) {
       return this.editableId === id
     },
-    onBlur () {
+    onBlur() {
       this.editableId = ''
     },
-    handleUpdate () {
+    handleUpdate() {
       const headers = this.$api.getHeaders()
       const yearData = Object.assign({}, this.yearData, this.yearCopy)
       const taxYearId = yearData.id
       const clientId = this.selectedClient.id
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

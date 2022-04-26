@@ -1,6 +1,10 @@
 <template>
   <div>
-    <div class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1" :class="classObj" @click="toggleShowing">
+    <div
+      class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
+      :class="classObj"
+      @click="toggleShowing"
+    >
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col space-y-3">
           <div class="flex">
@@ -32,65 +36,65 @@ export default {
   props: {
     idx: {
       type: Number,
-      default: NaN
+      default: NaN,
     },
     taxYear: {
       type: Object,
-      default: () => null
-    }
+      default: () => null,
+    },
   },
   computed: {
     ...mapState([models.shownTaxYears]),
-    federalFilingInfo () {
-      return this.taxYear.filings.filter(filing => filing.filingType === filingTypes.federal)[0]
+    federalFilingInfo() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)[0]
     },
-    year () {
+    year() {
       return this.taxYear.year
     },
-    status () {
+    status() {
       return this.federalFilingInfo?.status
     },
-    owes () {
+    owes() {
       return this.federalFilingInfo?.owes ? this.formatAsILS(this.federalFilingInfo.owes).split('.')[0] : ''
     },
-    taxForm () {
+    taxForm() {
       return this.federalFilingInfo?.taxForm
     },
-    statusDetail () {
+    statusDetail() {
       return this.federalFilingInfo?.statusDetail
     },
-    paid () {
+    paid() {
       return this.federalFilingInfo?.paid ? this.formatAsILS(this.federalFilingInfo.paid).split('.')[0] : ''
     },
-    classObj () {
+    classObj() {
       const even = this.idx % 2 === 0
       return { even }
     },
     showing: {
-      get () {
+      get() {
         return this.shownTaxYears.includes(this.taxYear.id)
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.change, newVal)
-      }
-    }
+      },
+    },
   },
   methods: {
-    formatAsILS (amt) {
+    formatAsILS(amt) {
       return formatAsILCurrency(amt)
     },
-    toggleShowing () {
+    toggleShowing() {
       this.showing = !this.showing
     },
-    onDeleteClick () {
+    onDeleteClick() {
       this.$emit(events.delete, this.taxYear.id)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-  .even {
-    @apply bg-gray-50;
-  }
+.even {
+  @apply bg-gray-50;
+}
 </style>

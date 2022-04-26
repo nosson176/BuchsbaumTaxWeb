@@ -1,19 +1,22 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+  <div tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <date-picker
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
+      tabindex="0"
       :value-type="valueType"
       :format="format"
+      autofocus
       :type="type"
       :open.sync="showPicker"
       @focus="onFocus"
     >
       <template #header="{ emit }">
-        <button class="mx-btn mx-btn-text" @click="emit(new Date())">
-          Today
-        </button>
+        <button class="mx-btn mx-btn-text" @click="emit(new Date())">Today</button>
       </template>
     </date-picker>
     <span v-else class="cursor-pointer">{{ displayedValue }}</span>
@@ -29,58 +32,58 @@ export default {
   props: {
     value: {
       type: String,
-      default: null
+      default: null,
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      default: 'date'
-    }
+      default: 'date',
+    },
   },
-  data () {
+  data() {
     return {
-      showPicker: false
+      showPicker: false,
     }
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit('input', newVal)
         this.$emit(events.blur)
-      }
+      },
     },
-    format () {
+    format() {
       return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
     },
-    valueType () {
+    valueType() {
       return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
     },
-    isTypeDate () {
+    isTypeDate() {
       return this.type === 'date'
     },
-    displayedValue () {
+    displayedValue() {
       return this.isTypeDate && this.computedValue ? formatDateForClient(this.computedValue) : this.computedValue
-    }
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       this.$refs.input.focus()
     }
-    if (!this.showPicker) {
-      this.$emit(events.blur)
-    }
   },
   methods: {
-    onFocus () {
+    onFocus() {
       this.showPicker = true
-    }
-  }
+    },
+    onBlur() {
+      this.$emit(events.blur)
+    },
+  },
 }
 </script>
 

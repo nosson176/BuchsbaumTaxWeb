@@ -13,29 +13,27 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     ...mapState([models.selectedClient, models.shownTaxYears]),
-    displayedTaxYearData () {
+    displayedTaxYearData() {
       if (this.isClientSelected) {
         return Object.assign(
           Object.values(this.selectedClient.taxYearData)
-            .filter(taxYear => this.shownTaxYears.includes(taxYear.id))
-            .sort((a, b) => a.year > b.year ? 1 : -1)
+            .filter((taxYear) => this.shownTaxYears.includes(taxYear.id))
+            .sort((a, b) => (a.year > b.year ? 1 : -1))
         )
       } else {
         return null
       }
     },
-    isClientSelected () {
+    isClientSelected() {
       return this.selectedClient.length || Object.entries(this.selectedClient).length
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

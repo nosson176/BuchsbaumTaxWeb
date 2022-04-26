@@ -207,196 +207,196 @@ export default {
   props: {
     filing: {
       type: Object,
-      default: () => null
-    }
+      default: () => null,
+    },
   },
-  data () {
+  data() {
     return {
       editable: '',
-      formModel: null
+      formModel: null,
     }
   },
   computed: {
     ...mapState([models.valueTypes, models.selectedClient]),
-    headers () {
+    headers() {
       return this.$api.getHeaders()
     },
     taxForm: {
-      get () {
+      get() {
         return this.formModel.taxForm
       },
-      set (newValue) {
+      set(newValue) {
         this.formModel.taxForm = newValue
-      }
+      },
     },
     status: {
-      get () {
+      get() {
         return this.formModel.status
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.status = newVal
-      }
+      },
     },
     statusDetail: {
-      get () {
+      get() {
         return this.formModel.statusDetail
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.statusDetail = newVal
-      }
+      },
     },
     statusDate: {
-      get () {
+      get() {
         return this.formModel.statusDate
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.statusDate = newVal
-      }
+      },
     },
     memo: {
-      get () {
+      get() {
         return this.formModel.memo
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.memo = newVal
-      }
+      },
     },
     includeInRefund: {
-      get () {
+      get() {
         return this.formModel.includeInRefund
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.includeInRefund = newVal
-      }
+      },
     },
     owes: {
-      get () {
+      get() {
         return this.formModel.owes
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.owes = newVal
-      }
+      },
     },
     paid: {
-      get () {
+      get() {
         return this.formModel.paid
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.paid = newVal
-      }
+      },
     },
     includeFee: {
-      get () {
+      get() {
         return this.formModel.includeFee
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.includeFee = newVal
-      }
+      },
     },
     owesFee: {
-      get () {
+      get() {
         return this.formModel.owesFee
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.owesFee = newVal
-      }
+      },
     },
     paidFee: {
-      get () {
+      get() {
         return this.formModel.paidFee
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.paidFee = newVal
-      }
+      },
     },
     fileType: {
-      get () {
+      get() {
         return this.formModel.fileType
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.fileType = newVal
-      }
+      },
     },
     refund: {
-      get () {
+      get() {
         return this.formModel.refund
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.refund = newVal
-      }
+      },
     },
     rebate: {
-      get () {
+      get() {
         return this.formModel.rebate
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.rebate = newVal
-      }
+      },
     },
     completed: {
-      get () {
+      get() {
         return this.formModel.completed
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.completed = newVal
-      }
+      },
     },
-    sum () {
+    sum() {
       return this.refund - this.rebate
     },
-    sumClassObj () {
+    sumClassObj() {
       return {
         'bg-gray-400': this.sum === 0,
         'bg-yellow-400': this.sum > 0 && !this.completed,
         'bg-green-400': this.sum > 0 && this.completed,
         'bg-blue-400': this.sum < 0 && !this.completed,
-        'bg-red-400': this.sum < 0 && this.completed
+        'bg-red-400': this.sum < 0 && this.completed,
       }
     },
     deliveryContact: {
-      get () {
+      get() {
         return this.formModel.deliveryContact
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.deliveryContact = newVal
-      }
+      },
     },
     secondDeliveryContact: {
-      get () {
+      get() {
         return this.formModel.secondDeliveryContact
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.secondDeliveryContact = newVal
-      }
+      },
     },
     dateFiled: {
-      get () {
+      get() {
         return this.formModel.dateFiled
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.dateFiled = newVal
-      }
+      },
     },
-    filingType () {
+    filingType() {
       return this.filing.filingType
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
-    taxFormOptions () {
-      return this.valueTypes.tax_form.filter(taxForm => taxForm.show)
+    taxFormOptions() {
+      return this.valueTypes.tax_form.filter((taxForm) => taxForm.show)
     },
-    statusOptions () {
+    statusOptions() {
       if (this.filingType === filingTypes.fbar) {
-        return this.valueTypes.fbar_status.filter(status => status.show)
+        return this.valueTypes.fbar_status.filter((status) => status.show)
       } else if (this.filingType === filingTypes.state) {
-        return this.valueTypes.state_status.filter(status => status.show)
+        return this.valueTypes.state_status.filter((status) => status.show)
       } else {
-        return this.valueTypes.tax_year_status.filter(status => status.show)
+        return this.valueTypes.tax_year_status.filter((status) => status.show)
       }
     },
-    statusDetailOptions () {
-      const parentId = this.statusOptions.find(statusOption => statusOption.value === this.formModel.status)?.id
+    statusDetailOptions() {
+      const parentId = this.statusOptions.find((statusOption) => statusOption.value === this.formModel.status)?.id
       if (this.filingType === filingTypes.fbar) {
         return this.valueTypes.fbar_status_detail.filter((status) => {
           if (this.formModel.status) {
@@ -423,48 +423,49 @@ export default {
         })
       }
     },
-    fileTypeOptions () {
-      return this.valueTypes.file_type.filter(fileType => fileType.show)
+    fileTypeOptions() {
+      return this.valueTypes.file_type.filter((fileType) => fileType.show)
     },
-    contactTypeOptions () {
-      return this.valueTypes.contact_type.filter(contactType => contactType.show)
-    }
+    contactTypeOptions() {
+      return this.valueTypes.contact_type.filter((contactType) => contactType.show)
+    },
   },
-  watch:
-  {
+  watch: {
     filing: {
-      handler () {
+      handler() {
         this.formModel = JSON.parse(JSON.stringify(this.filing))
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
-  created () {
+  created() {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
   },
   methods: {
-    formatAsILCurrency (amt) {
+    formatAsILCurrency(amt) {
       return formatAsILCurrency(amt)
     },
-    formatAsUSCurrency (amt) {
+    formatAsUSCurrency(amt) {
       return formatAsUSCurrency(amt)
     },
-    setEditable (editable) {
+    setEditable(editable) {
       this.editable = editable
     },
-    isEditable (value) {
+    isEditable(value) {
       return this.editable === value
     },
-    onBlur () {
+    onBlur() {
       this.setEditable('')
     },
-    handleUpdate () {
-      this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.filing.id }, this.formModel)
-    }
-  }
+    handleUpdate() {
+      this.$api.updateFiling(
+        this.headers,
+        { clientId: this.selectedClient.id, filingId: this.filing.id },
+        this.formModel
+      )
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

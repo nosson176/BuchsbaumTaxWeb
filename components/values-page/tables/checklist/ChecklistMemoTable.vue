@@ -21,11 +21,7 @@
           <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" />
         </div>
         <div class="table-col w-full" @click="toggleEditable(memo.id)">
-          <EditableInput
-            v-model="memo.value"
-            :is-editable="isEditable(memo.id)"
-            @input="debounceUpdate"
-          />
+          <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @input="debounceUpdate" />
         </div>
         <div class="table-col">
           <DeleteButton @click="deleteValue(memo.id)" />
@@ -39,68 +35,65 @@
 </template>
 
 <script>
-import { debounce } from 'lodash';
-import { mapState } from 'vuex';
-import { models } from '~/shared/constants';
+import { debounce } from 'lodash'
+import { mapState } from 'vuex'
+import { models } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
-const TABLE_TYPE = 'checklist_memo';
+const TABLE_TYPE = 'checklist_memo'
 
 export default {
-  name: "ChecklistMemoTable",
-  data () {
+  name: 'ChecklistMemoTable',
+  data() {
     return {
       editableId: null,
       showDelete: false,
-      deleteId: ''
-    };
+      deleteId: '',
+    }
   },
   computed: {
     ...mapState([models.valueTypes]),
-    checklistMemo () {
-      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]));
+    checklistMemo() {
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
     },
-    headers () {
-      return this.$api.getHeaders();
+    headers() {
+      return this.$api.getHeaders()
     },
-    debounceUpdate () {
-      return debounce(this.handleUpdate, 500);
+    debounceUpdate() {
+      return debounce(this.handleUpdate, 500)
     },
   },
   methods: {
-    toggleEditable (id) {
-      this.editableId = id;
+    toggleEditable(id) {
+      this.editableId = id
     },
-    isEditable (id) {
-      return this.editableId === id;
+    isEditable(id) {
+      return this.editableId === id
     },
-    deleteValue (valueId) {
-      this.deleteId = valueId;
-      this.showDelete = true;
+    deleteValue(valueId) {
+      this.deleteId = valueId
+      this.showDelete = true
     },
-    onAddRowClick () {
-      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: "" });
-      this.$api.createValueType(this.headers, { value });
+    onAddRowClick() {
+      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: '' })
+      this.$api.createValueType(this.headers, { value })
     },
-    handleUpdate () {
-      const value = Object.values(this.checklistMemo).find(type => type.id === this.editableId);
-      this.$api.updateValueType(this.headers, { valueId: value.id }, value);
+    handleUpdate() {
+      const value = Object.values(this.checklistMemo).find((type) => type.id === this.editableId)
+      this.$api.updateValueType(this.headers, { valueId: value.id }, value)
     },
-    deleteItem () {
-      this.$api.deleteValueType(this.headers, { valueId: this.deleteId })
-        .then(() => {
-          this.showDelete = false;
-          this.deleteId = '';
-        });
+    deleteItem() {
+      this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then(() => {
+        this.showDelete = false
+        this.deleteId = ''
+      })
     },
-    closeDeleteModal () {
-      this.showDelete = false;
-      this.deleteId = '';
+    closeDeleteModal() {
+      this.showDelete = false
+      this.deleteId = ''
     },
   },
-};
+}
 </script>
 
-<style scoped>
-</style>
-
+<style scoped></style>

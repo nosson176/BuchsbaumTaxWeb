@@ -1,10 +1,5 @@
 import { getCookieByKey, setCookieByKey } from '~/shared/cookie-utilities'
-import {
-  COOKIE_KEY_SESSION_TOKEN,
-  models,
-  mutations,
-  routes,
-} from '~/shared/constants'
+import { COOKIE_KEY_SESSION_TOKEN, models, mutations, routes } from '~/shared/constants'
 
 export default ({ $axios, store, $toast, redirect }, inject) => {
   const getHeaders = () => {
@@ -114,54 +109,34 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   // CREATE
   const createLog = (headers, { log }) =>
-    $axios
-      .post('/logs', log, { headers })
-      .catch(() => $toast.error('Error creating log'))
+    $axios.post('/logs', log, { headers }).catch(() => $toast.error('Error creating log'))
 
   const createTaxPersonal = (headers, { personal }) =>
-    $axios
-      .post('/personals', personal, { headers })
-      .catch(() => $toast.error('Error creating tax personal'))
+    $axios.post('/personals', personal, { headers }).catch(() => $toast.error('Error creating tax personal'))
 
   const createContact = (headers, { contact }) =>
-    $axios
-      .post('/contacts', contact, { headers })
-      .catch(() => $toast.error('Error creating contact'))
+    $axios.post('/contacts', contact, { headers }).catch(() => $toast.error('Error creating contact'))
 
   const createIncome = (headers, { income }) =>
-    $axios
-      .post('/incomes', income, { headers })
-      .catch(() => $toast.error('Error creating income'))
+    $axios.post('/incomes', income, { headers }).catch(() => $toast.error('Error creating income'))
 
   const createFbar = (headers, { fbar }) =>
-    $axios
-      .post('/fbars', fbar, { headers })
-      .catch(() => $toast.error('Error creating fbar'))
+    $axios.post('/fbars', fbar, { headers }).catch(() => $toast.error('Error creating fbar'))
 
   const createFee = (headers, { fee }) =>
-    $axios
-      .post('/fees', fee, { headers })
-      .catch(() => $toast.error('Error creating fee'))
+    $axios.post('/fees', fee, { headers }).catch(() => $toast.error('Error creating fee'))
 
   const createTaxYear = (headers, { taxYear }) =>
-    $axios
-      .post('/tax-years', taxYear, { headers })
-      .catch(() => $toast.error('Error creating tax year'))
+    $axios.post('/tax-years', taxYear, { headers }).catch(() => $toast.error('Error creating tax year'))
 
   const createFiling = (headers, { filing }) =>
-    $axios
-      .post('/filings', filing, { headers })
-      .catch(() => $toast.error('Error creating filing'))
+    $axios.post('/filings', filing, { headers }).catch(() => $toast.error('Error creating filing'))
 
   const createChecklist = (headers, { checklist }) =>
-    $axios
-      .post('/checklists', checklist, { headers })
-      .catch(() => $toast.error('Error creating checklist'))
+    $axios.post('/checklists', checklist, { headers }).catch(() => $toast.error('Error creating checklist'))
 
   const createClient = (headers, { client }) =>
-    $axios
-      .post('/clients', client, { headers })
-      .catch(() => $toast.error('Error creating client'))
+    $axios.post('/clients', client, { headers }).catch(() => $toast.error('Error creating client'))
 
   const createSmartview = (headers, { smartview }) =>
     $axios
@@ -170,9 +145,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getSmartviews(headers))
 
   const createValueType = (headers, { value }) =>
-    $axios
-      .post('/values', value, { headers })
-      .then(() => getValueTypes(headers))
+    $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>

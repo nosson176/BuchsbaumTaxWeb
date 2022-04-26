@@ -29,29 +29,28 @@
 </template>
 
 <script>
-import { events } from '~/shared/constants';
+import { events } from '~/shared/constants'
 export default {
-  name: "UsersTable",
+  name: 'UsersTable',
   props: {
     users: {
       type: Array,
-      required: true
+      required: true,
     },
     userId: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   methods: {
-    setSelected (user) {
-      this.$emit(events.click, user.id);
+    setSelected(user) {
+      this.$emit(events.click, user.id)
     },
-    isUserSelected (userId) {
-      return userId === this.userId;
+    isUserSelected(userId) {
+      return userId === this.userId
     },
-    onAddRowClick () {
-    }
-  }
+    onAddRowClick() {},
+  },
 }
 </script>
 

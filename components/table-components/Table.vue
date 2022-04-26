@@ -12,13 +12,11 @@ import { events } from '~/shared/constants'
 export default {
   name: 'Table',
   methods: {
-    emitKeyDown (e) {
+    emitKeyDown(e) {
       this.$emit(events.keydown, e)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

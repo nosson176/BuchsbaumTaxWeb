@@ -33,7 +33,9 @@
         type="button"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         @click="emitHide"
-      >Cancel</button>
+      >
+        Cancel
+      </button>
     </div>
   </div>
 </template>
@@ -44,133 +46,131 @@ import { events, models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'DeleteCard',
-  data () {
+  data() {
     return {
-      isLoading: false
+      isLoading: false,
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.modals, models.clients, models.smartviews]),
-    clientId () {
+    clientId() {
       return this.selectedClient.id
     },
-    modalData () {
+    modalData() {
       return this.modals.delete.data
     },
-    id () {
+    id() {
       return this.modalData.id
     },
-    type () {
+    type() {
       return this.modalData.type
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
     },
-    updateToValue () {
+    updateToValue() {
       return this.updatedItem.archived ? 'archive' : 'unarchive'
     },
-    isTypeLog () {
+    isTypeLog() {
       return this.type === tabs.logs
     },
-    isTypeIncome () {
+    isTypeIncome() {
       return this.type === tabs.income
     },
-    isTypeFbar () {
+    isTypeFbar() {
       return this.type === tabs.fbar
     },
-    isTypeContact () {
+    isTypeContact() {
       return this.type === tabs.contact
     },
-    isTypeTaxPersonals () {
+    isTypeTaxPersonals() {
       return this.type === tabs.tax_personals
     },
-    isTypeTaxYear () {
+    isTypeTaxYear() {
       return this.type === tabs.tax_years
     },
-    isTypeFee () {
+    isTypeFee() {
       return this.type === tabs.fees
     },
-    isTypeClient () {
+    isTypeClient() {
       return this.type === tabs.clients
     },
-    isTypeSmartview () {
+    isTypeSmartview() {
       return this.type === tabs.smartviews
     },
-    logs () {
+    logs() {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
-    incomes () {
+    incomes() {
       return JSON.parse(JSON.stringify(this.selectedClient.incomeBreakdowns))
     },
-    fbars () {
+    fbars() {
       return JSON.parse(JSON.stringify(this.selectedClient.fbarBreakdowns))
     },
-    contacts () {
+    contacts() {
       return JSON.parse(JSON.stringify(this.selectedClient.contacts))
     },
-    taxPersonals () {
+    taxPersonals() {
       return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
     },
-    taxYears () {
+    taxYears() {
       return JSON.parse(JSON.stringify(this.selectedClient.taxYearData))
     },
-    fees () {
+    fees() {
       return JSON.parse(JSON.stringify(this.selectedClient.fees))
     },
-    clientsCopy () {
+    clientsCopy() {
       return JSON.parse(JSON.stringify(this.clients))
     },
-    smartviewCopy () {
+    smartviewCopy() {
       return JSON.parse(JSON.stringify(this.smartviews))
     },
-    updatedLog () {
-      const log = this.logs.find(log => log.id === this.id)
+    updatedLog() {
+      const log = this.logs.find((log) => log.id === this.id)
       log.archived = !log.archived
       return log
     },
-    updatedIncome () {
-      const income = this.incomes.find(income => income.id === this.id)
+    updatedIncome() {
+      const income = this.incomes.find((income) => income.id === this.id)
       income.archived = !income.archived
       return income
     },
-    updatedFbar () {
-      const fbar = this.fbars.find(fbar => fbar.id === this.id)
+    updatedFbar() {
+      const fbar = this.fbars.find((fbar) => fbar.id === this.id)
       fbar.archived = !fbar.archived
       return fbar
     },
-    updatedContact () {
-      const contact = this.contacts.find(contact => contact.id === this.id)
+    updatedContact() {
+      const contact = this.contacts.find((contact) => contact.id === this.id)
       contact.archived = !contact.archived
       return contact
     },
-    updatedTaxPersonal () {
-      const taxPersonal = this.taxPersonals.find(taxPersonal => taxPersonal.id === this.id)
+    updatedTaxPersonal() {
+      const taxPersonal = this.taxPersonals.find((taxPersonal) => taxPersonal.id === this.id)
       taxPersonal.archived = !taxPersonal.archived
       return taxPersonal
     },
-    updatedTaxYear () {
-      const taxYear = this.taxYears.find(taxYear => taxYear.id === this.id)
+    updatedTaxYear() {
+      const taxYear = this.taxYears.find((taxYear) => taxYear.id === this.id)
       taxYear.archived = !taxYear.archived
       return taxYear
     },
-    updatedFee () {
-      const fee = this.fees.find(fee => fee.id === this.id)
+    updatedFee() {
+      const fee = this.fees.find((fee) => fee.id === this.id)
       fee.archived = !fee.archived
       return fee
     },
-    updatedClient () {
-      const client = Object.values(this.clientsCopy)
-        .find(client => client.id === this.id)
+    updatedClient() {
+      const client = Object.values(this.clientsCopy).find((client) => client.id === this.id)
       client.archived = !client.archived
       return client
     },
-    updatedSmartview () {
-      const smartview = Object.values(this.smartviewCopy)
-        .find(smartview => smartview.id === this.id)
+    updatedSmartview() {
+      const smartview = Object.values(this.smartviewCopy).find((smartview) => smartview.id === this.id)
       smartview.archived = !smartview.archived
       return smartview
     },
-    updatedItem () {
+    updatedItem() {
       let item = null
       if (this.isTypeLog) {
         item = this.updatedLog
@@ -192,10 +192,10 @@ export default {
         item = this.updatedSmartview
       }
       return item
-    }
+    },
   },
   methods: {
-    handleDelete () {
+    handleDelete() {
       this.isLoading = true
       if (this.isTypeLog) {
         this.updateLog()
@@ -217,57 +217,65 @@ export default {
         this.updateSmartview()
       }
     },
-    emitHide () {
+    emitHide() {
       this.$emit(events.hide)
     },
-    updateLog () {
-      this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
+    updateLog() {
+      this.$api
+        .updateLog(this.headers, { clientId: this.clientId, logId: this.id }, this.updatedItem)
         .finally(() => this.updateClientSideData())
     },
-    updateIncome () {
-      this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
+    updateIncome() {
+      this.$api
+        .updateIncome(this.headers, { clientId: this.clientId, incomeId: this.id }, this.updatedItem)
         .finally(() => this.updateClientSideData())
     },
-    updateFbar () {
-      this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
+    updateFbar() {
+      this.$api
+        .updateFbar(this.headers, { clientId: this.clientId, fbarId: this.id }, this.updatedItem)
         .finally(() => this.updateClientSideData())
     },
-    updateContact () {
-      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
+    updateContact() {
+      this.$api
+        .updateContact(this.headers, { clientId: this.clientId, contactId: this.id }, this.updatedItem)
         .finally(() => this.updateClientSideData())
     },
-    updateTaxPersonal () {
-      this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
+    updateTaxPersonal() {
+      this.$api
+        .updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: this.id }, this.updatedItem)
         .finally(() => this.updateClientSideData())
     },
-    updateTaxYear () {
-      this.$api.updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
+    updateTaxYear() {
+      this.$api
+        .updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
         .finally(() => this.updateClientSideData())
     },
-    updateFee () {
-      this.$api.updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
+    updateFee() {
+      this.$api
+        .updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
         .then(() => this.updateClientSideData())
     },
-    updateClient () {
-      this.$api.updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
+    updateClient() {
+      this.$api
+        .updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
         .then(() => this.$api.getClientList(this.headers))
         .then(() => this.updateClientSideData())
     },
-    updateSmartview () {
-      this.$api.updateSmartview(this.headers, { smartviewId: this.updatedItem.id }, this.updatedItem)
+    updateSmartview() {
+      this.$api
+        .updateSmartview(this.headers, { smartviewId: this.updatedItem.id }, this.updatedItem)
         .then(() => {
           this.$api.getSmartviews(this.headers)
           this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
         })
         .then(() => this.updateClientSideData())
     },
-    updateClientSideData () {
+    updateClientSideData() {
       this.isLoading = false
       this.emitHide()
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

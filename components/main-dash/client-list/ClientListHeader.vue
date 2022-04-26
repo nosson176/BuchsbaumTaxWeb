@@ -3,9 +3,16 @@
     <ViewArchivedHeader @change="emitChange" />
     <div class="flex items-center justify-between space-x-1">
       <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
-      <span v-if="clientCount" class="text-xs mt-1 p-1 font-semibold text-indigo-600 bg-blue-100 rounded">{{ clientCount }}</span>
+      <span v-if="clientCount" class="text-xs mt-1 p-1 font-semibold text-indigo-600 bg-blue-100 rounded">{{
+        clientCount
+      }}</span>
     </div>
-    <HeaderSelectOption v-model="searchOptionValue" :shown-value="seachOptionName" :options="searchOptions" @input="debounceSearch" />
+    <HeaderSelectOption
+      v-model="searchOptionValue"
+      :shown-value="seachOptionName"
+      :options="searchOptions"
+      @input="debounceSearch"
+    />
   </div>
 </template>
 
@@ -19,62 +26,59 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      searchOptionValue: ''
+      searchOptionValue: '',
     }
   },
   computed: {
     ...mapState([models.clientSearchValue, models.clients, models.selectedSmartview]),
-    debounceSearch () {
+    debounceSearch() {
       return debounce(this.searchClients, 1000)
     },
-    searchOptions () {
+    searchOptions() {
       return searchOptions
     },
-    seachOptionName () {
-      return this.searchOptions.find(option => option.value === this.searchOptionValue)?.name
+    seachOptionName() {
+      return this.searchOptions.find((option) => option.value === this.searchOptionValue)?.name
     },
     searchInput: {
-      get () {
+      get() {
         return this.clientSearchValue.length > 0 ? this.clientSearchValue : ''
       },
-      set (value) {
+      set(value) {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
         this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: value })
-      }
+      },
     },
-    clientCount () {
+    clientCount() {
       if (this.searchInput) {
-        return Object.entries(this.clients)
-          .filter(([key, client]) => this.showArchived === client.archived).length
+        return Object.entries(this.clients).filter(([key, client]) => this.showArchived === client.archived).length
       } else {
         return 0
       }
     },
-    hasSelectedSmartview () {
+    hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
-    }
+    },
   },
   methods: {
-    emitChange () {
+    emitChange() {
       this.$emit(events.change)
     },
-    searchClients () {
+    searchClients() {
       const headers = this.$api.getHeaders()
       this.$api.getClientList(headers, this.searchInput, this.searchOptionValue)
     },
-    clearSearch () {
+    clearSearch() {
       this.searchInput = ''
       this.searchClients()
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -21,11 +21,7 @@
           <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
         </div>
         <div class="table-col w-full" @click="toggleEditable(type.id)">
-          <EditableInput
-            v-model="type.value"
-            :is-editable="isEditable(type.id)"
-            @input="debounceUpdate"
-          />
+          <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
         </div>
         <div class="table-col">
           <DeleteButton @click="deleteValue(type.id)" />
@@ -39,74 +35,72 @@
 </template>
 
 <script>
-import { debounce } from 'lodash';
-import { mapState } from 'vuex';
-import { models } from '~/shared/constants';
+import { debounce } from 'lodash'
+import { mapState } from 'vuex'
+import { models } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
-const TABLE_TYPE = 'state_status_detail';
+const TABLE_TYPE = 'state_status_detail'
 
 export default {
-  name: "TaxYearStateStatusDetailsTable",
+  name: 'TaxYearStateStatusDetailsTable',
   props: {
     status: {
       type: Object,
       default: () => null,
     },
   },
-  data () {
+  data() {
     return {
       editableId: null,
       showDelete: false,
-      deleteId: ''
-    };
+      deleteId: '',
+    }
   },
   computed: {
     ...mapState([models.valueTypes]),
-    taxYearStateStatusDetails () {
-      if (!this.status) return [];
-      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE])).filter(item => item.parentId === this.status.id);
+    taxYearStateStatusDetails() {
+      if (!this.status) return []
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE])).filter((item) => item.parentId === this.status.id)
     },
-    headers () {
-      return this.$api.getHeaders();
+    headers() {
+      return this.$api.getHeaders()
     },
-    debounceUpdate () {
-      return debounce(this.handleUpdate, 500);
+    debounceUpdate() {
+      return debounce(this.handleUpdate, 500)
     },
   },
   methods: {
-    toggleEditable (id) {
-      this.editableId = id;
+    toggleEditable(id) {
+      this.editableId = id
     },
-    isEditable (id) {
-      return this.editableId === id;
+    isEditable(id) {
+      return this.editableId === id
     },
-    deleteValue (valueId) {
-      this.deleteId = valueId;
-      this.showDelete = true;
+    deleteValue(valueId) {
+      this.deleteId = valueId
+      this.showDelete = true
     },
-    onAddRowClick () {
-      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: "" });
-      this.$api.createValueType(this.headers, { value });
+    onAddRowClick() {
+      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: '' })
+      this.$api.createValueType(this.headers, { value })
     },
-    handleUpdate () {
-      const value = Object.values(this.taxYearStateStatusDetails).find(type => type.id === this.editableId);
-      this.$api.updateValueType(this.headers, { valueId: value.id }, value);
+    handleUpdate() {
+      const value = Object.values(this.taxYearStateStatusDetails).find((type) => type.id === this.editableId)
+      this.$api.updateValueType(this.headers, { valueId: value.id }, value)
     },
-    deleteItem () {
-      this.$api.deleteValueType(this.headers, { valueId: this.deleteId })
-        .then(() => {
-          this.showDelete = false;
-          this.deleteId = '';
-        });
+    deleteItem() {
+      this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then(() => {
+        this.showDelete = false
+        this.deleteId = ''
+      })
     },
-    closeDeleteModal () {
-      this.showDelete = false;
-      this.deleteId = '';
+    closeDeleteModal() {
+      this.showDelete = false
+      this.deleteId = ''
     },
   },
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

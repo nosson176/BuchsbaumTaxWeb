@@ -1,18 +1,12 @@
 <template>
   <div class="header">
     <div v-if="selectedClientCopy" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
-      <div
-        class="col-start-1 font-bold text-2xl cursor-pointer"
-        @click="openEditNameDialogue"
-      >{{ lastName }}</div>
+      <div class="col-start-1 font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">{{ lastName }}</div>
       <div class="col-start-2">
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
         <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
       </div>
-      <div
-        class="col-start-3 font-bold text-white flex justify-center text-2xl"
-        @click="setEditable('status')"
-      >
+      <div class="col-start-3 font-bold text-white flex justify-center text-2xl" @click="setEditable('status')">
         <EditableSelectCell
           v-model="statusValue"
           :options="statusOptions"
@@ -21,10 +15,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div
-        class="col-start-4 text-gray-100 flex text-sm justify-center"
-        @click="setEditable('periodical')"
-      >
+      <div class="col-start-4 text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
         <EditableSelectCell
           v-model="periodical"
           :options="periodicalOptions"
@@ -46,11 +37,7 @@
       </div>
     </div>
     <Modal :showing="showEditNameDialogue">
-      <SubmitCard
-        :loading="isLastNameUpdateLoading"
-        @hide="closeEditNameDialogue"
-        @submit="handleUpdate"
-      >
+      <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
         <FormInput ref="lastNameInput" v-model="lastName" label="Lastname" />
       </SubmitCard>
     </Modal>
@@ -65,7 +52,7 @@ import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
   name: 'ClientTaxYearsHeader',
-  data () {
+  data() {
     return {
       editingId: '',
       showEditNameDialogue: false,
@@ -75,16 +62,16 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.clients]),
-    selectedClientCopy () {
+    selectedClientCopy() {
       return JSON.parse(JSON.stringify(this.selectedClient))
     },
-    primaryPersonal () {
-      return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.primary)[0]
+    primaryPersonal() {
+      return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.primary)[0]
     },
-    secondaryPersonal () {
-      return this.selectedClientCopy?.taxPersonals?.filter(personal => personal.category === categories.secondary)[0]
+    secondaryPersonal() {
+      return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.secondary)[0]
     },
-    formattedCreatedDate () {
+    formattedCreatedDate() {
       if (this.selectedClientCopy.created) {
         return formatDateForClient(this.selectedClientCopy.created)
       } else {
@@ -92,83 +79,88 @@ export default {
       }
     },
     lastName: {
-      get () {
+      get() {
         return this.selectedClientCopy.lastName
       },
-      set (newVal) {
+      set(newVal) {
         this.selectedClientCopy.lastName = newVal
-      }
+      },
     },
     statusValue: {
-      get () {
+      get() {
         return this.selectedClientCopy.status
       },
-      set (newVal) {
+      set(newVal) {
         this.selectedClientCopy.status = newVal
-      }
+      },
     },
     periodical: {
-      get () {
+      get() {
         return this.selectedClientCopy.periodical
       },
-      set (newVal) {
+      set(newVal) {
         this.selectedClientCopy.periodical = newVal
-      }
+      },
     },
-    debounceUpdate () {
+    debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
-    statusOptions () {
+    statusOptions() {
       return this.valueTypes.status || []
     },
-    periodicalOptions () {
+    periodicalOptions() {
       return this.valueTypes.periodical || []
     },
-    clientsCopy () {
-      return JSON.parse(JSON.stringify(Object.assign(
-        Object.values(this.clients)
-          .map(client => client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client)
-      )))
+    clientsCopy() {
+      return JSON.parse(
+        JSON.stringify(
+          Object.assign(
+            Object.values(this.clients).map((client) =>
+              client.id === this.selectedClientCopy.id ? this.selectedClientCopy : client
+            )
+          )
+        )
+      )
     },
-    isArchived () {
+    isArchived() {
       return this.selectedClientCopy.archived
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
-    }
+    },
   },
   watch: {
     showEditNameDialogue: {
-      handler (newVal) {
+      handler(newVal) {
         if (newVal) {
           this.$nextTick(() => {
             this.$refs.lastNameInput.$refs.input.focus()
           })
         }
-      }
-    }
+      },
+    },
   },
   methods: {
-    setEditable (editingId) {
+    setEditable(editingId) {
       this.editingId = editingId
     },
-    isEditable (editingId) {
+    isEditable(editingId) {
       return this.editingId === editingId
     },
-    onBlur () {
+    onBlur() {
       this.editingId = ''
     },
-    handleUpdate () {
+    handleUpdate() {
       const client = this.selectedClientCopy
       this.$api.updateClient(this.headers, { clientId: client.id, client })
     },
-    openEditNameDialogue () {
+    openEditNameDialogue() {
       this.showEditNameDialogue = true
     },
-    closeEditNameDialogue () {
+    closeEditNameDialogue() {
       this.showEditNameDialogue = false
     },
-    async handleDelete () {
+    async handleDelete() {
       if (this.isLoading) {
         return
       }
@@ -176,7 +168,7 @@ export default {
       await this.$api.deleteClient(this.headers, { clientId: this.selectedClientCopy.id })
       this.isLoading = false
     },
-  }
+  },
 }
 </script>
 

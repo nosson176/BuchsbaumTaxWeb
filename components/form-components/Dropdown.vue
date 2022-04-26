@@ -10,12 +10,26 @@
         @click="toggleShowOptions"
       >
         {{ shownValue || computedValue }}
-        <svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        <svg
+          class="-mr-1 ml-2 h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
         </svg>
       </button>
     </div>
-    <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
+    <transition
+      leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
       <div
         v-if="showOptions"
         class="z-50 origin-top-right absolute right-0 mt-2 h-64 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
@@ -50,44 +64,42 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     options: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     shownValue: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  data () {
+  data() {
     return {
-      showOptions: false
+      showOptions: false,
     }
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (value) {
+      set(value) {
         this.$emit(events.input, value)
-      }
-    }
+      },
+    },
   },
   methods: {
-    toggleShowOptions () {
+    toggleShowOptions() {
       this.showOptions = !this.showOptions
     },
-    setSelectOption (option) {
+    setSelectOption(option) {
       this.computedValue = option.value
       this.showOptions = false
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

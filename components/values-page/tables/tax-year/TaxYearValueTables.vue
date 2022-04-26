@@ -42,7 +42,7 @@
 <script>
 export default {
   name: 'TaxYearValueTables',
-  data () {
+  data() {
     return {
       selectedTaxYearStatus: null,
       selectedTaxYearFbarStatus: null,
@@ -50,30 +50,29 @@ export default {
     }
   },
   methods: {
-    setSelectedTaxYearStatus (status) {
+    setSelectedTaxYearStatus(status) {
       if (this.selectedTaxYearStatus?.id === status.id) {
-        this.selectedTaxYearStatus = null;
+        this.selectedTaxYearStatus = null
       } else {
-        this.selectedTaxYearStatus = status;
+        this.selectedTaxYearStatus = status
       }
     },
-    setSelectedTaxYearFbarStatus (status) {
+    setSelectedTaxYearFbarStatus(status) {
       if (this.selectedTaxYearFbarStatus?.id === status.id) {
-        this.selectedTaxYearFbarStatus = null;
+        this.selectedTaxYearFbarStatus = null
       } else {
-        this.selectedTaxYearFbarStatus = status;
+        this.selectedTaxYearFbarStatus = status
       }
     },
-    setSelectedTaxYearStateStatus (status) {
+    setSelectedTaxYearStateStatus(status) {
       if (this.selectedTaxYearStateStatus?.id === status.id) {
-        this.selectedTaxYearStateStatus = null;
+        this.selectedTaxYearStateStatus = null
       } else {
-        this.selectedTaxYearStateStatus = status;
+        this.selectedTaxYearStateStatus = status
       }
     },
   },
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

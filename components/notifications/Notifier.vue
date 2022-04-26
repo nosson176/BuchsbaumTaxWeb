@@ -10,50 +10,48 @@
 import { models, mutations } from '~/shared/constants'
 export default {
   name: 'Notifier',
-  data () {
+  data() {
     return {
-      showNotification: false
+      showNotification: false,
     }
   },
   computed: {
     // notification () {
     //   return this[models.toast].currentNotification
     // },
-    message () {
+    message() {
       return this.notification.message
     },
-    type () {
+    type() {
       return this.notification.type
-    }
+    },
     // currentNotification () {
     //   return this[models.toast].currentNotification
     // }
   },
   watch: {
-    currentNotification () {
+    currentNotification() {
       this.onNotificationChange()
-    }
+    },
   },
   methods: {
-    onNotificationChange () {
+    onNotificationChange() {
       if (this.currentNotification !== null) {
         this.updateNotification(this.currentNotification)
       } else {
         this.showNotification = false
       }
     },
-    updateNotification (notification) {
+    updateNotification(notification) {
       this.showNotification = true
       setTimeout(this.resetNotification, notification.time)
     },
-    resetNotification () {
+    resetNotification() {
       this.$store.commit(mutations.setModelResponse, { model: models.notifier, data: null })
       this.showNotification = false
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

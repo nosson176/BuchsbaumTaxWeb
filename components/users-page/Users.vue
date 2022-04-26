@@ -6,31 +6,30 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { models } from '~/shared/constants';
+import { mapState } from 'vuex'
+import { models } from '~/shared/constants'
 export default {
   name: 'Users',
-  data () {
+  data() {
     return {
       selectedUserId: null,
-    };
+    }
   },
   computed: {
     ...mapState([models.users]),
-    usersCopy () {
-      return Object.values(JSON.parse(JSON.stringify(this.users)));
+    usersCopy() {
+      return Object.values(JSON.parse(JSON.stringify(this.users)))
     },
-    user () {
-      return Object.values(this.users).find(user => user.id === this.selectedUserId);
-    }
+    user() {
+      return Object.values(this.users).find((user) => user.id === this.selectedUserId)
+    },
   },
   methods: {
-    setSelectedUserId (userId) {
-      this.selectedUserId = userId;
+    setSelectedUserId(userId) {
+      this.selectedUserId = userId
     },
   },
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

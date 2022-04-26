@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center">
+  <div tabindex="-1" class="flex items-center justify-center">
     <div
       class="flex justify-center border items-center border-transparent rounded-full cursor-pointer bg-gray-500 text-white leading-tight text-center hover:shadow hover:border-indigo-500"
       :class="small ? 'w-3 h-3' : 'w-4 h-4'"
@@ -20,17 +20,15 @@ export default {
   props: {
     small: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   methods: {
-    emitClick () {
+    emitClick() {
       this.$emit(events.click)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

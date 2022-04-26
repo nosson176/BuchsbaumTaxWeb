@@ -12,24 +12,22 @@ export default {
   props: {
     showArchived: {
       type: Boolean,
-      default: false
+      default: false,
     },
     currentTab: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   computed: {
-    showTaxPersonals () {
+    showTaxPersonals() {
       return this.currentTab === tabs.tax_personals
     },
-    showContacts () {
+    showContacts() {
       return this.currentTab === tabs.contact
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -6,25 +6,24 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { models, valueTabs } from '~/shared/constants';
+import { mapState } from 'vuex'
+import { models, valueTabs } from '~/shared/constants'
 export default {
-  name: "ValuesEditorSection",
-  data () {
+  name: 'ValuesEditorSection',
+  data() {
     return {
-      activeTab: valueTabs[0]
+      activeTab: valueTabs[0],
     }
   },
   computed: {
-    ...mapState([models.valueTypes])
+    ...mapState([models.valueTypes]),
   },
   methods: {
-    setActiveTab (tab) {
-      this.activeTab = tab;
-    }
-  }
-};
+    setActiveTab(tab) {
+      this.activeTab = tab
+    },
+  },
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
