@@ -7,12 +7,7 @@
         clientCount
       }}</span>
     </div>
-    <HeaderSelectOption
-      v-model="searchOptionValue"
-      :shown-value="seachOptionName"
-      :options="searchOptions"
-      @input="debounceSearch"
-    />
+    <HeaderSelectOption v-model="searchOptionValue" :options="searchOptions" @input="debounceSearch" />
   </div>
 </template>
 
@@ -41,9 +36,6 @@ export default {
     },
     searchOptions() {
       return searchOptions
-    },
-    seachOptionName() {
-      return this.searchOptions.find((option) => option.value === this.searchOptionValue)?.name
     },
     searchInput: {
       get() {
