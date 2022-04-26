@@ -32,6 +32,7 @@
           v-model="computedValue"
           type="text"
           class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-0.5 pr-0.5 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          :placeholder="shownValue"
           @keyup="onInputKeyup($event.key)"
           @click="onInputClick"
         />
@@ -141,9 +142,10 @@ export default {
     ...mapState([models.selectedClient]),
     computedValue: {
       get() {
-        return this.value
+        return this.shownValue || this.value
       },
       set(value) {
+        this.filterOptionsValue = value
         this.$emit(events.input, value)
       },
     },
@@ -170,6 +172,7 @@ export default {
     showOptions(value) {
       if (value) {
         this.$refs.filter?.focus()
+        this.computedValue = ''
       }
     },
     selectedClient(newVal, oldVal) {
