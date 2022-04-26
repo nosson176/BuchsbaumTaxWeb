@@ -13,7 +13,8 @@
           </h3>
           <div class="mt-2">
             <p class="text-sm text-gray-500">
-              Are you sure you want to <span class="capitalize">{{ updateToValue }}</span> item?
+              Are you sure you want to
+              <span class="capitalize">{{ updateToValue }}</span> item?
             </p>
           </div>
         </div>
@@ -41,7 +42,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, tabs } from '~/shared/constants'
+import { events, models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'DeleteCard',
@@ -51,7 +52,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.modals, models.clients]),
+    ...mapState([models.selectedClient, models.modals, models.clients, models.smartviews]),
     clientId() {
       return this.selectedClient.id
     },
@@ -94,6 +95,9 @@ export default {
     isTypeClient() {
       return this.type === tabs.clients
     },
+    isTypeSmartview() {
+      return this.type === tabs.smartviews
+    },
     logs() {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
@@ -117,6 +121,9 @@ export default {
     },
     clientsCopy() {
       return JSON.parse(JSON.stringify(this.clients))
+    },
+    smartviewCopy() {
+      return JSON.parse(JSON.stringify(this.smartviews))
     },
     updatedLog() {
       const log = this.logs.find((log) => log.id === this.id)
@@ -158,6 +165,11 @@ export default {
       client.archived = !client.archived
       return client
     },
+    updatedSmartview() {
+      const smartview = Object.values(this.smartviewCopy).find((smartview) => smartview.id === this.id)
+      smartview.archived = !smartview.archived
+      return smartview
+    },
     updatedItem() {
       let item = null
       if (this.isTypeLog) {
@@ -176,6 +188,8 @@ export default {
         item = this.updatedFee
       } else if (this.isTypeClient) {
         item = this.updatedClient
+      } else if (this.isTypeSmartview) {
+        item = this.updatedSmartview
       }
       return item
     },
@@ -199,6 +213,8 @@ export default {
         this.updateFee()
       } else if (this.isTypeClient) {
         this.updateClient()
+      } else if (this.isTypeSmartview) {
+        this.updateSmartview()
       }
     },
     emitHide() {
@@ -243,6 +259,15 @@ export default {
       this.$api
         .updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
         .then(() => this.$api.getClientList(this.headers))
+        .then(() => this.updateClientSideData())
+    },
+    updateSmartview() {
+      this.$api
+        .updateSmartview(this.headers, { smartviewId: this.updatedItem.id }, this.updatedItem)
+        .then(() => {
+          this.$api.getSmartviews(this.headers)
+          this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+        })
         .then(() => this.updateClientSideData())
     },
     updateClientSideData() {

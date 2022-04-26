@@ -90,6 +90,7 @@ export const tabs = Object.freeze({
   fees: 'fees',
   income: 'income',
   logs: 'logs',
+  smartviews: 'smartviews',
   tax_personals: 'tax-personals',
   tax_years: 'tax-years',
   values: {

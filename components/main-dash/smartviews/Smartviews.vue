@@ -12,14 +12,17 @@
         <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
         <span class="font-medium text-gray-900">{{ smartview.name }}</span>
       </div>
-      <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
+      <div class="flex space-x-1">
+        <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
+        <DeleteButton @click="archiveSmartview(smartview)" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations } from '~/shared/constants'
+import { models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'Smartviews',
@@ -34,7 +37,9 @@ export default {
     displayedSmartviews() {
       if (this.smartviews) {
         return Object.fromEntries(
-          Object.entries(this.smartviews).filter(([key, smartview]) => this.showArchived === smartview.archived)
+          Object.entries(JSON.parse(JSON.stringify(this.smartviews))).filter(
+            ([key, smartview]) => this.showArchived === smartview.archived
+          )
         )
       } else {
         return []
@@ -42,6 +47,9 @@ export default {
     },
     selectedSmartviewId() {
       return this.selectedSmartview?.id
+    },
+    headers() {
+      return this.$api.getHeaders()
     },
   },
   methods: {
@@ -58,6 +66,19 @@ export default {
         model: models.modals,
         data: { smartview: { showing: true, data: smartview } },
       })
+    },
+    archiveSmartview(smartview) {
+      if (this.showArchived) {
+        smartview.archived = false
+        this.$api
+          .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
+          .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
+      } else {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews } } },
+        })
+      }
     },
   },
 }

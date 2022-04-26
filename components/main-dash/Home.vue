@@ -30,7 +30,10 @@
         <DeleteCard @hide="closeDeleteModal" />
       </Modal>
       <Modal :showing="showSmartviewEditModal" @hide="closeSmartviewEditModal">
-        <SmartviewEditCard @hide="closeSmartviewEditModal" />
+        <SmartviewEditCard :deleting="isLoading" @hide="closeSmartviewEditModal" @delete="confirmDelete" />
+      </Modal>
+      <Modal :showing="showDeleteConfirmation" @hide="closeDeleteModal">
+        <DeleteType @hide="closeSmartviewDeleteModal" @delete="handleDeleteSmartview" />
       </Modal>
     </div>
   </div>
@@ -52,6 +55,8 @@ export default {
       showArchivedLogsIncomeFbar: false,
       showArchivedPersonals: false,
       showArchivedSmartviews: false,
+      showDeleteConfirmation: false,
+      isLoading: false,
     }
   },
   computed: {
@@ -73,6 +78,12 @@ export default {
           keyup: this.onCmdUp,
         },
       }
+    },
+    smartview() {
+      return JSON.parse(JSON.stringify(this.modals.smartview?.data))
+    },
+    headers() {
+      return this.$api.getHeaders()
     },
   },
   methods: {
@@ -117,6 +128,24 @@ export default {
     },
     onCmdUp() {
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
+    },
+    confirmDelete() {
+      this.showDeleteConfirmation = true
+    },
+    closeSmartviewDeleteModal() {
+      this.showDeleteConfirmation = false
+    },
+    handleDeleteSmartview() {
+      if (this.isLoading) {
+        return
+      }
+      this.isLoading = true
+      this.$api.deleteSmartview(this.headers, { smartviewId: this.smartview.id }).then(() => {
+        this.isLoading = false
+        this.closeSmartviewDeleteModal()
+        this.closeSmartviewEditModal()
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+      })
     },
   },
 }

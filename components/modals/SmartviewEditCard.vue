@@ -48,9 +48,10 @@
       <button
         type="button"
         class="w-full inline-flex justify-center justify-self-start rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="handleDelete"
+        @click="confirmDelete"
       >
-        <span class="capitalize">{{ smartview.archived ? 'Unarchive' : 'Archive' }}</span>
+        <LoadingIndicator v-if="deleting" class="px-4 cursor-not-allowed" />
+        <span v-else class="capitalize">Delete</span>
       </button>
     </div>
   </div>
@@ -65,10 +66,17 @@ const lineConstructor = {
   fieldName: '',
   operator: '',
   searchValue: '',
+  showDelete: false,
 }
 
 export default {
   name: 'SmartviewEditCard',
+  props: {
+    deleting: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       isLoading: false,
@@ -128,6 +136,9 @@ export default {
       this.updateSmartview()
     },
     create() {
+      if (this.isLoading) {
+        return
+      }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       this.$api.createSmartview(this.headers, { smartview }).then(() => {
@@ -136,6 +147,9 @@ export default {
       })
     },
     update() {
+      if (this.isLoading) {
+        return
+      }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then(() => {
@@ -153,12 +167,8 @@ export default {
         this.update()
       }
     },
-    handleDelete() {
-      this.smartview.archived = !this.smartview.archived
-      const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then(() => {
-        this.emitHide()
-      })
+    confirmDelete() {
+      this.$emit(events.delete)
     },
     updateSmartview() {
       this.$store.commit(mutations.setModelResponse, {
