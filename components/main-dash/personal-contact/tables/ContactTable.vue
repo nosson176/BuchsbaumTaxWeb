@@ -124,7 +124,7 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedContacts() {
       const contacts = this.filteredContacts
-      contacts.map((contact) => {
+      contacts?.map((contact) => {
         return { enabled: !contact.disabled, ...contact }
       })
       const newContactIdx = contacts?.findIndex((contact) => contact.id === this.newContactId)

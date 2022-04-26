@@ -58,7 +58,7 @@ export default {
       handler() {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
-          data: this.displayedTaxYearData.slice(0, 4).map((taxYear) => taxYear.id),
+          data: this.displayedTaxYearData?.slice(0, 4).map((taxYear) => taxYear.id),
         })
       },
     },

@@ -29,7 +29,7 @@
         <button
           type="button"
           class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-          @click="handleDelete"
+          @click="confirmDelete"
         >
           <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed" />
           <span v-else class="capitalize">Delete</span>
@@ -41,13 +41,16 @@
         <FormInput ref="lastNameInput" v-model="lastName" label="Lastname" />
       </SubmitCard>
     </Modal>
+    <Modal :showing="showDelete" @hide="closeDeleteModal">
+      <DeleteType @hide="closeDeleteModal" @delete="handleDelete" />
+    </Modal>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { categories, models } from '~/shared/constants'
+import { categories, models, mutations } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
 
 export default {
@@ -58,6 +61,7 @@ export default {
       showEditNameDialogue: false,
       isLastNameUpdateLoading: false,
       isLoading: false,
+      showDelete: false,
     }
   },
   computed: {
@@ -160,13 +164,24 @@ export default {
     closeEditNameDialogue() {
       this.showEditNameDialogue = false
     },
+    confirmDelete() {
+      this.showDelete = true
+    },
+    closeDeleteModal() {
+      this.showDelete = false
+    },
     async handleDelete() {
       if (this.isLoading) {
         return
       }
       this.isLoading = true
       await this.$api.deleteClient(this.headers, { clientId: this.selectedClientCopy.id })
+      this.showDelete = false
       this.isLoading = false
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.selectedClient,
+        data: [],
+      })
     },
   },
 }
