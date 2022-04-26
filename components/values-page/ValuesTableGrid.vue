@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full grid grid-cols-3 gap-4 bg-gray-100 border border-indigo-500 p-2">
+  <div class="container">
     <slot />
   </div>
 </template>
@@ -18,4 +18,10 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  @apply w-full overflow-auto grid grid-cols-3 gap-4 bg-gray-100 border border-indigo-500 p-2;
+
+  height: calc(100vh - 10rem);
+}
+</style>

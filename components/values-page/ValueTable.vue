@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full">
+  <div class="w-full h-full overflow-hidden">
     <ChecklistValueTables v-if="isChecklistsTabActive" />
     <ClientValueTables v-if="isClientTabActive" />
     <ContactValueTables v-if="isContactsTabActive" />

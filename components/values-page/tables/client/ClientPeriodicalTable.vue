@@ -1,5 +1,5 @@
 <template>
-  <Table class="h-64 shadow" @keydown.tab.prevent="onKeyDown">
+  <Table class="h-auto shadow" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
         <div class="table-header">
