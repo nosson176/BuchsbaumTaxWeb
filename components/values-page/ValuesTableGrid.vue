@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full grid grid-cols-3 gap-4 bg-gray-100 border border-indigo-500 p-2">
+  <div class="w-full h-screen overflow-auto grid grid-cols-3 gap-4 bg-gray-100 border border-indigo-500 p-2">
     <slot />
   </div>
 </template>
