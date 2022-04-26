@@ -12,7 +12,7 @@ export default {
   name: 'ValuesEditorSection',
   data() {
     return {
-      activeTab: valueTabs[0],
+      activeTab: valueTabs[6], // shared tab as default
     }
   },
   computed: {
