@@ -165,6 +165,9 @@ export default {
       this.showEditNameDialogue = false
     },
     confirmDelete() {
+      if (this.isLoading) {
+        return
+      }
       this.showDelete = true
     },
     closeDeleteModal() {
