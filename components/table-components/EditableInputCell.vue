@@ -9,7 +9,7 @@
       v-model="computedValue"
       autofocus
       type="text"
-      class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full"
+      class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full z-20"
       tabindex="0"
       :placeholder="placeholder"
     />

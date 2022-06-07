@@ -3,7 +3,7 @@
     <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
+    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
       <input
         ref="button"
         v-model="inputValue"

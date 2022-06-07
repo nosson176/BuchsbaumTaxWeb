@@ -8,7 +8,8 @@
       ref="input"
       v-model="computedValue"
       tabindex="0"
-      class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full"
+      class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full z-20"
+      @click.prevent
       @keydown.tab.prevent
       @input="onInput"
     />
