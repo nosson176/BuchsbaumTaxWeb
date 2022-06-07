@@ -1,6 +1,6 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
+    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
       <input
         ref="button"
         v-model="computedValue"
