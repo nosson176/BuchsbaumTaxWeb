@@ -75,6 +75,7 @@
             v-model="log.note"
             :is-editable="isEditable(`${idx}-note`)"
             @input="debounceUpdate"
+            @tab="onTabPress"
             @blur="onBlur"
           />
         </div>
