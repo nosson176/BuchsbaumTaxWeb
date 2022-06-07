@@ -2,7 +2,7 @@
   <div class="flex-grow flex">
     <div class="bg-white shadow w-64 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
-        <h3 class="text-2xl leading-6 font-semibold text-gray-900 w-full">
+        <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full">
           <div class="w-full flex justify-center" @click="toggleEditable('year', yearData.id)">
             <EditableSelectCell
               v-model="year"
@@ -14,16 +14,21 @@
           </div>
         </h3>
       </div>
-      <ClientTaxYearCardTabs
-        :filings="filings"
-        :active-filing-type="activeFilingType"
-        :tax-year="yearData"
-        @change="updateOnClient"
-        @click="setActiveFilingType"
-      />
-      <div class="mt-2" />
-      <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
-      <div class="mt-2" />
+      <div class="flex overflow-auto">
+        <ClientTaxYearExtension v-for="(extension, idx) in extensions" :key="idx" :extension="extension" />
+        <div>
+          <ClientTaxYearCardTabs
+            :filings="filings"
+            :active-filing-type="activeFilingType"
+            :tax-year="yearData"
+            @change="updateOnClient"
+            @click="setActiveFilingType"
+          />
+          <div class="mt-2" />
+          <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
+          <div class="mt-2" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -73,6 +78,9 @@ export default {
     debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
+    extensions(){
+      return this.filings.filter((filing) => filing.filingType === filingTypes.ext)
+    }
   },
   methods: {
     setActiveFilingType(filingType) {
@@ -99,10 +107,12 @@ export default {
       const yearData = Object.assign({}, this.yearData, this.yearCopy)
       const taxYearId = yearData.id
       const clientId = this.selectedClient.id
+      console.log({yearData})
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
     },
   },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

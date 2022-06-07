@@ -37,7 +37,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient]),
     filingTypes() {
-      return filingTypes
+      const types = {}
+      for(const key in filingTypes){
+        if(filingTypes[key] !== filingTypes.ext){
+          types[key] = filingTypes[key]
+        }
+      }
+      return types
     },
   },
   methods: {
