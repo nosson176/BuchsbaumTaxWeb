@@ -43,24 +43,26 @@
 import { mapState } from 'vuex'
 import { tabs, models, mutations } from '~/shared/constants'
 
+const initialState = () => ({
+  currentFeesChecklistsTab: tabs.fees,
+  currentLogsIncomeFbarTab: tabs.logs,
+  currentPersonalsTab: tabs.tax_personals,
+  showArchivedClients: false,
+  showArchivedFeesChecklists: false,
+  showArchivedLogsIncomeFbar: false,
+  showArchivedPersonals: false,
+  showArchivedSmartviews: false,
+  showDeleteConfirmation: false,
+  isLoading: false,
+})
+
 export default {
   name: 'Home',
   data() {
-    return {
-      currentFeesChecklistsTab: tabs.fees,
-      currentLogsIncomeFbarTab: tabs.logs,
-      currentPersonalsTab: tabs.tax_personals,
-      showArchivedClients: false,
-      showArchivedFeesChecklists: false,
-      showArchivedLogsIncomeFbar: false,
-      showArchivedPersonals: false,
-      showArchivedSmartviews: false,
-      showDeleteConfirmation: false,
-      isLoading: false,
-    }
+    return initialState()
   },
   computed: {
-    ...mapState([models.modals]),
+    ...mapState([models.modals, models.selectedClient]),
     showDeleteModal() {
       return this.modals.delete?.showing
     },
@@ -84,6 +86,13 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+  },
+  watch: {
+    selectedClient(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        Object.assign(this.$data, initialState())
+      }
     },
   },
   methods: {

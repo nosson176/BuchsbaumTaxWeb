@@ -8,13 +8,24 @@
 </template>
 
 <script>
-import { events } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, models } from '~/shared/constants'
 export default {
   name: 'ViewArchivedHeader',
   data() {
     return {
       viewActive: true,
     }
+  },
+  computed: {
+    ...mapState([models.selectedClient]),
+  },
+  watch: {
+    selectedClient(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.viewActive = true
+      }
+    },
   },
   methods: {
     toggleView() {
