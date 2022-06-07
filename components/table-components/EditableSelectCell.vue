@@ -163,6 +163,18 @@ export default {
       }
     })
   },
+  beforeDestroy() {
+    document.removeEventListener('keydown', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftPress()
+      }
+    })
+    document.removeEventListener('keyup', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftUp()
+      }
+    })
+  },
   methods: {
     emitChange(value) {
       if (this.shiftActive) {
