@@ -174,7 +174,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
     const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
-    $axios
+    return $axios
       .put(endpoint, income, { headers })
       .catch(() => $toast.error('Error updating income'))
       .finally(() => getClientData(headers, clientId))
