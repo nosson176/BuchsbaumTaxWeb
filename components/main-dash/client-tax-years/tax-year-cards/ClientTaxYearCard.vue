@@ -15,7 +15,19 @@
         </h3>
       </div>
       <div class="flex overflow-auto">
-        <ClientTaxYearExtension v-for="(extension, idx) in extensions" :key="idx" :extension="extension" />
+        <div class="extension-column">
+          <div>
+            <HeaderSelectOption
+              ref="filingTypeMenu"
+              v-model="selectedFileType"
+              class="mt-2"
+              title="Add filing"
+              menu
+              :options="filingOptions"
+              @input="addFilingType" />
+          </div>
+          <ClientTaxYearExtension v-for="(extension, idx) in extensions" :key="idx" :extension="extension" />
+        </div>
         <div>
           <ClientTaxYearCardTabs
             :filings="filings"
@@ -51,6 +63,7 @@ export default {
       activeFilingType: filingTypes.federal,
       editableId: '',
       editableYearId: '',
+      selectedFileType: ''
     }
   },
   computed: {
@@ -80,6 +93,13 @@ export default {
     },
     extensions(){
       return this.filings.filter((filing) => filing.filingType === filingTypes.ext)
+    },
+    filingOptions(){
+      const types = [{value: '', name: ''}]
+      for(const type in filingTypes){
+        types.push({ value: type, name: type.toUpperCase() })
+      }
+      return types
     }
   },
   methods: {
@@ -107,12 +127,33 @@ export default {
       const yearData = Object.assign({}, this.yearData, this.yearCopy)
       const taxYearId = yearData.id
       const clientId = this.selectedClient.id
-      console.log({yearData})
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
+    },
+    addFilingType(filingType) {
+      console.log(filingType)
+      if(!filingType){
+        return
+      }
+      const headers = this.$api.getHeaders()
+      const defaultValues = {
+        filingType,
+        taxYearId: this.yearData.id,
+      }
+      const filing = Object.assign({}, defaultValues)
+      this.$api.createFiling(headers, { filing }).then((data) => {
+        // this.$emit(events.change, data)
+        // this.emitClick(filingType)
+        this.updateOnClient()
+      })
     },
   },
 }
 </script>
 
 <style scoped>
+.extension-column {
+  @apply flex flex-col justify-between;
+
+  width: 15%;
+}
 </style>
