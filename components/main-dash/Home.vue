@@ -14,8 +14,8 @@
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
-        <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
-        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
+        <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody :current-tab="currentLogsIncomeFbarTab" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact bg-white">
         <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
@@ -49,7 +49,6 @@ const initialState = () => ({
   currentPersonalsTab: tabs.tax_personals,
   showArchivedClients: false,
   showArchivedFeesChecklists: false,
-  showArchivedLogsIncomeFbar: false,
   showArchivedPersonals: false,
   showArchivedSmartviews: false,
   showDeleteConfirmation: false,
@@ -107,9 +106,6 @@ export default {
     },
     switchPersonalsTab(tab) {
       this.currentPersonalsTab = tab
-    },
-    toggleShowArchivedLogsIncomeFbar() {
-      this.showArchivedLogsIncomeFbar = !this.showArchivedLogsIncomeFbar
     },
     toggleShowArchivedFeesChecklists() {
       this.showArchivedFeesChecklists = !this.showArchivedFeesChecklists
