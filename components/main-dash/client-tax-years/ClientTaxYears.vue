@@ -2,7 +2,7 @@
   <div class="flex-grow flex overflow-hidden">
     <div class="grid grid-cols-7 grid-rows-1 w-full">
       <div class="flex flex-col col-start-1 border-r border-gray-300 overflow-hidden">
-        <ClientTaxYearsListHeader @change="toggleArchivedYears" />
+        <ClientTaxYearsListHeader :show-archived="showArchived" @change="toggleArchivedYears" />
         <ClientTaxYearsList :show-archived="showArchived" />
       </div>
       <div class="flex col-start-2 col-span-8 overflow-hidden">

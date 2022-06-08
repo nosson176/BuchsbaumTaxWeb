@@ -6,8 +6,8 @@
         <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
-        <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
-        <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
+        <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
+        <FeesChecklistsBody :current-tab="currentFeesChecklistsTab" />
       </div>
       <div class="shadow rounded flex flex-col smart-views bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
@@ -48,7 +48,6 @@ const initialState = () => ({
   currentLogsIncomeFbarTab: tabs.logs,
   currentPersonalsTab: tabs.tax_personals,
   showArchivedClients: false,
-  showArchivedFeesChecklists: false,
   showArchivedSmartviews: false,
   showDeleteConfirmation: false,
   isLoading: false,
@@ -102,9 +101,6 @@ export default {
     },
     switchPersonalsTab(tab) {
       this.currentPersonalsTab = tab
-    },
-    toggleShowArchivedFeesChecklists() {
-      this.showArchivedFeesChecklists = !this.showArchivedFeesChecklists
     },
     switchLogsIncomeFbarTab(tab) {
       this.currentLogsIncomeFbarTab = tab

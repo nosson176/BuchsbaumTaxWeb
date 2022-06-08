@@ -25,9 +25,6 @@ export default {
     },
   },
   methods: {
-    emitChange() {
-      this.$emit(events.change)
-    },
     emitTabClick(tab) {
       this.activeTab = tab
       this.$emit(events.click, tab)
