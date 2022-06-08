@@ -75,6 +75,7 @@
             v-model="log.note"
             :is-editable="isEditable(`${idx}-note`)"
             @input="debounceUpdate"
+            @tab="onTabPress"
             @blur="onBlur"
           />
         </div>
@@ -169,7 +170,13 @@ export default {
         logs.splice(newLogIdx, 1)
         logs.unshift(tempLog)
       }
-      return searchArrOfObjs(logs, this.searchInput)
+      const mappedLogs = logs.map(log => {
+        if(log.alarmUserId && !log.alarmUserName){
+          log.alarmUserName = this.usersArray[log.alarmUserId].username
+        }
+        return log
+      })
+      return searchArrOfObjs(mappedLogs, this.searchInput)
     },
     shownLogs() {
       if (this.logs) {
@@ -234,6 +241,14 @@ export default {
     filterByAlarmStatus() {
       return !(this.filterByAlarmStatusValue === '')
     },
+    usersArray(){
+      const usersArray = []
+      for (const key in this.users){
+        const user = this.users[key]
+        usersArray[user.id] = user
+      }
+      return usersArray
+    }
   },
   watch: {
     selectedClient(newClient, oldClient) {
@@ -265,6 +280,12 @@ export default {
     },
     handleUpdate() {
       const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
+      for (const key in this.users){
+          if(this.users[key].username === log.alarmUserName){
+            log.alarmUserId = this.users[key].id
+          }
+      }
+
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
     },
     onDeleteClick(logId) {

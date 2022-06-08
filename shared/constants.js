@@ -69,6 +69,7 @@ export const events = Object.freeze({
   keyup: 'keyup',
   resize: 'resize',
   submit: 'submit',
+  tab: 'tab',
 })
 
 export const dateformat = Object.freeze({

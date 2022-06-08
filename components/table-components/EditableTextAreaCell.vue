@@ -8,8 +8,10 @@
       ref="input"
       v-model="computedValue"
       tabindex="0"
-      class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full"
-      @keydown.tab.prevent
+      class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full z-20"
+      @click.prevent
+      @keydown.tab.prevent="emitTab"
+      @keydown.enter.prevent="emitTab"
       @input="onInput"
     />
     <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">{{
@@ -47,9 +49,17 @@ export default {
       },
     },
   },
-  updated() {
+  watch: {
+    async isEditable(val) {
+      if (val) {
+        await this.$nextTick(() => {
+          this.$refs.input.focus()
+        })
+      }
+    },
+  },
+  mounted() {
     if (this.isEditable) {
-      this.$refs.input.focus()
       this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px;overflow-y:hidden;')
     }
   },
@@ -60,6 +70,9 @@ export default {
     onInput() {
       this.$refs.input.style.height = 'auto'
       this.$refs.input.style.height = this.scrollHeight + 'px'
+    },
+    emitTab() {
+      this.$emit(events.tab)
     },
   },
 }
