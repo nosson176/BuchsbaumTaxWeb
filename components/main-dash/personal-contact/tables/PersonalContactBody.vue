@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { tabs } from '~/shared/constants'
+import { tabs, mutations, models, tableGroups } from '~/shared/constants'
 export default {
   name: 'PersonalContactBody',
   props: {
@@ -43,6 +43,11 @@ export default {
       }
     },
   },
+  watch: {
+    searchInput(searchInput) {
+      this.searchInputUpdate(searchInput)
+    },
+  },
   methods: {
     archiveToggle() {
       if (this.showTaxPersonals) {
@@ -50,6 +55,12 @@ export default {
       } else if (this.showContacts) {
         this.showActiveContacts = !this.showActiveContacts
       }
+    },
+    searchInputUpdate(searchInput) {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.search,
+        data: { [tableGroups.personalContact]: searchInput },
+      })
     },
   },
 }
