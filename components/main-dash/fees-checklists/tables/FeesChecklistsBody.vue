@@ -21,7 +21,8 @@ export default {
   },
   data() {
     return {
-      searchInput: '',
+      searchInputFees: '',
+      searchInputChecklists: '',
       showFeesActive: true,
       showChecklistsActive: true,
     }
@@ -41,6 +42,24 @@ export default {
       } else {
         return true
       }
+    },
+    searchInput: {
+      get() {
+        if (this.showFees) {
+          return this.searchInputFees
+        } else if (this.showChecklists) {
+          return this.searchInputChecklists
+        } else {
+          return ''
+        }
+      },
+      set(val) {
+        if (this.showFees) {
+          this.searchInputFees = val
+        } else if (this.showChecklists) {
+          this.searchInputChecklists = val
+        }
+      },
     },
   },
   watch: {

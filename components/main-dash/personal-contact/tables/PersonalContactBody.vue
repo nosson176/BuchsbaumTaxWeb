@@ -21,7 +21,8 @@ export default {
   },
   data() {
     return {
-      searchInput: '',
+      searchInputPersonals: '',
+      searchInputContacts: '',
       showActivePersonals: true,
       showActiveContacts: true,
     }
@@ -41,6 +42,24 @@ export default {
       } else {
         return true
       }
+    },
+    searchInput: {
+      get() {
+        if (this.showTaxPersonals) {
+          return this.searchInputPersonals
+        } else if (this.showContacts) {
+          return this.searchInputContacts
+        } else {
+          return ''
+        }
+      },
+      set(val) {
+        if (this.showTaxPersonals) {
+          this.searchInputPersonals = val
+        } else if (this.showContacts) {
+          this.searchInputContacts = val
+        }
+      },
     },
   },
   watch: {
