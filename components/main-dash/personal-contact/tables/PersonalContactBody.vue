@@ -4,8 +4,10 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <TaxPersonalsTable v-if="showTaxPersonals" :show-archived="!showActivePersonals" />
-    <ContactTable v-else-if="showContacts" :show-archived="!showActiveContacts" />
+    <KeepAlive>
+      <TaxPersonalsTable v-if="showTaxPersonals" :show-archived="!showActivePersonals" />
+      <ContactTable v-else-if="showContacts" :show-archived="!showActiveContacts" />
+    </KeepAlive>
   </div>
 </template>
 

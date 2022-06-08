@@ -4,9 +4,11 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <LogsTable v-if="showLogs" :show-archived="!showActiveLogs" />
-    <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
-    <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
+    <KeepAlive>
+      <LogsTable v-if="showLogs" :show-archived="!showActiveLogs" />
+      <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
+      <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
+    </KeepAlive>
   </div>
 </template>
 
