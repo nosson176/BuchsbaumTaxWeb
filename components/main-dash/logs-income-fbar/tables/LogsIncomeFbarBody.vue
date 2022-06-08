@@ -11,7 +11,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { tabs, mutations, models, tableGroups } from '~/shared/constants'
+
+const initialState = () => ({
+  searchInputLogs: '',
+  searchInputIncome: '',
+  searchInputFbar: '',
+  showActiveLogs: true,
+  showActiveIncome: true,
+  showActiveFbar: true,
+})
+
 export default {
   name: 'LogsIncomeFbarBody',
   props: {
@@ -21,16 +32,10 @@ export default {
     },
   },
   data() {
-    return {
-      searchInputLogs: '',
-      searchInputIncome: '',
-      searchInputFbar: '',
-      showActiveLogs: true,
-      showActiveIncome: true,
-      showActiveFbar: true,
-    }
+    return initialState()
   },
   computed: {
+    ...mapState([models.selectedClient]),
     showLogs() {
       return this.currentTab === tabs.logs
     },
@@ -77,6 +82,9 @@ export default {
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
+    },
+    selectedClient() {
+      Object.assign(this.$data, initialState())
     },
   },
   methods: {

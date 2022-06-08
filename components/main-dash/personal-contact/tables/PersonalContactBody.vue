@@ -10,7 +10,16 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { tabs, mutations, models, tableGroups } from '~/shared/constants'
+
+const initialState = () => ({
+  searchInputPersonals: '',
+  searchInputContacts: '',
+  showActivePersonals: true,
+  showActiveContacts: true,
+})
+
 export default {
   name: 'PersonalContactBody',
   props: {
@@ -20,14 +29,10 @@ export default {
     },
   },
   data() {
-    return {
-      searchInputPersonals: '',
-      searchInputContacts: '',
-      showActivePersonals: true,
-      showActiveContacts: true,
-    }
+    return initialState()
   },
   computed: {
+    ...mapState([models.selectedClient]),
     showTaxPersonals() {
       return this.currentTab === tabs.tax_personals
     },
@@ -65,6 +70,9 @@ export default {
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
+    },
+    selectedClient() {
+      Object.assign(this.$data, initialState())
     },
   },
   methods: {
