@@ -85,13 +85,6 @@ export default {
       return this.$api.getHeaders()
     },
   },
-  watch: {
-    selectedClient(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        Object.assign(this.$data, initialState())
-      }
-    },
-  },
   methods: {
     toggleShowArchivedClients() {
       this.showArchivedClients = !this.showArchivedClients
