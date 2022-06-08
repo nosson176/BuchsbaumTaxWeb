@@ -2,7 +2,7 @@
   <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
-        <ClientListHeader :show-archived="showArchivedClients" @change="toggleShowArchivedClients" />
+        <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
@@ -18,8 +18,8 @@
         <LogsIncomeFbarBody :current-tab="currentLogsIncomeFbarTab" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact bg-white">
-        <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+        <PersonalContactHeader @click="switchPersonalsTab" />
+        <PersonalContactBody :current-tab="currentPersonalsTab" />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
       <div class="bg-white shadow-md rounded-t flex flex-col-reverse client-tax-years">
@@ -49,7 +49,6 @@ const initialState = () => ({
   currentPersonalsTab: tabs.tax_personals,
   showArchivedClients: false,
   showArchivedFeesChecklists: false,
-  showArchivedPersonals: false,
   showArchivedSmartviews: false,
   showDeleteConfirmation: false,
   isLoading: false,
@@ -97,9 +96,6 @@ export default {
   methods: {
     toggleShowArchivedClients() {
       this.showArchivedClients = !this.showArchivedClients
-    },
-    toggleShowArchivedPersonals() {
-      this.showArchivedPersonals = !this.showArchivedPersonals
     },
     toggleShowArchivedSmartviews() {
       this.showArchivedSmartviews = !this.showArchivedSmartviews

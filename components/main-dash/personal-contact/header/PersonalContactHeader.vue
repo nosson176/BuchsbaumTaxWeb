@@ -1,10 +1,6 @@
 <template>
   <div class="flex flex-col">
     <PersonalContactTabs :active-tab="activeTab" @click="emitTabClick" />
-    <div class="flex bg-blue-200 p-0.5">
-      <ViewArchivedHeader @change="emitChange" />
-      <SearchHeader v-model="searchInput" :active-tab="activeTab" />
-    </div>
   </div>
 </template>
 
