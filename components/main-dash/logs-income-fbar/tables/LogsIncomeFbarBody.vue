@@ -22,7 +22,9 @@ export default {
   },
   data() {
     return {
-      searchInput: '',
+      searchInputLogs: '',
+      searchInputIncome: '',
+      searchInputFbar: '',
       showActiveLogs: true,
       showActiveIncome: true,
       showActiveFbar: true,
@@ -48,6 +50,28 @@ export default {
       } else {
         return true
       }
+    },
+    searchInput: {
+      get() {
+        if (this.showLogs) {
+          return this.searchInputLogs
+        } else if (this.showIncome) {
+          return this.searchInputIncome
+        } else if (this.showFbar) {
+          return this.searchInputFbar
+        } else {
+          return ''
+        }
+      },
+      set(val) {
+        if (this.showLogs) {
+          this.searchInputLogs = val
+        } else if (this.showIncome) {
+          this.searchInputIncome = val
+        } else if (this.showFbar) {
+          this.searchInputFbar = val
+        }
+      },
     },
   },
   watch: {
