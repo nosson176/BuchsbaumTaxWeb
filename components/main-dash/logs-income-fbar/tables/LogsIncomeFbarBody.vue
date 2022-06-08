@@ -1,24 +1,32 @@
 <template>
-  <div class="flex flex-grow overflow-hidden">
-    <LogsTable v-if="showLogs" :show-archived="showArchived" />
-    <IncomeTable v-else-if="showIncome" :show-archived="showArchived" />
-    <FbarTable v-else-if="showFbar" :show-archived="showArchived" />
+  <div class="flex flex-col flex-grow overflow-hidden">
+    <div class="flex bg-blue-200 p-0.5">
+      <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
+      <SearchHeader v-model="searchInput" :active-tab="currentTab" />
+    </div>
+    <LogsTable v-if="showLogs" :show-archived="!showActiveLogs" />
+    <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
+    <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
   </div>
 </template>
 
 <script>
-import { tabs } from '~/shared/constants'
+import { tabs, mutations, models, tableGroups } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarBody',
   props: {
-    showArchived: {
-      type: Boolean,
-      default: false,
-    },
     currentTab: {
       type: String,
       default: '',
     },
+  },
+  data() {
+    return {
+      searchInput: '',
+      showActiveLogs: true,
+      showActiveIncome: true,
+      showActiveFbar: true,
+    }
   },
   computed: {
     showLogs() {
@@ -29,6 +37,39 @@ export default {
     },
     showFbar() {
       return this.currentTab === tabs.fbar
+    },
+    showActive() {
+      if (this.showLogs) {
+        return this.showActiveLogs
+      } else if (this.showIncome) {
+        return this.showActiveIncome
+      } else if (this.showFbar) {
+        return this.showActiveFbar
+      } else {
+        return true
+      }
+    },
+  },
+  watch: {
+    searchInput(searchInput) {
+      this.searchInputUpdate(searchInput)
+    },
+  },
+  methods: {
+    searchInputUpdate(searchInput) {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.search,
+        data: { [tableGroups.logsIncomeFbar]: searchInput },
+      })
+    },
+    archiveToggle(value) {
+      if (this.showLogs) {
+        this.showActiveLogs = value
+      } else if (this.showIncome) {
+        this.showActiveIncome = value
+      } else if (this.showFbar) {
+        this.showActiveFbar = value
+      }
     },
   },
 }

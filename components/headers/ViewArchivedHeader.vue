@@ -1,6 +1,6 @@
 <template>
   <div class="flex bg-blue-200 items-center p-0.5 rounded-t-sm space-x-1">
-    <ToggleButton v-model="viewActive" @click="toggleView" />
+    <ToggleButton v-model="computedActive" />
     <span id="view-active" class="ml-1">
       <span class="text-xs tracking-tighter font-medium text-gray-700">{{ viewActive ? 'Active' : 'Archived' }} </span>
     </span>
@@ -8,32 +8,23 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { events, models } from '~/shared/constants'
+import { events } from '~/shared/constants'
 export default {
   name: 'ViewArchivedHeader',
-  data() {
-    return {
-      viewActive: true,
-    }
+  props: {
+    viewActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
-    ...mapState([models.selectedClient]),
-  },
-  watch: {
-    selectedClient(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.viewActive = true
-      }
-    },
-  },
-  methods: {
-    toggleView() {
-      this.viewActive = !this.viewActive
-      this.emitChange()
-    },
-    emitChange() {
-      this.$emit(events.change)
+    computedActive: {
+      get() {
+        return this.viewActive
+      },
+      set(value) {
+        this.$emit(events.change, value)
+      },
     },
   },
 }
