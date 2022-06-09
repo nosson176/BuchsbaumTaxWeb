@@ -11,7 +11,7 @@ export default {
   name: 'PersonalContactHeader',
   data() {
     return {
-      activeTab: tabs.tax_personals,
+      activeTab: tabs.contact,
     }
   },
   computed: {
