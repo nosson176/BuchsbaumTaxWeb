@@ -113,12 +113,15 @@ export default {
     filingOptions(){
       const types = [{value: '', name: ''}]
       for(const type in filingTypes){
+        if(type === filingTypes.ext && this.extensions.length > 2) {
+          continue
+        }
         types.push({ value: type, name: type.toUpperCase() })
       }
       return types
     },
     extensionColumnHeight(){
-      const colHeight = this.extensions.length > 0 ? 200 * this.extensions.length : 200
+      const colHeight = this.extensions.length > 0 ? 240 * this.extensions.length : 240
       return 'height:' + colHeight + 'px'
     }
   },
