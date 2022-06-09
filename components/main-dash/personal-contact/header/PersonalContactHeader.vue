@@ -15,13 +15,11 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.clientClicked]),
   },
   watch: {
-    selectedClient(newVal, oldVal) {
-      if (newVal.id !== oldVal.id) {
-        this.emitTabClick(tabs.contact)
-      }
+    clientClicked() {
+      this.emitTabClick(tabs.contact)
     },
   },
   methods: {

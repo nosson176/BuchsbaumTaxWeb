@@ -269,7 +269,14 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
+    ...mapState([
+      models.selectedClient,
+      models.valueTypes,
+      models.valueTaxGroups,
+      models.search,
+      models.cmdPressed,
+      models.clientClicked,
+    ]),
     displayedFbars() {
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar))
       const newFbarIdx = fbars?.findIndex((fbar) => fbar.id === this.newFbarId)
@@ -444,11 +451,9 @@ export default {
     },
   },
   watch: {
-    selectedClient(newClient, oldClient) {
-      if (newClient.id !== oldClient.id) {
-        Object.assign(this.$data, this.$options.data.apply(this))
-        this.initSelectedItems()
-      }
+    clientClicked() {
+      Object.assign(this.$data, this.$options.data.apply(this))
+      this.initSelectedItems()
     },
   },
   created() {

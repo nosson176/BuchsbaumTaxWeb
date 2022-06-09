@@ -303,7 +303,14 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
+    ...mapState([
+      models.selectedClient,
+      models.valueTypes,
+      models.valueTaxGroups,
+      models.search,
+      models.cmdPressed,
+      models.clientClicked,
+    ]),
     displayedIncomes() {
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
       const newIncomeIdx = incomes?.findIndex((income) => income.id === this.newIncomeId)
@@ -471,11 +478,9 @@ export default {
     },
   },
   watch: {
-    selectedClient(newClient, oldClient) {
-      if (newClient.id !== oldClient.id) {
-        Object.assign(this.$data, this.$options.data.apply(this))
-        this.initSelectedItems()
-      }
+    clientClicked() {
+      Object.assign(this.$data, this.$options.data.apply(this))
+      this.initSelectedItems()
     },
   },
   created() {
