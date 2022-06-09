@@ -38,6 +38,7 @@
       <EditableInput
         v-model="formModel.owesFee"
         :is-editable="isEditable('owesFee')"
+        :class="{'select-cell': isEditable('owesFee')}"
         placeholder="Owes"
         currency
         @blur="onBlur"
@@ -48,6 +49,7 @@
       <EditableInput
         v-model="formModel.paidFee"
         placeholder="Paid"
+        :class="{'select-cell': isEditable('paidFee')}"
         currency
         :is-editable="isEditable('paidFee')"
         @blur="onBlur"
@@ -134,6 +136,7 @@ export default {
 
 .select-cell {
   transform: rotate(270deg);
+  min-width: 40px;
 }
 
 </style>
