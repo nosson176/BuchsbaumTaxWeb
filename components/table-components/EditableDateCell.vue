@@ -16,7 +16,9 @@
       @focus="onFocus"
     >
       <template #header="{ emit }">
-        <button class="mx-btn mx-btn-text" @click="emit(new Date())">Today</button>
+        <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="emit(new Date())">
+          Today
+        </button>
       </template>
     </date-picker>
     <span v-else class="cursor-pointer">{{ displayedValue }}</span>
