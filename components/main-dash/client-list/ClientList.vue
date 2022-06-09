@@ -7,12 +7,13 @@
       v-for="(client, idx) in displayedClients"
       :ref="client.id"
       :key="idx"
-      class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
+      class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
       @click="selectClient(client)"
     >
       <div class="w-full">
-        <span class="font-medium text-gray-900">{{ client.lastName }}</span> {{ client.displayName }}
+        <span class="font-medium text-gray-900 group-hover:text-white">{{ client.lastName }}</span>
+        {{ client.displayName }}
       </div>
       <div class="w-5" @click.stop>
         <DeleteButton @click="archiveClient(client)" />

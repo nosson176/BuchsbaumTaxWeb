@@ -86,7 +86,7 @@
         <div :id="`${idx}-ssn`" class="normal table-col" @click="toggleEditable(`${idx}-ssn`, personal.id)">
           <EditableInputCell
             v-model="personal.ssn"
-            :class="isRedBG(personal.ssn) ? 'text-red-500' : ''"
+            :class="ssnClassObj(personal.ssn, personal.include)"
             :is-editable="isEditable(`${idx}-ssn`)"
             @input="debounceUpdate"
             @blur="onBlur"
@@ -276,8 +276,17 @@ export default {
     onBlur() {
       this.editableId = ''
     },
-    isRedBG(ssn) {
+    isRedText(ssn) {
       return ssn?.charAt(0) === '9'
+    },
+    ssnClassObj(ssn, include) {
+      if (this.isRedText(ssn) && include) {
+        return 'text-red-500'
+      } else if (this.isRedText(ssn) && !include) {
+        return 'text-red-200'
+      } else {
+        return ''
+      }
     },
   },
 }
