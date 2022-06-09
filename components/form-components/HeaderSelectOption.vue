@@ -175,8 +175,10 @@ export default {
         this.computedValue = ''
       }
     },
-    selectedClient() {
-      this.computedValue = ''
+    selectedClient(newVal, oldVal) {
+      if (newVal.id !== oldVal.id) {
+        this.computedValue = ''
+      }
     },
   },
   methods: {

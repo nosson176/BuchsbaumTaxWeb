@@ -170,8 +170,8 @@ export default {
         logs.splice(newLogIdx, 1)
         logs.unshift(tempLog)
       }
-      const mappedLogs = logs.map((log) => {
-        if (log.alarmUserId && !log.alarmUserName) {
+      const mappedLogs = logs.map(log => {
+        if(log.alarmUserId && !log.alarmUserName){
           log.alarmUserName = this.usersArray[log.alarmUserId].username
         }
         return log
@@ -241,22 +241,24 @@ export default {
     filterByAlarmStatus() {
       return !(this.filterByAlarmStatusValue === '')
     },
-    usersArray() {
+    usersArray(){
       const usersArray = []
-      for (const key in this.users) {
+      for (const key in this.users){
         const user = this.users[key]
         usersArray[user.id] = user
       }
       return usersArray
-    },
+    }
   },
   watch: {
-    selectedClient() {
-      Object.assign(this.$data, this.$options.data.apply(this))
-      this.selectedItems = {}
-      this.logs?.forEach((log) => {
-        this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
-      })
+    selectedClient(newClient, oldClient) {
+      if (newClient.id !== oldClient.id) {
+        Object.assign(this.$data, this.$options.data.apply(this))
+        this.selectedItems = {}
+        this.logs?.forEach((log) => {
+          this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
+        })
+      }
     },
   },
   created() {
@@ -278,10 +280,10 @@ export default {
     },
     handleUpdate() {
       const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
-      for (const key in this.users) {
-        if (this.users[key].username === log.alarmUserName) {
-          log.alarmUserId = this.users[key].id
-        }
+      for (const key in this.users){
+          if(this.users[key].username === log.alarmUserName){
+            log.alarmUserId = this.users[key].id
+          }
       }
 
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)

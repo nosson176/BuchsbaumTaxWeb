@@ -471,9 +471,11 @@ export default {
     },
   },
   watch: {
-    selectedClient() {
-      Object.assign(this.$data, this.$options.data.apply(this))
-      this.initSelectedItems()
+    selectedClient(newClient, oldClient) {
+      if (newClient.id !== oldClient.id) {
+        Object.assign(this.$data, this.$options.data.apply(this))
+        this.initSelectedItems()
+      }
     },
   },
   created() {
