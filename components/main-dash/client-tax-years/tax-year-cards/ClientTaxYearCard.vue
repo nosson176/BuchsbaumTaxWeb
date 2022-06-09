@@ -42,7 +42,9 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
           <div class="mt-2" />
         </div>
-        <ClientTaxYearFbar v-if="fbar" :fbar="fbar" class="fbar-column" />
+        <div>
+          <ClientTaxYearFbar v-if="fbar" :fbar="fbar" class="fbar-column" />
+        </div>
       </div>
       <div class="flex">
         <div class="bottom-tab">
@@ -188,16 +190,16 @@ export default {
 
 <style scoped>
 .extension-column {
-  @apply flex flex-col justify-between;
+  @apply flex flex-col justify-between border;
 
-  width: 15%;
+  width: 11%;
 }
 
 .fbar-column {
   @apply flex mt-2;
 
-  height: 15%;
-  width: 15%;
+  height: 10%;
+  width: 10%;
 }
 
 .bottom-tab {
