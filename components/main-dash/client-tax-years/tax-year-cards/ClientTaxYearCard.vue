@@ -31,7 +31,7 @@
         <div>
           <ClientTaxYearCardTabs
             :filings="filings"
-            :active-filing-type="activeFilingType"
+            :active-filing-idx="activeFilingType"
             :tax-year="yearData"
             @change="updateOnClient"
             @click="setActiveFilingType"
@@ -60,7 +60,7 @@ export default {
   },
   data() {
     return {
-      activeFilingType: filingTypes.federal,
+      activeFilingType: 0,
       editableId: '',
       editableYearId: '',
       selectedFileType: ''
@@ -83,7 +83,7 @@ export default {
       return this.yearData.filings
     },
     displayedFilingInfo() {
-      return this.filings.filter((filing) => filing.filingType === this.activeFilingType)[0]
+      return this.filings[this.activeFilingType]
     },
     yearOptions() {
       return this.$store.state.valueTypes.year_name.filter((year) => year.show)
@@ -101,6 +101,9 @@ export default {
       }
       return types
     }
+  },
+  created(){
+    this.setActiveFilingToFederal()
   },
   methods: {
     setActiveFilingType(filingType) {
@@ -130,7 +133,6 @@ export default {
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
     },
     addFilingType(filingType) {
-      console.log(filingType)
       if(!filingType){
         return
       }
@@ -141,11 +143,13 @@ export default {
       }
       const filing = Object.assign({}, defaultValues)
       this.$api.createFiling(headers, { filing }).then((data) => {
-        // this.$emit(events.change, data)
-        // this.emitClick(filingType)
         this.updateOnClient()
       })
     },
+    setActiveFilingToFederal(){
+      const federalIndex = this.filings.findIndex(filing => filing.filingType === filingTypes.federal)
+      this.activeFilingType = federalIndex > -1 ? federalIndex : 0
+    }
   },
 }
 </script>

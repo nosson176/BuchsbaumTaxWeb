@@ -1,12 +1,12 @@
 <template>
   <div class="border-t border-gray-300 space-x-1 flex shadow">
     <Tab
-      v-for="(filingType, idx) in filingTypes"
+      v-for="(filing, idx) in filings"
       :key="idx"
-      :active="filingType === activeFilingType"
-      @click="handleClick(filingType)"
+      :active="idx === activeFilingIdx"
+      @click="handleClick(idx)"
     >
-      <span v-if="filingHasFilingType(filingType)" class="uppercase">{{ filingType }}</span>
+      <span v-if="displayTab(filing)" class="uppercase">{{ filing.filingType }}</span>
     </Tab>
   </div>
 </template>
@@ -22,9 +22,9 @@ export default {
       type: Array,
       default: () => [],
     },
-    activeFilingType: {
-      type: String,
-      default: '',
+    activeFilingIdx: {
+      type: Number,
+      default: NaN,
     },
     taxYear: {
       type: Object,
@@ -44,14 +44,14 @@ export default {
     },
   },
   methods: {
-    handleClick(filingType) {
-      this.emitClick(filingType)
+    handleClick(filingIdx) {
+      this.emitClick(filingIdx)
     },
-    emitClick(filingType) {
-      return this.$emit(events.click, filingType)
+    emitClick(filingIdx) {
+      return this.$emit(events.click, filingIdx)
     },
-    filingHasFilingType(filingType) {
-      return this.filings.some((filing) => filing.filingType === filingType)
+    displayTab(filing) {
+      return filing.filingType !== filingTypes.ext
     }
   }
 }
