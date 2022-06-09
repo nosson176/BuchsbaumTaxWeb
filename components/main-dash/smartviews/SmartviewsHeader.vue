@@ -1,7 +1,7 @@
 <template>
   <div class="flex bg-blue-200 px-1 justify-between items-center shadow">
     <AddRowButton @click="addSmartview" />
-    <ViewArchivedHeader @change="emitChange" />
+    <ViewArchivedHeader :view-active="showActive" @change="emitChange" />
   </div>
 </template>
 
@@ -18,6 +18,11 @@ const smartviewConstructor = {
 
 export default {
   name: 'SmartviewsHeader',
+  data() {
+    return {
+      showActive: true,
+    }
+  },
   computed: {
     ...mapState([models.smartviews]),
     headers() {
@@ -25,7 +30,8 @@ export default {
     },
   },
   methods: {
-    emitChange() {
+    emitChange(value) {
+      this.showActive = value
       this.$emit(events.change)
     },
     addSmartview() {

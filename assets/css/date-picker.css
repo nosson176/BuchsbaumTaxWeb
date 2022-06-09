@@ -57,7 +57,7 @@
 }
 
 .mx-btn:hover {
-  @apply text-indigo-600 border-indigo-600;
+  @apply text-indigo-600 border-indigo-600 bg-gray-200;
 }
 
 .mx-btn-text {

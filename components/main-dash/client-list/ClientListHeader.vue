@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col bg-blue-200 px-0.5 py-1">
-    <ViewArchivedHeader @change="emitChange" />
+    <ViewArchivedHeader :view-active="showActive" @change="emitChange" />
     <div class="flex items-center justify-between space-x-1">
       <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
       <span v-if="clientCount" class="text-xs mt-1 p-1 font-semibold text-indigo-600 bg-blue-100 rounded">{{
@@ -18,15 +18,10 @@ import { events, models, mutations, searchOptions } from '~/shared/constants'
 
 export default {
   name: 'ClientListHeader',
-  props: {
-    showArchived: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data() {
     return {
       searchOptionValue: '',
+      showActive: true,
     }
   },
   computed: {
@@ -48,7 +43,7 @@ export default {
     },
     clientCount() {
       if (this.searchInput) {
-        return Object.entries(this.clients).filter(([key, client]) => this.showArchived === client.archived).length
+        return Object.entries(this.clients).filter(([key, client]) => !this.showActive === client.archived).length
       } else {
         return 0
       }
@@ -58,7 +53,8 @@ export default {
     },
   },
   methods: {
-    emitChange() {
+    emitChange(value) {
+      this.showActive = value
       this.$emit(events.change)
     },
     searchClients() {
