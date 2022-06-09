@@ -7,7 +7,7 @@
       role="switch"
       :aria-checked="computedValue"
       aria-labelledby="view-active"
-      @click="emitClick"
+      @click="onClick"
     >
       <span
         class="pointer-events-none relative inline-block h-2 w-2 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
@@ -65,8 +65,8 @@ export default {
     },
   },
   methods: {
-    emitClick() {
-      this.$emit(events.click, !this.value)
+    onClick() {
+      this.computedValue = !this.value
     },
   },
 }

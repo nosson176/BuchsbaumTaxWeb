@@ -2,24 +2,24 @@
   <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
-        <ClientListHeader :show-archived="showArchivedClients" @change="toggleShowArchivedClients" />
+        <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
-        <FeesChecklistsHeader @change="toggleShowArchivedFeesChecklists" @click="switchFeesChecklistsTab" />
-        <FeesChecklistsBody :show-archived="showArchivedFeesChecklists" :current-tab="currentFeesChecklistsTab" />
+        <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
+        <FeesChecklistsBody :current-tab="currentFeesChecklistsTab" />
       </div>
       <div class="shadow rounded flex flex-col smart-views bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
-        <LogsIncomeFbarHeader @change="toggleShowArchivedLogsIncomeFbar" @click="switchLogsIncomeFbarTab" />
-        <LogsIncomeFbarBody :show-archived="showArchivedLogsIncomeFbar" :current-tab="currentLogsIncomeFbarTab" />
+        <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody :current-tab="currentLogsIncomeFbarTab" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact bg-white">
-        <PersonalContactHeader @change="toggleShowArchivedPersonals" @click="switchPersonalsTab" />
-        <PersonalContactBody :show-archived="showArchivedPersonals" :current-tab="currentPersonalsTab" />
+        <PersonalContactHeader @click="switchPersonalsTab" />
+        <PersonalContactBody :current-tab="currentPersonalsTab" />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
       <div class="bg-white shadow-md rounded-t flex flex-col-reverse client-tax-years">
@@ -43,24 +43,23 @@
 import { mapState } from 'vuex'
 import { tabs, models, mutations } from '~/shared/constants'
 
+const initialState = () => ({
+  currentFeesChecklistsTab: tabs.fees,
+  currentLogsIncomeFbarTab: tabs.logs,
+  currentPersonalsTab: tabs.tax_personals,
+  showArchivedClients: false,
+  showArchivedSmartviews: false,
+  showDeleteConfirmation: false,
+  isLoading: false,
+})
+
 export default {
   name: 'Home',
   data() {
-    return {
-      currentFeesChecklistsTab: tabs.fees,
-      currentLogsIncomeFbarTab: tabs.logs,
-      currentPersonalsTab: tabs.tax_personals,
-      showArchivedClients: false,
-      showArchivedFeesChecklists: false,
-      showArchivedLogsIncomeFbar: false,
-      showArchivedPersonals: false,
-      showArchivedSmartviews: false,
-      showDeleteConfirmation: false,
-      isLoading: false,
-    }
+    return initialState()
   },
   computed: {
-    ...mapState([models.modals]),
+    ...mapState([models.modals, models.selectedClient]),
     showDeleteModal() {
       return this.modals.delete?.showing
     },
@@ -90,20 +89,11 @@ export default {
     toggleShowArchivedClients() {
       this.showArchivedClients = !this.showArchivedClients
     },
-    toggleShowArchivedPersonals() {
-      this.showArchivedPersonals = !this.showArchivedPersonals
-    },
     toggleShowArchivedSmartviews() {
       this.showArchivedSmartviews = !this.showArchivedSmartviews
     },
     switchPersonalsTab(tab) {
       this.currentPersonalsTab = tab
-    },
-    toggleShowArchivedLogsIncomeFbar() {
-      this.showArchivedLogsIncomeFbar = !this.showArchivedLogsIncomeFbar
-    },
-    toggleShowArchivedFeesChecklists() {
-      this.showArchivedFeesChecklists = !this.showArchivedFeesChecklists
     },
     switchLogsIncomeFbarTab(tab) {
       this.currentLogsIncomeFbarTab = tab
