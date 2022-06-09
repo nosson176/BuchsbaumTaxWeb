@@ -65,9 +65,11 @@ export default {
   },
   methods: {
     selectClient({ id }) {
-      this.selectedClientId = id
-      const headers = this.headers
-      this.$api.getClientData(headers, id)
+      if (this.selectedClientId !== id) {
+        this.selectedClientId = id
+        const headers = this.headers
+        this.$api.getClientData(headers, id)
+      }
     },
     onAddRowClick() {
       const defaultValues = {
