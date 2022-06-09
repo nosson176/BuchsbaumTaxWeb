@@ -18,10 +18,8 @@ export default {
     ...mapState([models.selectedClient]),
   },
   watch: {
-    selectedClient(newVal, oldVal) {
-      if (newVal.id !== oldVal.id) {
-        this.emitTabClick(tabs.contact)
-      }
+    selectedClient() {
+      this.emitTabClick(tabs.contact)
     },
   },
   methods: {
