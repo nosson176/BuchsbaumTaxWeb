@@ -50,6 +50,7 @@
             :is-editable="isEditable(`${idx}-priority`)"
             @input="debounceUpdate"
             @blur="onBlur"
+            @tab="onTabPress"
           />
         </div>
         <div :id="`${idx}-years`" class="table-col sm" @click="toggleEditable(`${idx}-years`, log.id)">
