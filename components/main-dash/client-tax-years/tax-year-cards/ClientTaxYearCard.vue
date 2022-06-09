@@ -14,15 +14,15 @@
           </div>
         </h3>
       </div>
-      <div class="flex overflow-auto">
+      <div class="flex overflow-auto flex-grow">
         <div class="extension-column" :style="extensionColumnHeight">
-          <div>
+          <div class="mx-auto">
             <HeaderSelectOption
               ref="filingTypeMenu"
               v-model="selectedFileType"
               class="mt-2"
               title="Add filing"
-              menu
+              add-icon
               :options="filingOptions"
               @input="addFilingType" />
           </div>
@@ -42,6 +42,7 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
           <div class="mt-2" />
         </div>
+        <ClientTaxYearFbar v-if="fbar" :fbar="fbar" class="fbar-column" />
       </div>
       <div class="flex">
         <div class="bottom-tab">
@@ -96,7 +97,10 @@ export default {
       return Object.assign({}, this.yearData)
     },
     filings() {
-      return this.yearData.filings
+      const clonedData = JSON.parse(JSON.stringify(this.yearData))
+      return clonedData.filings
+        .filter(filing => filing.filingType !== filingTypes.ext)
+        .sort((a,b) => a.filingType > b.filingType ? 1 : -1)
     },
     displayedFilingInfo() {
       return this.filings[this.activeFilingType]
@@ -108,12 +112,17 @@ export default {
       return debounce(this.handleUpdate, 500)
     },
     extensions(){
-      return this.filings.filter((filing) => filing.filingType === filingTypes.ext)
+      return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.ext)
+    },
+    fbar(){
+      return this.filings.find(filing => filing.filingType === filingTypes.fbar)
     },
     filingOptions(){
       const types = [{value: '', name: ''}]
       for(const type in filingTypes){
-        if(type === filingTypes.ext && this.extensions.length > 2) {
+        const hideExtension = type === filingTypes.ext && this.extensions.length > 2
+        const hideFbar = type === filingTypes.fbar && this.fbar
+        if(hideExtension || hideFbar) {
           continue
         }
         types.push({ value: type, name: type.toUpperCase() })
@@ -181,6 +190,13 @@ export default {
 .extension-column {
   @apply flex flex-col justify-between;
 
+  width: 15%;
+}
+
+.fbar-column {
+  @apply flex mt-2;
+
+  height: 15%;
   width: 15%;
 }
 

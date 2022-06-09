@@ -12,8 +12,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardTabs',
@@ -31,18 +30,6 @@ export default {
       default: () => null,
     },
   },
-  computed: {
-    ...mapState([models.selectedClient]),
-    filingTypes() {
-      const types = {}
-      for(const key in filingTypes){
-        if(filingTypes[key] !== filingTypes.ext){
-          types[key] = filingTypes[key]
-        }
-      }
-      return types
-    },
-  },
   methods: {
     handleClick(filingIdx) {
       this.emitClick(filingIdx)
@@ -51,7 +38,7 @@ export default {
       return this.$emit(events.click, filingIdx)
     },
     displayTab(filing) {
-      return filing.filingType !== filingTypes.ext
+      return filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
     }
   }
 }
