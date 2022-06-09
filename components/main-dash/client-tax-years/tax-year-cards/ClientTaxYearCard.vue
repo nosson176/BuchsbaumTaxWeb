@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-64 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-72 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
         <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full">
           <div class="w-full flex justify-center" @click="toggleEditable('year', yearData.id)">
@@ -15,7 +15,7 @@
         </h3>
       </div>
       <div class="flex overflow-auto">
-        <div class="extension-column">
+        <div class="extension-column" :style="extensionColumnHeight">
           <div>
             <HeaderSelectOption
               ref="filingTypeMenu"
@@ -26,7 +26,9 @@
               :options="filingOptions"
               @input="addFilingType" />
           </div>
-          <ClientTaxYearExtension v-for="(extension, idx) in extensions" :key="idx" :extension="extension" />
+          <div v-for="(extension, idx) in extensions" :key="idx">
+            <ClientTaxYearExtension :extension="extension" />
+          </div>
         </div>
         <div>
           <ClientTaxYearCardTabs
@@ -39,6 +41,20 @@
           <div class="mt-2" />
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
           <div class="mt-2" />
+        </div>
+      </div>
+      <div class="flex">
+        <div class="bottom-tab">
+          $
+        </div>
+        <div class="bottom-tab">
+          Tab
+        </div>
+        <div class="bottom-tab">
+          Win
+        </div>
+        <div class="bottom-tab">
+          Sub
         </div>
       </div>
     </div>
@@ -100,6 +116,10 @@ export default {
         types.push({ value: type, name: type.toUpperCase() })
       }
       return types
+    },
+    extensionColumnHeight(){
+      const colHeight = this.extensions.length > 0 ? 200 * this.extensions.length : 200
+      return 'height:' + colHeight + 'px'
     }
   },
   created(){
@@ -159,5 +179,9 @@ export default {
   @apply flex flex-col justify-between;
 
   width: 15%;
+}
+
+.bottom-tab {
+  @apply border bg-gray-300 w-1/4 text-lg font-bold;
 }
 </style>
