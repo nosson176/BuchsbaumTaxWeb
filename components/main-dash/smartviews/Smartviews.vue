@@ -4,13 +4,13 @@
       v-for="smartview in displayedSmartviews"
       :ref="smartview.id"
       :key="smartview.id"
-      class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center hover:text-white hover:bg-gray-400"
+      class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center group hover:text-white hover:bg-gray-400"
       :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
       @click="selectSmartview(smartview)"
     >
       <div class="flex items-center space-x-2">
         <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
-        <span class="font-medium text-gray-900">{{ smartview.name }}</span>
+        <span class="font-medium text-gray-900 group-hover:text-white">{{ smartview.name }}</span>
       </div>
       <div class="flex space-x-1">
         <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
