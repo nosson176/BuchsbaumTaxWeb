@@ -254,7 +254,6 @@ export default {
   },
   data() {
     return {
-      newFbarId: NaN,
       editableId: '',
       editableFbarId: '',
       yearFilterValue: '',
@@ -272,19 +271,11 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedFbars() {
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar))
-      const newFbarIdx = fbars?.findIndex((fbar) => fbar.id === this.newFbarId)
-      if (newFbarIdx > -1) {
-        const tempFbar = fbars[newFbarIdx]
-        fbars.splice(newFbarIdx, 1)
-        fbars.unshift(tempFbar)
-      }
       return searchArrOfObjs(fbars, this.searchInput)
     },
     shownFbars() {
       if (this.fbarBreakdowns) {
-        return this.fbarBreakdowns
-          .filter((fbar) => this.showArchived === fbar.archived)
-          .sort((a, b) => b.years - a.years)
+        return this.fbarBreakdowns.filter((fbar) => this.showArchived === fbar.archived)
       } else {
         return null
       }
@@ -506,7 +497,6 @@ export default {
           await this.$api.createFbar(this.headers, { fbar: newFbar }).then(async (data) => {
             if (this.selectedFbarIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.newFbarId = data.id
               this.toggleEditable(`${fbarIndex}-${columns[0]}`, data.id)
             }
           })
@@ -515,7 +505,6 @@ export default {
         const fbar = Object.assign({}, defaultValues)
         this.$api.createFbar(this.headers, { fbar }).then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newFbarId = data.id
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
       }
