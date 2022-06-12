@@ -42,7 +42,7 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
           <div class="mt-2" />
         </div>
-        <div>
+        <div class="fbar-container">
           <ClientTaxYearFbar v-if="fbar" :fbar="fbar" class="fbar-column" />
         </div>
       </div>
@@ -132,8 +132,8 @@ export default {
       return types
     },
     extensionColumnHeight(){
-      const colHeight = this.extensions.length > 0 ? 240 * this.extensions.length : 240
-      return 'height:' + colHeight + 'px'
+      const colHeight = this.extensions.length > 0 ? 250 * this.extensions.length : 250
+      return 'min-height:' + colHeight + 'px'
     }
   },
   created(){
@@ -195,11 +195,15 @@ export default {
   width: 11%;
 }
 
+.fbar-container {
+  @apply border pt-5;
+
+  width: 11%;
+}
+
 .fbar-column {
   @apply flex mt-2;
 
-  height: 10%;
-  width: 10%;
 }
 
 .bottom-tab {
