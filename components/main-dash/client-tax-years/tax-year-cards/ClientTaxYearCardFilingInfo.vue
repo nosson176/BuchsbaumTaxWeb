@@ -199,7 +199,6 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
 import { filingTypes, models } from '~/shared/constants'
 
 export default {
@@ -322,7 +321,7 @@ export default {
         return this.formModel.refund
       },
       set(newVal) {
-        this.formModel.refund = newVal
+        this.formModel.refund = this.setAsValidNumber(newVal)
       },
     },
     rebate: {
@@ -330,7 +329,7 @@ export default {
         return this.formModel.rebate
       },
       set(newVal) {
-        this.formModel.rebate = newVal
+        this.formModel.rebate = this.setAsValidNumber(newVal)
       },
     },
     completed: {
@@ -442,12 +441,6 @@ export default {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
   },
   methods: {
-    formatAsILCurrency(amt) {
-      return formatAsILCurrency(amt)
-    },
-    formatAsUSCurrency(amt) {
-      return formatAsUSCurrency(amt)
-    },
     setEditable(editable) {
       this.editable = editable
     },
@@ -464,6 +457,18 @@ export default {
         this.formModel
       )
     },
+    setAsValidNumber(input){
+      let newNumber = 0
+      if(isNaN(input) || !input){
+        if(input.includes(',')){
+          newNumber = input.replace(',', '')
+        }
+      }
+      else {
+        newNumber = input
+      }
+      return newNumber
+    }
   },
 }
 </script>
