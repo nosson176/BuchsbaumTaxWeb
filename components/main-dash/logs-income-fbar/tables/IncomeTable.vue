@@ -289,7 +289,6 @@ export default {
   data() {
     return {
       editableId: '',
-      newIncomeId: NaN,
       editableIncomeId: '',
       yearFilterValue: '',
       categoryFilterValue: '',
@@ -306,19 +305,11 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedIncomes() {
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
-      const newIncomeIdx = incomes?.findIndex((income) => income.id === this.newIncomeId)
-      if (newIncomeIdx > -1) {
-        const tempIncome = incomes[newIncomeIdx]
-        incomes.splice(newIncomeIdx, 1)
-        incomes.unshift(tempIncome)
-      }
       return searchArrOfObjs(incomes, this.searchInput)
     },
     shownIncomes() {
       if (this.incomeBreakdowns) {
-        return this.incomeBreakdowns
-          .filter((income) => this.showArchived === income.archived)
-          .sort((a, b) => b.years - a.years)
+        return this.incomeBreakdowns.filter((income) => this.showArchived === income.archived)
       } else {
         return null
       }
@@ -474,8 +465,8 @@ export default {
     selectedClient(newClient, oldClient) {
       if (newClient.id !== oldClient.id) {
         Object.assign(this.$data, this.$options.data.apply(this))
-        this.initSelectedItems()
       }
+      this.initSelectedItems()
     },
   },
   created() {
@@ -527,13 +518,13 @@ export default {
       }
       if (this.isCopyingIncomes) {
         this.selectedIncomeIds.forEach(async (incomeId, idx) => {
-          const income = this.displayedIncomes.find((income) => income.id === Number(incomeId))
+          const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
+          const income = this.displayedIncomes[incomeIndex]
           const newIncome = Object.assign({}, income)
           await this.$api.createIncome(this.headers, { income: newIncome }).then(async (data) => {
             if (this.selectedIncomeIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.newIncomeId = data.id
-              this.toggleEditable(`0-${columns[0]}`, data.id)
+              this.toggleEditable(`${incomeIndex}-${columns[0]}`, data.id)
             }
           })
         })
@@ -541,7 +532,6 @@ export default {
         const income = Object.assign({}, defaultValues)
         this.$api.createIncome(this.headers, { income }).then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newIncomeId = data.id
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
       }
