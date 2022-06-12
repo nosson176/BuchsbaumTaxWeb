@@ -303,14 +303,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      models.selectedClient,
-      models.valueTypes,
-      models.valueTaxGroups,
-      models.search,
-      models.cmdPressed,
-      models.clientClicked,
-    ]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedIncomes() {
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
       const newIncomeIdx = incomes?.findIndex((income) => income.id === this.newIncomeId)
@@ -477,11 +470,6 @@ export default {
       return this.isCmdPressed && this.selectedIncomeIds.length > 0
     },
   },
-  watch: {
-    clientClicked() {
-      Object.assign(this.$data, this.$options.data.apply(this))
-    },
-  },
   methods: {
     toggleEditable(id, incomeId) {
       this.editableIncomeId = incomeId
@@ -504,7 +492,9 @@ export default {
           income.include = false
         }
       })
-      this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
+      if (this.includeAll !== '') {
+        this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
+      }
     },
     onDeleteClick(incomeId) {
       if (this.showArchived) {

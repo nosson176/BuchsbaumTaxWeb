@@ -269,14 +269,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      models.selectedClient,
-      models.valueTypes,
-      models.valueTaxGroups,
-      models.search,
-      models.cmdPressed,
-      models.clientClicked,
-    ]),
+    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedFbars() {
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar))
       const newFbarIdx = fbars?.findIndex((fbar) => fbar.id === this.newFbarId)
@@ -450,11 +443,6 @@ export default {
       return this.isCmdPressed && this.selectedFbarIds.length > 0
     },
   },
-  watch: {
-    clientClicked() {
-      Object.assign(this.$data, this.$options.data.apply(this))
-    },
-  },
   methods: {
     toggleEditable(id, fbarId) {
       this.editableFbarId = fbarId
@@ -477,7 +465,9 @@ export default {
           fbar.include = false
         }
       })
-      this.$api.updateFbar(this.headers, { clientId: this.clientId }, this.displayedFbars)
+      if (this.includeAll !== '') {
+        this.$api.updateFbar(this.headers, { clientId: this.clientId }, this.displayedFbars)
+      }
     },
     onDeleteClick(fbarId) {
       if (this.showArchived) {

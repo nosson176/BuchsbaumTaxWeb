@@ -161,14 +161,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      models.selectedClient,
-      models.valueTypes,
-      models.users,
-      models.search,
-      models.cmdPressed,
-      models.clientClicked,
-    ]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
       const newLogIdx = logs?.findIndex((contact) => contact.id === this.newLogId)
@@ -255,12 +248,6 @@ export default {
         usersArray[user.id] = user
       }
       return usersArray
-    },
-  },
-  watch: {
-    clientClicked() {
-      Object.assign(this.$data, this.$options.data.apply(this))
-      this.selectedItems = {}
     },
   },
   methods: {

@@ -32,7 +32,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.clientClicked]),
     showFees() {
       return this.currentTab === tabs.fees
     },
@@ -71,7 +71,7 @@ export default {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
     },
-    selectedClient() {
+    clientClicked() {
       Object.assign(this.$data, initialState())
     },
   },

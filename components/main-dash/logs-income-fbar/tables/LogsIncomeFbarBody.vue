@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import { tabs, mutations, models, tableGroups } from '~/shared/constants'
 
 const initialState = () => ({
@@ -37,7 +36,6 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.selectedClient]),
     showLogs() {
       return this.currentTab === tabs.logs
     },
@@ -84,9 +82,6 @@ export default {
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
-    },
-    selectedClient() {
-      Object.assign(this.$data, initialState())
     },
   },
   methods: {

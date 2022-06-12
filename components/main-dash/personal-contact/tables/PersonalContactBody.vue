@@ -34,7 +34,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.clientClicked]),
     showTaxPersonals() {
       return this.currentTab === tabs.tax_personals
     },
@@ -73,7 +73,7 @@ export default {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
     },
-    selectedClient() {
+    clientClicked() {
       Object.assign(this.$data, initialState())
     },
   },

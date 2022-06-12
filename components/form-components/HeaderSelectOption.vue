@@ -139,7 +139,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.clientClicked]),
+    ...mapState([models.clientClicked]),
     computedValue: {
       get() {
         return this.shownValue || this.value

@@ -13,18 +13,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
-
 export default {
   name: 'ClientTaxYears',
   data() {
     return {
       showArchived: false,
     }
-  },
-  computed: {
-    ...mapState([models.selectedClient]),
   },
   methods: {
     toggleArchivedYears() {
