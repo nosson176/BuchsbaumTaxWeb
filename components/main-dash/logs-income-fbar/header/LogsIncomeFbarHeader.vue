@@ -5,13 +5,22 @@
 </template>
 
 <script>
-import { events, tabs } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, models, tabs } from '~/shared/constants'
 export default {
   name: 'LogsIncomeFbarHeader',
   data() {
     return {
       activeTab: tabs.logs,
     }
+  },
+  computed: {
+    ...mapState([models.clientClicked]),
+  },
+  watch: {
+    clientClicked() {
+      this.emitTabClick(tabs.logs)
+    },
   },
   methods: {
     emitTabClick(tab) {
