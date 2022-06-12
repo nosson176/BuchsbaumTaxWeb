@@ -26,7 +26,7 @@
               :options="filingOptions"
               @input="addFilingType" />
           </div>
-          <div v-for="(extension, idx) in extensions" :key="idx">
+          <div v-for="(extension, idx) in extensions"  :key="idx">
             <ClientTaxYearExtension :extension="extension" />
           </div>
         </div>
@@ -132,8 +132,9 @@ export default {
       return types
     },
     extensionColumnHeight(){
-      const colHeight = this.extensions.length > 0 ? 250 * this.extensions.length : 250
-      return 'min-height:' + colHeight + 'px'
+      const colHeight = this.extensions.length > 1 ? 250 * this.extensions.length : 260
+      const property = this.extensions.length > 1 ? 'min-height:' : 'height:'
+      return property + colHeight + 'px'
     }
   },
   created(){
@@ -192,13 +193,13 @@ export default {
 .extension-column {
   @apply flex flex-col justify-between border;
 
-  width: 11%;
+  width: 30px;
 }
 
 .fbar-container {
   @apply border pt-5;
 
-  width: 11%;
+  width: 30px;
 }
 
 .fbar-column {
