@@ -453,11 +453,7 @@ export default {
   watch: {
     clientClicked() {
       Object.assign(this.$data, this.$options.data.apply(this))
-      this.initSelectedItems()
     },
-  },
-  created() {
-    this.initSelectedItems()
   },
   methods: {
     toggleEditable(id, fbarId) {
@@ -559,13 +555,6 @@ export default {
     },
     isSelected(fbarId) {
       return this.selectedItems[fbarId]
-    },
-    initSelectedItems() {
-      if (this.fbarBreakdowns) {
-        this.fbarBreakdowns.forEach((fbar) => {
-          this.selectedItems = Object.assign(this.selectedItems, { [fbar.id]: false })
-        })
-      }
     },
   },
 }

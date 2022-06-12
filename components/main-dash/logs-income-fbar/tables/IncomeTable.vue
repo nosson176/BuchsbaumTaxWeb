@@ -480,11 +480,7 @@ export default {
   watch: {
     clientClicked() {
       Object.assign(this.$data, this.$options.data.apply(this))
-      this.initSelectedItems()
     },
-  },
-  created() {
-    this.initSelectedItems()
   },
   methods: {
     toggleEditable(id, incomeId) {
@@ -586,13 +582,6 @@ export default {
     },
     isSelected(incomeId) {
       return this.selectedItems[incomeId]
-    },
-    initSelectedItems() {
-      if (this.incomeBreakdowns) {
-        this.incomeBreakdowns.forEach((income) => {
-          this.selectedItems = Object.assign(this.selectedItems, { [income.id]: false })
-        })
-      }
     },
   },
 }
