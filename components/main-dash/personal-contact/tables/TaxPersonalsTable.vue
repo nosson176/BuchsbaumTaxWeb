@@ -130,7 +130,6 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { sortByCategory } from '~/shared/domain-utilities'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
@@ -170,9 +169,7 @@ export default {
     },
     filteredPersonals() {
       if (this.taxPersonals) {
-        return this.taxPersonals
-          .filter((personal) => this.showArchived === personal.archived)
-          .sort((a, b) => sortByCategory(a, b))
+        return this.taxPersonals.filter((personal) => this.showArchived === personal.archived)
       } else {
         return null
       }
