@@ -307,7 +307,8 @@ export default {
           await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
             if (this.selectedLogIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`0-${columns[0]}`, data.id)
+              const index = this.displayedLogs.findIndex((log) => log.id === Number(logId))
+              this.toggleEditable(`${index}-${columns[0]}`, data.id)
             }
           })
         })
