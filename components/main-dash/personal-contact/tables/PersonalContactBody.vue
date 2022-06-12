@@ -4,10 +4,11 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <KeepAlive>
+    <KeepAlive v-if="!isSelectedClientLoading">
       <TaxPersonalsTable v-if="showTaxPersonals" :show-archived="!showActivePersonals" />
       <ContactTable v-else-if="showContacts" :show-archived="!showActiveContacts" />
     </KeepAlive>
+    <LoadingIndicator v-else class="h-8 w-8 text-black mx-auto my-auto" />
   </div>
 </template>
 
@@ -34,7 +35,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.clientClicked]),
+    ...mapState([models.loading]),
     showTaxPersonals() {
       return this.currentTab === tabs.tax_personals
     },
@@ -68,13 +69,13 @@ export default {
         }
       },
     },
+    isSelectedClientLoading() {
+      return this.loading.selectedClient
+    },
   },
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
-    },
-    clientClicked() {
-      Object.assign(this.$data, initialState())
     },
   },
   methods: {

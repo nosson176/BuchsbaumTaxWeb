@@ -4,8 +4,11 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <FeesTable v-if="showFees" :show-archived="!showFeesActive" />
-    <ChecklistsTable v-else-if="showChecklists" :show-archived="!showChecklistsActive" />
+    <div v-if="!isSelectedClientLoading">
+      <FeesTable v-if="showFees" :show-archived="!showFeesActive" />
+      <ChecklistsTable v-else-if="showChecklists" :show-archived="!showChecklistsActive" />
+    </div>
+    <LoadingIndicator v-else class="h-8 w-8 text-black mx-auto my-auto" />
   </div>
 </template>
 
@@ -32,7 +35,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.clientClicked]),
+    ...mapState([models.loading]),
     showFees() {
       return this.currentTab === tabs.fees
     },
@@ -66,13 +69,13 @@ export default {
         }
       },
     },
+    isSelectedClientLoading() {
+      return this.loading.selectedClient
+    },
   },
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
-    },
-    clientClicked() {
-      Object.assign(this.$data, initialState())
     },
   },
   methods: {

@@ -4,15 +4,17 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <KeepAlive>
+    <KeepAlive v-if="!isSelectedClientLoading">
       <LogsTable v-if="showLogs" :show-archived="!showActiveLogs" />
       <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
       <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
     </KeepAlive>
+    <LoadingIndicator v-else class="h-8 w-8 text-black mx-auto my-auto" />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { tabs, mutations, models, tableGroups } from '~/shared/constants'
 
 const initialState = () => ({
@@ -36,6 +38,7 @@ export default {
     return initialState()
   },
   computed: {
+    ...mapState([models.loading]),
     showLogs() {
       return this.currentTab === tabs.logs
     },
@@ -77,6 +80,9 @@ export default {
           this.searchInputFbar = val
         }
       },
+    },
+    isSelectedClientLoading() {
+      return this.loading.selectedClient
     },
   },
   watch: {
