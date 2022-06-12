@@ -2,16 +2,21 @@
   <div class="flex-grow flex">
     <div class="bg-white shadow w-72 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
-        <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full">
-          <div class="w-full flex justify-center" @click="toggleEditable('year', yearData.id)">
+        <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full flex justify-center relative">
+          <div
+            class="absolute top-2 left-1 h-3 w-3 rounded-full cursor-pointer"
+            title="IRS History"
+            :class="yearData.irsHistory ? 'bg-blue-600' : 'bg-blue-200'"
+            @click="updateIrsHistory"
+          />
             <EditableSelectCell
               v-model="year"
               :options="yearOptions"
               :is-editable="isEditable('year')"
+              @click.native="toggleEditable('year', yearData.id)"
               @blur="onBlur"
               @input="debounceUpdate"
             />
-          </div>
         </h3>
       </div>
       <div class="flex overflow-auto flex-grow">
@@ -184,6 +189,10 @@ export default {
     setActiveFilingToFederal(){
       const federalIndex = this.filings.findIndex(filing => filing.filingType === filingTypes.federal)
       this.activeFilingType = federalIndex > -1 ? federalIndex : 0
+    },
+    updateIrsHistory(){
+      this.yearCopy.irsHistory = !this.yearCopy.irsHistory
+      this.handleUpdate()
     }
   },
 }
