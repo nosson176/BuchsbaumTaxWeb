@@ -254,7 +254,7 @@ export default {
       const personal = Object.assign({}, defaultValues)
       this.$api.createTaxPersonal(this.headers, { personal }).then(async (data) => {
         await this.$api.getClientData(this.headers, this.selectedClient.id)
-        this.toggleEditable(`${this.displayedPersonals.length - 1}-${columns[0]}`, data.id)
+        this.toggleEditable(`0-${columns[0]}`, data.id)
       })
     },
     onKeyDown() {
