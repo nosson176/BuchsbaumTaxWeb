@@ -164,22 +164,12 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
-      const mappedLogs = logs
-        .map((log) => {
-          if (log.alarmUserId && !log.alarmUserName) {
-            log.alarmUserName = this.usersArray[log.alarmUserId].username
-          }
-          return log
-        })
-        .sort((a, b) => {
-          if (a.logDate < b.logDate) {
-            return -1
-          }
-          if (a.logDate > b.logDate) {
-            return 1
-          }
-          return 0
-        })
+      const mappedLogs = logs.map((log) => {
+        if (log.alarmUserId && !log.alarmUserName) {
+          log.alarmUserName = this.usersArray[log.alarmUserId].username
+        }
+        return log
+      })
       return searchArrOfObjs(mappedLogs, this.searchInput)
     },
     shownLogs() {
