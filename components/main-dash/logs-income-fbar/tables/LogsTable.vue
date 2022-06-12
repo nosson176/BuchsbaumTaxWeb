@@ -302,13 +302,14 @@ export default {
       }
       if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
-          const log = this.displayedLogs.find((log) => log.id === Number(logId))
+          const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
+          const log = this.displayedLogs[logIndex]
           const newLog = Object.assign({}, log)
           await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
             if (this.selectedLogIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              const index = this.displayedLogs.findIndex((log) => log.id === Number(logId))
-              this.toggleEditable(`${index}-${columns[0]}`, data.id)
+
+              this.toggleEditable(`${logIndex}-${columns[0]}`, data.id)
             }
           })
         })

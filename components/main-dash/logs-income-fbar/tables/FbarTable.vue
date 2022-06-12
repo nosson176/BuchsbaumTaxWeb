@@ -500,13 +500,14 @@ export default {
       }
       if (this.isCopyingFbars) {
         this.selectedFbarIds.forEach(async (fbarId, idx) => {
-          const fbar = this.displayedFbars.find((fbar) => fbar.id === Number(fbarId))
+          const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
+          const fbar = this.displayedFbars[fbarIndex]
           const newFbar = Object.assign({}, fbar)
           await this.$api.createFbar(this.headers, { fbar: newFbar }).then(async (data) => {
             if (this.selectedFbarIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
               this.newFbarId = data.id
-              this.toggleEditable(`0-${columns[0]}`, data.id)
+              this.toggleEditable(`${fbarIndex}-${columns[0]}`, data.id)
             }
           })
         })

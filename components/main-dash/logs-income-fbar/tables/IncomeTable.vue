@@ -527,13 +527,15 @@ export default {
       }
       if (this.isCopyingIncomes) {
         this.selectedIncomeIds.forEach(async (incomeId, idx) => {
-          const income = this.displayedIncomes.find((income) => income.id === Number(incomeId))
+          const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
+          const income = this.displayedIncomes[incomeIndex]
           const newIncome = Object.assign({}, income)
           await this.$api.createIncome(this.headers, { income: newIncome }).then(async (data) => {
             if (this.selectedIncomeIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
               this.newIncomeId = data.id
-              this.toggleEditable(`0-${columns[0]}`, data.id)
+
+              this.toggleEditable(`${incomeIndex}-${columns[0]}`, data.id)
             }
           })
         })
