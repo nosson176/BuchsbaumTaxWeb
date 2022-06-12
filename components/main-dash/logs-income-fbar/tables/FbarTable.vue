@@ -438,8 +438,8 @@ export default {
     selectedClient(newClient, oldClient) {
       if (newClient.id !== oldClient.id) {
         Object.assign(this.$data, this.$options.data.apply(this))
-        this.initSelectedItems()
       }
+      this.initSelectedItems()
     },
   },
   created() {
