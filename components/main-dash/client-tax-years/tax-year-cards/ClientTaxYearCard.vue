@@ -23,6 +23,7 @@
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
           class="extension-column"
+          :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
           :style="extensionColumnHeight">
           <div class="mx-auto">
             <HeaderSelectOption
@@ -35,7 +36,7 @@
               @input="addFilingType" />
           </div>
           <div v-for="(extension, idx) in extensions"  :key="idx">
-            <ClientTaxYearExtension :extension="extension" />
+            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" />
           </div>
         </div>
         <div class="flex flex-col overflow-auto h-full w-full">
@@ -140,14 +141,11 @@ export default {
       return types
     },
     extensionColumnHeight(){
-      // let style = ''
-      // if(this.extensions.length > 1){
-      //   style = 'min-height:' + 250 * this.extensions.length + 'px'
-      // }
-      // return style
-      const colHeight = this.extensions.length > 1 ? 250 * this.extensions.length : 250
-      const property = this.extensions.length > 1 ? 'min-height:' : 'height:'
-      return property + colHeight + 'px'
+      let style = ''
+      if(this.extensions.length > 1){
+        style = 'min-height:' + 250 * this.extensions.length + 'px'
+      }
+      return style
     }
   },
   created(){
@@ -208,7 +206,7 @@ export default {
 
 <style scoped>
 .extension-column {
-  @apply flex flex-col justify-between border;
+  @apply flex flex-col border;
 
   width: 30px;
 }
