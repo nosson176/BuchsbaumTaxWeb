@@ -1,5 +1,5 @@
 <template>
-  <div v-if="filing" class="p-2 overflow-auto flex flex-grow">
+  <div v-if="filing" class="p-2 flex flex-grow">
     <div class="w-full grid grid-cols-1 gap-x-1 gap-y-4 text-xs">
       <div @click="setEditable('taxForm')">
         <EditableSelectCell

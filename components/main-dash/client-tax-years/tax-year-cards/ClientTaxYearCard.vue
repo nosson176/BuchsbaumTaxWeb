@@ -11,6 +11,7 @@
           />
             <EditableSelectCell
               v-model="year"
+              class="tracking-widest"
               :options="yearOptions"
               :is-editable="isEditable('year')"
               @click.native="toggleEditable('year', yearData.id)"
@@ -19,8 +20,10 @@
             />
         </h3>
       </div>
-      <div class="flex overflow-auto flex-grow">
-        <div class="extension-column" :style="extensionColumnHeight">
+      <div class="flex flex-grow h-3/4 w-full overflow-auto">
+        <div
+          class="extension-column"
+          :style="extensionColumnHeight">
           <div class="mx-auto">
             <HeaderSelectOption
               ref="filingTypeMenu"
@@ -35,7 +38,7 @@
             <ClientTaxYearExtension :extension="extension" />
           </div>
         </div>
-        <div>
+        <div class="flex flex-col overflow-auto h-full w-full">
           <ClientTaxYearCardTabs
             :filings="filings"
             :active-filing-idx="activeFilingType"
@@ -137,7 +140,12 @@ export default {
       return types
     },
     extensionColumnHeight(){
-      const colHeight = this.extensions.length > 1 ? 250 * this.extensions.length : 260
+      // let style = ''
+      // if(this.extensions.length > 1){
+      //   style = 'min-height:' + 250 * this.extensions.length + 'px'
+      // }
+      // return style
+      const colHeight = this.extensions.length > 1 ? 250 * this.extensions.length : 250
       const property = this.extensions.length > 1 ? 'min-height:' : 'height:'
       return property + colHeight + 'px'
     }
