@@ -6,7 +6,7 @@
           <div
             class="absolute top-2 left-1 h-3 w-3 rounded-full cursor-pointer"
             title="IRS History"
-            :class="yearData.irsHistory ? 'bg-blue-600' : 'bg-blue-200'"
+            :class="yearData.irsHistory ? 'bg-blue-600' : 'border border-blue-200'"
             @click="updateIrsHistory"
           />
             <EditableSelectCell
