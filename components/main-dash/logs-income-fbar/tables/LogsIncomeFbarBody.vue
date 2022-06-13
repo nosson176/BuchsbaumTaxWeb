@@ -4,12 +4,12 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <KeepAlive v-if="!isSelectedClientLoading">
+    <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
+    <KeepAlive v-else>
       <LogsTable v-if="showLogs" :show-archived="!showActiveLogs" />
       <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
       <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
     </KeepAlive>
-    <LoadingIndicator v-else class="h-8 w-8 text-black mx-auto my-auto" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ const initialState = () => ({
   showActiveLogs: true,
   showActiveIncome: true,
   showActiveFbar: true,
+  clickOnClient: false,
 })
 
 export default {
@@ -38,7 +39,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.loading]),
+    ...mapState([models.loading, models.clientClicked]),
     showLogs() {
       return this.currentTab === tabs.logs
     },
@@ -84,10 +85,21 @@ export default {
     isSelectedClientLoading() {
       return this.loading.selectedClient
     },
+    showLoadingSpinner() {
+      return this.isSelectedClientLoading && this.clickOnClient
+    },
   },
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
+    },
+    clientClicked() {
+      this.clickOnClient = true
+    },
+    isSelectedClientLoading() {
+      if (!this.isSelectedClientLoading) {
+        this.clickOnClient = false
+      }
     },
   },
   methods: {
