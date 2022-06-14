@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-72 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-60 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
         <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full flex justify-center relative">
           <div
