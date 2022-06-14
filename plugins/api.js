@@ -107,6 +107,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error loading smartviews'))
 
+  const getPhoneNumbers = (headers) =>
+     $axios
+      .get('/sms/phone_numbers', {
+        headers,
+        loading: models.phoneNumbers,
+        store: models.phoneNumbers,
+      })
+      .catch(() => $toast.error('Error loading phone numbers'))
+
   // CREATE
   const createLog = (headers, { log }) =>
     $axios.post('/logs', log, { headers }).catch(() => $toast.error('Error creating log'))
@@ -268,6 +277,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getSmartviews,
     getValueTaxGroups,
     getValueTypes,
+    getPhoneNumbers,
     login,
     signout,
     updateChecklist,
