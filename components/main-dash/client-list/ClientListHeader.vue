@@ -20,12 +20,11 @@ export default {
   name: 'ClientListHeader',
   data() {
     return {
-      searchOptionValue: '',
       showActive: true,
     }
   },
   computed: {
-    ...mapState([models.clientSearchValue, models.clients, models.selectedSmartview]),
+    ...mapState([models.clientSearchValue, models.clientSearchOption, models.clients, models.selectedSmartview]),
     debounceSearch() {
       return debounce(this.searchClients, 1000)
     },
@@ -40,6 +39,16 @@ export default {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
         this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: value })
       },
+    },
+    searchOptionValue: {
+      get() {
+        return  this.clientSearchOption.length > 0 ? this.clientSearchOption : ''
+      },
+      set(value) {
+         if(value){
+          this.$store.commit(mutations.setModelResponse, { model: models.clientSearchOption, data: value})
+         }
+      }
     },
     clientCount() {
       if (this.searchInput) {
