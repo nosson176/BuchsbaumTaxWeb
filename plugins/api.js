@@ -156,6 +156,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
 
+  const createPhoneNumber = (headers, { phoneNum }) =>
+    $axios.post('/sms/phone_numbers', phoneNum, { headers }).catch(() => $toast.error('Error creating phone number'))
+
+  const sendSms = (headers, { sms }) =>
+    $axios.post('/sms/send', sms, { headers }).catch(() => $toast.error('Error sending SMS'))
+
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
     $axios
@@ -262,6 +268,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createIncome,
     createLog,
     createValueType,
+    createPhoneNumber,
     createSmartview,
     createTaxPersonal,
     createTaxYear,
@@ -280,6 +287,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getPhoneNumbers,
     login,
     signout,
+    sendSms,
     updateChecklist,
     updateClient,
     updateContact,

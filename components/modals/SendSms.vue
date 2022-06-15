@@ -9,16 +9,26 @@
               <div class="mb-1">
                 Message
               </div>
-              <input v-model="message" type='tel' class="rounded w-full" />
+              <input v-model="message" type="text" class="w-full" />
             </label>
-            <div class="mt-4">
+            <div v-show="!addNumberMode" class="mt-4 h-20">
               <div class="flex justify-between">
                 <div>
                   Send to:
                 </div>
-                <AddRowButton title="Add phone number" />
+                <AddRowButton title="Add phone number" @click.native="toggleAddNumberMode" />
               </div>
               <HeaderSelectOption v-model="telId" :options="mappedPhoneNumbers" />
+            </div>
+            <div v-show="addNumberMode" class="mt-4 w-4/5 mx-auto flex items-center justify-between h-20">
+                <div class="text-xs text-right">
+                  Name: <input v-model="newPhoneName" type="text" class="mb-2" />
+                  +972 <input v-model="newPhoneNumber" type="tel" />
+                </div>
+              <div class="flex items-center ml-3">
+                <CheckIcon class="h-5 w-5 mr-1 text-green-500 cursor-pointer" @click.native="addPhoneNumber" />
+                <CloseIcon class="h-5 w-5 ml-1 text-red-500 cursor-pointer" @click.native="toggleAddNumberMode" />
+              </div>
             </div>
           </div>
         </div>
@@ -27,7 +37,10 @@
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
       <button
         type="button"
-        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+        :disabled="isDisabled"
+        :class="isDisabled ? 'bg-green-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'"
+        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+        @click="sendSms"
       >
         Send
       </button>
@@ -49,7 +62,10 @@ export default {
   data(){
     return {
       message: '',
-      telId: ''
+      telId: '',
+      addNumberMode: false,
+      newPhoneNumber: '',
+      newPhoneName: ''
     }
   },
   computed:{
@@ -63,6 +79,12 @@ export default {
         phoneNumberArr.push({name: this.phoneNumbersState[key].name, value: this.phoneNumbersState[key].id.toString()})
       }
       return phoneNumberArr
+    },
+    headers() {
+      return this.$api.getHeaders()
+    },
+    isDisabled(){
+      return !this.message || !this.telId
     }
   },
   created(){
@@ -74,8 +96,42 @@ export default {
     },
     async loadPhoneNumbers(){
       await this.$api.getPhoneNumbers(this.headers)
+    },
+    toggleAddNumberMode(){
+      this.addNumberMode = !this.addNumberMode
+    },
+    addPhoneNumber(){
+      if(!this.newPhoneNumber || !this.newPhoneName){
+        return
+      }
+      if(isNaN(this.newPhoneNumber)){
+        this.newPhoneNumber = this.newPhoneNumber.replaceAll('-', '')
+          .replaceAll(' ', '')
+          .trim()
+      }
+      if(this.newPhoneNumber[0] === '0'){
+        this.newPhoneNumber = this.newPhoneNumber.substring(1)
+      }
+      const formattedNumber = '+972' + this.newPhoneNumber
+      const phoneNum = { phoneNumber: formattedNumber, name: this.newPhoneName }
+      this.$api.createPhoneNumber(this.headers, { phoneNum }).then((data) => {
+        this.loadPhoneNumbers()
+      })
+      this.toggleAddNumberMode()
+    },
+    sendSms(){
+      const sms = { phoneNumberId: this.telId, message: this.message }
+      this.$api.sendSms(this.headers, { sms }).then(this.emitHide)
     }
   },
 }
 </script>
-<style scoped></style>
+<style scoped>
+
+input {
+  @apply border-gray-300 rounded;
+
+  height:22px;
+}
+
+</style>
