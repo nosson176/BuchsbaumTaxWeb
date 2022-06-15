@@ -33,8 +33,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
     } else if (searchParam) {
       endpoint = endpoint.concat(`?q=${searchParam}`)
-    } else if (searchOption) {
-      endpoint = endpoint.concat(`?field=${searchOption}`)
     }
     return $axios
       .get(endpoint, {
