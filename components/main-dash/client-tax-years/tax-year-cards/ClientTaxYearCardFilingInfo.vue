@@ -46,8 +46,8 @@
           v-model="memo"
           placeholder="Memo"
           :is-editable="isEditable('memo')"
-          @blur="onBlur"
-          @input="debounceUpdate"
+          @blur="onMemoBlur"
+          @keyup.enter.native="onMemoBlur"
         />
       </div>
       <div class="flex justify-center mb-1">
@@ -455,6 +455,10 @@ export default {
     },
     onBlur() {
       this.setEditable('')
+    },
+    onMemoBlur(){
+      this.onBlur()
+      this.handleUpdate()
     },
     handleUpdate() {
       this.$api.updateFiling(
