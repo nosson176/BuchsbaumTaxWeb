@@ -1,10 +1,9 @@
 <template>
-  <div class="fbar">
-    <div @click="setEditable('taxForm')">
+  <div class="fbar" @click="setEditable('')">
+    <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
       <EditableSelectCell
         v-model="formModel.taxForm"
         class="font-bold ml-2 whitespace-nowrap"
-        :class="{'select-cell': isEditable('taxForm')}"
         :options="taxFormOptions"
         :is-editable="isEditable('taxForm')"
         placeholder="Tax Form"
@@ -12,19 +11,40 @@
         @input="handleUpdate"
       />
     </div>
-    <div class="mx-2" @click="setEditable('status')">
+    <div v-else class="absolute top-0 h-48 w-48">
+      <EditableSelectCell
+        v-model="formModel.taxForm"
+        class="font-bold ml-2 whitespace-nowrap select-cell"
+        :options="taxFormOptions"
+        is-editable
+        placeholder="Tax Form"
+        @blur="onBlur"
+        @input="handleUpdate"
+      />
+    </div>
+    <div v-if="!isEditable('status')" class="mx-2" @click.stop="setEditable('status')">
       <EditableSelectCell
         v-model="formModel.status"
         :options="statusOptions"
         class="whitespace-nowrap"
-        :class="{'select-cell': isEditable('status')}"
         :is-editable="isEditable('status')"
         placeholder="Status"
         @blur="onBlur"
         @input="handleUpdate"
       />
     </div>
-    <div @click="setEditable('statusDate')">
+    <div v-else class="absolute top-0 left-12 h-48 w-48">
+      <EditableSelectCell
+        v-model="formModel.status"
+        :options="statusOptions"
+        class="whitespace-nowrap select-cell"
+        is-editable
+        placeholder="Status"
+        @blur="onBlur"
+        @input="handleUpdate"
+      />
+    </div>
+    <div @click.stop="setEditable('statusDate')">
       <EditableDate
         v-model="formModel.statusDate"
         placeholder="Date"
@@ -34,7 +54,7 @@
         @input="handleUpdate"
       />
     </div>
-    <div class="mx-2" @click="setEditable('owesFee')">
+    <div class="mx-2" @click.stop="setEditable('owesFee')">
       <EditableInput
         v-model="formModel.owesFee"
         :is-editable="isEditable('owesFee')"
@@ -45,7 +65,7 @@
         @input="debounceUpdate"
       />
     </div>
-    <div @click="setEditable('paidFee')">
+    <div @click.stop="setEditable('paidFee')">
       <EditableInput
         v-model="formModel.paidFee"
         placeholder="Paid"
@@ -56,7 +76,7 @@
         @input="debounceUpdate"
       />
     </div>
-    <div class="ml-2" @click="setEditable('dateFiled')">
+    <div class="ml-2" @click.stop="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
         placeholder="Date"
@@ -129,7 +149,7 @@ export default {
 
 <style scoped>
 .fbar {
-  @apply text-xs flex;
+  @apply text-xs flex relative;
 
   transform: rotate(90deg);
 }
