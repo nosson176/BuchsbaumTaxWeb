@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-72 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-60 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
         <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full flex justify-center relative">
           <div
@@ -20,7 +20,7 @@
             />
         </h3>
       </div>
-      <div class="flex flex-grow h-3/4 w-full overflow-auto">
+      <div class="flex flex-grow h-3/4 w-full overflow-visible">
         <div
           class="extension-column"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
