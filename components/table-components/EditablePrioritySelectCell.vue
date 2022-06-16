@@ -19,6 +19,7 @@
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
+        @click.stop
         @blur="onBlur"
       >
         <li
@@ -125,7 +126,6 @@ export default {
       return this.computedValue === value
     },
     onBlur() {
-      this.showOptions = false
       this.$emit(events.blur)
     },
     onButtonClick() {
