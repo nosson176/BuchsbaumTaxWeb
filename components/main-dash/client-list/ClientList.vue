@@ -65,11 +65,10 @@ export default {
   },
   methods: {
     selectClient({ id }) {
-      if (this.selectedClientId !== id) {
-        this.selectedClientId = id
-        const headers = this.headers
-        this.$api.getClientData(headers, id)
-      }
+      this.selectedClientId = id
+      const headers = this.headers
+      this.$api.getClientData(headers, id)
+
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
