@@ -33,7 +33,7 @@
         :class="!smartviewIsValid ? 'cursor-not-allowed' : 'cursor-pointer'"
         @click="handleUpdateCreate"
       >
-        <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed" />
+        <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
         <span v-else-if="isNew" class="capitalize">Create</span>
         <span v-else class="capitalize">Save</span>
       </button>
@@ -50,7 +50,7 @@
         class="w-full inline-flex justify-center justify-self-start rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
         @click="confirmDelete"
       >
-        <LoadingIndicator v-if="deleting" class="px-4 cursor-not-allowed" />
+        <LoadingIndicator v-if="deleting" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
         <span v-else class="capitalize">Delete</span>
       </button>
     </div>

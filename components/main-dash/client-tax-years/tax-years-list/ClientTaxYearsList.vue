@@ -24,7 +24,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.shownTaxYears, models.shownTaxYears]),
+    ...mapState([models.selectedClient, models.shownTaxYears, models.shownTaxYears, models.loading]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
@@ -52,23 +52,24 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
+    isClientLoading() {
+      return this.loading.selectedClient
+    },
   },
   watch: {
-    selectedClient: {
-      handler() {
+    isClientLoading(isLoading) {
+      if (!isLoading) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
           data: this.displayedTaxYearData?.slice(0, 4).map((taxYear) => taxYear.id),
         })
-      },
+      }
     },
-    showArchived: {
-      handler() {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.shownTaxYears,
-          data: this.displayedTaxYearData.slice(0, 4).map((taxYear) => taxYear.id),
-        })
-      },
+    showArchived() {
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.shownTaxYears,
+        data: this.displayedTaxYearData.slice(0, 4).map((taxYear) => taxYear.id),
+      })
     },
   },
   methods: {

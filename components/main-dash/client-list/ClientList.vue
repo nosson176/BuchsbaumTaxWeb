@@ -68,6 +68,11 @@ export default {
       this.selectedClientId = id
       const headers = this.headers
       this.$api.getClientData(headers, id)
+
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.clientClicked,
+        data: Math.random(),
+      })
     },
     onAddRowClick() {
       const defaultValues = {

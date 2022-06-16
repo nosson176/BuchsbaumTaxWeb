@@ -144,7 +144,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.clientClicked]),
     computedValue: {
       get() {
         return this.shownValue || this.value
@@ -180,10 +180,8 @@ export default {
         this.computedValue = ''
       }
     },
-    selectedClient(newVal, oldVal) {
-      if (newVal.id !== oldVal.id) {
-        this.computedValue = ''
-      }
+    clientClicked() {
+      this.computedValue = ''
     },
   },
   methods: {

@@ -58,8 +58,9 @@ export default {
   data() {
     return initialState()
   },
+
   computed: {
-    ...mapState([models.modals, models.selectedClient]),
+    ...mapState([models.modals, models.clientClicked]),
     showDeleteModal() {
       return this.modals.delete?.showing
     },
@@ -83,6 +84,11 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+  },
+  watch: {
+    clientClicked() {
+      Object.assign(this.$data, initialState())
     },
   },
   methods: {

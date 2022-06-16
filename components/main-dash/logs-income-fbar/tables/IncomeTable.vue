@@ -461,17 +461,6 @@ export default {
       return this.isCmdPressed && this.selectedIncomeIds.length > 0
     },
   },
-  watch: {
-    selectedClient(newClient, oldClient) {
-      if (newClient.id !== oldClient.id) {
-        Object.assign(this.$data, this.$options.data.apply(this))
-      }
-      this.initSelectedItems()
-    },
-  },
-  created() {
-    this.initSelectedItems()
-  },
   methods: {
     toggleEditable(id, incomeId) {
       this.editableIncomeId = incomeId
@@ -494,7 +483,9 @@ export default {
           income.include = false
         }
       })
-      this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
+      if (this.includeAll !== '') {
+        this.$api.updateIncome(this.headers, { clientId: this.clientId }, this.displayedIncomes)
+      }
     },
     onDeleteClick(incomeId) {
       if (this.showArchived) {
@@ -571,13 +562,6 @@ export default {
     },
     isSelected(incomeId) {
       return this.selectedItems[incomeId]
-    },
-    initSelectedItems() {
-      if (this.incomeBreakdowns) {
-        this.incomeBreakdowns.forEach((income) => {
-          this.selectedItems = Object.assign(this.selectedItems, { [income.id]: false })
-        })
-      }
     },
   },
 }

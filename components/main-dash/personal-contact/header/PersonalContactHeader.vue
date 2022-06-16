@@ -11,17 +11,15 @@ export default {
   name: 'PersonalContactHeader',
   data() {
     return {
-      activeTab: tabs.tax_personals,
+      activeTab: tabs.contact,
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.clientClicked]),
   },
   watch: {
-    selectedClient(newVal, oldVal) {
-      if (newVal.id !== oldVal.id) {
-        this.emitTabClick(tabs.contact)
-      }
+    clientClicked() {
+      this.emitTabClick(tabs.contact)
     },
   },
   methods: {
