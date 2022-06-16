@@ -53,13 +53,11 @@ export default {
       return this.$api.getHeaders()
     },
     isClientLoading() {
-      console.log(this.loading.selectedClient)
       return this.loading.selectedClient
     },
   },
   watch: {
     isClientLoading(isLoading) {
-      console.log('isClientLoading', isLoading)
       if (!isLoading) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
