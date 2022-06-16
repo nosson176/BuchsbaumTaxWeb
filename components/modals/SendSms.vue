@@ -82,8 +82,7 @@ export default {
       const phoneNumberArr = []
       for(const key in this.phoneNumbersState){
         phoneNumberArr.push({
-          name: '0' + this.phoneNumbersState[key].phoneNumber.replace('+972', '') +
-            ' (' + this.phoneNumbersState[key].name + ')',
+          name: this.phoneNumbersState[key].phoneNumber + ' (' + this.phoneNumbersState[key].name + ')',
           value: this.phoneNumbersState[key].id.toString()
         })
       }
