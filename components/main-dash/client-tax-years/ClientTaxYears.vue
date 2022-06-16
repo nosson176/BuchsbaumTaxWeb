@@ -1,6 +1,7 @@
 <template>
   <div class="flex-grow flex overflow-hidden">
-    <div class="grid grid-cols-7 grid-rows-1 w-full">
+    <LoadingIndicator v-show="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
+    <div v-show="!showLoadingSpinner" class="grid grid-cols-7 grid-rows-1 w-full">
       <div class="flex flex-col col-start-1 border-r border-gray-300 overflow-hidden">
         <ClientTaxYearsListHeader :show-archived="showArchived" @change="toggleArchivedYears" />
         <ClientTaxYearsList :show-archived="showArchived" />
@@ -21,10 +22,27 @@ export default {
   data() {
     return {
       showArchived: false,
+      clickOnClient: false,
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.loading, models.clientClicked]),
+    isSelectedClientLoading() {
+      return this.loading.selectedClient
+    },
+    showLoadingSpinner() {
+      return this.isSelectedClientLoading && this.clickOnClient
+    },
+  },
+  watch: {
+    clientClicked() {
+      this.clickOnClient = true
+    },
+    isSelectedClientLoading() {
+      if (!this.isSelectedClientLoading) {
+        this.clickOnClient = false
+      }
+    },
   },
   methods: {
     toggleArchivedYears() {

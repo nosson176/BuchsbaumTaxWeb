@@ -18,8 +18,9 @@ export const models = Object.freeze({
   valueTypes: 'valueTypes',
   cmdPressed: 'cmdPressed',
   clientSearchValue: 'clientSearchValue',
+  clientClicked: 'clientClicked',
   phoneNumbers: 'phoneNumbers',
-  clientSearchOption: 'clientSearchOption'
+  clientSearchOption: 'clientSearchOption',
 })
 
 // Store Mutations

@@ -4,8 +4,11 @@
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
     </div>
-    <FeesTable v-if="showFees" :show-archived="!showFeesActive" />
-    <ChecklistsTable v-else-if="showChecklists" :show-archived="!showChecklistsActive" />
+    <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
+    <div v-else>
+      <FeesTable v-if="showFees" :show-archived="!showFeesActive" />
+      <ChecklistsTable v-else-if="showChecklists" :show-archived="!showChecklistsActive" />
+    </div>
   </div>
 </template>
 
@@ -18,6 +21,7 @@ const initialState = () => ({
   searchInputChecklists: '',
   showFeesActive: true,
   showChecklistsActive: true,
+  clickOnClient: false,
 })
 
 export default {
@@ -32,7 +36,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.loading, models.clientClicked]),
     showFees() {
       return this.currentTab === tabs.fees
     },
@@ -66,13 +70,24 @@ export default {
         }
       },
     },
+    isSelectedClientLoading() {
+      return this.loading.selectedClient
+    },
+    showLoadingSpinner() {
+      return this.isSelectedClientLoading && this.clickOnClient
+    },
   },
   watch: {
     searchInput(searchInput) {
       this.searchInputUpdate(searchInput)
     },
-    selectedClient() {
-      Object.assign(this.$data, initialState())
+    clientClicked() {
+      this.clickOnClient = true
+    },
+    isSelectedClientLoading() {
+      if (!this.isSelectedClientLoading) {
+        this.clickOnClient = false
+      }
     },
   },
   methods: {

@@ -434,17 +434,6 @@ export default {
       return this.isCmdPressed && this.selectedFbarIds.length > 0
     },
   },
-  watch: {
-    selectedClient(newClient, oldClient) {
-      if (newClient.id !== oldClient.id) {
-        Object.assign(this.$data, this.$options.data.apply(this))
-      }
-      this.initSelectedItems()
-    },
-  },
-  created() {
-    this.initSelectedItems()
-  },
   methods: {
     toggleEditable(id, fbarId) {
       this.editableFbarId = fbarId
@@ -467,7 +456,9 @@ export default {
           fbar.include = false
         }
       })
-      this.$api.updateFbar(this.headers, { clientId: this.clientId }, this.displayedFbars)
+      if (this.includeAll !== '') {
+        this.$api.updateFbar(this.headers, { clientId: this.clientId }, this.displayedFbars)
+      }
     },
     onDeleteClick(fbarId) {
       if (this.showArchived) {
@@ -544,13 +535,6 @@ export default {
     },
     isSelected(fbarId) {
       return this.selectedItems[fbarId]
-    },
-    initSelectedItems() {
-      if (this.fbarBreakdowns) {
-        this.fbarBreakdowns.forEach((fbar) => {
-          this.selectedItems = Object.assign(this.selectedItems, { [fbar.id]: false })
-        })
-      }
     },
   },
 }

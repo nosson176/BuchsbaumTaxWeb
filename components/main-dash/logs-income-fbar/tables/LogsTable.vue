@@ -244,22 +244,6 @@ export default {
       return usersArray
     },
   },
-  watch: {
-    selectedClient() {
-      Object.assign(this.$data, this.$options.data.apply(this))
-      this.selectedItems = {}
-      this.logs?.forEach((log) => {
-        this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
-      })
-    },
-  },
-  created() {
-    if (this.logs) {
-      this.logs.forEach((log) => {
-        this.selectedItems = Object.assign(this.selectedItems, { [log.id]: false })
-      })
-    }
-  },
   methods: {
     toggleEditable(id, logId) {
       this.editableLogId = logId
