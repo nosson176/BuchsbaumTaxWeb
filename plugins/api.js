@@ -33,8 +33,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
     } else if (searchParam) {
       endpoint = endpoint.concat(`?q=${searchParam}`)
-    } else if (searchOption) {
-      endpoint = endpoint.concat(`?field=${searchOption}`)
     }
     return $axios
       .get(endpoint, {
@@ -107,6 +105,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error loading smartviews'))
 
+  const getPhoneNumbers = (headers) =>
+     $axios
+      .get('/sms/phone_numbers', {
+        headers,
+        loading: models.phoneNumbers,
+        store: models.phoneNumbers,
+      })
+      .catch(() => $toast.error('Error loading phone numbers'))
+
   // CREATE
   const createLog = (headers, { log }) =>
     $axios.post('/logs', log, { headers }).catch(() => $toast.error('Error creating log'))
@@ -146,6 +153,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
+
+  const createPhoneNumber = (headers, { phoneNum }) =>
+    $axios.post('/sms/phone_numbers', phoneNum, { headers }).catch(() => $toast.error('Error creating phone number'))
+
+  const sendSms = (headers, { sms }) =>
+    $axios.post('/sms/send', sms, { headers }).catch(() => $toast.error('Error sending SMS'))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
@@ -253,6 +266,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createIncome,
     createLog,
     createValueType,
+    createPhoneNumber,
     createSmartview,
     createTaxPersonal,
     createTaxYear,
@@ -268,8 +282,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getSmartviews,
     getValueTaxGroups,
     getValueTypes,
+    getPhoneNumbers,
     login,
     signout,
+    sendSms,
     updateChecklist,
     updateClient,
     updateContact,

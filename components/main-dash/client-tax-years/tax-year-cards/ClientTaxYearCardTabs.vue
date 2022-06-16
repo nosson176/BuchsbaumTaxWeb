@@ -1,22 +1,18 @@
 <template>
   <div class="border-t border-gray-300 space-x-1 flex shadow">
     <Tab
-      v-for="(filingType, idx) in filingTypes"
+      v-for="(filing, idx) in filings"
       :key="idx"
-      :active="filingType === activeFilingType"
-      @click="handleClick(filingType)"
+      :active="idx === activeFilingIdx"
+      @click="handleClick(idx)"
     >
-      <span v-if="filingHasFilingType(filingType)" class="uppercase">{{ filingType }}</span>
-      <span v-else class="text-xs font-light text-gray-300 uppercase flex items-center"
-        ><AddRowButton /> {{ filingType }}</span
-      >
+      <span v-if="displayTab(filing)" class="uppercase">{{ filing.filingType }}</span>
     </Tab>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardTabs',
@@ -25,48 +21,26 @@ export default {
       type: Array,
       default: () => [],
     },
-    activeFilingType: {
-      type: String,
-      default: '',
+    activeFilingIdx: {
+      type: Number,
+      default: NaN,
     },
     taxYear: {
       type: Object,
       default: () => null,
     },
   },
-  computed: {
-    ...mapState([models.selectedClient]),
-    filingTypes() {
-      return filingTypes
-    },
-  },
   methods: {
-    handleClick(filingType) {
-      if (this.filingHasFilingType(filingType)) {
-        this.emitClick(filingType)
-      } else {
-        this.addFiling(filingType)
-      }
+    handleClick(filingIdx) {
+      this.emitClick(filingIdx)
     },
-    emitClick(filingType) {
-      return this.$emit(events.click, filingType)
+    emitClick(filingIdx) {
+      return this.$emit(events.click, filingIdx)
     },
-    filingHasFilingType(filingType) {
-      return this.filings.some((filing) => filing.filingType === filingType)
-    },
-    addFiling(filingType) {
-      const headers = this.$api.getHeaders()
-      const defaultValues = {
-        filingType,
-        taxYearId: this.taxYear.id,
-      }
-      const filing = Object.assign({}, defaultValues)
-      this.$api.createFiling(headers, { filing }).then((data) => {
-        this.$emit(events.change, data)
-        this.emitClick(filingType)
-      })
-    },
-  },
+    displayTab(filing) {
+      return filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
+    }
+  }
 }
 </script>
 

@@ -1,6 +1,14 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
+      <button
+        type="button"
+        class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+        aria-expanded="true"
+        @click="openSmsModal"
+      >
+        Send SMS
+      </button>
       <div class="ml-auto">
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
       </div>
@@ -16,6 +24,9 @@
         </nuxt-link>
       </div>
     </div>
+    <Modal :showing="showSmsModal" @hide="closeSmsModal">
+      <SendSms @hide="closeSmsModal" />
+    </Modal>
   </div>
 </template>
 
@@ -25,6 +36,11 @@ import { models, routes } from '~/shared/constants'
 
 export default {
   name: 'Header',
+  data(){
+    return {
+      showSmsModal: false
+    }
+  },
   computed: {
     ...mapState([models.clientsHistory]),
     mappedClientHistory() {
@@ -66,6 +82,12 @@ export default {
       const id = selectedClient.id
       this.$api.getClientData(headers, id)
     },
+    openSmsModal(){
+      this.showSmsModal = true
+    },
+    closeSmsModal(){
+      this.showSmsModal = false
+    }
   },
 }
 </script>

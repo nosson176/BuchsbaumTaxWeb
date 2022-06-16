@@ -26,6 +26,7 @@
           </svg>
         </button>
       </div>
+      <AddRowButton v-else-if="addIcon" @click.native="toggleShowOptions" />
       <div v-else>
         <input
           ref="filter"
@@ -129,6 +130,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    addIcon: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -175,8 +180,10 @@ export default {
         this.computedValue = ''
       }
     },
-    selectedClient() {
-      this.computedValue = ''
+    selectedClient(newVal, oldVal) {
+      if (newVal.id !== oldVal.id) {
+        this.computedValue = ''
+      }
     },
   },
   methods: {

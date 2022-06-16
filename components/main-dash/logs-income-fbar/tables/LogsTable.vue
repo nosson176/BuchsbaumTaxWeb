@@ -151,7 +151,6 @@ export default {
   },
   data() {
     return {
-      newLogId: NaN,
       editableId: '',
       editableLogId: '',
       yearFilterValue: '',
@@ -165,12 +164,6 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
-      const newLogIdx = logs?.findIndex((contact) => contact.id === this.newLogId)
-      if (newLogIdx > -1) {
-        const tempLog = logs[newLogIdx]
-        logs.splice(newLogIdx, 1)
-        logs.unshift(tempLog)
-      }
       const mappedLogs = logs.map((log) => {
         if (log.alarmUserId && !log.alarmUserName) {
           log.alarmUserName = this.usersArray[log.alarmUserId].username
@@ -304,16 +297,17 @@ export default {
       }
       const defaultValues = {
         clientId: this.selectedClient.id,
+        logDate: new Date(),
       }
       if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
-          const log = this.displayedLogs.find((log) => log.id === Number(logId))
+          const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
+          const log = this.displayedLogs[logIndex]
           const newLog = Object.assign({}, log)
           await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
             if (this.selectedLogIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.newLogId = data.id
-              this.toggleEditable(`0-${columns[0]}`, data.id)
+              this.toggleEditable(`${logIndex}-${columns[0]}`, data.id)
             }
           })
         })
@@ -321,7 +315,6 @@ export default {
         const log = Object.assign({}, defaultValues)
         this.$api.createLog(this.headers, { log }).then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.newLogId = data.id
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
       }
