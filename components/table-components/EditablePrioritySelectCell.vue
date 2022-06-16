@@ -8,7 +8,7 @@
         tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
-        @keyup="onInputKeyup($event.key)"
+        @keyup.prevent="onInputKeyup($event.key)"
       />
       <ul
         v-if="showOptions"
@@ -19,6 +19,7 @@
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
+        @click.stop
         @blur="onBlur"
       >
         <li
@@ -125,37 +126,18 @@ export default {
       return this.computedValue === value
     },
     onBlur() {
-      this.showOptions = false
       this.$emit(events.blur)
     },
     onButtonClick() {
       this.showOptions = !this.showOptions
     },
     onInputKeyup(key) {
-      if (key === 'ArrowDown') {
-        this.onArrowDownPress()
-      } else if (key === 'ArrowUp') {
-        this.onArrowUpPress()
-      } else if (key === 'Enter') {
+      if (key === 'Enter') {
         this.onEnterPress()
       }
     },
-    onArrowDownPress() {
-      if (this.hoverIndex < this.priorityOptions.length - 1) {
-        this.hoverIndex++
-        this.scrollSelectedIntoView()
-      }
-    },
-    onArrowUpPress() {
-      if (this.hoverIndex > 0) {
-        this.hoverIndex--
-        this.scrollSelectedIntoView()
-      }
-    },
     onEnterPress() {
-      if (this.hoverIndex > -1) {
-        this.emitChange(this.priorityOptions[this.hoverIndex].value)
-      }
+      this.$emit(events.tab)
     },
     onMouseOver(idx) {
       this.hoverIndex = idx
