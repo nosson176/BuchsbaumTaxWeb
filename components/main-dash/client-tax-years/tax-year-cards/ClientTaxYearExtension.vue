@@ -3,7 +3,7 @@
     <div @click="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
-        placeholder="Date"
+        placeholder="Filed"
         type="date"
         :is-editable="isEditable('dateFiled')"
         @blur="onBlur"
