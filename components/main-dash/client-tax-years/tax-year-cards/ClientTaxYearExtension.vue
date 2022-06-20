@@ -112,7 +112,6 @@ export default {
       return this.editable === value
     },
     onBlur() {
-      console.log('extonBlue')
       this.setEditable('')
     },
     handleUpdate() {
