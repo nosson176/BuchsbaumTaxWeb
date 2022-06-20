@@ -35,7 +35,7 @@
       <EditableSelectCell
         v-model="formModel.status"
         class="font-bold ml-2 whitespace-nowrap select-cell"
-        :options="taxFormOptions"
+        :options="statusOptions"
         is-editable
         placeholder="Status"
         @blur="onBlur"

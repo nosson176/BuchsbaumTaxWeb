@@ -118,7 +118,7 @@ export default {
       return this.$api.getHeaders()
     },
     statusOptions() {
-      return this.valueTypes.tax_year_status.filter((status) => status.show)
+      return this.valueTypes.fbar_status.filter((status) => status.show)
     },
     fileTypeOptions() {
       return this.valueTypes.file_type.filter((fileType) => fileType.show)
