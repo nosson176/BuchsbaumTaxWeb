@@ -11,7 +11,7 @@
           />
             <EditableSelectCell
               v-model="year"
-              class="tracking-widest"
+              :class="{'tracking-widest': !isEditable('year')}"
               :options="yearOptions"
               :is-editable="isEditable('year')"
               @click.native="toggleEditable('year', yearData.id)"
@@ -223,6 +223,6 @@ export default {
 }
 
 .bottom-tab {
-  @apply border bg-gray-300 w-1/4 text-lg font-bold;
+  @apply border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center;
 }
 </style>

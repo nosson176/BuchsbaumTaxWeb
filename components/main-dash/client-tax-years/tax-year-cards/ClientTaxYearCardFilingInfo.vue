@@ -44,6 +44,7 @@
       <div class="col-span-2 cursor-pointer mb-1" @click="setEditable('memo')">
         <EditableTextAreaCell
           v-model="memo"
+          show-overflow
           placeholder="Memo"
           :is-editable="isEditable('memo')"
           @blur="onMemoBlur"

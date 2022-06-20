@@ -1,23 +1,23 @@
 <template>
   <div class="fbar" @click="setEditable('')">
-    <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
+    <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
       <EditableSelectCell
-        v-model="formModel.taxForm"
+        v-model="formModel.fileType"
         class="font-bold ml-2 whitespace-nowrap"
-        :options="taxFormOptions"
-        :is-editable="isEditable('taxForm')"
-        placeholder="Tax Form"
+        :options="fileTypeOptions"
+        :is-editable="isEditable('fileType')"
+        placeholder="Type"
         @blur="onBlur"
         @input="handleUpdate"
       />
     </div>
-    <div v-else class="absolute top-0 h-48 w-48">
+    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-48">
       <EditableSelectCell
-        v-model="formModel.taxForm"
+        v-model="formModel.fileType"
         class="font-bold ml-2 whitespace-nowrap select-cell"
-        :options="taxFormOptions"
+        :options="fileTypeOptions"
         is-editable
-        placeholder="Tax Form"
+        placeholder="Type"
         @blur="onBlur"
         @input="handleUpdate"
       />
@@ -33,7 +33,7 @@
         @input="handleUpdate"
       />
     </div>
-    <div v-else class="absolute top-0 left-12 h-48 w-48">
+    <div v-else v-click-outside="onBlur" class="absolute top-0 left-12 h-48 w-48">
       <EditableSelectCell
         v-model="formModel.status"
         :options="statusOptions"
@@ -54,32 +54,32 @@
         @input="handleUpdate"
       />
     </div>
-    <div class="mx-2" @click.stop="setEditable('owesFee')">
-      <EditableInput
-        v-model="formModel.owesFee"
-        :is-editable="isEditable('owesFee')"
-        :class="{'select-cell': isEditable('owesFee')}"
-        placeholder="Owes"
-        currency
-        @blur="onBlur"
-        @input="debounceUpdate"
-      />
-    </div>
-    <div @click.stop="setEditable('paidFee')">
-      <EditableInput
-        v-model="formModel.paidFee"
-        placeholder="Paid"
-        :class="{'select-cell': isEditable('paidFee')}"
-        currency
-        :is-editable="isEditable('paidFee')"
-        @blur="onBlur"
-        @input="debounceUpdate"
-      />
-    </div>
+<!--    <div class="mx-2" @click.stop="setEditable('owesFee')">-->
+<!--      <EditableInput-->
+<!--        v-model="formModel.owesFee"-->
+<!--        :is-editable="isEditable('owesFee')"-->
+<!--        :class="{'select-cell': isEditable('owesFee')}"-->
+<!--        placeholder="Owes"-->
+<!--        currency-->
+<!--        @blur="onBlur"-->
+<!--        @input="debounceUpdate"-->
+<!--      />-->
+<!--    </div>-->
+<!--    <div @click.stop="setEditable('paidFee')">-->
+<!--      <EditableInput-->
+<!--        v-model="formModel.paidFee"-->
+<!--        placeholder="Paid"-->
+<!--        :class="{'select-cell': isEditable('paidFee')}"-->
+<!--        currency-->
+<!--        :is-editable="isEditable('paidFee')"-->
+<!--        @blur="onBlur"-->
+<!--        @input="debounceUpdate"-->
+<!--      />-->
+<!--    </div>-->
     <div class="ml-2" @click.stop="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
-        placeholder="Date"
+        placeholder="Filed"
         type="date"
         :is-editable="isEditable('dateFiled')"
         @blur="onBlur"
@@ -92,10 +92,14 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
+import ClickOutside from 'vue-click-outside'
 import { models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearFbar',
+  directives: {
+    ClickOutside
+  },
   props: {
     fbar: {
       type: Object,
@@ -113,11 +117,11 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
-    taxFormOptions() {
-      return this.valueTypes.tax_form.filter((taxForm) => taxForm.show)
-    },
     statusOptions() {
-      return this.valueTypes.tax_year_status.filter((status) => status.show)
+      return this.valueTypes.fbar_status.filter((status) => status.show)
+    },
+    fileTypeOptions() {
+      return this.valueTypes.file_type.filter((fileType) => fileType.show)
     },
   },
   created() {

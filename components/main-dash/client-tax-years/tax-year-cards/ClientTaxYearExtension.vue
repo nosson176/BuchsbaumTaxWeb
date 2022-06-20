@@ -3,7 +3,7 @@
     <div @click="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
-        placeholder="Date"
+        placeholder="Filed"
         type="date"
         :is-editable="isEditable('dateFiled')"
         @blur="onBlur"
@@ -20,25 +20,45 @@
         @input="handleUpdate"
       />
     </div>
-    <div @click="setEditable('status')">
+    <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
       <EditableSelectCell
         v-model="formModel.status"
+        class="font-bold ml-2 whitespace-nowrap"
         :options="statusOptions"
-        class="whitespace-nowrap"
-        :class="{'select-cell': isEditable('status')}"
         :is-editable="isEditable('status')"
         placeholder="Status"
         @blur="onBlur"
         @input="handleUpdate"
       />
     </div>
-    <div @click="setEditable('taxForm')">
+    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
+      <EditableSelectCell
+        v-model="formModel.status"
+        class="font-bold ml-2 whitespace-nowrap select-cell"
+        :options="statusOptions"
+        is-editable
+        placeholder="Status"
+        @blur="onBlur"
+        @input="handleUpdate"
+      />
+    </div>
+    <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
       <EditableSelectCell
         v-model="formModel.taxForm"
         class="font-bold ml-2 whitespace-nowrap"
-        :class="{'select-cell': isEditable('taxForm')}"
         :options="taxFormOptions"
         :is-editable="isEditable('taxForm')"
+        placeholder="Tax Form"
+        @blur="onBlur"
+        @input="handleUpdate"
+      />
+    </div>
+    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
+      <EditableSelectCell
+        v-model="formModel.taxForm"
+        class="font-bold ml-2 whitespace-nowrap select-cell"
+        :options="taxFormOptions"
+        is-editable
         placeholder="Tax Form"
         @blur="onBlur"
         @input="handleUpdate"
@@ -49,10 +69,14 @@
 
 <script>
 import { mapState } from 'vuex'
+import ClickOutside from 'vue-click-outside'
 import { models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearExtension',
+  directives: {
+    ClickOutside
+  },
   props: {
     extension: {
       type: Object,
@@ -88,6 +112,7 @@ export default {
       return this.editable === value
     },
     onBlur() {
+      console.log('extonBlue')
       this.setEditable('')
     },
     handleUpdate() {
