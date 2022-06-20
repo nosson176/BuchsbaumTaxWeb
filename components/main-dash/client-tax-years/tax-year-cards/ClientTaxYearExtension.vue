@@ -1,5 +1,5 @@
 <template>
-  <div class="extension" @click="setEditable('')">
+  <div class="extension">
     <div @click="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
