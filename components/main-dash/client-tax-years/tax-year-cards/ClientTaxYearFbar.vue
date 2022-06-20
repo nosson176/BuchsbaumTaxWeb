@@ -11,7 +11,7 @@
         @input="handleUpdate"
       />
     </div>
-    <div v-else class="absolute top-0 h-48 w-48">
+    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-48">
       <EditableSelectCell
         v-model="formModel.fileType"
         class="font-bold ml-2 whitespace-nowrap select-cell"
@@ -33,7 +33,7 @@
         @input="handleUpdate"
       />
     </div>
-    <div v-else class="absolute top-0 left-12 h-48 w-48">
+    <div v-else v-click-outside="onBlur" class="absolute top-0 left-12 h-48 w-48">
       <EditableSelectCell
         v-model="formModel.status"
         :options="statusOptions"
@@ -92,10 +92,14 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
+import ClickOutside from 'vue-click-outside'
 import { models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearFbar',
+  directives: {
+    ClickOutside
+  },
   props: {
     fbar: {
       type: Object,
