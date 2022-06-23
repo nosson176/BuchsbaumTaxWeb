@@ -31,7 +31,9 @@
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
-        <div class="table-header xs" />
+        <div class="table-header sm">
+          {{ currentTimeSpent }}
+        </div>
       </TableHeader>
     </template>
     <template #body>
@@ -122,6 +124,12 @@
             @blur="onBlur"
           />
         </div>
+        <div :id="`${idx}-secondsSpent`" class="table-col sm">
+          <EditableInputCell
+            v-model="timeSpentOnClient"
+            :is-editable="false"
+          />
+        </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(log.id)" />
         </div>
@@ -133,7 +141,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { isToday, isPast, parseISO } from 'date-fns'
+import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
@@ -158,6 +166,9 @@ export default {
       selectedItems: {},
       filterByAlarmStatusValue: '',
       filterByAlarmStatusIndex: 0,
+      currentTimeOnLoad: 0,
+      currentTimeSpent: 0,
+      intervalId: ''
     }
   },
   computed: {
@@ -243,6 +254,18 @@ export default {
       }
       return usersArray
     },
+    timeSpentOnClient(){
+      const seconds = this.logs.secondsSpent || 0
+      const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
+      return seconds > 59 ? `${duration.hours}:${duration.minutes}` : ''
+    }
+  },
+  created(){
+    this.currentTimeOnLoad = new Date()
+    this.intervalId = setInterval(()=>this.getCurrentTimeSpent(), 1000)
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId)
   },
   methods: {
     toggleEditable(id, logId) {
@@ -362,6 +385,13 @@ export default {
     isMult(year) {
       return year?.includes('\u000B')
     },
+    getCurrentTimeSpent(){
+      const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
+      const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
+      const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
+      const ss = duration.seconds < 10 ? '0' + duration.seconds : duration.seconds
+      this.currentTimeSpent = `${hh}:${mm}:${ss}`
+    }
   },
 }
 </script>
