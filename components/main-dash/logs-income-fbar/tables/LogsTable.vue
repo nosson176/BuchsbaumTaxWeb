@@ -2,8 +2,9 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onTabPress">
     <template #header>
       <TableHeader>
-        <div class="table-header">
+        <div class="table-header flex items-start">
           <AddRowButton @click="onAddRowClick" />
+          <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
         <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
@@ -309,13 +310,16 @@ export default {
         })
       }
     },
-    onAddRowClick() {
+    onAddRowClick(addSecondsSpent) {
       if (!this.selectedClient) {
         return
       }
       const defaultValues = {
         clientId: this.selectedClient.id,
         logDate: new Date(),
+      }
+      if(addSecondsSpent){
+        defaultValues.secondsSpent = this.$store.getters[models.secondsSpentOnClient]
       }
       if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
