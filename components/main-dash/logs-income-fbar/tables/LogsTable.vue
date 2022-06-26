@@ -126,7 +126,7 @@
         </div>
         <div :id="`${idx}-secondsSpent`" class="table-col sm">
           <EditableInputCell
-            v-model="timeSpentOnClient"
+            :value="getTimeSpentOnClient(log)"
             :is-editable="false"
           />
         </div>
@@ -142,7 +142,13 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
+import {
+  models,
+  mutations,
+  secondsNeededToDisplayModal,
+  tableGroups,
+  tabs
+} from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete']
@@ -172,7 +178,8 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed,
+      models.secondsSpentOnClient]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
       const mappedLogs = logs.map((log) => {
@@ -253,16 +260,19 @@ export default {
         usersArray[user.id] = user
       }
       return usersArray
-    },
-    timeSpentOnClient(){
-      const seconds = this.logs.secondsSpent || 0
-      const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
-      return seconds > 59 ? `${duration.hours}:${duration.minutes}` : ''
     }
   },
   created(){
     this.currentTimeOnLoad = new Date()
-    this.intervalId = setInterval(()=>this.getCurrentTimeSpent(), 1000)
+    this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
+    if(this.$store.getters[models.selectedClient]?.id){
+      this.intervalId = setInterval(()=>{
+        const timeSpent = this.getCurrentTimeSpent()
+        if(timeSpent >= secondsNeededToDisplayModal){
+          this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent})
+        }
+      }, 1000)
+    }
   },
   beforeDestroy() {
     clearInterval(this.intervalId)
@@ -391,8 +401,26 @@ export default {
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
       const ss = duration.seconds < 10 ? '0' + duration.seconds : duration.seconds
       this.currentTimeSpent = `${hh}:${mm}:${ss}`
+      return this.formatToSeconds(duration)
+    },
+    formatToSeconds(duration){
+      let totalSeconds = duration.seconds
+      if(duration.minutes > 0){
+        totalSeconds += duration.minutes * 60
+      }
+      if(duration.hours > 0){
+        totalSeconds += duration.hours * 3600
+      }
+      return totalSeconds
+    },
+    getTimeSpentOnClient(log){
+      const seconds = log.secondsSpent || 0
+      const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
+      const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
+      const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
+      return seconds > 59 ? `${hh}:${mm}` : ''
     }
-  },
+  }
 }
 </script>
 

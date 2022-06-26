@@ -21,6 +21,7 @@ export const models = Object.freeze({
   clientClicked: 'clientClicked',
   phoneNumbers: 'phoneNumbers',
   clientSearchOption: 'clientSearchOption',
+  secondsSpentOnClient: 'secondsSpentOnClient'
 })
 
 // Store Mutations
@@ -73,6 +74,8 @@ export const events = Object.freeze({
   resize: 'resize',
   submit: 'submit',
   tab: 'tab',
+  switchClients: 'switchClients',
+  addLog: 'addLog'
 })
 
 export const dateformat = Object.freeze({
@@ -254,3 +257,5 @@ export const operators = Object.freeze([
   { name: '>=', value: '>=' },
   { name: '<=', value: '<=' },
 ])
+
+export const secondsNeededToDisplayModal = 15 // 600
