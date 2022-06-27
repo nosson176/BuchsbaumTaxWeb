@@ -22,7 +22,8 @@ const state = () => {
 const getters = {
   [models.appWidth]: (state) => state[models.appWidth],
   [models.secondsSpentOnClient]: (state) => state[models.secondsSpentOnClient],
-  [models.selectedClient]: (state) => state[models.selectedClient]
+  [models.selectedClient]: (state) => state[models.selectedClient],
+  [models.promptOnClientChange]: (state) => state[models.promptOnClientChange]
 }
 
 const mutations = {

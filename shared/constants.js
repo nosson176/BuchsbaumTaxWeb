@@ -21,7 +21,8 @@ export const models = Object.freeze({
   clientClicked: 'clientClicked',
   phoneNumbers: 'phoneNumbers',
   clientSearchOption: 'clientSearchOption',
-  secondsSpentOnClient: 'secondsSpentOnClient'
+  secondsSpentOnClient: 'secondsSpentOnClient',
+  promptOnClientChange: 'promptOnClientChange'
 })
 
 // Store Mutations
@@ -258,4 +259,4 @@ export const operators = Object.freeze([
   { name: '<=', value: '<=' },
 ])
 
-export const secondsNeededToDisplayModal = 15 // 600
+export const secondsNeededToDisplayModal = 600

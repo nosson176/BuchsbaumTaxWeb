@@ -10,7 +10,7 @@
         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
           <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Log Check</h3>
           <div class="mt-2">
-            <p class="text-sm text-gray-500">You have spent X on {{ currentClient.lastName }}.
+            <p class="text-sm text-gray-500">You have spent {{ formattedTimeSpent }} on {{ currentClient.lastName }}.
               Would you like to ignore this time and move on to
               {{ switchToClientName }} or pause and enter a new log?</p>
           </div>
@@ -54,10 +54,23 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.secondsSpentOnClient]),
     currentClient() {
       return this.selectedClient
-    }
+    },
+    formattedTimeSpent(){
+      const seconds = this.secondsSpentOnClient
+      const hours = seconds >= 3600 ? Math.floor(seconds / 3600) : 0
+      let minutes = 0
+      if(hours > 0){
+          minutes = Math.round((seconds % 3600) / 60)
+      }
+      else {
+        minutes = Math.round(seconds / 60)
+      }
+      const mm = (minutes < 10 ? '0' + minutes : minutes) + 'm'
+      return hours + 'h:' + mm
+    },
   },
   methods: {
     handleIgnore() {

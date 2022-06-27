@@ -122,7 +122,8 @@ export default {
       }
     },
     openChangeClientModal(client){
-      if(this.selectedClient?.id && this.$store.getters[models.secondsSpentOnClient] > 0){
+      if(this.selectedClient?.id && this.$store.getters[models.secondsSpentOnClient] > 0
+        && this.$store.getters[models.promptOnClientChange]){
         this.switchToClient = client
         this.showChangeClientModal = true
       }
@@ -143,6 +144,7 @@ export default {
         this.$api.createLog(this.headers, { log }).then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
         })
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
     }
   }
 }

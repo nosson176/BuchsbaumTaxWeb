@@ -5,6 +5,7 @@
         <div class="table-header flex items-start">
           <AddRowButton @click="onAddRowClick" />
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
+          <PlayIcon class="h-4 w-4 text-green-500 ml-2 cursor-pointer" @click.native="resetClock" />
         </div>
         <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
@@ -107,15 +108,6 @@
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
           />
         </div>
-        <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
-          <EditableDateCell
-            v-model="log.alarmTime"
-            type="time"
-            :is-editable="isEditable(`${idx}-alarmTime`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
         <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
           <EditableSelectCell
             v-model="log.alarmUserName"
@@ -152,7 +144,7 @@ import {
 } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -264,8 +256,7 @@ export default {
     }
   },
   created(){
-    this.currentTimeOnLoad = new Date()
-    this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
+    this.resetClock()
     if(this.$store.getters[models.selectedClient]?.id){
       this.intervalId = setInterval(()=>{
         const timeSpent = this.getCurrentTimeSpent()
@@ -340,6 +331,7 @@ export default {
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
       }
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
     },
     onBlur() {
       this.editableId = ''
@@ -423,6 +415,11 @@ export default {
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
       return seconds > 59 ? `${hh}:${mm}` : ''
+    },
+    resetClock(){
+      this.currentTimeOnLoad = new Date()
+      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true})
     }
   }
 }
