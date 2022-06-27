@@ -21,6 +21,7 @@ export const models = Object.freeze({
   clientClicked: 'clientClicked',
   phoneNumbers: 'phoneNumbers',
   clientSearchOption: 'clientSearchOption',
+  inbox: 'inbox'
 })
 
 // Store Mutations
@@ -73,6 +74,7 @@ export const events = Object.freeze({
   resize: 'resize',
   submit: 'submit',
   tab: 'tab',
+  newMessage: 'newMessage'
 })
 
 export const dateformat = Object.freeze({

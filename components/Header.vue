@@ -13,6 +13,7 @@
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
       </div>
       <div class="ml-auto flex space-x-4 items-center">
+        <InboxIcon class="w-4 cursor-pointer" @click.native="openInboxModal" />
         <nuxt-link :to="usersRoute">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -27,6 +28,12 @@
     <Modal :showing="showSmsModal" @hide="closeSmsModal">
       <SendSms @hide="closeSmsModal" />
     </Modal>
+    <Modal :showing="showInboxModal" @hide="closeInboxModal">
+      <Inbox @hide="closeInboxModal" @newMessage="openMessageModal" />
+    </Modal>
+    <Modal :showing="showMessageModal" @hide="closeMessageModal">
+      <SendMessage @hide="closeMessageModal" />
+    </Modal>
   </div>
 </template>
 
@@ -38,7 +45,9 @@ export default {
   name: 'Header',
   data(){
     return {
-      showSmsModal: false
+      showSmsModal: false,
+      showInboxModal: false,
+      showMessageModal: false
     }
   },
   computed: {
@@ -87,6 +96,18 @@ export default {
     },
     closeSmsModal(){
       this.showSmsModal = false
+    },
+    openInboxModal(){
+      this.showInboxModal = true
+    },
+    closeInboxModal(){
+      this.showInboxModal = false
+    },
+    openMessageModal(){
+      this.showMessageModal = true
+    },
+    closeMessageModal(){
+      this.showMessageModal = false
     }
   },
 }
