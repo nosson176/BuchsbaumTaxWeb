@@ -249,6 +249,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating value type'))
       .finally(() => getValueTypes(headers))
 
+  const updateMessage = (headers, { messageId }, value) =>
+    $axios
+      .put(`/users/current/messages/${messageId}`, value, { headers })
+      .catch(() => $toast.error('Error updating message'))
+      .finally(() => getValueTypes(headers))
+
   // DELETE
   const deleteValueType = (headers, { valueId }) =>
     $axios
@@ -312,6 +318,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateTaxPersonal,
     updateTaxYear,
     updateValueType,
+    updateMessage
   }
 
   // Inject to context as $api

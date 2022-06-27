@@ -80,6 +80,7 @@ export const events = Object.freeze({
 export const dateformat = Object.freeze({
   client: 'M/d/yy',
   server: 'yyyy-MM-dd',
+  time: 'h:mm a'
 })
 
 // Notification Types
