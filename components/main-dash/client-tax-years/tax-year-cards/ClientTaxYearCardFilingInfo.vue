@@ -348,7 +348,7 @@ export default {
       },
     },
     sum() {
-      return this.refund - this.rebate
+      return this.refund + this.rebate
     },
     sumClassObj() {
       return {
