@@ -5,7 +5,6 @@
         <div class="table-header flex items-start">
           <AddRowButton @click="onAddRowClick" />
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
-          <PlayIcon class="h-4 w-4 text-green-500 ml-2 cursor-pointer" @click.native="resetClock" />
         </div>
         <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
@@ -33,7 +32,8 @@
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
-        <div class="table-header sm">
+        <div class="table-header sm flex">
+          <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="resetClock" />
           {{ currentTimeSpent }}
         </div>
       </TableHeader>
