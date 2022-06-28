@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-80 sm:p-6 sm:pb-4">
+  <div class="h-full">
+    <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-80 sm:p-6 sm:pb-4 flex flex-col justify-between">
       <div class="sm:flex sm:items-start">
         <div
           class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10"
@@ -23,6 +23,19 @@
             />
           </div>
         </div>
+      </div>
+      <div class="flex items-center justify-end mt-2 mb-1 text-sm">
+          Send To Account:
+          <HeaderSelectOption v-model="sendToUserId" class="ml-2 overflow-visible" :options="usersArray" />
+        <button
+          type="button"
+          :disabled="isSendDisabled"
+          :class="isSendDisabled ? 'bg-green-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'"
+          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+          @click="updateUserId"
+        >
+          Send
+        </button>
       </div>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -80,10 +93,11 @@ export default {
   data() {
     return {
       isLoading: false,
+      sendToUserId: ''
     }
   },
   computed: {
-    ...mapState([models.modals, models.selectedClient]),
+    ...mapState([models.modals, models.selectedClient, models.users]),
     smartview() {
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
@@ -98,6 +112,16 @@ export default {
         this.$set(this.smartview, 'name', value)
       },
     },
+    // userId: {
+    //   get() {
+    //     console.log('get', this.smartview)
+    //     return this.usersArray.find(user => user.value === this.smartview.userId.toString()).value
+    //   },
+    //   set(value) {
+    //     this.$set(this.smartview, 'userId', value)
+    //     console.log('value', value, this.smartview)
+    //   },
+    // },
     hasLines() {
       return this.smartview.smartviewLines.length > 0
     },
@@ -112,6 +136,19 @@ export default {
         return line.fieldName !== '' && line.operator !== '' && line.searchValue !== ''
       })
     },
+    usersArray() {
+      const usersArray = []
+      for (const key in this.users) {
+        usersArray.push({
+          value: this.users[key].id.toString(),
+          name: this.users[key].username
+        })
+      }
+      return usersArray
+    },
+    isSendDisabled(){
+      return !this.sendToUserId || this.sendToUserId === this.modals.smartview.data.userId.toString()
+    }
   },
   mounted() {
     if (this.isNew) {
@@ -176,6 +213,11 @@ export default {
         data: { smartview: { showing: true, data: this.smartview } },
       })
     },
+    updateUserId(){
+      this.$set(this.smartview, 'userId', this.sendToUserId)
+      console.log('up', this.smartview)
+      this.update()
+    }
   },
 }
 </script>
