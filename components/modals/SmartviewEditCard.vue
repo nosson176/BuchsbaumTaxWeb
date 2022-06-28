@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div>
     <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-80 sm:p-6 sm:pb-4 flex flex-col justify-between">
       <div class="sm:flex sm:items-start">
         <div
@@ -26,7 +26,7 @@
       </div>
       <div class="flex items-center justify-end mt-2 mb-1 text-sm">
           Send To Account:
-          <HeaderSelectOption v-model="sendToUserId" class="ml-2 overflow-visible" :options="usersArray" />
+          <HeaderSelectOption v-model="sendToUserId" short class="ml-2" :options="usersArray" />
         <button
           type="button"
           :disabled="isSendDisabled"
@@ -112,16 +112,6 @@ export default {
         this.$set(this.smartview, 'name', value)
       },
     },
-    // userId: {
-    //   get() {
-    //     console.log('get', this.smartview)
-    //     return this.usersArray.find(user => user.value === this.smartview.userId.toString()).value
-    //   },
-    //   set(value) {
-    //     this.$set(this.smartview, 'userId', value)
-    //     console.log('value', value, this.smartview)
-    //   },
-    // },
     hasLines() {
       return this.smartview.smartviewLines.length > 0
     },
@@ -149,6 +139,10 @@ export default {
     isSendDisabled(){
       return !this.sendToUserId || this.sendToUserId === this.modals.smartview.data.userId.toString()
     }
+  },
+  created(){
+    const headers = this.$api.getHeaders()
+    this.$api.getAllUsers(headers)
   },
   mounted() {
     if (this.isNew) {
