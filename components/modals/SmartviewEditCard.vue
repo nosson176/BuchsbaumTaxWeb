@@ -209,7 +209,6 @@ export default {
     },
     updateUserId(){
       this.$set(this.smartview, 'userId', this.sendToUserId)
-      console.log('up', this.smartview)
       this.update()
     }
   },
