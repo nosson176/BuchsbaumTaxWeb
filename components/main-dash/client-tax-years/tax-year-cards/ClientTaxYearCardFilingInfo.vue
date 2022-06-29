@@ -1,7 +1,8 @@
 <template>
   <div v-if="filing" class="p-2 flex flex-grow">
     <div class="w-full text-center text-xs">
-      <div class="mb-1" @click="setEditable('taxForm')">
+      <div tabindex="0" class="mb-1" @focusin="setEditable('taxForm')"
+           @focusout="onBlur" @click="setEditable('taxForm')">
         <EditableSelectCell
           v-model="taxForm"
           :options="taxFormOptions"
@@ -11,7 +12,8 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="mb-1" @click="setEditable('statusDate')">
+      <div class="mb-1" tabindex="0"
+           @click="setEditable('statusDate')" @focusin="setEditable('statusDate')" @focusout="onBlur">
         <EditableDate
           v-model="statusDate"
           placeholder="Date"
@@ -21,7 +23,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="mb-1" @click="setEditable('status')">
+      <div class="mb-1" tabindex="0" @click="setEditable('status')" @focusin="setEditable('status')" @focusout="onBlur">
         <EditableSelectCell
           v-model="status"
           :options="statusOptions"
@@ -31,7 +33,7 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="mb-1" @click="setEditable('statusDetail')">
+      <div class="mb-1" tabindex="0" @click="setEditable('statusDetail')" @focusout="onBlur" @focusin="setEditable('statusDetail')">
         <EditableSelectCell
           v-model="statusDetail"
           :options="statusDetailOptions"
@@ -41,7 +43,8 @@
           @input="debounceUpdate"
         />
       </div>
-      <div class="col-span-2 cursor-pointer mb-1" @click="setEditable('memo')">
+      <div class="col-span-2 cursor-pointer mb-1"
+        @click="setEditable('memo')">
         <EditableTextAreaCell
           v-model="memo"
           show-overflow
@@ -62,7 +65,7 @@
             />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('owes')">
+            <div tabindex="0" @focusin="setEditable('owes')" @click="setEditable('owes')" @focusout="onBlur">
               <EditableInput
                 v-model="owes"
                 placeholder="Owes"
@@ -72,7 +75,7 @@
                 @input="debounceUpdate"
               />
             </div>
-            <div @click="setEditable('paid')">
+            <div tabindex="0" @click="setEditable('paid')" @focusout="onBlur" @focusin="setEditable('paid')">
               <EditableInput
                 v-model="paid"
                 placeholder="Paid"
@@ -94,7 +97,7 @@
             />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('owesFee')">
+            <div tabindex="0" @click="setEditable('owesFee')" @focusin="setEditable('owesFee')" @focusout="onBlur">
               <EditableInput
                 v-model="owesFee"
                 placeholder="FC"
@@ -104,7 +107,7 @@
                 @input="debounceUpdate"
               />
             </div>
-            <div @click="setEditable('paidFee')">
+            <div tabindex="0" @click="setEditable('paidFee')" @focusout="onBlur" @focusin="setEditable('paidFee')">
               <EditableInput
                 v-model="paidFee"
                 placeholder="Insur"
@@ -117,7 +120,7 @@
           </div>
         </div>
       </div>
-      <div class="mb-1" @click="setEditable('fileType')">
+      <div class="mb-1" tabindex="0" @click="setEditable('fileType')" @focusout="onBlur" @focusin="setEditable('fileType')">
         <EditableSelectCell
           v-model="fileType"
           :options="fileTypeOptions"
@@ -131,7 +134,7 @@
       <div />
       <!-- end of spacing -->
       <div class="flex justify-center mb-1">
-        <div class="mr-3" @click="setEditable('refund')">
+        <div class="mr-3" tabindex="0" @click="setEditable('refund')" @focusin="setEditable('refund')" @focusout="onBlur">
           <EditableInput
             v-model="refund"
             placeholder="Refund"
@@ -141,7 +144,7 @@
             @input="debounceUpdate"
           />
         </div>
-        <div class="ml-3" @click="setEditable('rebate')">
+        <div class="ml-3" tabindex="0" @click="setEditable('rebate')" @focusin="setEditable('rebate')" @focusout="onBlur">
           <EditableInput
             v-model="rebate"
             placeholder="Rebate"
@@ -168,7 +171,7 @@
         </div>
       </div>
       <div class="flex justify-center mb-1">
-        <div class="mr-3" @click="setEditable('deliveryContact')">
+        <div class="mr-3" tabindex="0" @click="setEditable('deliveryContact')" @focusin="setEditable('deliveryContact')" @focusout="onBlur">
           <EditableSelectCell
             v-model="deliveryContact"
             :options="contactTypeOptions"
@@ -178,7 +181,8 @@
             @input="debounceUpdate"
           />
         </div>
-        <div class="ml-3" @click="setEditable('secondDeliveryContact')">
+        <div class="ml-3" tabindex="0" @click="setEditable('secondDeliveryContact')"
+             @focusin="setEditable('secondDeliveryContact')" @focusout="onBlur">
           <EditableSelectCell
             v-model="secondDeliveryContact"
             :options="contactTypeOptions"
@@ -189,7 +193,7 @@
           />
         </div>
       </div>
-      <div @click="setEditable('dateFiled')">
+      <div tabindex="0" @click="setEditable('dateFiled')" @focusin="setEditable('dateFiled')" @focusout="onBlur">
         <EditableDate
           v-model="dateFiled"
           placeholder="Date Filed"
