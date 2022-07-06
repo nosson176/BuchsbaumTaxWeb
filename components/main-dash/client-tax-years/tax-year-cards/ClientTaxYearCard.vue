@@ -20,7 +20,7 @@
             />
         </h3>
       </div>
-      <div class="flex flex-grow h-3/4 w-full overflow-visible">
+      <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
           class="extension-column"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
@@ -36,7 +36,7 @@
               @input="addFilingType" />
           </div>
           <div v-for="(extension, idx) in extensions"  :key="idx">
-            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" />
+            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" @delete="startDelete" />
           </div>
         </div>
         <div class="flex flex-col overflow-auto h-full w-full">
@@ -52,7 +52,7 @@
           <div class="mt-2" />
         </div>
         <div class="fbar-container">
-          <ClientTaxYearFbar v-if="fbar" :fbar="fbar" class="fbar-column" />
+          <ClientTaxYearFbar v-if="fbar" :key="fbar.id" :fbar="fbar" class="fbar-column" @delete="startDelete" />
         </div>
       </div>
       <div class="flex">
@@ -70,6 +70,9 @@
         </div>
       </div>
     </div>
+    <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+      <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
+    </Modal>
   </div>
 </template>
 
@@ -91,7 +94,9 @@ export default {
       activeFilingType: 0,
       editableId: '',
       editableYearId: '',
-      selectedFileType: ''
+      selectedFileType: '',
+      deleteId: '',
+      showDeleteModal: false
     }
   },
   computed: {
@@ -143,9 +148,12 @@ export default {
     extensionColumnHeight(){
       let style = ''
       if(this.extensions.length > 1){
-        style = 'min-height:' + 250 * this.extensions.length + 'px'
+        style = 'min-height:' + 270 * this.extensions.length + 'px'
       }
       return style
+    },
+    headers() {
+      return this.$api.getHeaders()
     }
   },
   created(){
@@ -199,7 +207,22 @@ export default {
     updateIrsHistory(){
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
       this.handleUpdate()
-    }
+    },
+    startDelete(id){
+      this.deleteId = id
+      this.showDeleteModal = true
+    },
+    deleteItem() {
+      this.$api.deleteFiling(this.headers,
+        { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
+        this.showDeleteModal = false
+        this.deleteId = ''
+      })
+    },
+    closeDeleteModal() {
+      this.showDeleteModal = false
+      this.deleteId = ''
+    },
   },
 }
 </script>

@@ -1,5 +1,6 @@
 <template>
   <div class="fbar" @click="setEditable('')">
+    <DeleteButton class="mx-1" @click="emitDelete" />
     <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
       <EditableSelectCell
         v-model="formModel.fileType"
@@ -54,28 +55,6 @@
         @input="handleUpdate"
       />
     </div>
-<!--    <div class="mx-2" @click.stop="setEditable('owesFee')">-->
-<!--      <EditableInput-->
-<!--        v-model="formModel.owesFee"-->
-<!--        :is-editable="isEditable('owesFee')"-->
-<!--        :class="{'select-cell': isEditable('owesFee')}"-->
-<!--        placeholder="Owes"-->
-<!--        currency-->
-<!--        @blur="onBlur"-->
-<!--        @input="debounceUpdate"-->
-<!--      />-->
-<!--    </div>-->
-<!--    <div @click.stop="setEditable('paidFee')">-->
-<!--      <EditableInput-->
-<!--        v-model="formModel.paidFee"-->
-<!--        placeholder="Paid"-->
-<!--        :class="{'select-cell': isEditable('paidFee')}"-->
-<!--        currency-->
-<!--        :is-editable="isEditable('paidFee')"-->
-<!--        @blur="onBlur"-->
-<!--        @input="debounceUpdate"-->
-<!--      />-->
-<!--    </div>-->
     <div class="ml-2" @click.stop="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
@@ -93,7 +72,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import ClickOutside from 'vue-click-outside'
-import { models } from '~/shared/constants'
+import { events, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearFbar',
@@ -147,6 +126,9 @@ export default {
     debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
+    emitDelete() {
+      this.$emit(events.delete, this.fbar.id)
+    }
   }
 }
 </script>

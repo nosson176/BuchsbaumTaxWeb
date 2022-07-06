@@ -1,5 +1,6 @@
 <template>
   <div class="border-t border-gray-300 space-x-1 flex shadow">
+    <DeleteButton />
     <Tab
       v-for="(filing, idx) in filings"
       :key="idx"

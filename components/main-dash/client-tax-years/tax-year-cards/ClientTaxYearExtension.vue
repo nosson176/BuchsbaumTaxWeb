@@ -1,5 +1,6 @@
 <template>
   <div class="extension">
+    <DeleteButton class="mx-1" @click="emitDelete" />
     <div @click="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"
@@ -70,7 +71,7 @@
 <script>
 import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
-import { models } from '~/shared/constants'
+import { events, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearExtension',
@@ -120,6 +121,9 @@ export default {
         { clientId: this.selectedClient.id, filingId: this.extension.id },
         this.formModel
       )
+    },
+    emitDelete() {
+      this.$emit(events.delete, this.extension.id)
     }
   }
 }
