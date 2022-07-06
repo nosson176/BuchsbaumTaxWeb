@@ -54,38 +54,6 @@
         @input="handleUpdate"
       />
     </div>
-<!--    <div class="mx-2" @click.stop="setEditable('owesFee')">-->
-<!--      <EditableInput-->
-<!--        v-model="formModel.owesFee"-->
-<!--        :is-editable="isEditable('owesFee')"-->
-<!--        :class="{'select-cell': isEditable('owesFee')}"-->
-<!--        placeholder="Owes"-->
-<!--        currency-->
-<!--        @blur="onBlur"-->
-<!--        @input="debounceUpdate"-->
-<!--      />-->
-<!--    </div>-->
-<!--    <div @click.stop="setEditable('paidFee')">-->
-<!--      <EditableInput-->
-<!--        v-model="formModel.paidFee"-->
-<!--        placeholder="Paid"-->
-<!--        :class="{'select-cell': isEditable('paidFee')}"-->
-<!--        currency-->
-<!--        :is-editable="isEditable('paidFee')"-->
-<!--        @blur="onBlur"-->
-<!--        @input="debounceUpdate"-->
-<!--      />-->
-<!--    </div>-->
-    <div class="ml-2" @click.stop="setEditable('dateFiled')">
-      <EditableDate
-        v-model="formModel.dateFiled"
-        placeholder="Filed"
-        type="date"
-        :is-editable="isEditable('dateFiled')"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
-    </div>
   </div>
 </template>
 
