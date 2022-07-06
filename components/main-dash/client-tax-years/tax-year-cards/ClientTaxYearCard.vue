@@ -20,7 +20,7 @@
             />
         </h3>
       </div>
-      <div class="flex flex-grow h-3/4 w-full overflow-visible">
+      <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
           class="extension-column"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
@@ -51,8 +51,10 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
           <div class="mt-2" />
         </div>
-        <div class="fbar-container">
-          <ClientTaxYearFbar v-if="fbar" :fbar="fbar" class="fbar-column" />
+        <div class="fbar-column" :style="fbarColumnHeight">
+          <div v-for="fbar in fbars" :key="fbar.id" class="fbars-container">
+            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" />
+          </div>
         </div>
       </div>
       <div class="flex">
@@ -125,14 +127,14 @@ export default {
     extensions(){
       return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.ext)
     },
-    fbar(){
-      return this.filings.find(filing => filing.filingType === filingTypes.fbar)
+    fbars(){
+      return this.filings.filter(filing => filing.filingType === filingTypes.fbar)
     },
     filingOptions(){
       const types = [{value: '', name: ''}]
       for(const type in filingTypes){
         const hideExtension = type === filingTypes.ext && this.extensions.length > 2
-        const hideFbar = type === filingTypes.fbar && this.fbar
+        const hideFbar = type === filingTypes.fbar && this.fbars.length > 1
         if(hideExtension || hideFbar) {
           continue
         }
@@ -146,6 +148,10 @@ export default {
         style = 'min-height:' + 250 * this.extensions.length + 'px'
       }
       return style
+    },
+    fbarColumnHeight(){
+      const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
+      return 'min-height:' + 250 * longestItemLength + 'px'
     }
   },
   created(){
@@ -211,15 +217,18 @@ export default {
   width: 30px;
 }
 
-.fbar-container {
+.fbar-column {
   @apply border pt-5;
 
   width: 30px;
 }
 
-.fbar-column {
+.fbar-item {
   @apply flex mt-2;
+}
 
+.fbars-container {
+  min-height: 250px;
 }
 
 .bottom-tab {
