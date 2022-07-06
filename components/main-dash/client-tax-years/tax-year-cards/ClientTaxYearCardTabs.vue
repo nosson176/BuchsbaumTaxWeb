@@ -1,13 +1,12 @@
 <template>
   <div class="border-t border-gray-300 space-x-1 flex shadow">
-    <DeleteButton />
     <Tab
       v-for="(filing, idx) in filings"
       :key="idx"
       :active="idx === activeFilingIdx"
-      @click="handleClick(idx)"
     >
-      <span v-if="displayTab(filing)" class="uppercase">{{ filing.filingType }}</span>
+      <DeleteButton v-if="displayTab(filing)" class="mr-1" small @click="emitDelete(filing.id)" />
+      <span v-if="displayTab(filing)" class="uppercase" @click="handleClick(idx)">{{ filing.filingType }}</span>
     </Tab>
   </div>
 </template>
@@ -40,6 +39,9 @@ export default {
     },
     displayTab(filing) {
       return filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
+    },
+    emitDelete(id){
+      this.$emit(events.delete, id)
     }
   }
 }

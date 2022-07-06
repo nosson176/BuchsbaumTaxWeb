@@ -46,6 +46,7 @@
             :tax-year="yearData"
             @change="updateOnClient"
             @click="setActiveFilingType"
+            @delete="startDelete"
           />
           <div class="mt-2" />
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
