@@ -20,7 +20,7 @@
             />
         </h3>
       </div>
-      <div class="flex flex-grow h-3/4 w-full overflow-visible">
+      <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
           class="extension-column"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
