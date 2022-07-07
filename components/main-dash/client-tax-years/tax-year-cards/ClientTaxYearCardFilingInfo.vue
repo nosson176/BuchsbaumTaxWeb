@@ -1,7 +1,17 @@
 <template>
   <div v-if="filing" class="p-2 flex flex-grow">
     <div class="w-full text-center text-xs">
-      <div class="mb-1" @click="setEditable('taxForm')">
+      <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('state')">
+        <EditableSelectCell
+          v-model="state"
+          :options="stateOptions"
+          :is-editable="isEditable('state')"
+          placeholder="State"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
+      <div v-else class="mb-1" @click="setEditable('taxForm')">
         <EditableSelectCell
           v-model="taxForm"
           :options="taxFormOptions"
@@ -235,6 +245,14 @@ export default {
         this.formModel.taxForm = newValue
       },
     },
+    state: {
+      get() {
+        return this.formModel.state
+      },
+      set(newValue) {
+        this.formModel.state = newValue
+      },
+    },
     status: {
       get() {
         return this.formModel.status
@@ -391,6 +409,9 @@ export default {
     },
     taxFormOptions() {
       return this.valueTypes.tax_form.filter((taxForm) => taxForm.show)
+    },
+    stateOptions(){
+      return this.valueTypes.state
     },
     statusOptions() {
       if (this.filingType === filingTypes.fbar) {
