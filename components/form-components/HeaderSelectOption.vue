@@ -179,10 +179,7 @@ export default {
         this.$refs.filter?.focus()
         this.computedValue = ''
       }
-    },
-    clientClicked() {
-      this.computedValue = ''
-    },
+    }
   },
   methods: {
     onInputClick() {
