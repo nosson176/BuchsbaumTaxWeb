@@ -183,7 +183,9 @@ export default {
       }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then(() => {
+      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then((res) => {
+        // Change the selectedsmartview to the updated value
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: res })
         this.isLoading = false
         this.emitHide()
       })
