@@ -1,6 +1,6 @@
 <template>
   <div class="extension">
-    <DeleteButton class="mx-1" @click="emitDelete" />
+    <DeleteButton class="mx-1" small @click="emitDelete" />
     <div @click="setEditable('dateFiled')">
       <EditableDate
         v-model="formModel.dateFiled"

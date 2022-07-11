@@ -1,6 +1,6 @@
 <template>
   <div class="fbar" @click="setEditable('')">
-    <DeleteButton class="mx-1" @click="emitDelete" />
+    <DeleteButton class="mx-1" small @click="emitDelete" />
     <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
       <EditableSelectCell
         v-model="formModel.fileType"
