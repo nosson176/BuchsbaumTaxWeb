@@ -6,7 +6,14 @@
       :active="idx === activeFilingIdx"
     >
       <DeleteButton v-if="displayTab(filing)" class="mr-1" small @click="emitDelete(filing.id)" />
-      <span v-if="displayTab(filing)" class="uppercase" @click="handleClick(idx)">{{ filing.filingType }}</span>
+      <span
+        v-if="displayTab(filing)"
+        class="tab-text"
+        :class="{'text-gray-300': !filing.taxForm && !filing.state}"
+        @click="handleClick(idx)"
+      >
+        {{ filing.taxForm || filing.state || filing.filingType }}
+      </span>
     </Tab>
   </div>
 </template>
@@ -47,4 +54,12 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.tab-text {
+  @apply uppercase;
+
+  font-size: 10px;
+}
+
+</style>

@@ -35,7 +35,7 @@
               :options="filingOptions"
               @input="addFilingType" />
           </div>
-          <div v-for="(extension, idx) in extensions"  :key="idx">
+          <div v-for="(extension) in extensions"  :key="extension.id">
             <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" @delete="startDelete" />
           </div>
         </div>
@@ -52,8 +52,10 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
           <div class="mt-2" />
         </div>
-        <div class="fbar-container">
-          <ClientTaxYearFbar v-if="fbar" :key="fbar.id" :fbar="fbar" class="fbar-column" @delete="startDelete" />
+        <div class="fbar-column" :style="fbarColumnHeight">
+          <div v-for="fbar in fbars" :key="fbar.id" class="fbars-container">
+            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" @delete="startDelete" />
+          </div>
         </div>
       </div>
       <div class="flex">
@@ -131,14 +133,14 @@ export default {
     extensions(){
       return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.ext)
     },
-    fbar(){
-      return this.filings.find(filing => filing.filingType === filingTypes.fbar)
+    fbars(){
+      return this.filings.filter(filing => filing.filingType === filingTypes.fbar)
     },
     filingOptions(){
       const types = [{value: '', name: ''}]
       for(const type in filingTypes){
         const hideExtension = type === filingTypes.ext && this.extensions.length > 2
-        const hideFbar = type === filingTypes.fbar && this.fbar
+        const hideFbar = type === filingTypes.fbar && this.fbars.length > 1
         if(hideExtension || hideFbar) {
           continue
         }
@@ -155,6 +157,10 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+    fbarColumnHeight(){
+      const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
+      return 'min-height:' + 250 * longestItemLength + 'px'
     }
   },
   created(){
@@ -235,15 +241,18 @@ export default {
   width: 30px;
 }
 
-.fbar-container {
+.fbar-column {
   @apply border pt-5;
 
   width: 30px;
 }
 
-.fbar-column {
+.fbar-item {
   @apply flex mt-2;
+}
 
+.fbars-container {
+  min-height: 250px;
 }
 
 .bottom-tab {
