@@ -5,7 +5,6 @@
       :key="idx"
       :active="idx === activeFilingIdx"
     >
-      <DeleteButton v-if="displayTab(filing)" class="mr-1" small @click="emitDelete(filing.id)" />
       <span
         v-if="displayTab(filing)"
         class="tab-text"
@@ -46,9 +45,6 @@ export default {
     },
     displayTab(filing) {
       return filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
-    },
-    emitDelete(id){
-      this.$emit(events.delete, id)
     }
   }
 }
