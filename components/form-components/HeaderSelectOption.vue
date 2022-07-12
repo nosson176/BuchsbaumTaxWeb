@@ -177,7 +177,7 @@ export default {
     showOptions(value) {
       if (value) {
         this.$refs.filter?.focus()
-        this.computedValue = ''
+        this.filterOptionsValue = ''
       }
     }
   },
