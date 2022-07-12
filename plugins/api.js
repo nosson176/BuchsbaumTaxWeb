@@ -114,6 +114,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error loading phone numbers'))
 
+  const getInbox = (headers) =>
+    $axios
+      .get('/users/current/messages', {
+        headers,
+        loading: models.inbox,
+        store: models.inbox,
+      })
+      .catch(() => $toast.error('Error loading messages'))
+
   // CREATE
   const createLog = (headers, { log }) =>
     $axios.post('/logs', log, { headers }).catch(() => $toast.error('Error creating log'))
@@ -159,6 +168,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const sendSms = (headers, { sms }) =>
     $axios.post('/sms/send', sms, { headers }).catch(() => $toast.error('Error sending SMS'))
+
+  const sendMessage = (headers, { messageObj }) =>
+    $axios.post('/users/current/messages', messageObj, { headers }).catch(() => $toast.error('Error sending message'))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
@@ -237,6 +249,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating value type'))
       .finally(() => getValueTypes(headers))
 
+  const updateMessage = (headers, { messageId }, value) =>
+    $axios
+      .put(`/users/current/messages/${messageId}`, value, { headers })
+      .catch(() => $toast.error('Error updating message'))
+      .finally(() => getValueTypes(headers))
+
   // DELETE
   const deleteValueType = (headers, { valueId }) =>
     $axios
@@ -283,9 +301,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getValueTaxGroups,
     getValueTypes,
     getPhoneNumbers,
+    getInbox,
     login,
     signout,
     sendSms,
+    sendMessage,
     updateChecklist,
     updateClient,
     updateContact,
@@ -298,6 +318,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateTaxPersonal,
     updateTaxYear,
     updateValueType,
+    updateMessage
   }
 
   // Inject to context as $api

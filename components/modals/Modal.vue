@@ -20,7 +20,8 @@
         <transition name="card-fade">
           <div
             v-if="showing"
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle"
+            :class="{'sm:max-w-lg sm:w-full': !fullWidth}"
           >
             <slot />
           </div>
@@ -40,6 +41,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    fullWidth: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     emitHide() {
