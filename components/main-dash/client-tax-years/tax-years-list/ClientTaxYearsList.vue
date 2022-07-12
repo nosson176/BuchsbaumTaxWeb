@@ -30,9 +30,6 @@ export default {
         const displayedTaxYearData = Object.assign(
           Object.values(this.selectedClient.taxYearData)
             .filter((taxYear) => this.showArchived === taxYear.archived)
-            .sort((a, b) => {
-              return a.year < b.year ? 1 : -1
-            })
             .map((taxYear) => {
               const shown = this.shownTaxYears.includes(taxYear.id)
               return { shown, ...taxYear }

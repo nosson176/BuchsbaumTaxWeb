@@ -2,8 +2,9 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent="onTabPress">
     <template #header>
       <TableHeader>
-        <div class="table-header">
+        <div class="table-header flex items-start">
           <AddRowButton @click="onAddRowClick" />
+          <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
         <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
@@ -31,7 +32,10 @@
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
-        <div class="table-header xs" />
+        <div class="table-header sm flex">
+          <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="resetClock" />
+          {{ currentTimeSpent }}
+        </div>
       </TableHeader>
     </template>
     <template #body>
@@ -104,15 +108,6 @@
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
           />
         </div>
-        <div :id="`${idx}-alarmTime`" class="table-col xs" @click="toggleEditable(`${idx}-alarmTime`, log.id)">
-          <EditableDateCell
-            v-model="log.alarmTime"
-            type="time"
-            :is-editable="isEditable(`${idx}-alarmTime`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
-        </div>
         <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
           <EditableSelectCell
             v-model="log.alarmUserName"
@@ -120,6 +115,12 @@
             :options="userOptions"
             @input="debounceUpdate"
             @blur="onBlur"
+          />
+        </div>
+        <div :id="`${idx}-secondsSpent`" class="table-col sm">
+          <EditableInputCell
+            :value="getTimeSpentOnClient(log)"
+            :is-editable="false"
           />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
@@ -133,11 +134,17 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { isToday, isPast, parseISO } from 'date-fns'
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
+import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
+import {
+  models,
+  mutations,
+  secondsNeededToDisplayModal,
+  tableGroups,
+  tabs
+} from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -158,10 +165,14 @@ export default {
       selectedItems: {},
       filterByAlarmStatusValue: '',
       filterByAlarmStatusIndex: 0,
+      currentTimeOnLoad: 0,
+      currentTimeSpent: 0,
+      intervalId: ''
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed]),
+    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed,
+      models.secondsSpentOnClient]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
       const mappedLogs = logs.map((log) => {
@@ -242,7 +253,21 @@ export default {
         usersArray[user.id] = user
       }
       return usersArray
-    },
+    }
+  },
+  created(){
+    this.resetClock()
+    if(this.$store.getters[models.selectedClient]?.id){
+      this.intervalId = setInterval(()=>{
+        const timeSpent = this.getCurrentTimeSpent()
+        if(timeSpent >= secondsNeededToDisplayModal){
+          this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent})
+        }
+      }, 1000)
+    }
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId)
   },
   methods: {
     toggleEditable(id, logId) {
@@ -276,13 +301,16 @@ export default {
         })
       }
     },
-    onAddRowClick() {
+    onAddRowClick(addSecondsSpent) {
       if (!this.selectedClient) {
         return
       }
       const defaultValues = {
         clientId: this.selectedClient.id,
         logDate: new Date(),
+      }
+      if(addSecondsSpent){
+        defaultValues.secondsSpent = this.$store.getters[models.secondsSpentOnClient]
       }
       if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
@@ -303,6 +331,7 @@ export default {
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
       }
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
     },
     onBlur() {
       this.editableId = ''
@@ -362,7 +391,37 @@ export default {
     isMult(year) {
       return year?.includes('\u000B')
     },
-  },
+    getCurrentTimeSpent(){
+      const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
+      const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
+      const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
+      const ss = duration.seconds < 10 ? '0' + duration.seconds : duration.seconds
+      this.currentTimeSpent = `${hh}:${mm}:${ss}`
+      return this.formatToSeconds(duration)
+    },
+    formatToSeconds(duration){
+      let totalSeconds = duration.seconds
+      if(duration.minutes > 0){
+        totalSeconds += duration.minutes * 60
+      }
+      if(duration.hours > 0){
+        totalSeconds += duration.hours * 3600
+      }
+      return totalSeconds
+    },
+    getTimeSpentOnClient(log){
+      const seconds = log.secondsSpent || 0
+      const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
+      const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
+      const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
+      return seconds > 59 ? `${hh}:${mm}` : ''
+    },
+    resetClock(){
+      this.currentTimeOnLoad = new Date()
+      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true})
+    }
+  }
 }
 </script>
 

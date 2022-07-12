@@ -6,7 +6,13 @@
       :active="idx === activeFilingIdx"
       @click="handleClick(idx)"
     >
-      <span v-if="displayTab(filing)" class="uppercase">{{ filing.filingType }}</span>
+      <span
+        v-if="displayTab(filing)"
+        class="tab-text"
+        :class="{'text-gray-300': !filing.taxForm && !filing.state}"
+      >
+        {{ filing.taxForm || filing.state || filing.filingType }}
+      </span>
     </Tab>
   </div>
 </template>
@@ -44,4 +50,12 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.tab-text {
+  @apply uppercase;
+
+  font-size: 10px;
+}
+
+</style>

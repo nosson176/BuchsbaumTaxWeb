@@ -7,7 +7,7 @@
     <div v-if="count >= 0" class="text-white rounded-full bg-indigo-600 py-0.5 px-1.5 text-xs">
       {{ count }}
     </div>
-    <div class="text-gray-500 inline-flex items-center py-0.5 px-1.5 text-sm font-medium">
+    <div class="text-gray-500 inline-flex items-center py-0.5 px-1 text-sm font-medium">
       <slot />
     </div>
   </div>
