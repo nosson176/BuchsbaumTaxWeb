@@ -137,7 +137,7 @@ export default {
       return usersArray
     },
     isSendDisabled(){
-      return !this.sendToUserId || this.sendToUserId === this.modals.smartview.data.userId.toString()
+      return !this.sendToUserId || this.sendToUserId === this.modals.smartview.data.userId?.toString()
     },
     selectedSmView() {
       return this.selectedSmartview
