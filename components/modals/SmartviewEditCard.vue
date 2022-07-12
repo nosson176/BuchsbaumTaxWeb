@@ -97,7 +97,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.modals, models.selectedClient, models.users]),
+    ...mapState([models.modals, models.selectedClient, models.users, models.selectedSmartview]),
     smartview() {
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
@@ -138,7 +138,13 @@ export default {
     },
     isSendDisabled(){
       return !this.sendToUserId || this.sendToUserId === this.modals.smartview.data.userId?.toString()
-    }
+    },
+    selectedSmView() {
+      return this.selectedSmartview
+    },
+    hasSelectedSmartview() {
+      return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
+    },
   },
   created(){
     const headers = this.$api.getHeaders()
@@ -183,7 +189,11 @@ export default {
       }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
-      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then(() => {
+      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then((res) => {
+        // Change the selectedsmartview to the updated value
+        if(this.hasSelectedSmartview){
+          this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: res })
+        }
         this.isLoading = false
         this.emitHide()
       })

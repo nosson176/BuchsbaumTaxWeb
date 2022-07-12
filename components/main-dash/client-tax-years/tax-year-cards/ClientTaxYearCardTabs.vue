@@ -8,7 +8,7 @@
     >
       <span
         v-if="displayTab(filing)"
-        class="uppercase text-xs"
+        class="tab-text"
         :class="{'text-gray-300': !filing.taxForm && !filing.state}"
       >
         {{ filing.taxForm || filing.state || filing.filingType }}
@@ -50,4 +50,12 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.tab-text {
+  @apply uppercase;
+
+  font-size: 10px;
+}
+
+</style>

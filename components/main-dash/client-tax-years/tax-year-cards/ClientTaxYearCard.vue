@@ -35,7 +35,7 @@
               :options="filingOptions"
               @input="addFilingType" />
           </div>
-          <div v-for="(extension, idx) in extensions"  :key="idx">
+          <div v-for="(extension) in extensions"  :key="extension.id">
             <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" />
           </div>
         </div>
