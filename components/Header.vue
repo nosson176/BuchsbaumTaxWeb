@@ -13,7 +13,12 @@
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
       </div>
       <div class="ml-auto flex space-x-4 items-center">
-        <InboxIcon class="w-4 cursor-pointer" @click.native="openInboxModal" />
+        <div class="relative flex cursor-pointer" @click="openInboxModal">
+          <InboxIcon class="w-4 cursor-pointer" />
+          <div v-if="hasUnreadMessages" class="absolute top-2 right-2 rounded-full bg-red-500">
+            <BellIcon class="h-3 w-3" />
+          </div>
+        </div>
         <nuxt-link :to="usersRoute">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -28,7 +33,7 @@
     <Modal :showing="showSmsModal" @hide="closeSmsModal">
       <SendSms @hide="closeSmsModal" />
     </Modal>
-    <Modal :showing="showInboxModal" @hide="closeInboxModal">
+    <Modal full-width :showing="showInboxModal" @hide="closeInboxModal">
       <Inbox @hide="closeInboxModal" @newMessage="openMessageModal" />
     </Modal>
     <Modal :showing="showMessageModal" @hide="closeMessageModal">
@@ -51,7 +56,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clientsHistory]),
+    ...mapState([models.clientsHistory, models.inbox]),
     mappedClientHistory() {
       if (this.clientsHistoryLoaded) {
         return Object.values(this.clientsHistory).map((item) => {
@@ -83,6 +88,25 @@ export default {
         name: routes.users,
       }
     },
+    headers() {
+      return this.$api.getHeaders()
+    },
+    inboxMessages(){
+      return this.inbox
+    },
+    hasUnreadMessages(){
+      let unread = false
+      for(const key in this.inboxMessages){
+        if(this.inboxMessages[key].status === 'unread'){
+          unread = true
+          break
+        }
+      }
+      return unread
+    }
+  },
+  created(){
+    this.loadInbox()
   },
   methods: {
     getSelectedClient(selectedClientName) {
@@ -108,6 +132,9 @@ export default {
     },
     closeMessageModal(){
       this.showMessageModal = false
+    },
+    async loadInbox(){
+      await this.$api.getInbox(this.headers)
     }
   },
 }
