@@ -1,6 +1,7 @@
 <template>
   <div v-if="filing" class="p-2 flex flex-grow">
-    <div class="w-full text-center text-xs">
+    <div class="w-full text-center text-xs relative">
+      <DeleteButton class="delete-btn" small @click="emitDelete(filing.id)" />
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('state')">
         <EditableSelectCell
           v-model="state"
@@ -216,7 +217,7 @@
 <script>
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
-import { filingTypes, models } from '~/shared/constants'
+import { events, filingTypes, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -500,9 +501,20 @@ export default {
         newNumber = input
       }
       return newNumber
+    },
+    emitDelete(id){
+      this.$emit(events.delete, id)
     }
-  },
+  }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.delete-btn {
+  @apply absolute;
+
+  top: -5px;
+}
+
+</style>

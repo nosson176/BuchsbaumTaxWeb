@@ -1,5 +1,6 @@
 <template>
   <div class="fbar" @click="setEditable('')">
+    <DeleteButton class="mx-1" small @click="emitDelete" />
     <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
       <EditableSelectCell
         v-model="formModel.fileType"
@@ -54,6 +55,16 @@
         @input="handleUpdate"
       />
     </div>
+    <div class="ml-2" @click.stop="setEditable('dateFiled')">
+      <EditableDate
+        v-model="formModel.dateFiled"
+        placeholder="Filed"
+        type="date"
+        :is-editable="isEditable('dateFiled')"
+        @blur="onBlur"
+        @input="handleUpdate"
+      />
+    </div>
   </div>
 </template>
 
@@ -61,7 +72,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import ClickOutside from 'vue-click-outside'
-import { models } from '~/shared/constants'
+import { events, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearFbar',
@@ -115,6 +126,9 @@ export default {
     debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
+    emitDelete() {
+      this.$emit(events.delete, this.fbar.id)
+    }
   }
 }
 </script>

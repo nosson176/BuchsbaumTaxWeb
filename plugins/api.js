@@ -274,6 +274,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error deleting smartview'))
       .finally(() => getSmartviews(headers))
 
+  const deleteFiling = (headers, { filingId, clientId }) =>
+    $axios
+      .delete(`/filings/${filingId}`, { headers })
+      .catch(() => $toast.error('Error deleting filing'))
+      .finally(() => getClientData(headers, clientId))
+
   const api = {
     createChecklist,
     createClient,
@@ -291,6 +297,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     deleteValueType,
     deleteClient,
     deleteSmartview,
+    deleteFiling,
     getAllClientFees,
     getAllUsers,
     getClientData,

@@ -36,7 +36,7 @@
               @input="addFilingType" />
           </div>
           <div v-for="(extension) in extensions"  :key="extension.id">
-            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" />
+            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" @delete="startDelete" />
           </div>
         </div>
         <div class="flex flex-col overflow-auto h-full w-full">
@@ -48,12 +48,12 @@
             @click="setActiveFilingType"
           />
           <div class="mt-2" />
-          <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" />
+          <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
           <div class="mt-2" />
         </div>
         <div class="fbar-column" :style="fbarColumnHeight">
           <div v-for="fbar in fbars" :key="fbar.id" class="fbars-container">
-            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" />
+            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" @delete="startDelete" />
           </div>
         </div>
       </div>
@@ -72,6 +72,9 @@
         </div>
       </div>
     </div>
+    <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+      <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
+    </Modal>
   </div>
 </template>
 
@@ -93,7 +96,9 @@ export default {
       activeFilingType: 0,
       editableId: '',
       editableYearId: '',
-      selectedFileType: ''
+      selectedFileType: '',
+      deleteId: '',
+      showDeleteModal: false
     }
   },
   computed: {
@@ -145,9 +150,12 @@ export default {
     extensionColumnHeight(){
       let style = ''
       if(this.extensions.length > 1){
-        style = 'min-height:' + 250 * this.extensions.length + 'px'
+        style = 'min-height:' + 270 * this.extensions.length + 'px'
       }
       return style
+    },
+    headers() {
+      return this.$api.getHeaders()
     },
     fbarColumnHeight(){
       const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
@@ -205,7 +213,23 @@ export default {
     updateIrsHistory(){
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
       this.handleUpdate()
-    }
+    },
+    startDelete(id){
+      this.deleteId = id
+      this.showDeleteModal = true
+    },
+    deleteItem() {
+      this.$api.deleteFiling(this.headers,
+        { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
+        this.showDeleteModal = false
+        this.deleteId = ''
+        this.activeFilingType = this.filings.length > 0 ? 1 : 0
+      })
+    },
+    closeDeleteModal() {
+      this.showDeleteModal = false
+      this.deleteId = ''
+    },
   },
 }
 </script>

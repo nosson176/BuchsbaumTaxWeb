@@ -4,12 +4,12 @@
       v-for="(filing, idx) in filings"
       :key="idx"
       :active="idx === activeFilingIdx"
-      @click="handleClick(idx)"
     >
       <span
         v-if="displayTab(filing)"
         class="tab-text"
         :class="{'text-gray-300': !filing.taxForm && !filing.state}"
+        @click="handleClick(idx)"
       >
         {{ filing.taxForm || filing.state || filing.filingType }}
       </span>
