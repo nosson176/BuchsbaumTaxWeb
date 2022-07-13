@@ -223,6 +223,7 @@ export default {
         { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
         this.showDeleteModal = false
         this.deleteId = ''
+        this.activeFilingType = this.filings.length > 0 ? 1 : 0
       })
     },
     closeDeleteModal() {
