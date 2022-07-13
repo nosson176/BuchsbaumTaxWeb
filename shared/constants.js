@@ -21,6 +21,7 @@ export const models = Object.freeze({
   clientClicked: 'clientClicked',
   phoneNumbers: 'phoneNumbers',
   clientSearchOption: 'clientSearchOption',
+  inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
   promptOnClientChange: 'promptOnClientChange'
 })
@@ -75,6 +76,7 @@ export const events = Object.freeze({
   resize: 'resize',
   submit: 'submit',
   tab: 'tab',
+  newMessage: 'newMessage',
   switchClients: 'switchClients',
   addLog: 'addLog'
 })
@@ -82,6 +84,7 @@ export const events = Object.freeze({
 export const dateformat = Object.freeze({
   client: 'M/d/yy',
   server: 'yyyy-MM-dd',
+  time: 'h:mm a'
 })
 
 // Notification Types

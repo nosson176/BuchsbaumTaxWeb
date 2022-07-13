@@ -9,7 +9,7 @@
       @click="selectSmartview(smartview)"
     >
       <div class="flex items-center space-x-2">
-        <PenIcon class="h-3 w-3" @click="showEdit(smartview)" />
+        <PenIcon class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
         <span class="font-medium text-gray-900 group-hover:text-white">{{ smartview.name }}</span>
       </div>
       <div class="flex space-x-1">

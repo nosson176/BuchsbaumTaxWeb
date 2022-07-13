@@ -45,9 +45,7 @@ export default {
         return  this.clientSearchOption.length > 0 ? this.clientSearchOption : ''
       },
       set(value) {
-         if(value){
-          this.$store.commit(mutations.setModelResponse, { model: models.clientSearchOption, data: value})
-         }
+        this.$store.commit(mutations.setModelResponse, { model: models.clientSearchOption, data: value})
       }
     },
     clientCount() {
