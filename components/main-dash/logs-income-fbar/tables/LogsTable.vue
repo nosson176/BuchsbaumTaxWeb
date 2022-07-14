@@ -396,8 +396,7 @@ export default {
       const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
-      const ss = duration.seconds < 10 ? '0' + duration.seconds : duration.seconds
-      this.currentTimeSpent = `${hh}:${mm}:${ss}`
+      this.currentTimeSpent = `${hh}:${mm}`
       return this.formatToSeconds(duration)
     },
     formatToSeconds(duration){
