@@ -32,7 +32,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations, tabs } from '~/shared/constants'
+import { events, models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -145,6 +145,7 @@ export default {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
         })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
+      this.$emit(events.resetClock)
     }
   }
 }

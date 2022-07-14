@@ -332,6 +332,7 @@ export default {
         })
       }
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
+      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
     },
     onBlur() {
       this.editableId = ''
