@@ -117,10 +117,12 @@
             @blur="onBlur"
           />
         </div>
-        <div :id="`${idx}-secondsSpent`" class="table-col sm">
+        <div :id="`${idx}-secondsSpent`" class="table-col sm" @click="toggleEditable(`${idx}-secondsSpent`, log.id)">
           <EditableInputCell
-            :value="getTimeSpentOnClient(log)"
-            :is-editable="false"
+            v-model="log.timeSpent"
+            :is-editable="isEditable(`${idx}-secondsSpent`)"
+            @blur="updateSecondsSpent(log)"
+            @keypress.native.enter="updateSecondsSpent(log)"
           />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
@@ -144,7 +146,7 @@ import {
 } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -179,6 +181,7 @@ export default {
         if (log.alarmUserId && !log.alarmUserName) {
           log.alarmUserName = this.usersArray[log.alarmUserId].username
         }
+        log.timeSpent = this.getTimeSpentOnClient(log)
         return log
       })
       return searchArrOfObjs(mappedLogs, this.searchInput)
@@ -286,7 +289,6 @@ export default {
           log.alarmUserId = this.users[key].id
         }
       }
-
       this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
     },
     onDeleteClick(logId) {
@@ -420,6 +422,17 @@ export default {
       this.currentTimeOnLoad = new Date()
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true})
+    },
+    updateSecondsSpent(log){
+      const timeArr = log.timeSpent.split(":")
+      if(timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {
+        log.timeSpent = this.getTimeSpentOnClient(log)
+        console.log(log.timeSpent)
+        return false
+      }
+      log.secondsSpent = timeArr[0] * 3600 + timeArr[1] * 60
+      this.handleUpdate()
+      this.onBlur()
     }
   }
 }
