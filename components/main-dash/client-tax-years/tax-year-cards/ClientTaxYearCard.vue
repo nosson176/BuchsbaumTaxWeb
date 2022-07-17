@@ -36,7 +36,7 @@
               @input="addFilingType" />
           </div>
           <div v-for="(extension) in extensions"  :key="extension.id">
-            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" @delete="startDelete" />
+            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" @delete="startDelete($event, 'filing')" />
           </div>
         </div>
         <div class="flex flex-col overflow-auto h-full w-full">
@@ -53,7 +53,7 @@
         </div>
         <div class="fbar-column" :style="fbarColumnHeight">
           <div v-for="fbar in fbars" :key="fbar.id" class="fbars-container">
-            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" @delete="startDelete" />
+            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" @delete="startDelete($event, 'filing')" />
           </div>
         </div>
       </div>
@@ -73,7 +73,7 @@
       </div>
     </div>
     <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
-      <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
+      <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteItem" />
     </Modal>
   </div>
 </template>
@@ -98,7 +98,8 @@ export default {
       editableYearId: '',
       selectedFileType: '',
       deleteId: '',
-      showDeleteModal: false
+      showDeleteModal: false,
+      deleteTypeLabel: ''
     }
   },
   computed: {
@@ -214,8 +215,9 @@ export default {
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
       this.handleUpdate()
     },
-    startDelete(id){
+    startDelete(id, deleteLabel){
       this.deleteId = id
+      this.deleteTypeLabel = deleteLabel
       this.showDeleteModal = true
     },
     deleteItem() {

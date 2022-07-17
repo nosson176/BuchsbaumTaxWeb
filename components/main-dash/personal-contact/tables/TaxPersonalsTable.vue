@@ -119,7 +119,7 @@
           />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(personal.id)" />
+          <DeleteButton small @click="onDeleteClick(personal)" />
         </div>
       </TableRow>
     </template>
@@ -224,15 +224,15 @@ export default {
         personal
       )
     },
-    onDeleteClick(personalId) {
+    onDeleteClick(personalObj) {
       if (this.showArchived) {
-        const personal = this.displayedPersonals.find((personal) => personal.id === personalId)
+        const personal = this.displayedPersonals.find((personal) => personal.id === personalObj.id)
         personal.archived = false
-        this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId }, personal)
+        this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: personalObj.id }, personal)
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: personalId, type: tabs.tax_personals } } },
+          data: { delete: { showing: true, data: { id: personalObj.id, type: tabs.tax_personals, label: personalObj.firstName } } },
         })
       }
     },

@@ -76,7 +76,7 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews } } },
+          data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews, label: smartview.name } } },
         })
       }
     },
