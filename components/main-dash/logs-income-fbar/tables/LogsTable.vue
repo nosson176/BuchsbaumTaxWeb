@@ -137,13 +137,7 @@
 import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
-import {
-  models,
-  mutations,
-  secondsNeededToDisplayModal,
-  tableGroups,
-  tabs
-} from '~/shared/constants'
+import { models, mutations, secondsNeededToDisplayModal, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'secondsSpent', 'delete']
@@ -169,12 +163,18 @@ export default {
       filterByAlarmStatusIndex: 0,
       currentTimeOnLoad: 0,
       currentTimeSpent: 0,
-      intervalId: ''
+      intervalId: '',
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.users, models.search, models.cmdPressed,
-      models.secondsSpentOnClient]),
+    ...mapState([
+      models.selectedClient,
+      models.valueTypes,
+      models.users,
+      models.search,
+      models.cmdPressed,
+      models.secondsSpentOnClient,
+    ]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
       const mappedLogs = logs.map((log) => {
@@ -256,15 +256,15 @@ export default {
         usersArray[user.id] = user
       }
       return usersArray
-    }
+    },
   },
-  created(){
+  created() {
     this.resetClock()
-    if(this.$store.getters[models.selectedClient]?.id){
-      this.intervalId = setInterval(()=>{
+    if (this.$store.getters[models.selectedClient]?.id) {
+      this.intervalId = setInterval(() => {
         const timeSpent = this.getCurrentTimeSpent()
-        if(timeSpent >= secondsNeededToDisplayModal){
-          this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent})
+        if (timeSpent >= secondsNeededToDisplayModal) {
+          this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent })
         }
       }, 1000)
     }
@@ -311,7 +311,7 @@ export default {
         clientId: this.selectedClient.id,
         logDate: new Date(),
       }
-      if(addSecondsSpent){
+      if (addSecondsSpent) {
         defaultValues.secondsSpent = this.$store.getters[models.secondsSpentOnClient]
       }
       if (this.isCopyingLogs) {
@@ -333,8 +333,8 @@ export default {
           this.toggleEditable(`0-${columns[0]}`, data.id)
         })
       }
-      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
-      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
+      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur() {
       this.editableId = ''
@@ -394,47 +394,46 @@ export default {
     isMult(year) {
       return year?.includes('\u000B')
     },
-    getCurrentTimeSpent(){
+    getCurrentTimeSpent() {
       const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
       this.currentTimeSpent = `${hh}:${mm}`
       return this.formatToSeconds(duration)
     },
-    formatToSeconds(duration){
+    formatToSeconds(duration) {
       let totalSeconds = duration.seconds
-      if(duration.minutes > 0){
+      if (duration.minutes > 0) {
         totalSeconds += duration.minutes * 60
       }
-      if(duration.hours > 0){
+      if (duration.hours > 0) {
         totalSeconds += duration.hours * 3600
       }
       return totalSeconds
     },
-    getTimeSpentOnClient(log){
+    getTimeSpentOnClient(log) {
       const seconds = log.secondsSpent || 0
       const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
       return seconds > 59 ? `${hh}:${mm}` : ''
     },
-    resetClock(){
+    resetClock() {
       this.currentTimeOnLoad = new Date()
-      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0})
-      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true})
+      this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true })
     },
-    updateSecondsSpent(log){
-      const timeArr = log.timeSpent.split(":")
-      if(timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {
+    updateSecondsSpent(log) {
+      const timeArr = log.timeSpent.split(':')
+      if (timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {
         log.timeSpent = this.getTimeSpentOnClient(log)
-        console.log(log.timeSpent)
         return false
       }
       log.secondsSpent = timeArr[0] * 3600 + timeArr[1] * 60
       this.handleUpdate()
       this.onBlur()
-    }
-  }
+    },
+  },
 }
 </script>
 
