@@ -13,20 +13,28 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(memo, idx) in checklistMemo" :key="idx" class="pr-1">
-        <div class="table-col bg-gray-200 mr-1">
-          <ClickCell>{{ idx + 1 }}</ClickCell>
-        </div>
-        <div class="table-col">
-          <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" />
-        </div>
-        <div class="table-col w-full" @click="toggleEditable(memo.id)">
-          <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @input="debounceUpdate" />
-        </div>
-        <div class="table-col">
-          <DeleteButton @click="deleteValue(memo.id)" />
-        </div>
-      </TableRow>
+      <div @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
+        <TableRow
+          v-for="(memo, idx) in checklistMemo"
+          :key="idx"
+          draggable
+          class="pr-1"
+          @dragstart="startDrag($event, memo, idx)"
+        >
+          <div class="table-col bg-gray-200 mr-1">
+            <ClickCell>{{ idx + 1 }}</ClickCell>
+          </div>
+          <div class="table-col">
+            <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" />
+          </div>
+          <div class="table-col w-full" @click="toggleEditable(memo.id)">
+            <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @input="debounceUpdate" />
+          </div>
+          <div class="table-col">
+            <DeleteButton @click="deleteValue(memo.id)" />
+          </div>
+        </TableRow>
+      </div>
       <Modal :showing="showDelete" @hide="closeDeleteModal">
         <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
       </Modal>
@@ -91,6 +99,24 @@ export default {
     closeDeleteModal() {
       this.showDelete = false
       this.deleteId = ''
+    },
+    startDrag(evt, item, idx) {
+      evt.dataTransfer.dropEffect = 'move'
+      evt.dataTransfer.effectAllowed = 'move'
+      evt.dataTransfer.setData('itemID', item.id)
+      evt.dataTransfer.setData('idx', idx)
+    },
+    onDrop(evt, endIdx) {
+      const itemID = Number(evt.dataTransfer.getData('itemID'))
+      const startIdx = evt.dataTransfer.getData('idx')
+      const item = this.checklistMemo.find((item) => item.id === itemID)
+      this.reorderList(startIdx, endIdx, item)
+    },
+    reorderList(startIdx, endIdx, item) {
+      // this.checklistMemo.splice(startIdx, 1)
+      // this.checklistMemo.splice(endIdx, 0, item)
+      item.sortOrder = endIdx
+      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
     },
   },
 }
