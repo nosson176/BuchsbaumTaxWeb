@@ -23,7 +23,7 @@ export const models = Object.freeze({
   clientSearchOption: 'clientSearchOption',
   inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
-  promptOnClientChange: 'promptOnClientChange'
+  promptOnClientChange: 'promptOnClientChange',
 })
 
 // Store Mutations
@@ -78,13 +78,18 @@ export const events = Object.freeze({
   tab: 'tab',
   newMessage: 'newMessage',
   switchClients: 'switchClients',
-  addLog: 'addLog'
+  addLog: 'addLog',
+  resetClock: 'resetClock',
+  dragstart: 'dragstart',
+  drop: 'drop',
+  dragover: 'dragover',
+  dragenter: 'dragenter',
 })
 
 export const dateformat = Object.freeze({
   client: 'M/d/yy',
   server: 'yyyy-MM-dd',
-  time: 'h:mm a'
+  time: 'h:mm a',
 })
 
 // Notification Types
