@@ -14,7 +14,7 @@
           <div class="mt-2">
             <p class="text-sm text-gray-500">
               Are you sure you want to
-              <span class="capitalize">{{ updateToValue }}</span> {{ contentLabel }}?
+              <span class="capitalize">{{ updateToValue }}</span> {{ label }}?
             </p>
           </div>
         </div>
@@ -49,7 +49,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      contentLabel: 'item'
     }
   },
   computed: {
@@ -66,7 +65,7 @@ export default {
     type() {
       return this.modalData.type
     },
-    label(){
+    label() {
       return this.modalData.label || 'item'
     },
     headers() {
@@ -198,9 +197,6 @@ export default {
       return item
     },
   },
-  created(){
-    this.contentLabel = this.label || 'item'
-  },
   methods: {
     handleDelete() {
       this.isLoading = true
@@ -280,7 +276,7 @@ export default {
     updateClientSideData() {
       this.isLoading = false
       this.emitHide()
-    }
+    },
   },
 }
 </script>
