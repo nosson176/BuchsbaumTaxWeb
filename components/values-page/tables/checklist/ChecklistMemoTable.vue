@@ -42,11 +42,10 @@
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { models } from '~/shared/constants'
+import { models, TRANSITION_NAME } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
 const TABLE_TYPE = 'checklist_memo'
-const TRANSITION_NAME = 'flip-list'
 
 export default {
   name: 'ChecklistMemoTable',

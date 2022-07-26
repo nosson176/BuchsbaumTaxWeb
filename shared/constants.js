@@ -268,3 +268,5 @@ export const operators = Object.freeze([
 ])
 
 export const secondsNeededToDisplayModal = 600
+
+export const TRANSITION_NAME = 'flip-list'
