@@ -13,28 +13,24 @@
       </TableHeader>
     </template>
     <template #body>
-      <div @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
-        <TableRow
-          v-for="(memo, idx) in checklistMemo"
-          :key="idx"
-          draggable
-          class="pr-1"
-          @dragstart="startDrag($event, memo, idx)"
-        >
-          <div class="table-col bg-gray-200 mr-1">
-            <ClickCell>{{ idx + 1 }}</ClickCell>
-          </div>
-          <div class="table-col">
-            <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" />
-          </div>
-          <div class="table-col w-full" @click="toggleEditable(memo.id)">
-            <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @input="debounceUpdate" />
-          </div>
-          <div class="table-col">
-            <DeleteButton @click="deleteValue(memo.id)" />
-          </div>
-        </TableRow>
-      </div>
+      <draggable :value="checklistMemo" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+        <transition-group type="transition" :name="transitionName">
+          <TableRow v-for="(memo, idx) in checklistMemo" :key="memo.id" class="pr-1">
+            <div class="table-col bg-gray-200 mr-1">
+              <ClickCell>{{ idx + 1 }}</ClickCell>
+            </div>
+            <div class="table-col">
+              <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" />
+            </div>
+            <div class="table-col w-full" @click="toggleEditable(memo.id)">
+              <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @input="debounceUpdate" />
+            </div>
+            <div class="table-col">
+              <DeleteButton @click="deleteValue(memo.id)" />
+            </div>
+          </TableRow>
+        </transition-group>
+      </draggable>
       <Modal :showing="showDelete" @hide="closeDeleteModal">
         <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
       </Modal>
@@ -45,18 +41,26 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
+import draggable from 'vuedraggable'
 import { models } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
 const TABLE_TYPE = 'checklist_memo'
+const TRANSITION_NAME = 'flip-list'
 
 export default {
   name: 'ChecklistMemoTable',
+  components: { draggable },
   data() {
     return {
       editableId: null,
       showDelete: false,
       deleteId: '',
+      dragActive: false,
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'ghost',
+      },
     }
   },
   computed: {
@@ -69,6 +73,12 @@ export default {
     },
     debounceUpdate() {
       return debounce(this.handleUpdate, 500)
+    },
+    transitionName() {
+      if (!this.dragActive) {
+        return TRANSITION_NAME
+      }
+      return null
     },
   },
   methods: {
@@ -100,22 +110,12 @@ export default {
       this.showDelete = false
       this.deleteId = ''
     },
-    startDrag(evt, item, idx) {
-      evt.dataTransfer.dropEffect = 'move'
-      evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('itemID', item.id)
-      evt.dataTransfer.setData('idx', idx)
+    startDrag() {
+      this.dragActive = true
     },
-    onDrop(evt, endIdx) {
-      const itemID = Number(evt.dataTransfer.getData('itemID'))
-      const startIdx = evt.dataTransfer.getData('idx')
-      const item = this.checklistMemo.find((item) => item.id === itemID)
-      this.reorderList(startIdx, endIdx, item)
-    },
-    reorderList(startIdx, endIdx, item) {
-      // this.checklistMemo.splice(startIdx, 1)
-      // this.checklistMemo.splice(endIdx, 0, item)
-      item.sortOrder = endIdx
+    onDrop(evt) {
+      const item = this.checklistMemo[evt.oldIndex]
+      item.sortOrder = evt.newIndex
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
     },
   },
