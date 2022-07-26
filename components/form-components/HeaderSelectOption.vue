@@ -132,8 +132,8 @@ export default {
     },
     addIcon: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -179,7 +179,7 @@ export default {
         this.$refs.filter?.focus()
         this.filterOptionsValue = ''
       }
-    }
+    },
   },
   methods: {
     onInputClick() {
