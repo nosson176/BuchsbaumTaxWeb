@@ -14,7 +14,7 @@
           </div>
           <div v-if="hasLines" class="mt-4 shadow">
             <SmartviewLine
-              v-for="(line, idx) in smartview.smartviewLines"
+              v-for="(line, idx) in smartviewLines"
               :key="idx"
               :line="line"
               :idx="idx"
@@ -144,6 +144,9 @@ export default {
     },
     hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
+    },
+    smartviewLines() {
+      return [...this.smartview.smartviewLines].sort((a, b) => a.groupNum - b.groupNum)
     },
   },
   created() {
