@@ -117,6 +117,7 @@ export default {
       const item = this.checklistMemo[evt.oldIndex]
       item.sortOrder = evt.newIndex
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
+      this.dragActive = false
     },
   },
 }
