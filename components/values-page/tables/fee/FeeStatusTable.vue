@@ -13,21 +13,30 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(type, idx) in feeStatus" :key="idx" class="pr-1" :class="isSelected(type) ? 'selected' : ''">
-        <div class="table-col bg-gray-200 mr-1">
-          <ClickCell @click="toggleSelected(type)">{{ idx + 1 }}</ClickCell>
-        </div>
-        <div class="table-col">
-          <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
-        </div>
-        <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
-          <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
-          <span class="pr-1">{{ detailCount(type.id) }}</span>
-        </div>
-        <div class="table-col">
-          <DeleteButton @click="deleteValue(type.id)" />
-        </div>
-      </TableRow>
+      <draggable :value="feeStatus" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+        <transition-group type="transition" :name="transitionName">
+          <TableRow
+            v-for="(type, idx) in feeStatus"
+            :key="type.id"
+            class="pr-1"
+            :class="isSelected(type) ? 'selected' : ''"
+          >
+            <div class="table-col bg-gray-200 mr-1">
+              <ClickCell @click="toggleSelected(type)">{{ idx + 1 }}</ClickCell>
+            </div>
+            <div class="table-col">
+              <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
+            </div>
+            <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
+              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+              <span class="pr-1">{{ detailCount(type.id) }}</span>
+            </div>
+            <div class="table-col">
+              <DeleteButton @click="deleteValue(type.id)" />
+            </div>
+          </TableRow>
+        </transition-group>
+      </draggable>
       <Modal :showing="showDelete" @hide="closeDeleteModal">
         <DeleteType @hide="closeDeleteModal" @delete="deleteItem" />
       </Modal>
@@ -38,7 +47,8 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { events, models } from '~/shared/constants'
+import draggable from 'vuedraggable'
+import { events, models, TRANSITION_NAME } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
 const TABLE_TYPE = 'fee_status'
@@ -46,12 +56,18 @@ const SECONDARY_TABLE_TYPE = 'fee_status_detail'
 
 export default {
   name: 'FeeStatusTable',
+  components: { draggable },
   data() {
     return {
       editableId: null,
       showDelete: false,
       deleteId: '',
       selectedId: null,
+      dragActive: false,
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'ghost',
+      },
     }
   },
   computed: {
@@ -67,6 +83,12 @@ export default {
     },
     debounceUpdate() {
       return debounce(this.handleUpdate, 500)
+    },
+    transitionName() {
+      if (!this.dragActive) {
+        return TRANSITION_NAME
+      }
+      return null
     },
   },
   methods: {
@@ -107,6 +129,15 @@ export default {
     },
     isSelected(type) {
       return this.selectedId === type.id
+    },
+    startDrag() {
+      this.dragActive = true
+    },
+    onDrop(evt) {
+      const item = this.feeStatus[evt.oldIndex]
+      item.sortOrder = evt.newIndex
+      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
+      this.dragActive = false
     },
   },
 }
