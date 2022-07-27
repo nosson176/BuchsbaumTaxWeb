@@ -78,7 +78,8 @@ export const events = Object.freeze({
   tab: 'tab',
   newMessage: 'newMessage',
   switchClients: 'switchClients',
-  addLog: 'addLog'
+  addLog: 'addLog',
+  resetClock: 'resetClock'
 })
 
 export const dateformat = Object.freeze({
