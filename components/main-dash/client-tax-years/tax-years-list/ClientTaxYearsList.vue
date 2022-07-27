@@ -5,7 +5,7 @@
       :key="taxYear.id"
       :idx="idx"
       :tax-year="taxYear"
-      @delete="onDeleteClick"
+      @delete="onDeleteClick($event, taxYear)"
       @change="toggleItemShown($event, taxYear)"
     />
   </div>
@@ -83,7 +83,7 @@ export default {
         })
       }
     },
-    onDeleteClick(taxYearId) {
+    onDeleteClick(taxYearId, taxYear) {
       if (this.showArchived) {
         const taxYear = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId)
         taxYear.archived = false
@@ -93,7 +93,7 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years } } },
+          data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years, label: taxYear.year } } },
         })
       }
     },

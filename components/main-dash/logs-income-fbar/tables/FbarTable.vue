@@ -468,7 +468,7 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: fbarId, type: tabs.fbar } } },
+          data: { delete: { showing: true, data: { id: fbarId, type: tabs.fbar, label: 'filing' } } },
         })
       }
     },

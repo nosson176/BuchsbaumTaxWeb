@@ -90,7 +90,7 @@
           />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(contact.id)" />
+          <DeleteButton small @click="onDeleteClick(contact)" />
         </div>
       </TableRow>
     </template>
@@ -179,15 +179,15 @@ export default {
       const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId)
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
     },
-    onDeleteClick(contactId) {
+    onDeleteClick(contactObj) {
       if (this.showArchived) {
-        const contact = this.displayedContacts.find((contact) => contact.id === contactId)
+        const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
         contact.archived = false
-        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId }, contact)
+        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId:contactObj.id }, contact)
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: contactId, type: tabs.contact } } },
+          data: { delete: { showing: true, data: { id: contactObj.id, type: tabs.contact, label: contactObj.contactType } } },
         })
       }
     },
