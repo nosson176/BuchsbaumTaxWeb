@@ -100,7 +100,7 @@ export default {
       return this.valueTypes.fbar_status.filter((status) => status.show)
     },
     fileTypeOptions() {
-      return this.valueTypes.file_type.filter((fileType) => fileType.show)
+      return this.valueTypes.fbar_filing.filter((fileType) => fileType.show)
     },
   },
   created() {
