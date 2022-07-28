@@ -23,7 +23,7 @@ export const models = Object.freeze({
   clientSearchOption: 'clientSearchOption',
   inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
-  promptOnClientChange: 'promptOnClientChange'
+  promptOnClientChange: 'promptOnClientChange',
 })
 
 // Store Mutations
@@ -79,13 +79,17 @@ export const events = Object.freeze({
   newMessage: 'newMessage',
   switchClients: 'switchClients',
   addLog: 'addLog',
-  resetClock: 'resetClock'
+  resetClock: 'resetClock',
+  dragstart: 'dragstart',
+  drop: 'drop',
+  dragover: 'dragover',
+  dragenter: 'dragenter',
 })
 
 export const dateformat = Object.freeze({
   client: 'M/d/yy',
   server: 'yyyy-MM-dd',
-  time: 'h:mm a'
+  time: 'h:mm a',
 })
 
 // Notification Types
@@ -264,3 +268,5 @@ export const operators = Object.freeze([
 ])
 
 export const secondsNeededToDisplayModal = 600
+
+export const TRANSITION_NAME = 'flip-list'
