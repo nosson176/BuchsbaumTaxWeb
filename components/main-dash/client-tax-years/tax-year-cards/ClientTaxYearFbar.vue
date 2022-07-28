@@ -55,16 +55,6 @@
         @input="handleUpdate"
       />
     </div>
-    <div class="ml-2" @click.stop="setEditable('dateFiled')">
-      <EditableDate
-        v-model="formModel.dateFiled"
-        placeholder="Filed"
-        type="date"
-        :is-editable="isEditable('dateFiled')"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
-    </div>
   </div>
 </template>
 

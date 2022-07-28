@@ -42,10 +42,10 @@
         <div class="flex flex-col overflow-auto h-full w-full">
           <ClientTaxYearCardTabs
             :filings="filings"
-            :active-filing-idx="activeFilingType"
+            :active-filing-idx="activeFilingIndex"
             :tax-year="yearData"
             @change="updateOnClient"
-            @click="setActiveFilingType"
+            @click="setActiveFilingIndex"
           />
           <div class="mt-2" />
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
@@ -93,7 +93,7 @@ export default {
   },
   data() {
     return {
-      activeFilingType: 0,
+      activeFilingIndex: 0,
       editableId: '',
       editableYearId: '',
       selectedFileType: '',
@@ -118,11 +118,11 @@ export default {
     filings() {
       const clonedData = JSON.parse(JSON.stringify(this.yearData))
       return clonedData.filings
-        .filter(filing => filing.filingType !== filingTypes.ext)
+        .filter(filing => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar)
         .sort((a,b) => a.filingType > b.filingType ? 1 : -1)
     },
     displayedFilingInfo() {
-      return this.filings[this.activeFilingType]
+      return this.filings[this.activeFilingIndex]
     },
     yearOptions() {
       return this.$store.state.valueTypes.year_name.filter((year) => year.show)
@@ -134,7 +134,7 @@ export default {
       return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.ext)
     },
     fbars(){
-      return this.filings.filter(filing => filing.filingType === filingTypes.fbar)
+      return this.yearData.filings.filter(filing => filing.filingType === filingTypes.fbar)
     },
     filingOptions(){
       const types = [{value: '', name: ''}]
@@ -163,12 +163,9 @@ export default {
       return 'min-height:' + 250 * longestItemLength + 'px'
     }
   },
-  created(){
-    this.setActiveFilingToFederal()
-  },
   methods: {
-    setActiveFilingType(filingType) {
-      this.activeFilingType = filingType
+    setActiveFilingIndex(filingIndex) {
+      this.activeFilingIndex = filingIndex
     },
     updateOnClient() {
       const headers = this.$api.getHeaders()
@@ -207,10 +204,6 @@ export default {
         this.updateOnClient()
       })
     },
-    setActiveFilingToFederal(){
-      const federalIndex = this.filings.findIndex(filing => filing.filingType === filingTypes.federal)
-      this.activeFilingType = federalIndex > -1 ? federalIndex : 0
-    },
     updateIrsHistory(){
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
       this.handleUpdate()
@@ -225,7 +218,7 @@ export default {
         { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
         this.showDeleteModal = false
         this.deleteId = ''
-        this.activeFilingType = this.filings.length > 0 ? 1 : 0
+        this.activeFilingIndex = 0
       })
     },
     closeDeleteModal() {
