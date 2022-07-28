@@ -3,7 +3,7 @@
     <div class="grid flex-grow overflow-hidden p-2">
       <div class="shadow rounded flex flex-col client-list bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
-        <ClientList :show-archived="showArchivedClients" />
+        <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />
       </div>
       <div class="shadow rounded flex flex-col fees-checklists bg-white">
         <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
@@ -15,7 +15,7 @@
       </div>
       <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
         <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
-        <LogsIncomeFbarBody :current-tab="currentLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody ref="logsBodyRef" :current-tab="currentLogsIncomeFbarTab" />
       </div>
       <div class="shadow rounded flex flex-col personal-contact bg-white">
         <PersonalContactHeader @click="switchPersonalsTab" />
@@ -143,6 +143,11 @@ export default {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
       })
     },
+    resetClock(){
+      if(this.$refs.logsBodyRef){
+        this.$refs.logsBodyRef.resetClock()
+      }
+    }
   },
 }
 </script>

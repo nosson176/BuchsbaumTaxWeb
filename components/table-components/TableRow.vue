@@ -4,6 +4,7 @@
     class="flex items-center bg-gray-50"
     :class="idx % 2 === 0 ? 'even' : ''"
     @dragstart="emitDragstart($event)"
+    @click="emitClick"
   >
     <slot />
   </div>
@@ -27,6 +28,9 @@ export default {
   methods: {
     emitDragstart(evt) {
       this.$emit(events.dragstart, evt)
+    },
+    emitClick(e) {
+      this.$emit(events.click, e)
     },
   },
 }

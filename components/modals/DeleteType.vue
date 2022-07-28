@@ -8,9 +8,9 @@
           <AlertIcon class="text-red-600" />
         </div>
         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-          <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Delete Item</h3>
+          <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900 capitalize">Delete {{ label }}</h3>
           <div class="mt-2">
-            <p class="text-sm text-gray-500">Are you sure you want to Delete item?</p>
+            <p class="text-sm text-gray-500">Are you sure you want to Delete {{ label }}?</p>
           </div>
         </div>
       </div>
@@ -37,6 +37,12 @@
 import { events } from '~/shared/constants'
 export default {
   name: 'DeleteType',
+  props:{
+    label:{
+      type: String,
+      default: 'item'
+    }
+  },
   methods: {
     handleDelete() {
       this.$emit(events.delete)

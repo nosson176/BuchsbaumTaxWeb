@@ -6,7 +6,7 @@
     </div>
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
     <KeepAlive v-else>
-      <LogsTable v-if="showLogs" :show-archived="!showActiveLogs" />
+      <LogsTable v-if="showLogs" ref="logsTableRef" :show-archived="!showActiveLogs" />
       <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
       <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
     </KeepAlive>
@@ -118,6 +118,11 @@ export default {
         this.showActiveFbar = value
       }
     },
+    resetClock(){
+      if(this.$refs.logsTableRef){
+        this.$refs.logsTableRef.resetClock()
+      }
+    }
   },
 }
 </script>

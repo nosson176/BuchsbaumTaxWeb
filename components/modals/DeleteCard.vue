@@ -14,7 +14,7 @@
           <div class="mt-2">
             <p class="text-sm text-gray-500">
               Are you sure you want to
-              <span class="capitalize">{{ updateToValue }}</span> item?
+              <span class="capitalize">{{ updateToValue }}</span> {{ label }}?
             </p>
           </div>
         </div>
@@ -64,6 +64,9 @@ export default {
     },
     type() {
       return this.modalData.type
+    },
+    label() {
+      return this.modalData.label || 'item'
     },
     headers() {
       return this.$api.getHeaders()
