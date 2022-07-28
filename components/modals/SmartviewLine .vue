@@ -7,7 +7,7 @@
       <HeaderSelectOption v-model="fieldName" :options="smartviewOptions" />
     </div>
     <div class="col-span-2">
-      <HeaderSelectOption v-model="operator" short :options="operators" />
+      <HeaderSelectOption v-model="operator" :options="operators" />
     </div>
     <div class="col-span-3">
       <Input v-model="searchValue" />
