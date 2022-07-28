@@ -29,7 +29,7 @@
       <Modal :showing="showDeleteModal">
         <DeleteCard @hide="closeDeleteModal" />
       </Modal>
-      <Modal full-width :showing="showSmartviewEditModal" @hide="closeSmartviewEditModal">
+      <Modal :showing="showSmartviewEditModal" @hide="closeSmartviewEditModal">
         <SmartviewEditCard :deleting="isLoading" @hide="closeSmartviewEditModal" @delete="confirmDelete" />
       </Modal>
       <Modal :showing="showDeleteConfirmation" @hide="closeDeleteModal">
