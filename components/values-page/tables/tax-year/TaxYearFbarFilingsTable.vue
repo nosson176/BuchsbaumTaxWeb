@@ -95,7 +95,7 @@ export default {
       const value = Object.assign({}, valueTypeValueConstructor, {
         key: TABLE_TYPE,
         value: '',
-        sortOrder: this.valueTypes[TABLE_TYPE].length,
+        sortOrder: this.valueTypes[TABLE_TYPE].length + 1,
       })
       this.$api.createValueType(this.headers, { value })
     },
