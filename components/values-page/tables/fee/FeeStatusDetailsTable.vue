@@ -99,7 +99,11 @@ export default {
       this.showDelete = true
     },
     onAddRowClick() {
-      const value = Object.assign({}, valueTypeValueConstructor, { key: TABLE_TYPE, value: '' })
+      const value = Object.assign({}, valueTypeValueConstructor, {
+        key: TABLE_TYPE,
+        value: '',
+        sortOrder: this.valueTypes[TABLE_TYPE].length,
+      })
       this.$api.createValueType(this.headers, { value })
     },
     handleUpdate() {
