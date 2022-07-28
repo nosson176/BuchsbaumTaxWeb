@@ -21,7 +21,7 @@
           <div
             v-if="showing"
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full"
-            :class="{ 'sm:max-w-lg ': !fullWidth }"
+            :class="modalMaxWidth"
           >
             <slot />
           </div>
@@ -44,6 +44,21 @@ export default {
     fullWidth: {
       type: Boolean,
       default: false,
+    },
+    wide: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    modalMaxWidth() {
+      if (this.fullWidth) {
+        return ''
+      } else if (this.wide) {
+        return 'sm:max-w-2xl'
+      } else {
+        return 'sm:max-w-lg'
+      }
     },
   },
   methods: {
