@@ -114,7 +114,7 @@ export default {
     },
     onDrop(evt) {
       const item = this.taxPersonalLanguages[evt.oldIndex]
-      item.sortOrder = evt.newIndex
+      item.sortOrder = evt.newIndex + 1
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
     },
