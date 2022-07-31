@@ -20,7 +20,7 @@
 <script>
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes, models, TRANSITION_NAME } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCardTabs',
@@ -53,6 +53,12 @@ export default {
     ...mapState([models.selectedClient]),
     headers() {
       return this.$api.getHeaders()
+    },
+    transitionName() {
+      if (!this.dragActive) {
+        return TRANSITION_NAME
+      }
+      return null
     },
   },
   methods: {
