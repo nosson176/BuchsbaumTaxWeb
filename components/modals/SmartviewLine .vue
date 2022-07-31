@@ -4,7 +4,7 @@
       <Input v-model="groupNum" />
     </div>
     <div class="col-span-5">
-      <HeaderSelectOption v-model="fieldName" :options="smartviewOptions" />
+      <HeaderSelectOption v-model="fieldName" long :options="smartviewOptions" />
     </div>
     <div class="col-span-2">
       <HeaderSelectOption v-model="operator" :options="operators" />
