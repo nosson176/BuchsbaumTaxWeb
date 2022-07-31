@@ -20,7 +20,7 @@
         <transition name="card-fade">
           <div
             v-if="showing"
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full"
+            class="inline-block align-bottom bg-white text-left shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full"
             :class="modalMaxWidth"
           >
             <slot />
