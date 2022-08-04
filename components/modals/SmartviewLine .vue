@@ -4,10 +4,10 @@
       <Input v-model="groupNum" />
     </div>
     <div class="col-span-5">
-      <HeaderSelectOption v-model="fieldName" short :options="smartviewOptions" />
+      <HeaderSelectOption v-model="fieldName" long :options="smartviewOptions" />
     </div>
     <div class="col-span-2">
-      <HeaderSelectOption v-model="operator" short :options="operators" />
+      <HeaderSelectOption v-model="operator" :options="operators" />
     </div>
     <div class="col-span-3">
       <Input v-model="searchValue" />

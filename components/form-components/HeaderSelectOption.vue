@@ -64,7 +64,7 @@
         v-if="showOptions"
         class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
         tabindex="-1"
-        :class="short ? 'max-h-20' : 'max-h-60'"
+        :class="dropdownHeight"
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
@@ -132,8 +132,12 @@ export default {
     },
     addIcon: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+    long: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -172,6 +176,15 @@ export default {
     shownValue() {
       return this.options.find((option) => option.value === this.value)?.name
     },
+    dropdownHeight() {
+      if (this.short) {
+        return 'max-h-20'
+      } else if (this.long) {
+        return 'max-h-full'
+      } else {
+        return 'max-h-60'
+      }
+    },
   },
   watch: {
     showOptions(value) {
@@ -179,7 +192,7 @@ export default {
         this.$refs.filter?.focus()
         this.filterOptionsValue = ''
       }
-    }
+    },
   },
   methods: {
     onInputClick() {
