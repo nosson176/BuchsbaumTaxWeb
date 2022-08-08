@@ -178,18 +178,18 @@
           />
         </div>
       </div>
-      <div class="flex justify-center mb-1">
-        <div class="mr-3" @click="setEditable('deliveryContact')">
-          <EditableSelectCell
-            v-model="deliveryContact"
-            :options="contactTypeOptions"
-            :is-editable="isEditable('deliveryContact')"
-            placeholder="Delivery1"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div class="ml-3" @click="setEditable('secondDeliveryContact')">
+      <div @click="setEditable('deliveryContact')">
+        <EditableSelectCell
+          v-model="deliveryContact"
+          :options="contactTypeOptions"
+          :is-editable="isEditable('deliveryContact')"
+          placeholder="Delivery1"
+          @blur="onBlur"
+          @input="debounceUpdate"
+        />
+      </div>
+      <div class="flex space-x-6 justify-center">
+        <div @click="setEditable('secondDeliveryContact')">
           <EditableSelectCell
             v-model="secondDeliveryContact"
             :options="contactTypeOptions"
@@ -199,6 +199,9 @@
             @input="debounceUpdate"
           />
         </div>
+        <button @click="setSecondDeliveryContact('CHECK')">
+          <font-awesome-icon icon="fa-light fa-money-check" />
+        </button>
       </div>
       <div @click="setEditable('dateFiled')">
         <EditableDate
@@ -411,7 +414,7 @@ export default {
     taxFormOptions() {
       return this.valueTypes.tax_form.filter((taxForm) => taxForm.show)
     },
-    stateOptions(){
+    stateOptions() {
       return this.valueTypes.state
     },
     statusOptions() {
@@ -479,7 +482,7 @@ export default {
     onBlur() {
       this.setEditable('')
     },
-    onMemoBlur(){
+    onMemoBlur() {
       this.onBlur()
       this.handleUpdate()
     },
@@ -490,31 +493,32 @@ export default {
         this.formModel
       )
     },
-    setAsValidNumber(input){
+    setAsValidNumber(input) {
       let newNumber = 0
-      if(isNaN(input) || !input){
-        if(input.includes(',')){
+      if (isNaN(input) || !input) {
+        if (input.includes(',')) {
           newNumber = input.replace(',', '')
         }
-      }
-      else {
+      } else {
         newNumber = input
       }
       return newNumber
     },
-    emitDelete(id){
+    emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
-    }
-  }
+    },
+    setSecondDeliveryContact(value) {
+      this.secondDeliveryContact = value
+      this.handleUpdate()
+    },
+  },
 }
 </script>
 
 <style scoped>
-
 .delete-btn {
   @apply absolute;
 
   top: -5px;
 }
-
 </style>
