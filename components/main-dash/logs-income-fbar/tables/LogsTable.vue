@@ -299,7 +299,7 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: logId, type: tabs.logs } } },
+          data: { delete: { showing: true, data: { id: logId, type: tabs.logs, label: 'log note' } } },
         })
       }
     },
