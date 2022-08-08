@@ -59,6 +59,8 @@ export default {
     '@nuxtjs/stylelint-module',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
+    // https://github.com/nuxt-community/fontawesome-module
+    '@nuxtjs/fontawesome',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -84,6 +86,14 @@ export default {
   toast: {
     position: 'bottom-right',
     timeout: 5000,
+  },
+  // https://github.com/nuxt-community/fontawesome-module#setup
+  fontawesome: {
+    proIcons: {
+      // if you have bought the Pro packages
+      // list the icons you want to add, not listed icons will be tree-shaked
+      light: ['faMoneyCheck'],
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
