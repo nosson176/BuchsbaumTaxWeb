@@ -91,7 +91,7 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: feeId, type: tabs.fees } } },
+          data: { delete: { showing: true, data: { id: feeId, type: tabs.fees, label: 'misc/fee item' } } },
         })
       }
     },

@@ -232,7 +232,16 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: personalObj.id, type: tabs.tax_personals, label: personalObj.firstName } } },
+          data: {
+            delete: {
+              showing: true,
+              data: {
+                id: personalObj.id,
+                type: tabs.tax_personals,
+                label: `${personalObj.category} ${personalObj.firstName}`,
+              },
+            },
+          },
         })
       }
     },

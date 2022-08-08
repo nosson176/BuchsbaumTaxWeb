@@ -495,7 +495,9 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: incomeId, type: tabs.income } } },
+          data: {
+            delete: { showing: true, data: { id: incomeId, type: tabs.income, label: 'income breakdown record' } },
+          },
         })
       }
     },
