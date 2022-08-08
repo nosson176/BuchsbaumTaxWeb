@@ -14,7 +14,7 @@
           <div class="mt-2">
             <p class="text-sm text-gray-500">
               Are you sure you want to
-              <span class="capitalize">{{ updateToValue }}</span> {{ label }}?
+              <span>{{ updateToValue }}</span> {{ label }}?
             </p>
           </div>
         </div>
