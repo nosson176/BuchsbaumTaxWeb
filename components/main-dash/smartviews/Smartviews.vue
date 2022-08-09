@@ -53,6 +53,7 @@ export default {
       if (this.smartviews) {
         return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
           .filter((smartview) => this.showArchived === smartview.archived)
+          .sort((a, b) => a.sortNumber - b.sortNumber)
       } else {
         return []
       }
