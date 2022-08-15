@@ -12,7 +12,6 @@
           :options="statusOptions"
           :is-editable="isEditable('status')"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="col-start-4 text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
@@ -21,7 +20,6 @@
           :options="periodicalOptions"
           :is-editable="isEditable('periodical')"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="col-start-5 text-sm">{{ formattedCreatedDate }}</div>
@@ -152,11 +150,12 @@ export default {
       return this.editingId === editingId
     },
     onBlur() {
+      this.handleUpdate()
       this.editingId = ''
     },
     handleUpdate() {
       const client = this.selectedClientCopy
-      this.$api.updateClient(this.headers, { clientId: client.id, client })
+      return this.$api.updateClient(this.headers, { clientId: client.id, client })
     },
     openEditNameDialogue() {
       this.showEditNameDialogue = true
