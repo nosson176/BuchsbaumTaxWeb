@@ -16,83 +16,91 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow
-        v-for="(contact, idx) in displayedContacts"
-        :key="idx"
-        :idx="idx"
-        :class="{ disabled: !contact.enabled }"
-      >
-        <div class="table-col bg-gray-200 mr-1">
-          <ClickCell>{{ idx + 1 }}</ClickCell>
-        </div>
-        <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
-          <EditableCheckBoxCell
-            v-model="contact.enabled"
-            :is-editable="isEditable(`${idx}-disabled`)"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div
-          :id="`${idx}-contactType`"
-          class="table-col-primary normal"
-          @click="toggleEditable(`${idx}-contactType`, contact.id)"
-        >
-          <EditableSelectCell
-            v-model="contact.contactType"
-            :is-editable="isEditable(`${idx}-contactType`)"
-            :options="contactTypeOptions"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
-          <EditableInputCell
-            v-model="contact.memo"
-            :is-editable="isEditable(`${idx}-memo`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div :id="`${idx}-mainDetail`" class="table-col lg" @click="toggleEditable(`${idx}-mainDetail`, contact.id)">
-          <EditableInputCell
-            v-model="contact.mainDetail"
-            :is-editable="isEditable(`${idx}-mainDetail`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div
-          :id="`${idx}-secondaryDetail`"
-          class="table-col lg"
-          @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)"
-        >
-          <EditableInputCell
-            v-model="contact.secondaryDetail"
-            :is-editable="isEditable(`${idx}-secondaryDetail`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
-          <EditableInputCell
-            v-model="contact.state"
-            :is-editable="isEditable(`${idx}-state`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id)">
-          <EditableInputCell
-            v-model="contact.zip"
-            :is-editable="isEditable(`${idx}-zip`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(contact)" />
-        </div>
-      </TableRow>
+      <draggable :value="displayedContacts" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+        <transition-group type="transition" :name="transitionName">
+          <TableRow
+            v-for="(contact, idx) in displayedContacts"
+            :key="contact.id"
+            :idx="idx"
+            :class="{ disabled: !contact.enabled }"
+          >
+            <div class="table-col bg-gray-200 mr-1">
+              <ClickCell>{{ idx + 1 }}</ClickCell>
+            </div>
+            <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
+              <EditableCheckBoxCell
+                v-model="contact.enabled"
+                :is-editable="isEditable(`${idx}-disabled`)"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div
+              :id="`${idx}-contactType`"
+              class="table-col-primary normal"
+              @click="toggleEditable(`${idx}-contactType`, contact.id)"
+            >
+              <EditableSelectCell
+                v-model="contact.contactType"
+                :is-editable="isEditable(`${idx}-contactType`)"
+                :options="contactTypeOptions"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
+              <EditableInputCell
+                v-model="contact.memo"
+                :is-editable="isEditable(`${idx}-memo`)"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div
+              :id="`${idx}-mainDetail`"
+              class="table-col lg"
+              @click="toggleEditable(`${idx}-mainDetail`, contact.id)"
+            >
+              <EditableInputCell
+                v-model="contact.mainDetail"
+                :is-editable="isEditable(`${idx}-mainDetail`)"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div
+              :id="`${idx}-secondaryDetail`"
+              class="table-col lg"
+              @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)"
+            >
+              <EditableInputCell
+                v-model="contact.secondaryDetail"
+                :is-editable="isEditable(`${idx}-secondaryDetail`)"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
+              <EditableInputCell
+                v-model="contact.state"
+                :is-editable="isEditable(`${idx}-state`)"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id)">
+              <EditableInputCell
+                v-model="contact.zip"
+                :is-editable="isEditable(`${idx}-zip`)"
+                @blur="onBlur"
+                @input="debounceUpdate"
+              />
+            </div>
+            <div :id="`${idx}-delete`" class="table-col xs">
+              <DeleteButton small @click="onDeleteClick(contact)" />
+            </div>
+          </TableRow>
+        </transition-group>
+      </draggable>
     </template>
   </Table>
 </template>
@@ -100,13 +108,15 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
+import draggable from 'vuedraggable'
+import { models, mutations, tableGroups, tabs, TRANSITION_NAME } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['disabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete']
 
 export default {
   name: 'ContactTable',
+  components: { draggable },
   props: {
     showArchived: {
       type: Boolean,
@@ -118,6 +128,11 @@ export default {
       editableId: '',
       editableContactId: '',
       newContactId: '',
+      dragActive: false,
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'ghost',
+      },
     }
   },
   computed: {
@@ -164,6 +179,12 @@ export default {
     searchInput() {
       return this.search?.[tableGroups.personalContact]
     },
+    transitionName() {
+      if (!this.dragActive) {
+        return TRANSITION_NAME
+      }
+      return null
+    },
   },
   methods: {
     toggleEditable(id, contactId) {
@@ -183,11 +204,13 @@ export default {
       if (this.showArchived) {
         const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
         contact.archived = false
-        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId:contactObj.id }, contact)
+        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: contactObj.id }, contact)
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: contactObj.id, type: tabs.contact, label: contactObj.contactType } } },
+          data: {
+            delete: { showing: true, data: { id: contactObj.id, type: tabs.contact, label: contactObj.contactType } },
+          },
         })
       }
     },
@@ -222,6 +245,15 @@ export default {
     },
     onBlur() {
       this.editableId = ''
+    },
+    startDrag() {
+      this.dragActive = true
+    },
+    onDrop(evt) {
+      const item = this.displayedContacts[evt.oldIndex]
+      item.sortOrder = evt.newIndex + 1
+      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
+      this.dragActive = false
     },
   },
 }
