@@ -318,14 +318,14 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     async onBlur() {
-      await this.handleUpdate
+      await this.handleUpdate()
       this.editableId = ''
     },
     isTodayOrPast(date) {
       const parsedDate = parseISO(date)
       return isToday(parsedDate) || isPast(parsedDate)
     },
-    toggleComplete(log) {
+    async toggleComplete(log) {
       if (!this.isTodayOrPast(log.alarmDate) && !log.alarmComplete) {
         return
       } else if (log.alarmComplete) {
@@ -334,7 +334,7 @@ export default {
         log.alarmComplete = true
       }
       this.editableLogId = log.id
-      this.handleUpdate()
+      await this.handleUpdate()
     },
     filterLogs(log) {
       const hasAlarm = log.alarmDate
@@ -353,7 +353,8 @@ export default {
     isSelected(logId) {
       return this.selectedItems[logId]
     },
-    onTabPress() {
+    async onTabPress() {
+      await this.handleUpdate()
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
@@ -405,14 +406,14 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true })
     },
-    updateSecondsSpent(log) {
+    async updateSecondsSpent(log) {
       const timeArr = log.timeSpent.split(':')
       if (timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {
         log.timeSpent = this.getTimeSpentOnClient(log)
         return false
       }
       log.secondsSpent = timeArr[0] * 3600 + timeArr[1] * 60
-      this.handleUpdate()
+      await this.handleUpdate()
       this.onBlur()
     },
   },
