@@ -9,22 +9,22 @@
             :class="yearData.irsHistory ? 'bg-blue-600' : 'border border-blue-200'"
             @click="updateIrsHistory"
           />
-            <EditableSelectCell
-              v-model="year"
-              :class="{'tracking-widest': !isEditable('year')}"
-              :options="yearOptions"
-              :is-editable="isEditable('year')"
-              @click.native="toggleEditable('year', yearData.id)"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
+          <EditableSelectCell
+            v-model="year"
+            :class="{ 'tracking-widest': !isEditable('year') }"
+            :options="yearOptions"
+            :is-editable="isEditable('year')"
+            @click.native="toggleEditable('year', yearData.id)"
+            @blur="onBlur"
+          />
         </h3>
       </div>
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
           class="extension-column"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
-          :style="extensionColumnHeight">
+          :style="extensionColumnHeight"
+        >
           <div class="mx-auto">
             <HeaderSelectOption
               ref="filingTypeMenu"
@@ -33,10 +33,15 @@
               title="Add filing"
               add-icon
               :options="filingOptions"
-              @input="addFilingType" />
+              @input="addFilingType"
+            />
           </div>
-          <div v-for="(extension) in extensions"  :key="extension.id">
-            <ClientTaxYearExtension :class="{'mt-56': extensions.length < 2}" :extension="extension" @delete="startDelete($event, 'filing')" />
+          <div v-for="extension in extensions" :key="extension.id">
+            <ClientTaxYearExtension
+              :class="{ 'mt-56': extensions.length < 2 }"
+              :extension="extension"
+              @delete="startDelete($event, 'filing')"
+            />
           </div>
         </div>
         <div class="flex flex-col overflow-auto h-full w-full">
@@ -58,18 +63,10 @@
         </div>
       </div>
       <div class="flex">
-        <div class="bottom-tab">
-          $
-        </div>
-        <div class="bottom-tab">
-          Tab
-        </div>
-        <div class="bottom-tab">
-          Win
-        </div>
-        <div class="bottom-tab">
-          Sub
-        </div>
+        <div class="bottom-tab">$</div>
+        <div class="bottom-tab">Tab</div>
+        <div class="bottom-tab">Win</div>
+        <div class="bottom-tab">Sub</div>
       </div>
     </div>
     <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
@@ -80,7 +77,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { filingTypes, models } from '~/shared/constants'
 
 export default {
@@ -99,7 +95,7 @@ export default {
       selectedFileType: '',
       deleteId: '',
       showDeleteModal: false,
-      deleteTypeLabel: ''
+      deleteTypeLabel: '',
     }
   },
   computed: {
@@ -118,8 +114,8 @@ export default {
     filings() {
       const clonedData = JSON.parse(JSON.stringify(this.yearData))
       return clonedData.filings
-        .filter(filing => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar)
-        .sort((a,b) => a.filingType > b.filingType ? 1 : -1)
+        .filter((filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar)
+        .sort((a, b) => (a.filingType > b.filingType ? 1 : -1))
     },
     displayedFilingInfo() {
       return this.filings[this.activeFilingIndex]
@@ -127,30 +123,27 @@ export default {
     yearOptions() {
       return this.$store.state.valueTypes.year_name.filter((year) => year.show)
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
-    extensions(){
+    extensions() {
       return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.ext)
     },
-    fbars(){
-      return this.yearData.filings.filter(filing => filing.filingType === filingTypes.fbar)
+    fbars() {
+      return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.fbar)
     },
-    filingOptions(){
-      const types = [{value: '', name: ''}]
-      for(const type in filingTypes){
+    filingOptions() {
+      const types = [{ value: '', name: '' }]
+      for (const type in filingTypes) {
         const hideExtension = type === filingTypes.ext && this.extensions.length > 2
         const hideFbar = type === filingTypes.fbar && this.fbars.length > 1
-        if(hideExtension || hideFbar) {
+        if (hideExtension || hideFbar) {
           continue
         }
         types.push({ value: type, name: type.toUpperCase() })
       }
       return types
     },
-    extensionColumnHeight(){
+    extensionColumnHeight() {
       let style = ''
-      if(this.extensions.length > 1){
+      if (this.extensions.length > 1) {
         style = 'min-height:' + 270 * this.extensions.length + 'px'
       }
       return style
@@ -158,10 +151,10 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
-    fbarColumnHeight(){
+    fbarColumnHeight() {
       const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
       return 'min-height:' + 250 * longestItemLength + 'px'
-    }
+    },
   },
   methods: {
     setActiveFilingIndex(filingIndex) {
@@ -181,6 +174,7 @@ export default {
       return this.editableId === id
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     handleUpdate() {
@@ -191,7 +185,7 @@ export default {
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
     },
     addFilingType(filingType) {
-      if(!filingType){
+      if (!filingType) {
         return
       }
       const headers = this.$api.getHeaders()
@@ -204,18 +198,17 @@ export default {
         this.updateOnClient()
       })
     },
-    updateIrsHistory(){
+    updateIrsHistory() {
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
       this.handleUpdate()
     },
-    startDelete(id, deleteLabel){
+    startDelete(id, deleteLabel) {
       this.deleteId = id
       this.deleteTypeLabel = deleteLabel
       this.showDeleteModal = true
     },
     deleteItem() {
-      this.$api.deleteFiling(this.headers,
-        { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
+      this.$api.deleteFiling(this.headers, { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
         this.showDeleteModal = false
         this.deleteId = ''
         this.activeFilingIndex = 0
