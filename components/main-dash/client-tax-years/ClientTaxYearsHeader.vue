@@ -47,7 +47,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { categories, models, mutations } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
 
@@ -103,9 +102,6 @@ export default {
       set(newVal) {
         this.selectedClientCopy.periodical = newVal
       },
-    },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
     },
     statusOptions() {
       return this.valueTypes.status || []
