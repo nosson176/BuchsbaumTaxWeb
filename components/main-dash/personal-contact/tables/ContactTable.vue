@@ -127,7 +127,6 @@ export default {
     return {
       editableId: '',
       editableContactId: '',
-      newContactId: '',
       dragActive: false,
       dragOptions: {
         animation: 200,
@@ -142,12 +141,6 @@ export default {
       contacts?.map((contact) => {
         return { enabled: !contact.disabled, ...contact }
       })
-      const newContactIdx = contacts?.findIndex((contact) => contact.id === this.newContactId)
-      if (newContactIdx > -1) {
-        const tempContact = contacts[newContactIdx]
-        contacts.splice(newContactIdx, 1)
-        contacts.unshift(tempContact)
-      }
       return searchArrOfObjs(contacts, this.searchInput)
     },
     filteredContacts() {
@@ -226,7 +219,6 @@ export default {
       const contact = Object.assign({}, defaultValues)
       this.$api.createContact(this.headers, { contact }).then(async (data) => {
         await this.$api.getClientData(this.headers, this.selectedClient.id)
-        this.newContactId = data.id
         this.toggleEditable(`0-${columns[0]}`, data.id)
       })
     },
