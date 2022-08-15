@@ -74,12 +74,7 @@
           </Tooltip>
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <EditableTextAreaCell
-            v-model="log.note"
-            :is-editable="isEditable(`${idx}-note`)"
-            @tab="onTabPress"
-            @blur="onBlur"
-          />
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @blur="onBlur" />
@@ -308,7 +303,7 @@ export default {
           await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
             if (this.selectedLogIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`${logIndex}-${columns[0]}`, data.id)
+              this.toggleEditable(`${logIndex}-${columns[1]}`, data.id)
             }
           })
         })
@@ -316,7 +311,7 @@ export default {
         const log = Object.assign({}, defaultValues)
         this.$api.createLog(this.headers, { log }).then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.toggleEditable(`0-${columns[0]}`, data.id)
+          this.toggleEditable(`0-${columns[1]}`, data.id)
         })
       }
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
@@ -364,6 +359,7 @@ export default {
       const columnIndex = columns.findIndex((col) => col === idArr[1])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        console.log(nextCell)
         this.toggleEditable(nextCell, this.editableLogId)
       } else if (columnIndex === columns.length - 1) {
         const row = Number(idArr[0]) + 1
