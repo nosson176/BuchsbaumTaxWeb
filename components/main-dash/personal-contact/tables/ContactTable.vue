@@ -12,7 +12,7 @@
         <div class="table-header lg">City / Account</div>
         <div class="table-header xs">St</div>
         <div class="table-header sm">Zip</div>
-        <div class="table-header xs" />
+        <div class="table-header sm"><button v-if="!isDefaultOrder" @click="resetOrder">Reset Order</button></div>
       </TableHeader>
     </template>
     <template #body>
@@ -95,7 +95,7 @@
                 @input="debounceUpdate"
               />
             </div>
-            <div :id="`${idx}-delete`" class="table-col xs">
+            <div :id="`${idx}-delete`" class="table-col sm">
               <DeleteButton small @click="onDeleteClick(contact)" />
             </div>
           </TableRow>
@@ -178,6 +178,9 @@ export default {
       }
       return null
     },
+    isDefaultOrder() {
+      return this.displayedContacts?.every((contact) => !contact.sortOrder)
+    },
   },
   methods: {
     toggleEditable(id, contactId) {
@@ -215,6 +218,7 @@ export default {
       const defaultValues = {
         clientId,
         include: true,
+        sortOrder: this.isDefaultOrder ? 0 : 1,
       }
       const contact = Object.assign({}, defaultValues)
       this.$api.createContact(this.headers, { contact }).then(async (data) => {
@@ -246,6 +250,11 @@ export default {
       item.sortOrder = evt.newIndex + 1
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
       this.dragActive = false
+    },
+    resetOrder() {
+      const item = this.displayedContacts[0]
+      item.sortOrder = 0
+      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
     },
   },
 }
