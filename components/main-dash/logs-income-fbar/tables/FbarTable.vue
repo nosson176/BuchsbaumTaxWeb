@@ -407,6 +407,7 @@ export default {
   },
   methods: {
     toggleEditable(id, fbarId) {
+      this.handleUpdate()
       this.editableFbarId = fbarId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -503,7 +504,6 @@ export default {
       return returnValue
     },
     toggleSelected(fbar) {
-      this.handleUpdate()
       this.selectedItems[fbar.id] = !this.selectedItems[fbar.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },

@@ -255,6 +255,7 @@ export default {
   },
   methods: {
     toggleEditable(id, logId) {
+      this.handleUpdate()
       this.editableLogId = logId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -348,7 +349,6 @@ export default {
       return returnValue
     },
     toggleSelected(log) {
-      this.handleUpdate()
       this.selectedItems[log.id] = !this.selectedItems[log.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },
