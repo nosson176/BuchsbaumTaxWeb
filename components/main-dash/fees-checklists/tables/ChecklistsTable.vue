@@ -102,6 +102,7 @@ export default {
   },
   methods: {
     toggleEditable(id, checklistId) {
+      this.handleUpdate()
       this.editableChecklistId = checklistId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -111,6 +112,7 @@ export default {
       return this.editableId === editableId
     },
     handleUpdate() {
+      if (!this.editableChecklistId) return
       const checklist = this.displayedChecklists.find((checklist) => checklist.id === this.editableChecklistId)
       this.$api.updateChecklist(
         this.headers,
