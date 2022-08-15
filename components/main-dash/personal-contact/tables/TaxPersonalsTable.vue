@@ -31,7 +31,7 @@
           <EditableCheckBoxCell
             v-model="personal.include"
             :is-editable="isEditable(`${idx}-include`)"
-            @input="debounceUpdate"
+            @input="handleUpdate"
           />
         </div>
         <div
@@ -43,7 +43,6 @@
             v-model="personal.category"
             :is-editable="isEditable(`${idx}-category`)"
             :options="categoryOptions"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -51,7 +50,6 @@
           <EditableInputCell
             v-model="personal.firstName"
             :is-editable="isEditable(`${idx}-firstName`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -63,23 +61,16 @@
           <EditableInputCell
             v-model="personal.middleInitial"
             :is-editable="isEditable(`${idx}-middleInitial`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
         <div :id="`${idx}-lastName`" class="normal table-col" @click="toggleEditable(`${idx}-lastName`, personal.id)">
-          <EditableInputCell
-            v-model="personal.lastName"
-            :is-editable="isEditable(`${idx}-lastName`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
+          <EditableInputCell v-model="personal.lastName" :is-editable="isEditable(`${idx}-lastName`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-dateOfBirth`" class="table-col sm" @click="toggleEditable(`${idx}-dateOfBirth`, personal.id)">
           <EditableDateCell
             v-model="personal.dateOfBirth"
             :is-editable="isEditable(`${idx}-dateOfBirth`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -88,24 +79,17 @@
             v-model="personal.ssn"
             :class="ssnClassObj(personal.ssn, personal.include)"
             :is-editable="isEditable(`${idx}-ssn`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
         <div :id="`${idx}-informal`" class="sm table-col" @click="toggleEditable(`${idx}-informal`, personal.id)">
-          <EditableInputCell
-            v-model="personal.informal"
-            :is-editable="isEditable(`${idx}-informal`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
+          <EditableInputCell v-model="personal.informal" :is-editable="isEditable(`${idx}-informal`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-relation`" class="sm table-col" @click="toggleEditable(`${idx}-relation`, personal.id)">
           <EditableSelectCell
             v-model="personal.relation"
             :is-editable="isEditable(`${idx}-relation`)"
             :options="relationOptions"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -114,7 +98,6 @@
             v-model="personal.language"
             :is-editable="isEditable(`${idx}-language`)"
             :options="languageOptions"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -127,7 +110,6 @@
 </template>
 
 <script>
-import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
@@ -174,9 +156,6 @@ export default {
         return null
       }
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
     categoryOptions() {
       return this.valueTypes.category.filter((category) => category.show)
     },
@@ -205,6 +184,7 @@ export default {
   },
   methods: {
     toggleEditable(id, personalId) {
+      this.handleUpdate()
       this.editablePersonalId = personalId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -214,6 +194,7 @@ export default {
       return this.editableId === id
     },
     handleUpdate() {
+      if (!this.editablePersonalId) return
       const personal = this.displayedPersonals.find((personal) => personal.id === this.editablePersonalId)
       if (/^([0-9]{9})$/.test(personal.ssn)) {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
@@ -280,6 +261,7 @@ export default {
       }
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     isRedText(ssn) {
