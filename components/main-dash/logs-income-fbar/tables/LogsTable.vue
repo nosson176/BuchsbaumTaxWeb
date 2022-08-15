@@ -264,6 +264,7 @@ export default {
       return this.editableId === id
     },
     handleUpdate() {
+      if (!this.editableLogId) return
       const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
       for (const key in this.users) {
         if (this.users[key].username === log.alarmUserName) {
@@ -347,6 +348,7 @@ export default {
       return returnValue
     },
     toggleSelected(log) {
+      this.handleUpdate()
       this.selectedItems[log.id] = !this.selectedItems[log.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },
@@ -354,7 +356,6 @@ export default {
       return this.selectedItems[logId]
     },
     onTabPress() {
-      this.handleUpdate()
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])

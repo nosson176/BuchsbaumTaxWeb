@@ -16,7 +16,6 @@
           <EditableCheckBoxCell
             v-model="checklist.finished"
             :is-editable="isEditable(`${idx}-finished`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -24,7 +23,6 @@
           <EditableCheckBoxCell
             v-model="checklist.translate"
             :is-editable="isEditable(`${idx}-translate`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -34,7 +32,6 @@
             :options="memoOptions"
             :is-editable="isEditable(`${idx}-memo`)"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
@@ -47,7 +44,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { searchArrOfObjs } from '~/shared/utility'
 import { models, tableGroups } from '~/shared/constants'
 
@@ -100,9 +96,6 @@ export default {
     memoOptions() {
       return this.valueTypes.checklist_memo.filter((memo) => memo.show)
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
     headers() {
       return this.$api.getHeaders()
     },
@@ -126,6 +119,7 @@ export default {
       )
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     onAddRowClick() {
