@@ -3,8 +3,8 @@
     <div
       class="w-full text-center text-xs relative"
       @keydown.tab.prevent
-      @keyup.tab.exact="goToNextColumn"
-      @keyup.shift.tab.exact="goToPrevColumn"
+      @keyup.tab.exact="goToNextItem"
+      @keyup.shift.tab.exact="goToPrevItem"
     >
       <DeleteButton class="delete-btn" small @click="emitDelete(filing.id)" />
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('state')">
@@ -499,6 +499,7 @@ export default {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
   },
   mounted() {
+    // if its state or not for the tabbing
     if (this.filingType === 'state') {
       items[0] = 'state'
     }
@@ -542,7 +543,7 @@ export default {
       this.secondDeliveryContact = value
       this.handleUpdate()
     },
-    goToNextColumn() {
+    goToNextItem() {
       const currentCell = this.editable
       const itemIndex = items.findIndex((col) => {
         return col === currentCell
@@ -552,7 +553,7 @@ export default {
         this.setEditable(nextCell)
       }
     },
-    goToPrevColumn() {
+    goToPrevItem() {
       const currentCell = this.editable
       const itemIndex = items.findIndex((col) => col === currentCell)
       if (itemIndex > 0) {
