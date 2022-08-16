@@ -505,7 +505,6 @@ export default {
   },
   methods: {
     setEditable(editable) {
-      console.log(editable)
       this.editable = editable
     },
     isEditable(value) {
@@ -546,10 +545,8 @@ export default {
     goToNextColumn() {
       const currentCell = this.editable
       const itemIndex = items.findIndex((col) => {
-        console.log(col, currentCell)
         return col === currentCell
       })
-      console.log(items)
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
         this.setEditable(nextCell)
