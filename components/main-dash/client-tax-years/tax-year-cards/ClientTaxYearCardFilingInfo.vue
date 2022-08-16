@@ -1,6 +1,11 @@
 <template>
   <div v-if="filing" class="p-2 flex flex-grow">
-    <div class="w-full text-center text-xs relative">
+    <div
+      class="w-full text-center text-xs relative"
+      @keydown.tab.prevent
+      @keyup.tab.exact="goToNextColumn"
+      @keyup.shift.tab.exact="goToPrevColumn"
+    >
       <DeleteButton class="delete-btn" small @click="emitDelete(filing.id)" />
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('state')">
         <EditableSelectCell
@@ -223,7 +228,6 @@ import { debounce } from 'lodash'
 import { events, filingTypes, models } from '~/shared/constants'
 
 const items = [
-  'state',
   'taxForm',
   'statusDate',
   'status',
@@ -494,8 +498,14 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
   },
+  mounted() {
+    if (this.filingType === 'state') {
+      items[0] = 'state'
+    }
+  },
   methods: {
     setEditable(editable) {
+      console.log(editable)
       this.editable = editable
     },
     isEditable(value) {
@@ -532,6 +542,26 @@ export default {
     setSecondDeliveryContact(value) {
       this.secondDeliveryContact = value
       this.handleUpdate()
+    },
+    goToNextColumn() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => {
+        console.log(col, currentCell)
+        return col === currentCell
+      })
+      console.log(items)
+      if (itemIndex < items.length - 1) {
+        const nextCell = items[itemIndex + 1]
+        this.setEditable(nextCell)
+      }
+    },
+    goToPrevColumn() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => col === currentCell)
+      if (itemIndex > 0) {
+        const prevCell = items[itemIndex - 1]
+        this.setEditable(prevCell)
+      }
     },
   },
 }
