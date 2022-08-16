@@ -229,9 +229,14 @@ export default {
       this.shiftActive = true
     },
     onShiftUp() {
-      this.shiftActive = false
-      this.computedValue.unshift(MULT)
-      this.computedValue = this.computedValue.join('\u000B')
+      if (this.shiftActive) {
+        this.shiftActive = false
+        if (this.computedValue.length > 1) {
+          this.computedValue.unshift(MULT)
+          this.computedValue = this.computedValue.join('\u000B')
+          this.onBlur()
+        }
+      }
     },
     onInputKeyup(key) {
       if (key === 'ArrowDown') {
