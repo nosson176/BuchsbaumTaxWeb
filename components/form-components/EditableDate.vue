@@ -1,10 +1,14 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
+  <div tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+      <div class="h-full" @click="onBlur" />
+    </div>
     <date-picker
       v-if="isEditable"
       ref="input"
       v-model="computedValue"
       :value-type="valueType"
+      tabindex="0"
       :format="format"
       :type="type"
       :placeholder="placeholder"
@@ -82,9 +86,6 @@ export default {
     if (this.isEditable) {
       this.$refs.input.focus()
     }
-    if (!this.showPicker) {
-      this.$emit(events.blur)
-    }
   },
   methods: {
     onFocus() {
@@ -92,6 +93,9 @@ export default {
     },
     onInput(newVal) {
       this.computedValue = newVal
+    },
+    onBlur() {
+      this.$emit(events.blur)
     },
   },
 }
