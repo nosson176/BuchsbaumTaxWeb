@@ -232,7 +232,6 @@ export default {
       this.shiftActive = false
       this.computedValue.unshift(MULT)
       this.computedValue = this.computedValue.join('\u000B')
-      this.onBlur()
     },
     onInputKeyup(key) {
       if (key === 'ArrowDown') {
