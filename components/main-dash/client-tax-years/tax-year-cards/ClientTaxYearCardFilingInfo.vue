@@ -498,7 +498,7 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
   },
-  mounted() {
+  updated() {
     // if its state or not for the tabbing
     if (this.filingType === 'state') {
       items[0] = 'state'
