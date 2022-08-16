@@ -1,5 +1,11 @@
 <template>
-  <div class="fbar" @click="setEditable('')">
+  <div
+    class="fbar"
+    @click="setEditable('')"
+    @keydown.tab.prevent
+    @keyup.tab.exact="goToNextItem"
+    @keyup.shift.tab.exact="goToPrevItem"
+  >
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
       <EditableSelectCell
@@ -64,21 +70,23 @@ import { debounce } from 'lodash'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
+const items = ['fileType', 'status', 'statusDate']
+
 export default {
   name: 'ClientTaxYearFbar',
   directives: {
-    ClickOutside
+    ClickOutside,
   },
   props: {
     fbar: {
       type: Object,
-      default: ()=>{}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
       editable: '',
-      formModel: null
+      formModel: null,
     }
   },
   computed: {
@@ -96,7 +104,7 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.fbar))
   },
-  methods:{
+  methods: {
     setEditable(editable) {
       this.editable = editable
     },
@@ -107,19 +115,33 @@ export default {
       this.setEditable('')
     },
     handleUpdate() {
-      this.$api.updateFiling(
-        this.headers,
-        { clientId: this.selectedClient.id, filingId: this.fbar.id },
-        this.formModel
-      )
+      this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
     },
     debounceUpdate() {
       return debounce(this.handleUpdate, 500)
     },
     emitDelete() {
       this.$emit(events.delete, this.fbar.id)
-    }
-  }
+    },
+    goToNextItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => {
+        return col === currentCell
+      })
+      if (itemIndex < items.length - 1) {
+        const nextCell = items[itemIndex + 1]
+        this.setEditable(nextCell)
+      }
+    },
+    goToPrevItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => col === currentCell)
+      if (itemIndex > 0) {
+        const prevCell = items[itemIndex - 1]
+        this.setEditable(prevCell)
+      }
+    },
+  },
 }
 </script>
 
@@ -134,5 +156,4 @@ export default {
   transform: rotate(270deg);
   min-width: 40px;
 }
-
 </style>
