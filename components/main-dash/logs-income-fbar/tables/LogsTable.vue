@@ -380,11 +380,12 @@ export default {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
       if (columnIndex < columns.length - 1) {
         const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
-      } else if (columnIndex === columns.length - 1) {
-        const row = Number(idArr[0]) + 1
+      } else if (columnIndex === columns.length - 1 && currentRow < this.displayedLogs.length - 1) {
+        const row = currentRow + 1
         const nextCell = `${row}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
@@ -393,11 +394,12 @@ export default {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
-      if (columnIndex === 0) {
-        const row = Number(idArr[0]) - 1
+      const currentRow = Number(idArr[0])
+      if (columnIndex === 0 && currentRow > 0) {
+        const row = currentRow - 1
         const nextCell = `${row}-${columns[columns.length - 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
-      } else {
+      } else if (columnIndex > 0) {
         const nextCell = `${idArr[0]}-${columns[columnIndex - 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
