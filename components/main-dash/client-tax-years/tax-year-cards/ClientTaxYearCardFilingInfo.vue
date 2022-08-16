@@ -222,6 +222,28 @@ import { mapState } from 'vuex'
 import { debounce } from 'lodash'
 import { events, filingTypes, models } from '~/shared/constants'
 
+const items = [
+  'state',
+  'taxForm',
+  'statusDate',
+  'status',
+  'statusDetail',
+  'memo',
+  'includeInRefund',
+  'owes',
+  'paid',
+  'includeFee',
+  'owesFee',
+  'paidFee',
+  'fileType',
+  'refund',
+  'rebate',
+  'completed',
+  'deliveryContact',
+  'secondDeliveryContact',
+  'dateFiled',
+]
+
 export default {
   name: 'ClientTaxYearCardFilingInfo',
   props: {
