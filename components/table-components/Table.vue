@@ -1,5 +1,9 @@
 <template>
-  <div class="flex flex-col flex-grow overflow-hidden bg-white" @keydown.tab.prevent="emitKeyDown">
+  <div
+    class="flex flex-col flex-grow overflow-hidden bg-white"
+    @keydown.prevent="emitKeyDown"
+    @keyup.prevent="emitKeyUp"
+  >
     <slot name="header" />
     <div class="flex-grow overflow-auto">
       <slot name="body" />
@@ -14,6 +18,9 @@ export default {
   methods: {
     emitKeyDown(e) {
       this.$emit(events.keydown, e)
+    },
+    emitKeyUp(e) {
+      this.$emit(events.keyup, e)
     },
   },
 }

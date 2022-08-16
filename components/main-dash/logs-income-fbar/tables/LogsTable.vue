@@ -1,5 +1,10 @@
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent="onTabPress">
+  <Table
+    v-if="isClientSelected"
+    @keydown.tab.prevent
+    @keyup.tab.exact="goToNextColumn"
+    @keyup.shift.tab.exact="goToPrevColumn"
+  >
     <template #header>
       <TableHeader>
         <div class="table-header flex items-start">
@@ -54,7 +59,7 @@
             :is-editable="isEditable(`${idx}-priority`)"
             @input="debounceUpdate"
             @blur="onBlur"
-            @tab="onTabPress"
+            @tab="goToNextColumn"
           />
         </div>
         <div :id="`${idx}-years`" class="table-col sm" @click="toggleEditable(`${idx}-years`, log.id)">
@@ -80,7 +85,7 @@
             v-model="log.note"
             :is-editable="isEditable(`${idx}-note`)"
             @input="debounceUpdate"
-            @tab="onTabPress"
+            @tab="goToNextColumn"
             @blur="onBlur"
           />
         </div>
@@ -371,7 +376,7 @@ export default {
     isSelected(logId) {
       return this.selectedItems[logId]
     },
-    onTabPress() {
+    goToNextColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
@@ -381,6 +386,19 @@ export default {
       } else if (columnIndex === columns.length - 1) {
         const row = Number(idArr[0]) + 1
         const nextCell = `${row}-${columns[0]}`
+        this.toggleEditable(nextCell, this.editableLogId)
+      }
+    },
+    goToPrevColumn() {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex((col) => col === idArr[1])
+      if (columnIndex === 0) {
+        const row = Number(idArr[0]) - 1
+        const nextCell = `${row}-${columns[columns.length - 1]}`
+        this.toggleEditable(nextCell, this.editableLogId)
+      } else {
+        const nextCell = `${idArr[0]}-${columns[columnIndex - 1]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
     },
