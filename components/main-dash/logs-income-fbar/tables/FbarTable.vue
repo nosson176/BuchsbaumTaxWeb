@@ -524,7 +524,7 @@ export default {
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
       const currentRow = Number(idArr[0])
-      if (columnIndex < columns.length - 1) {
+      if (columnIndex === 0 && currentRow > 0) {
         const prevRow = currentRow - 1
         const prevCell = `${prevRow}-${columns[columns.length - 1]}`
         this.toggleEditable(prevCell, this.editableFbarId)
