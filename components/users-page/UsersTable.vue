@@ -21,8 +21,11 @@
           <span class="font-light">({{ user.userType }})</span>
         </div>
         <div class="table-col">
-          <DeleteButton />
+          <DeleteButton @click="onDeleteClick(user)" />
         </div>
+        <Modal :showing="showDelete" @hide="closeDeleteModal">
+          <DeleteType :label="user.username" @hide="closeDeleteModal" @delete="deleteUser" />
+        </Modal>
       </TableRow>
     </template>
   </Table>
@@ -42,6 +45,12 @@ export default {
       default: 0,
     },
   },
+  data() {
+    return {
+      showDelete: false,
+      deleteUserId: null,
+    }
+  },
   computed: {
     headers() {
       return this.$api.getHeaders()
@@ -58,6 +67,17 @@ export default {
       // const defaultValues = {}
       // const user = Object.assign({}, defaultValues)
       // this.$api.createUser(this.headers, { user })
+    },
+    onDeleteClick(user) {
+      this.deleteUserId = user.id
+      this.showDelete = true
+    },
+    deleteUser() {
+      this.$api.deleteUser(this.headers, { userId: this.deleteUserId })
+      this.closeDeleteModal()
+    },
+    closeDeleteModal() {
+      this.showDelete = false
     },
   },
 }
