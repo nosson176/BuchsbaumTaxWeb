@@ -45,7 +45,7 @@
 <script>
 import { mapState } from 'vuex'
 import { searchArrOfObjs } from '~/shared/utility'
-import { models, tableGroups } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 
 const columns = ['finished', 'translate', 'memo', 'delete']
 
@@ -148,6 +148,18 @@ export default {
         const row = Number(idArr[0]) + 1
         const nextCell = `${row}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableChecklistId)
+      }
+    },
+    onDeleteClick(checklistId) {
+      if (this.showArchived) {
+        const checklist = this.displayedChecklists.find((checklist) => checklist.id === checklistId)
+        checklist.archived = false
+        this.$api.updateChecklist(this.headers, { clientId: this.selectedClient.id, checklistId }, checklist)
+      } else {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: checklistId, type: tabs.checklists, label: 'checklist' } } },
+        })
       }
     },
   },

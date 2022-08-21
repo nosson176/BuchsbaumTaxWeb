@@ -101,6 +101,9 @@ export default {
     isTypeSmartview() {
       return this.type === tabs.smartviews
     },
+    isTypeChecklist() {
+      return this.type === tabs.checklists
+    },
     logs() {
       return JSON.parse(JSON.stringify(this.selectedClient.logs))
     },
@@ -121,6 +124,9 @@ export default {
     },
     fees() {
       return JSON.parse(JSON.stringify(this.selectedClient.fees))
+    },
+    checklists() {
+      return JSON.parse(JSON.stringify(this.selectedClient.checklists))
     },
     clientsCopy() {
       return JSON.parse(JSON.stringify(this.clients))
@@ -163,6 +169,11 @@ export default {
       fee.archived = !fee.archived
       return fee
     },
+    updatedChecklist() {
+      const checklist = this.checklists.find((checklist) => checklist.id === this.id)
+      checklist.archived = !checklist.archived
+      return checklist
+    },
     updatedClient() {
       const client = Object.values(this.clientsCopy).find((client) => client.id === this.id)
       client.archived = !client.archived
@@ -193,6 +204,8 @@ export default {
         item = this.updatedClient
       } else if (this.isTypeSmartview) {
         item = this.updatedSmartview
+      } else if (this.isTypeChecklist) {
+        item = this.updatedChecklist
       }
       return item
     },
@@ -218,6 +231,8 @@ export default {
         this.updateClient()
       } else if (this.isTypeSmartview) {
         this.updateSmartview()
+      } else if (this.isTypeChecklist) {
+        this.updateChecklist()
       }
     },
     emitHide() {
@@ -271,6 +286,11 @@ export default {
           this.$api.getSmartviews(this.headers)
           this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
         })
+        .then(() => this.updateClientSideData())
+    },
+    updateChecklist() {
+      this.$api
+        .updateChecklist(this.headers, { clientId: this.clientId, checklistId: this.id }, this.updatedItem)
         .then(() => this.updateClientSideData())
     },
     updateClientSideData() {
