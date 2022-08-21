@@ -16,7 +16,9 @@
       @focus="onFocus"
     >
       <template #header="{ emit }">
-        <button class="mx-btn mx-btn-text" @click="emit(new Date())">Today</button>
+        <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="emit(new Date())">
+          Today
+        </button>
       </template>
     </date-picker>
     <span v-else class="cursor-pointer">{{ displayedValue }}</span>
@@ -32,58 +34,58 @@ export default {
   props: {
     value: {
       type: String,
-      default: null
+      default: null,
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      default: 'date'
-    }
+      default: 'date',
+    },
   },
-  data () {
+  data() {
     return {
-      showPicker: false
+      showPicker: false,
     }
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit('input', newVal)
         this.$emit(events.blur)
-      }
+      },
     },
-    format () {
+    format() {
       return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
     },
-    valueType () {
+    valueType() {
       return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
     },
-    isTypeDate () {
+    isTypeDate() {
       return this.type === 'date'
     },
-    displayedValue () {
+    displayedValue() {
       return this.isTypeDate && this.computedValue ? formatDateForClient(this.computedValue) : this.computedValue
-    }
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       this.$refs.input.focus()
     }
   },
   methods: {
-    onFocus () {
+    onFocus() {
       this.showPicker = true
     },
-    onBlur () {
-      this.$emit(events.blur);
-    }
-  }
+    onBlur() {
+      this.$emit(events.blur)
+    },
+  },
 }
 </script>
 

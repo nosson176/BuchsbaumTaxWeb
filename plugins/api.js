@@ -1,10 +1,5 @@
 import { getCookieByKey, setCookieByKey } from '~/shared/cookie-utilities'
-import {
-  COOKIE_KEY_SESSION_TOKEN,
-  models,
-  mutations,
-  routes,
-} from '~/shared/constants'
+import { COOKIE_KEY_SESSION_TOKEN, models, mutations, routes } from '~/shared/constants'
 
 export default ({ $axios, store, $toast, redirect }, inject) => {
   const getHeaders = () => {
@@ -38,8 +33,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
     } else if (searchParam) {
       endpoint = endpoint.concat(`?q=${searchParam}`)
-    } else if (searchOption) {
-      endpoint = endpoint.concat(`?field=${searchOption}`)
     }
     return $axios
       .get(endpoint, {
@@ -112,56 +105,54 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error loading smartviews'))
 
+  const getPhoneNumbers = (headers) =>
+    $axios
+      .get('/sms/phone_numbers', {
+        headers,
+        loading: models.phoneNumbers,
+        store: models.phoneNumbers,
+      })
+      .catch(() => $toast.error('Error loading phone numbers'))
+
+  const getInbox = (headers) =>
+    $axios
+      .get('/users/current/messages', {
+        headers,
+        loading: models.inbox,
+        store: models.inbox,
+      })
+      .catch(() => $toast.error('Error loading messages'))
+
   // CREATE
   const createLog = (headers, { log }) =>
-    $axios
-      .post('/logs', log, { headers })
-      .catch(() => $toast.error('Error creating log'))
+    $axios.post('/logs', log, { headers }).catch(() => $toast.error('Error creating log'))
 
   const createTaxPersonal = (headers, { personal }) =>
-    $axios
-      .post('/personals', personal, { headers })
-      .catch(() => $toast.error('Error creating tax personal'))
+    $axios.post('/personals', personal, { headers }).catch(() => $toast.error('Error creating tax personal'))
 
   const createContact = (headers, { contact }) =>
-    $axios
-      .post('/contacts', contact, { headers })
-      .catch(() => $toast.error('Error creating contact'))
+    $axios.post('/contacts', contact, { headers }).catch(() => $toast.error('Error creating contact'))
 
   const createIncome = (headers, { income }) =>
-    $axios
-      .post('/incomes', income, { headers })
-      .catch(() => $toast.error('Error creating income'))
+    $axios.post('/incomes', income, { headers }).catch(() => $toast.error('Error creating income'))
 
   const createFbar = (headers, { fbar }) =>
-    $axios
-      .post('/fbars', fbar, { headers })
-      .catch(() => $toast.error('Error creating fbar'))
+    $axios.post('/fbars', fbar, { headers }).catch(() => $toast.error('Error creating fbar'))
 
   const createFee = (headers, { fee }) =>
-    $axios
-      .post('/fees', fee, { headers })
-      .catch(() => $toast.error('Error creating fee'))
+    $axios.post('/fees', fee, { headers }).catch(() => $toast.error('Error creating fee'))
 
   const createTaxYear = (headers, { taxYear }) =>
-    $axios
-      .post('/tax-years', taxYear, { headers })
-      .catch(() => $toast.error('Error creating tax year'))
+    $axios.post('/tax-years', taxYear, { headers }).catch(() => $toast.error('Error creating tax year'))
 
   const createFiling = (headers, { filing }) =>
-    $axios
-      .post('/filings', filing, { headers })
-      .catch(() => $toast.error('Error creating filing'))
+    $axios.post('/filings', filing, { headers }).catch(() => $toast.error('Error creating filing'))
 
   const createChecklist = (headers, { checklist }) =>
-    $axios
-      .post('/checklists', checklist, { headers })
-      .catch(() => $toast.error('Error creating checklist'))
+    $axios.post('/checklists', checklist, { headers }).catch(() => $toast.error('Error creating checklist'))
 
   const createClient = (headers, { client }) =>
-    $axios
-      .post('/clients', client, { headers })
-      .catch(() => $toast.error('Error creating client'))
+    $axios.post('/clients', client, { headers }).catch(() => $toast.error('Error creating client'))
 
   const createSmartview = (headers, { smartview }) =>
     $axios
@@ -170,9 +161,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getSmartviews(headers))
 
   const createValueType = (headers, { value }) =>
-    $axios
-      .post('/values', value, { headers })
-      .then(() => getValueTypes(headers))
+    $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
+
+  const createPhoneNumber = (headers, { phoneNum }) =>
+    $axios.post('/sms/phone_numbers', phoneNum, { headers }).catch(() => $toast.error('Error creating phone number'))
+
+  const sendSms = (headers, { sms }) =>
+    $axios.post('/sms/send', sms, { headers }).catch(() => $toast.error('Error sending SMS'))
+
+  const sendMessage = (headers, { messageObj }) =>
+    $axios.post('/users/current/messages', messageObj, { headers }).catch(() => $toast.error('Error sending message'))
 
   const createUser = (headers, { user }) =>
     $axios
@@ -207,7 +205,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
     const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
-    $axios
+    return $axios
       .put(endpoint, income, { headers })
       .catch(() => $toast.error('Error updating income'))
       .finally(() => getClientData(headers, clientId))
@@ -260,10 +258,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const updateUser = (headers, { userId }, user) =>
     $axios
       .put(`/users/${userId}`, user, { headers })
-      .catch((e) =>
-        $toast.error('Error updating user: ' + e.response.data.message)
-      )
+      .catch((e) => $toast.error('Error updating user: ' + e.response.data.message))
       .finally(() => getAllUsers(headers))
+
+  const updateMessage = (headers, { messageId }, value) =>
+    $axios
+      .put(`/users/current/messages/${messageId}`, value, { headers })
+      .catch(() => $toast.error('Error updating message'))
+      .finally(() => getValueTypes(headers))
 
   // DELETE
   const deleteValueType = (headers, { valueId }) =>
@@ -271,6 +273,24 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .delete(`/values/${valueId}`, { headers })
       .catch(() => $toast.error('Error deleting value'))
       .finally(() => getValueTypes(headers))
+
+  const deleteClient = (headers, { clientId }) =>
+    $axios
+      .delete(`/clients/${clientId}`, { headers })
+      .catch(() => $toast.error('Error deleting client'))
+      .finally(() => getClientList(headers))
+
+  const deleteSmartview = (headers, { smartviewId }) =>
+    $axios
+      .delete(`/smartviews/${smartviewId}`, { headers })
+      .catch(() => $toast.error('Error deleting smartview'))
+      .finally(() => getSmartviews(headers))
+
+  const deleteFiling = (headers, { filingId, clientId }) =>
+    $axios
+      .delete(`/filings/${filingId}`, { headers })
+      .catch(() => $toast.error('Error deleting filing'))
+      .finally(() => getClientData(headers, clientId))
 
   const deleteUser = (headers, { userId }) =>
     $axios
@@ -288,11 +308,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createIncome,
     createLog,
     createValueType,
+    createPhoneNumber,
     createSmartview,
     createTaxPersonal,
     createTaxYear,
     createUser,
     deleteValueType,
+    deleteClient,
+    deleteSmartview,
+    deleteFiling,
     deleteUser,
     getAllClientFees,
     getAllUsers,
@@ -303,8 +327,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getSmartviews,
     getValueTaxGroups,
     getValueTypes,
+    getPhoneNumbers,
+    getInbox,
     login,
     signout,
+    sendSms,
+    sendMessage,
     updateChecklist,
     updateClient,
     updateContact,
@@ -318,6 +346,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateTaxYear,
     updateValueType,
     updateUser,
+    updateMessage,
   }
 
   // Inject to context as $api

@@ -1,6 +1,9 @@
 <template>
   <div v-if="personal" class="flex w-full justify-end text-xs">
-    <span class="mr-auto">{{ category }}</span><span>{{ firstName }}</span>&nbsp;(<span>{{ relationFirstLetter }}</span> <span v-if="showComma">,</span><span>{{ lang }}</span>)
+    <span class="mr-auto">{{ category }}</span
+    ><span>{{ firstName }}</span
+    >&nbsp;(<span>{{ relationFirstLetter }}</span> <span v-if="showComma">,</span><span>{{ lang }}</span
+    >)
   </div>
 </template>
 
@@ -10,29 +13,27 @@ export default {
   props: {
     personal: {
       type: Object,
-      default: () => null
-    }
+      default: () => null,
+    },
   },
   computed: {
-    category () {
+    category() {
       return this.personal.category
     },
-    firstName () {
+    firstName() {
       return this.personal.informal || this.personal.firstName
     },
-    relationFirstLetter () {
+    relationFirstLetter() {
       return this.personal.relation?.slice(0, 1)
     },
-    lang () {
+    lang() {
       return this.personal.language
     },
-    showComma () {
+    showComma() {
       return this.relationFirstLetter && this.lang
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

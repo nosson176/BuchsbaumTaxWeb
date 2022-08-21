@@ -9,7 +9,7 @@
       <ClientOwesStatusTable />
     </div>
     <div class="flex-col">
-      <span class="font-bold text-xl text-gray-500">Periodic</span>
+      <span class="font-bold text-xl text-gray-500">Periodical</span>
       <ClientPeriodicalTable />
     </div>
   </ValuesTableGrid>
@@ -18,8 +18,7 @@
 <script>
 export default {
   name: 'ClientValueTables',
-};
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

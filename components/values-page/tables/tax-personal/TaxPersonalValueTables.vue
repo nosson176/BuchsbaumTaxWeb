@@ -13,9 +13,8 @@
 
 <script>
 export default {
-  name: "TaxPersonalValueTables",
-};
+  name: 'TaxPersonalValueTables',
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

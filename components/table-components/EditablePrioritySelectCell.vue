@@ -1,6 +1,6 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
+    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
       <input
         ref="button"
         v-model="computedValue"
@@ -8,8 +8,8 @@
         tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
-        @keyup="onInputKeyup($event.key)"
-      >
+        @keyup.prevent="onInputKeyup($event.key)"
+      />
       <ul
         v-if="showOptions"
         ref="select"
@@ -19,6 +19,7 @@
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
+        @click.stop
         @blur="onBlur"
       >
         <li
@@ -33,14 +34,28 @@
           <div class="h-3 w-3 rounded-full" :class="priorityColor(option.value)" />
           <div v-if="isSelected(option)" class="text-indigo-600 inset-y-0 flex items-center p-0">
             <!-- Heroicon name: solid/check -->
-            <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            <svg
+              class="h-3 w-3"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
             </svg>
           </div>
         </li>
       </ul>
     </div>
-    <span v-else class="cursor-pointer m-px inline-flex justify-center items-center" :class="computedValue ? '' : 'text-gray-400 italic'">
+    <span
+      v-else
+      class="cursor-pointer m-px inline-flex justify-center items-center"
+      :class="computedValue ? '' : 'text-gray-400 italic'"
+    >
       <div class="h-3 w-3 rounded-full" :class="priorityColor(computedValue)" />
     </span>
   </div>
@@ -54,41 +69,41 @@ export default {
   props: {
     value: {
       type: Number,
-      default: 0
+      default: 0,
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  data () {
+  data() {
     return {
       showOptions: false,
       hoverIndex: -1,
-      mouseMode: false
+      mouseMode: false,
     }
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value || ''
       },
-      set (newVal) {
+      set(newVal) {
         if (newVal) {
           this.$emit(events.input, newVal)
         }
-      }
+      },
     },
-    priorityOptions () {
+    priorityOptions() {
       return priorityOptions
-    }
+    },
   },
   watch: {
-    async isEditable (val) {
+    async isEditable(val) {
       if (!val) {
         this.showOptions = false
       } else {
@@ -97,65 +112,46 @@ export default {
           this.$refs.button.focus()
         })
       }
-    }
+    },
   },
   methods: {
-    priorityColor (priority) {
-      return this.priorityOptions.find(option => option.value === priority)?.color
+    priorityColor(priority) {
+      return this.priorityOptions.find((option) => option.value === priority)?.color
     },
-    emitChange (value) {
+    emitChange(value) {
       this.computedValue = value
       this.onBlur()
     },
-    isSelected ({ value }) {
+    isSelected({ value }) {
       return this.computedValue === value
     },
-    onBlur () {
-      this.showOptions = false
+    onBlur() {
       this.$emit(events.blur)
     },
-    onButtonClick () {
+    onButtonClick() {
       this.showOptions = !this.showOptions
     },
-    onInputKeyup (key) {
-      if (key === 'ArrowDown') {
-        this.onArrowDownPress()
-      } else if (key === 'ArrowUp') {
-        this.onArrowUpPress()
-      } else if (key === 'Enter') {
+    onInputKeyup(key) {
+      if (key === 'Enter') {
         this.onEnterPress()
       }
     },
-    onArrowDownPress () {
-      if (this.hoverIndex < this.priorityOptions.length - 1) {
-        this.hoverIndex++
-        this.scrollSelectedIntoView()
-      }
+    onEnterPress() {
+      this.$emit(events.tab)
     },
-    onArrowUpPress () {
-      if (this.hoverIndex > 0) {
-        this.hoverIndex--
-        this.scrollSelectedIntoView()
-      }
-    },
-    onEnterPress () {
-      if (this.hoverIndex > -1) {
-        this.emitChange(this.priorityOptions[this.hoverIndex].value)
-      }
-    },
-    onMouseOver (idx) {
+    onMouseOver(idx) {
       this.hoverIndex = idx
     },
-    scrollSelectedIntoView () {
+    scrollSelectedIntoView() {
       if (this.$refs.option) {
         if (this.$refs.option[this.hoverIndex]) {
           this.$refs.option[this.hoverIndex].scrollIntoView({
-            block: 'center'
+            block: 'center',
           })
         }
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -208,7 +204,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 </style>

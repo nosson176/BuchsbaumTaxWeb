@@ -13,7 +13,10 @@
       @input="onInput"
     >
       <template #header="{ emit }">
-        <button class="mx-btn mx-btn-text" @click="emit(new Date())">
+        <button
+          class="w-full bg-gray-200 flex items-center justify-center mx-btn mx-btn-text"
+          @click="emit(new Date())"
+        >
           Today
         </button>
       </template>
@@ -32,50 +35,50 @@ export default {
   props: {
     value: {
       type: String,
-      default: null
+      default: null,
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      default: 'date'
+      default: 'date',
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  data () {
+  data() {
     return {
-      showPicker: false
+      showPicker: false,
     }
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         return this.value
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit('input', newVal)
         this.$emit(events.blur)
-      }
+      },
     },
-    format () {
+    format() {
       return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
     },
-    valueType () {
+    valueType() {
       return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
     },
-    isTypeDate () {
+    isTypeDate() {
       return this.type === 'date'
     },
-    displayedValue () {
+    displayedValue() {
       return this.isTypeDate && this.computedValue ? formatDateForClient(this.computedValue) : this.computedValue
-    }
+    },
   },
-  updated () {
+  updated() {
     if (this.isEditable) {
       this.$refs.input.focus()
     }
@@ -84,13 +87,13 @@ export default {
     }
   },
   methods: {
-    onFocus () {
+    onFocus() {
       this.showPicker = true
     },
-    onInput (newVal) {
+    onInput(newVal) {
       this.computedValue = newVal
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -7,9 +7,7 @@
     <div v-if="count >= 0" class="text-white rounded-full bg-indigo-600 py-0.5 px-1.5 text-xs">
       {{ count }}
     </div>
-    <div
-      class="text-gray-500  inline-flex items-center py-0.5 px-1.5 text-sm font-medium"
-    >
+    <div class="text-gray-500 inline-flex items-center py-0.5 px-1 text-sm font-medium">
       <slot />
     </div>
   </div>
@@ -22,29 +20,28 @@ export default {
   props: {
     active: {
       type: Boolean,
-      default: false
+      default: false,
     },
     count: {
       type: Number,
-      default: -1
-    }
+      default: -1,
+    },
   },
   computed: {
-    classObj () {
+    classObj() {
       const active = this.active
       return { active }
-    }
+    },
   },
   methods: {
-    emitClick () {
+    emitClick() {
       this.$emit(events.click)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
-
 .active {
   @apply border-indigo-500 text-gray-900;
 }

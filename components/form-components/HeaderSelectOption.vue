@@ -22,18 +22,18 @@
             fill="currentColor"
             aria-hidden="true"
           >
-            <path
-              d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-            />
+            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
           </svg>
         </button>
       </div>
+      <AddRowButton v-else-if="addIcon" @click.native="toggleShowOptions" />
       <div v-else>
         <input
           ref="filter"
-          v-model="inputValue"
+          v-model="computedValue"
           type="text"
           class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-0.5 pr-0.5 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          :placeholder="shownValue"
           @keyup="onInputKeyup($event.key)"
           @click="onInputClick"
         />
@@ -64,7 +64,7 @@
         v-if="showOptions"
         class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
         tabindex="-1"
-        :class="short ? 'max-h-20' : 'max-h-60'"
+        :class="dropdownHeight"
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
@@ -80,9 +80,9 @@
           role="option"
           @click="setSelectOption(option)"
         >
-          <span
-            :class="[isSelected(option) ? 'font-semibold' : 'font-normal', 'block truncate']"
-          >{{ option.name || option.value }}</span>
+          <span :class="[isSelected(option) ? 'font-semibold' : 'font-normal', 'block truncate']">{{
+            option.name || option.value
+          }}</span>
           <span
             v-if="isSelected(option)"
             class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4 hover:text-white"
@@ -116,94 +116,107 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     options: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     menu: {
       type: Boolean,
-      default: false
+      default: false,
     },
     short: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+    addIcon: {
+      type: Boolean,
+      default: false,
+    },
+    long: {
+      type: Boolean,
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
       showOptions: false,
       filterOptionsValue: '',
       selectedIdx: -1,
-      keyboardMode: false
+      keyboardMode: false,
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.clientClicked]),
     computedValue: {
-      get () {
-        return this.value
+      get() {
+        return this.shownValue || this.value
       },
-      set (value) {
+      set(value) {
+        this.filterOptionsValue = value
         this.$emit(events.input, value)
-      }
+      },
     },
     inputValue: {
-      get () {
+      get() {
         return this.filterOptionsValue
       },
-      set (value) {
+      set(value) {
         this.filterOptionsValue = value
-      }
+      },
     },
-    filteredOptions () {
+    filteredOptions() {
       return this.options.filter((option) => {
         const nameFilter = option.name?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
         const valueFilter = option.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
         return nameFilter || valueFilter
       })
     },
-    shownValue () {
-      return this.options.find(option => option.value === this.value)?.name
-    }
-  },
-  watch: {
-    showOptions (value) {
-      if (value) {
-        this.$refs.filter?.focus()
-        this.inputValue = ''
+    shownValue() {
+      return this.options.find((option) => option.value === this.value)?.name
+    },
+    dropdownHeight() {
+      if (this.short) {
+        return 'max-h-20'
+      } else if (this.long) {
+        return 'max-h-full'
+      } else {
+        return 'max-h-60'
       }
     },
-    selectedClient (newVal, oldVal) {
-      if (newVal.id !== oldVal.id) {
+  },
+  watch: {
+    showOptions(value) {
+      if (value) {
+        this.$refs.filter?.focus()
         this.filterOptionsValue = ''
       }
-    }
+    },
   },
   methods: {
-    onInputClick () {
+    onInputClick() {
       this.toggleShowOptions()
       this.$refs.filter?.focus()
     },
-    toggleShowOptions () {
+    toggleShowOptions() {
       this.showOptions = !this.showOptions
       this.selectedIdx = this.showOptions ? 0 : -1
     },
-    setSelectOption (option) {
+    setSelectOption(option) {
       this.filterOptionsValue = option.value
       this.computedValue = option.value
       this.showOptions = false
     },
-    onBlur () {
+    onBlur() {
       this.showOptions = false
     },
-    isSelected (option) {
+    isSelected(option) {
       if (option.value) {
         return option.value === this.computedValue
       }
     },
-    onArrowDownPress () {
+    onArrowDownPress() {
       this.keyboardMode = true
       if (!this.showOptions) {
         this.showOptions = true
@@ -212,7 +225,7 @@ export default {
         this.$refs.li[this.selectedIdx]?.scrollIntoView()
       }
     },
-    onArrowUpPress () {
+    onArrowUpPress() {
       this.keyboardMode = true
       if (!this.showOptions) {
         this.showOptions = true
@@ -221,7 +234,7 @@ export default {
         this.$refs.li[this.selectedIdx]?.scrollIntoView()
       }
     },
-    onEnterPress () {
+    onEnterPress() {
       this.keyboardMode = true
       if (this.hoverIndex > -1) {
         this.setSelectOption(this.filteredOptions[this.selectedIdx] || this.computedValue)
@@ -229,7 +242,7 @@ export default {
       this.selectedIdx = -1
       this.keyboardMode = false
     },
-    onInputKeyup (key) {
+    onInputKeyup(key) {
       if (key === 'ArrowDown') {
         this.onArrowDownPress()
       } else if (key === 'ArrowUp') {
@@ -238,13 +251,12 @@ export default {
         this.onEnterPress()
       }
     },
-    selectedItem (idx) {
+    selectedItem(idx) {
       const keyboardHover = this.keyboardMode && this.selectedIdx === idx
       return { keyboardHover }
-    }
-  }
+    },
+  },
 }
-
 </script>
 
 <style scoped>

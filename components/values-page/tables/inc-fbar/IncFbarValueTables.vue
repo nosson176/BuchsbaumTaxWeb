@@ -17,9 +17,8 @@
 
 <script>
 export default {
-  name: "IncFbarValueTables",
-};
+  name: 'IncFbarValueTables',
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

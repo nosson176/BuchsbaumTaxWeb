@@ -7,78 +7,98 @@
       v-for="(client, idx) in displayedClients"
       :ref="client.id"
       :key="idx"
-      class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer hover:bg-gray-400 hover:text-white"
+      class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
       :class="client.id === selectedClientId ? 'selected' : ''"
-      @click="selectClient(client)"
+      @click="openChangeClientModal(client)"
     >
       <div class="w-full">
-        <span class="font-medium text-gray-900 ">{{ client.lastName }}</span> {{ client.displayName }}
+        <span class="font-medium text-gray-900 group-hover:text-white">{{ client.lastName }}</span>
+        {{ client.displayName }}
       </div>
       <div class="w-5" @click.stop>
         <DeleteButton @click="archiveClient(client)" />
       </div>
     </div>
+    <Modal :showing="showChangeClientModal" @hide="closeChangeClientModal">
+      <ChangeClient
+        :switch-to-client-name="switchToClient.lastName"
+        @switchClients="selectClient(switchToClient)"
+        @addLog="addLog"
+        @hide="closeChangeClientModal"
+      />
+    </Modal>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations, tabs } from '~/shared/constants'
+import { events, models, mutations, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
   props: {
     showArchived: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
-    return { selectedClientId: NaN }
+  data() {
+    return {
+      selectedClientId: NaN,
+      showChangeClientModal: false,
+      switchToClient: ''
+    }
   },
   computed: {
     ...mapState([models.clients, models.selectedClient, models.selectedSmartview]),
-    displayedClients () {
+    displayedClients() {
       return this.filteredClients
     },
-    filteredClients () {
-      return Object.fromEntries(Object.entries(this.clients)
-        .filter(([key, client]) => this.showArchived === client.archived)
-        .filter(([key, client]) => this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true))
+    filteredClients() {
+      return Object.fromEntries(
+        Object.entries(this.clients)
+          .filter(([key, client]) => this.showArchived === client.archived)
+          .filter(([key, client]) =>
+            this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true
+          )
+      )
     },
-    hasSelectedSmartview () {
+    hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     },
-    headers () {
+    headers() {
       return this.$api.getHeaders()
-    }
+    },
   },
   watch: {
-    selectedClient () {
+    selectedClient() {
       this.scrollClientIntoView()
-    }
+    },
   },
   methods: {
-    selectClient ({ id }) {
+    selectClient({ id }) {
       this.selectedClientId = id
       const headers = this.headers
       this.$api.getClientData(headers, id)
+
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.clientClicked,
+        data: Math.random(),
+      })
     },
-    onAddRowClick () {
+    onAddRowClick() {
       const defaultValues = {
-        lastName: 'New Client'
+        lastName: 'New Client',
       }
       const client = Object.assign({}, defaultValues)
-      this.$api.createClient(this.headers, { client })
-        .then((data) => {
-          this.$api.getClientData(this.headers, data.id)
-            .then(async () => {
-              await this.$api.getClientList(this.headers)
-              this.scrollClientIntoView()
-            })
+      this.$api.createClient(this.headers, { client }).then((data) => {
+        this.$api.getClientData(this.headers, data.id).then(async () => {
+          await this.$api.getClientList(this.headers)
+          this.scrollClientIntoView()
         })
+      })
     },
-    scrollClientIntoView () {
+    scrollClientIntoView() {
       if (this.selectedClient) {
         this.selectedClientId = this.selectedClient.id
         const selectedClientRef = this.$refs[this.selectedClient.id]
@@ -87,18 +107,45 @@ export default {
         }
       }
     },
-    archiveClient (client) {
+    archiveClient(client) {
       if (this.showArchived) {
         const clientCopy = Object.assign({}, client)
         clientCopy.archived = false
-        this.$api.updateClient(this.headers, { clientId: client.id, client: clientCopy })
+        this.$api
+          .updateClient(this.headers, { clientId: client.id, client: clientCopy })
           .then(() => this.$api.getClientList(this.headers))
       } else {
-        this.$store.commit(
-          mutations.setModelResponse,
-          { model: models.modals, data: { delete: { showing: true, data: { id: client.id, type: tabs.clients } } } }
-        )
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.modals,
+          data: { delete: { showing: true, data: { id: client.id, type: tabs.clients, label: client.lastName } } },
+        })
       }
+    },
+    openChangeClientModal(client){
+      if(this.selectedClient?.id && this.$store.getters[models.secondsSpentOnClient] > 0
+        && this.$store.getters[models.promptOnClientChange]){
+        this.switchToClient = client
+        this.showChangeClientModal = true
+      }
+      else {
+        this.selectClient(client)
+      }
+    },
+    closeChangeClientModal(){
+      this.showChangeClientModal = false
+    },
+    addLog(){
+      const defaultValues = {
+        clientId: this.selectedClient.id,
+        logDate: new Date(),
+        secondsSpent: this.$store.getters[models.secondsSpentOnClient]
+      }
+        const log = Object.assign({}, defaultValues)
+        this.$api.createLog(this.headers, { log }).then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+        })
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
+      this.$emit(events.resetClock)
     }
   }
 }

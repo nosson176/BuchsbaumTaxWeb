@@ -9,12 +9,11 @@
 <script>
 export default {
   name: 'ValuesPage',
-  async fetch () {
+  async fetch() {
     const headers = this.$api.getHeaders()
     await this.$api.getValueTypes(headers)
-  }
-};
+  },
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

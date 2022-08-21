@@ -18,6 +18,12 @@ export const models = Object.freeze({
   valueTypes: 'valueTypes',
   cmdPressed: 'cmdPressed',
   clientSearchValue: 'clientSearchValue',
+  clientClicked: 'clientClicked',
+  phoneNumbers: 'phoneNumbers',
+  clientSearchOption: 'clientSearchOption',
+  inbox: 'inbox',
+  secondsSpentOnClient: 'secondsSpentOnClient',
+  promptOnClientChange: 'promptOnClientChange',
 })
 
 // Store Mutations
@@ -69,11 +75,21 @@ export const events = Object.freeze({
   keyup: 'keyup',
   resize: 'resize',
   submit: 'submit',
+  tab: 'tab',
+  newMessage: 'newMessage',
+  switchClients: 'switchClients',
+  addLog: 'addLog',
+  resetClock: 'resetClock',
+  dragstart: 'dragstart',
+  drop: 'drop',
+  dragover: 'dragover',
+  dragenter: 'dragenter',
 })
 
 export const dateformat = Object.freeze({
   client: 'M/d/yy',
   server: 'yyyy-MM-dd',
+  time: 'h:mm a',
 })
 
 // Notification Types
@@ -90,6 +106,7 @@ export const tabs = Object.freeze({
   fees: 'fees',
   income: 'income',
   logs: 'logs',
+  smartviews: 'smartviews',
   tax_personals: 'tax-personals',
   tax_years: 'tax-years',
   values: {
@@ -249,3 +266,7 @@ export const operators = Object.freeze([
   { name: '>=', value: '>=' },
   { name: '<=', value: '<=' },
 ])
+
+export const secondsNeededToDisplayModal = 600
+
+export const TRANSITION_NAME = 'flip-list'

@@ -8,9 +8,9 @@
           <AlertIcon class="text-red-600" />
         </div>
         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-          <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900">Delete Item</h3>
+          <h3 id="modal-title" class="text-lg leading-6 font-medium text-gray-900 capitalize">Delete {{ label }}</h3>
           <div class="mt-2">
-            <p class="text-sm text-gray-500">Are you sure you want to Delete item?</p>
+            <p class="text-sm text-gray-500">Are you sure you want to Delete {{ label }}?</p>
           </div>
         </div>
       </div>
@@ -20,28 +20,37 @@
         type="button"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
         @click="handleDelete"
-      >Delete</button>
+      >
+        Delete
+      </button>
       <button
         type="button"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         @click="emitHide"
-      >Cancel</button>
+      >
+        Cancel
+      </button>
     </div>
   </div>
 </template>
 <script>
-import { events } from '~/shared/constants';
+import { events } from '~/shared/constants'
 export default {
   name: 'DeleteType',
-  methods: {
-    handleDelete () {
-      this.$emit(events.delete);
-    },
-    emitHide () {
-      this.$emit(events.hide);
+  props:{
+    label:{
+      type: String,
+      default: 'item'
     }
-  }
+  },
+  methods: {
+    handleDelete() {
+      this.$emit(events.delete)
+    },
+    emitHide() {
+      this.$emit(events.hide)
+    },
+  },
 }
 </script>
-<style scoped>
-</style>
+<style scoped></style>

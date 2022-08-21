@@ -3,7 +3,7 @@
     <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0">
+    <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
       <input
         ref="button"
         v-model="inputValue"
@@ -12,7 +12,7 @@
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick"
         @keyup="onInputKeyup($event.key)"
-      >
+      />
       <ul
         v-if="showOptions && isEditable"
         ref="select"
@@ -39,8 +39,18 @@
           </span>
           <span v-if="isSelected(option)" class="text-indigo-600 absolute inset-y-0 left-0 flex items-center p-0">
             <!-- Heroicon name: solid/check -->
-            <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            <svg
+              class="h-3 w-3"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
             </svg>
           </span>
         </li>
@@ -62,33 +72,33 @@ export default {
   props: {
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     isEditable: {
       type: Boolean,
-      required: true
+      required: true,
     },
     options: {
       type: Array,
-      required: true
+      required: true,
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  data () {
+  data() {
     return {
       showOptions: false,
       shiftActive: false,
       hoverIndex: -1,
       mouseMode: false,
-      filterOptionsValue: ''
+      filterOptionsValue: '',
     }
   },
   computed: {
     computedValue: {
-      get () {
+      get() {
         let selected = []
         if (this.splitOptions[0] === MULT) {
           selected = this.splitOptions.slice(1)
@@ -97,28 +107,28 @@ export default {
         }
         return selected
       },
-      set (newVal) {
+      set(newVal) {
         this.$emit(events.input, newVal)
-      }
+      },
     },
     inputValue: {
-      get () {
+      get() {
         return this.showOptions ? this.filterOptionsValue : this.shownValue
       },
-      set (value) {
+      set(value) {
         this.filterOptionsValue = value
-      }
+      },
     },
-    multiple () {
+    multiple() {
       return this.splitOptions.length > 1
     },
-    splitOptions () {
+    splitOptions() {
       return this.value.split('\u000B')
     },
-    shownValue () {
+    shownValue() {
       return this.splitOptions[0] || this.placeholder
     },
-    filteredOptions () {
+    filteredOptions() {
       return this.options.filter((option) => {
         if (option.value) {
           return option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
@@ -126,10 +136,10 @@ export default {
           return false
         }
       })
-    }
+    },
   },
   watch: {
-    async isEditable (val) {
+    async isEditable(val) {
       if (!val) {
         this.showOptions = false
       } else {
@@ -139,9 +149,9 @@ export default {
           this.inputValue = ''
         })
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     document.addEventListener('keydown', (e) => {
       if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
         this.onShiftPress()
@@ -153,8 +163,20 @@ export default {
       }
     })
   },
+  beforeDestroy() {
+    document.removeEventListener('keydown', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftPress()
+      }
+    })
+    document.removeEventListener('keyup', (e) => {
+      if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && this.isEditable) {
+        this.onShiftUp()
+      }
+    })
+  },
   methods: {
-    emitChange (value) {
+    emitChange(value) {
       if (this.shiftActive) {
         const isSelected = this.computedValue.includes(value)
         if (isSelected) {
@@ -167,52 +189,52 @@ export default {
         this.onBlur()
       }
     },
-    removeValue (value) {
+    removeValue(value) {
       const index = this.computedValue.indexOf(value)
       if (index > -1) {
         this.computedValue.splice(index, 1)
       }
     },
-    addValue (value) {
+    addValue(value) {
       this.computedValue.push(value)
     },
-    isSelected ({ value }) {
+    isSelected({ value }) {
       return this.computedValue.includes(value)
     },
-    onBlur () {
+    onBlur() {
       this.showOptions = false
       this.$emit(events.blur)
     },
-    onButtonClick () {
+    onButtonClick() {
       this.showOptions = !this.showOptions
     },
-    onArrowDownPress () {
+    onArrowDownPress() {
       if (this.hoverIndex < this.filteredOptions.length - 1) {
         this.hoverIndex++
         this.scrollSelectedIntoView()
       }
     },
-    onArrowUpPress () {
+    onArrowUpPress() {
       if (this.hoverIndex > 0) {
         this.hoverIndex--
         this.scrollSelectedIntoView()
       }
     },
-    onEnterPress () {
+    onEnterPress() {
       if (this.hoverIndex > -1) {
         this.emitChange(this.filteredOptions[this.hoverIndex].value)
       }
     },
-    onShiftPress () {
+    onShiftPress() {
       this.shiftActive = true
     },
-    onShiftUp () {
+    onShiftUp() {
       this.shiftActive = false
       this.computedValue.unshift(MULT)
       this.computedValue = this.computedValue.join('\u000B')
       this.onBlur()
     },
-    onInputKeyup (key) {
+    onInputKeyup(key) {
       if (key === 'ArrowDown') {
         this.onArrowDownPress()
       } else if (key === 'ArrowUp') {
@@ -221,19 +243,19 @@ export default {
         this.onEnterPress()
       }
     },
-    onMouseOver (idx) {
+    onMouseOver(idx) {
       this.hoverIndex = idx
     },
-    scrollSelectedIntoView () {
+    scrollSelectedIntoView() {
       if (this.$refs.option) {
         if (this.$refs.option[this.hoverIndex]) {
           this.$refs.option[this.hoverIndex].scrollIntoView({
-            block: 'center'
+            block: 'center',
           })
         }
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

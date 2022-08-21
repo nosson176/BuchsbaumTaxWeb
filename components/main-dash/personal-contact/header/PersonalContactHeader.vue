@@ -1,55 +1,34 @@
 <template>
   <div class="flex flex-col">
     <PersonalContactTabs :active-tab="activeTab" @click="emitTabClick" />
-    <div class="flex bg-blue-200 p-0.5">
-      <ViewArchivedHeader @change="emitChange" />
-      <SearchHeader v-model="searchInput" :active-tab="activeTab" />
-    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, tableGroups, tabs } from '~/shared/constants'
+import { events, models, tabs } from '~/shared/constants'
 export default {
   name: 'PersonalContactHeader',
-  data () {
+  data() {
     return {
-      searchInput: '',
-      activeTab: tabs.tax_personals
+      activeTab: tabs.contact,
     }
   },
   computed: {
-    ...mapState([models.selectedClient])
+    ...mapState([models.selectedClient, models.clientClicked]),
   },
   watch: {
-    searchInput (searchInput) {
-      this.searchInputUpdate(searchInput)
+    clientClicked() {
+      this.emitTabClick(tabs.contact)
     },
-    selectedClient (newVal, oldVal) {
-      if (newVal.id !== oldVal.id) {
-        this.emitTabClick(tabs.contact)
-      }
-    }
   },
   methods: {
-    emitChange () {
-      this.$emit(events.change)
-    },
-    emitTabClick (tab) {
-      this.searchInput = ''
+    emitTabClick(tab) {
       this.activeTab = tab
       this.$emit(events.click, tab)
     },
-    searchInputUpdate (searchInput) {
-      this.$store.commit(
-        mutations.setModelResponse,
-        { model: models.search, data: { [tableGroups.personalContact]: searchInput } }
-      )
-    }
-  }
+  },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

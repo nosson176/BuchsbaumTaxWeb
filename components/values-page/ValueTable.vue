@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full">
+  <div class="w-full h-full overflow-hidden">
     <ChecklistValueTables v-if="isChecklistsTabActive" />
     <ClientValueTables v-if="isClientTabActive" />
     <ContactValueTables v-if="isContactsTabActive" />
@@ -12,43 +12,42 @@
 </template>
 
 <script>
-import { tabs } from '~/shared/constants';
+import { tabs } from '~/shared/constants'
 export default {
-  name: "ValueTable",
+  name: 'ValueTable',
   props: {
     activeTab: {
       type: Object,
-      default: () => null
-    }
+      default: () => null,
+    },
   },
   computed: {
-    isChecklistsTabActive () {
-      return this.activeTab?.value === tabs.values.checklist;
+    isChecklistsTabActive() {
+      return this.activeTab?.value === tabs.values.checklist
     },
-    isClientTabActive () {
-      return this.activeTab?.value === tabs.values.client;
+    isClientTabActive() {
+      return this.activeTab?.value === tabs.values.client
     },
-    isContactsTabActive () {
-      return this.activeTab?.value === tabs.values.contact;
+    isContactsTabActive() {
+      return this.activeTab?.value === tabs.values.contact
     },
-    isFeesTabActive () {
-      return this.activeTab?.value === tabs.values.fee;
+    isFeesTabActive() {
+      return this.activeTab?.value === tabs.values.fee
     },
-    isIncFbarTabActive () {
-      return this.activeTab?.value === tabs.values.inc_fbar_breakdown;
+    isIncFbarTabActive() {
+      return this.activeTab?.value === tabs.values.inc_fbar_breakdown
     },
-    isSharedTabActive () {
-      return this.activeTab?.value === tabs.values.shared;
+    isSharedTabActive() {
+      return this.activeTab?.value === tabs.values.shared
     },
-    isTaxPersonalTabActive () {
-      return this.activeTab?.value === tabs.values.tax_personal;
+    isTaxPersonalTabActive() {
+      return this.activeTab?.value === tabs.values.tax_personal
     },
-    isTaxYearTabActive () {
-      return this.activeTab?.value === tabs.values.tax_year;
+    isTaxYearTabActive() {
+      return this.activeTab?.value === tabs.values.tax_year
     },
   },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

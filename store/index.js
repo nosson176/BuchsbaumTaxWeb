@@ -15,17 +15,20 @@ const state = () => {
     // The Axios API global request interceptor marks a model as loading=true
     // and the response interceptor marks it as false. The model keys are being
     // pre-initialised here to fix "reactivity" issues on first loads.
-    loading: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: false }), {})
+    loading: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: false }), {}),
   }
 }
 
 const getters = {
-  [models.appWidth]: state => state[models.appWidth]
+  [models.appWidth]: (state) => state[models.appWidth],
+  [models.secondsSpentOnClient]: (state) => state[models.secondsSpentOnClient],
+  [models.selectedClient]: (state) => state[models.selectedClient],
+  [models.promptOnClientChange]: (state) => state[models.promptOnClientChange]
 }
 
 const mutations = {
   // Set data from API responses. `model` is 'lists', 'campaigns' etc.
-  setModelResponse (state, { model, data }) {
+  setModelResponse(state, { model, data }) {
     state[model] = data
   },
 
@@ -33,13 +36,11 @@ const mutations = {
   // status is set to true which is used by the UI to show loaders and block
   // forms. When a response is received, the status is set to false. This is
   // invoked by API requests in `http`.
-  setLoading (state, { model, status }) {
+  setLoading(state, { model, status }) {
     state.loading[model] = status
-  }
+  },
 }
 
-const actions = {
-
-}
+const actions = {}
 
 export { namespaced, state, getters, mutations, actions }

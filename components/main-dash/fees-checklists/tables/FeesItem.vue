@@ -17,7 +17,6 @@
                 :is-editable="isEditable('feeType')"
                 :options="feeTypeOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
             <div @click="setEditable('year')">
@@ -28,7 +27,6 @@
                 :is-editable="isEditable('year')"
                 :options="yearOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
           </div>
@@ -40,7 +38,6 @@
                 :is-editable="isEditable('status')"
                 :options="feeStatusOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
             <div @click="setEditable('statusDetail')">
@@ -50,19 +47,12 @@
                 :is-editable="isEditable('statusDetail')"
                 :options="feeStatusDetailOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
           </div>
           <div class="flex items-center w-1/3 space-x-1">
             <div @click="setEditable('sum')">
-              <EditableCheckBoxCell
-                v-model="sum"
-                placeholder="Sum"
-                :is-editable="isEditable('sum')"
-                @blur="onBlur"
-                @input="debounceUpdate"
-              />
+              <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur" />
             </div>
             <div class="flex flex-col">
               <div @click="setEditable('manualAmount')">
@@ -72,7 +62,6 @@
                   currency
                   :is-editable="isEditable('manualAmount')"
                   @blur="onBlur"
-                  @input="debounceUpdate"
                 />
                 <div v-if="isEditable('manualAmount')" />
               </div>
@@ -83,7 +72,6 @@
                   currency
                   :is-editable="isEditable('paidAmount')"
                   @blur="onBlur"
-                  @input="debounceUpdate"
                 />
                 <div v-if="isEditable('paidAmount')" />
               </div>
@@ -92,12 +80,7 @@
         </div>
         <div class="flex justify-between">
           <div @click="setEditable('include')">
-            <EditableCheckBoxCell
-              v-model="include"
-              :is-editable="isEditable('include')"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
+            <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @blur="onBlur" />
           </div>
           <div class="flex space-x-2">
             <span class="missing">Time</span>
@@ -107,31 +90,18 @@
                 placeholder="Date"
                 type="date"
                 :is-editable="isEditable('dateFee')"
-                @input="debounceUpdate"
                 @blur="onBlur"
               />
             </div>
           </div>
           <div class="w-1/3">
             <div @click="setEditable('rate')">
-              <EditableInput
-                v-model="rate"
-                :is-editable="isEditable('rate')"
-                placeholder="Rate/hr"
-                @blur="onBlur"
-                @input="debounceUpdate"
-              />
+              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr" @blur="onBlur" />
             </div>
           </div>
         </div>
         <div @click="setEditable('notes')">
-          <EditableInput
-            v-model="notes"
-            placeholder="Notes"
-            :is-editable="isEditable('notes')"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" />
         </div>
       </div>
     </div>
@@ -140,7 +110,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { events, models, currencySymbols } from '~/shared/constants'
 
 export default {
@@ -148,136 +117,136 @@ export default {
   props: {
     fee: {
       type: Object,
-      required: true
+      required: true,
     },
     idx: {
       type: Number,
-      default: NaN
+      default: NaN,
     },
     isNew: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      editable: ''
+      editable: '',
     }
   },
   computed: {
     ...mapState([models.valueTypes, models.selectedClient]),
-    classObj () {
+    classObj() {
       const even = this.idx % 2 === 0
       return { even }
     },
-    formModel () {
+    formModel() {
       return {
-        ...this.fee
+        ...this.fee,
       }
     },
-    count () {
+    count() {
       return this.idx + 1
     },
     feeType: {
-      get () {
+      get() {
         return this.formModel.feeType
       },
-      set (newValue) {
+      set(newValue) {
         this.formModel.feeType = newValue
-      }
+      },
     },
     year: {
-      get () {
+      get() {
         return this.formModel.year
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.year = newVal
-      }
+      },
     },
     status: {
-      get () {
+      get() {
         return this.formModel.status
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.status = newVal
-      }
+      },
     },
     statusDetail: {
-      get () {
+      get() {
         return this.formModel.statusDetail
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.statusDetail = newVal
-      }
+      },
     },
     manualAmount: {
-      get () {
+      get() {
         return this.formModel.manualAmount
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.manualAmount = newVal
-      }
+      },
     },
     paidAmount: {
-      get () {
+      get() {
         return this.formModel.paidAmount
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.paidAmount = newVal
-      }
+      },
     },
     dateFee: {
-      get () {
+      get() {
         return this.formModel.dateFee
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.dateFee = newVal
-      }
+      },
     },
     rate: {
-      get () {
+      get() {
         return this.formModel.rate
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.rate = newVal
-      }
+      },
     },
     notes: {
-      get () {
+      get() {
         return this.formModel.notes
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.notes = newVal
-      }
+      },
     },
     include: {
-      get () {
+      get() {
         return this.formModel.include
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.include = newVal
-      }
+      },
     },
     sum: {
-      get () {
+      get() {
         return this.formModel.sum
       },
-      set (newVal) {
+      set(newVal) {
         this.formModel.sum = newVal
-      }
+      },
     },
-    yearOptions () {
-      return this.valueTypes.year_name.filter(year => year.show)
+    yearOptions() {
+      return this.valueTypes.year_name.filter((year) => year.show)
     },
-    feeTypeOptions () {
-      return this.valueTypes.fee_type.filter(feeType => feeType.show)
+    feeTypeOptions() {
+      return this.valueTypes.fee_type.filter((feeType) => feeType.show)
     },
-    feeStatusOptions () {
-      return this.valueTypes.fee_status.filter(feeStatus => feeStatus.show)
+    feeStatusOptions() {
+      return this.valueTypes.fee_status.filter((feeStatus) => feeStatus.show)
     },
-    feeStatusDetailOptions () {
+    feeStatusDetailOptions() {
       return this.valueTypes.fee_status_detail.filter((feeStatusDetail) => {
-        const parentId = this.feeStatusOptions.find(statusOption => statusOption.value === this.formModel.status)?.id
+        const parentId = this.feeStatusOptions.find((statusOption) => statusOption.value === this.formModel.status)?.id
         if (this.formModel.status) {
           return feeStatusDetail.parentId === parentId
         } else {
@@ -285,43 +254,41 @@ export default {
         }
       })
     },
-    debounceUpdate () {
-      return debounce(this.handleUpdate, 500)
-    },
-    currencySymbols () {
+    currencySymbols() {
       return currencySymbols
     },
-    isRedBG () {
+    isRedBG() {
       return this.year === 'ITIN'
-    }
+    },
   },
   watch: {
     fee: {
-      handler () {
+      handler() {
         if (this.isNew) {
           this.editable = 'feeType'
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
-    setEditable (field) {
+    setEditable(field) {
       this.editable = field
     },
-    isEditable (field) {
+    isEditable(field) {
       return this.editable === field
     },
-    onBlur () {
+    onBlur() {
+      this.handleUpdate()
       this.editable = ''
     },
-    handleUpdate () {
+    handleUpdate() {
       this.$emit(events.input, this.formModel)
     },
-    onDeleteClick () {
+    onDeleteClick() {
       this.$emit(events.delete, this.fee.id)
-    }
-  }
+    },
+  },
 }
 </script>
 

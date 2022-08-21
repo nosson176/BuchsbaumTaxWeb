@@ -32,59 +32,59 @@
 </template>
 
 <script>
-import { events } from '~/shared/constants';
+import { events } from '~/shared/constants'
 export default {
-  name: "UsersTable",
+  name: 'UsersTable',
   props: {
     users: {
       type: Array,
-      required: true
+      required: true,
     },
     userId: {
       type: Number,
-      default: 0
+      default: 0,
     },
   },
-  data () {
+  data() {
     return {
       deleteId: null,
       showDelete: false,
-    };
-  },
-  computed: {
-    headers () {
-      return this.$api.getHeaders();
     }
   },
+  computed: {
+    headers() {
+      return this.$api.getHeaders()
+    },
+  },
   methods: {
-    setSelected (user) {
-      this.$emit(events.click, user.id);
+    setSelected(user) {
+      this.$emit(events.click, user.id)
     },
-    isUserSelected ({ id }) {
-      return id === this.userId;
+    isUserSelected({ id }) {
+      return id === this.userId
     },
-    onAddRowClick () {
+    onAddRowClick() {
       const user = {
         username: '',
         firstName: '',
         lastName: '',
         userType: '',
         notifyOfLogins: false,
-      };
-      this.$api.createUser(this.headers, { user });
+      }
+      this.$api.createUser(this.headers, { user })
     },
-    deleteUser (userId) {
-      this.deleteId = userId;
-      this.showDelete = true;
+    deleteUser(userId) {
+      this.deleteId = userId
+      this.showDelete = true
     },
-    completeDelete () {
-      this.$api.deleteUser(this.headers, { userId: this.deleteId });
-      this.showDelete = false;
+    completeDelete() {
+      this.$api.deleteUser(this.headers, { userId: this.deleteId })
+      this.showDelete = false
     },
-    closeDeleteModal () {
-      this.showDelete = false;
-    }
-  }
+    closeDeleteModal() {
+      this.showDelete = false
+    },
+  },
 }
 </script>
 
