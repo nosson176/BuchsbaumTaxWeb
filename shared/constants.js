@@ -140,6 +140,11 @@ export const categories = Object.freeze({
   dependant: 'DEP.',
 })
 
+export const userTypes = Object.freeze([
+  { name: 'admin', value: 'admin' },
+  { name: 'user', value: 'user' },
+])
+
 export const priorityOptions = Object.freeze([
   { color: 'pink', value: 1 },
   { color: 'green', value: 2 },
