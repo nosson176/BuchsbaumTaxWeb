@@ -79,13 +79,7 @@
           </Tooltip>
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <EditableTextAreaCell
-            v-model="log.note"
-            :is-editable="isEditable(`${idx}-note`)"
-            @input="debounceUpdate"
-            @tab="goToNextColumn"
-            @blur="onBlur"
-          />
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @blur="onBlur" />
