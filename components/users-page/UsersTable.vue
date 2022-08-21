@@ -64,9 +64,7 @@ export default {
       return userId === this.userId
     },
     onAddRowClick() {
-      // const defaultValues = {}
-      // const user = Object.assign({}, defaultValues)
-      // this.$api.createUser(this.headers, { user })
+      this.$emit(events.change)
     },
     onDeleteClick(user) {
       this.deleteUserId = user.id

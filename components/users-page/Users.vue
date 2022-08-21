@@ -1,6 +1,12 @@
 <template>
   <div class="w-full h-full grid grid-cols-2">
-    <UsersTable :users="usersCopy" :user-id="selectedUserId" @click="setSelectedUserId" />
+    <UsersTable
+      :key="usersCopy.length"
+      :users="usersCopy"
+      :user-id="selectedUserId"
+      @click="setSelectedUserId"
+      @change="addUserRow"
+    />
     <UserDetails v-if="user" :key="user.id" :user="user" @change="updateUser" />
   </div>
 </template>
@@ -8,6 +14,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
+import { userConstructor } from '~/shared/domain-utilities'
 export default {
   name: 'Users',
   data() {
@@ -33,6 +40,11 @@ export default {
     },
     updateUser(user) {
       this.$api.updateUser(this.headers, { userId: user.id }, user)
+    },
+    addUserRow() {
+      const user = userConstructor()
+      this.usersCopy.push(user)
+      this.usersCopy.splice(this.usersCopy.length)
     },
   },
 }
