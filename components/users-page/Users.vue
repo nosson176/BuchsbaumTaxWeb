@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full grid grid-cols-2">
     <UsersTable :users="usersCopy" :user-id="selectedUserId" @click="setSelectedUserId" />
-    <UserDetails :user="user" />
+    <UserDetails v-if="user" :key="user.id" :user="user" @change="updateUser" />
   </div>
 </template>
 
@@ -27,6 +27,10 @@ export default {
   methods: {
     setSelectedUserId(userId) {
       this.selectedUserId = userId
+    },
+    updateUser(user) {
+      console.log(user)
+      // this.$api.updateUser()
     },
   },
 }
