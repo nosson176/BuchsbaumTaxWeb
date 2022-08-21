@@ -28,6 +28,9 @@
         <nuxt-link :to="homeRoute">
           <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
+        <button @click="logout">
+          <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </button>
       </div>
     </div>
     <Modal :showing="showSmsModal" @hide="closeSmsModal">
@@ -48,11 +51,11 @@ import { models, routes } from '~/shared/constants'
 
 export default {
   name: 'Header',
-  data(){
+  data() {
     return {
       showSmsModal: false,
       showInboxModal: false,
-      showMessageModal: false
+      showMessageModal: false,
     }
   },
   computed: {
@@ -91,21 +94,21 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
-    inboxMessages(){
+    inboxMessages() {
       return this.inbox
     },
-    hasUnreadMessages(){
+    hasUnreadMessages() {
       let unread = false
-      for(const key in this.inboxMessages){
-        if(this.inboxMessages[key].status === 'unread'){
+      for (const key in this.inboxMessages) {
+        if (this.inboxMessages[key].status === 'unread') {
           unread = true
           break
         }
       }
       return unread
-    }
+    },
   },
-  created(){
+  created() {
     this.loadInbox()
   },
   methods: {
@@ -115,27 +118,30 @@ export default {
       const id = selectedClient.id
       this.$api.getClientData(headers, id)
     },
-    openSmsModal(){
+    openSmsModal() {
       this.showSmsModal = true
     },
-    closeSmsModal(){
+    closeSmsModal() {
       this.showSmsModal = false
     },
-    openInboxModal(){
+    openInboxModal() {
       this.showInboxModal = true
     },
-    closeInboxModal(){
+    closeInboxModal() {
       this.showInboxModal = false
     },
-    openMessageModal(){
+    openMessageModal() {
       this.showMessageModal = true
     },
-    closeMessageModal(){
+    closeMessageModal() {
       this.showMessageModal = false
     },
-    async loadInbox(){
+    async loadInbox() {
       await this.$api.getInbox(this.headers)
-    }
+    },
+    logout() {
+      this.$api.signout()
+    },
   },
 }
 </script>

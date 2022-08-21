@@ -17,7 +17,6 @@
                 :is-editable="isEditable('feeType')"
                 :options="feeTypeOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
             <div @click="setEditable('year')">
@@ -28,7 +27,6 @@
                 :is-editable="isEditable('year')"
                 :options="yearOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
           </div>
@@ -40,7 +38,6 @@
                 :is-editable="isEditable('status')"
                 :options="feeStatusOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
             <div @click="setEditable('statusDetail')">
@@ -50,19 +47,12 @@
                 :is-editable="isEditable('statusDetail')"
                 :options="feeStatusDetailOptions"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
           </div>
           <div class="flex items-center w-1/3 space-x-1">
             <div @click="setEditable('sum')">
-              <EditableCheckBoxCell
-                v-model="sum"
-                placeholder="Sum"
-                :is-editable="isEditable('sum')"
-                @blur="onBlur"
-                @input="debounceUpdate"
-              />
+              <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur" />
             </div>
             <div class="flex flex-col">
               <div @click="setEditable('manualAmount')">
@@ -72,7 +62,6 @@
                   currency
                   :is-editable="isEditable('manualAmount')"
                   @blur="onBlur"
-                  @input="debounceUpdate"
                 />
                 <div v-if="isEditable('manualAmount')" />
               </div>
@@ -83,7 +72,6 @@
                   currency
                   :is-editable="isEditable('paidAmount')"
                   @blur="onBlur"
-                  @input="debounceUpdate"
                 />
                 <div v-if="isEditable('paidAmount')" />
               </div>
@@ -92,12 +80,7 @@
         </div>
         <div class="flex justify-between">
           <div @click="setEditable('include')">
-            <EditableCheckBoxCell
-              v-model="include"
-              :is-editable="isEditable('include')"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
+            <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @blur="onBlur" />
           </div>
           <div class="flex space-x-2">
             <span class="missing">Time</span>
@@ -107,31 +90,18 @@
                 placeholder="Date"
                 type="date"
                 :is-editable="isEditable('dateFee')"
-                @input="debounceUpdate"
                 @blur="onBlur"
               />
             </div>
           </div>
           <div class="w-1/3">
             <div @click="setEditable('rate')">
-              <EditableInput
-                v-model="rate"
-                :is-editable="isEditable('rate')"
-                placeholder="Rate/hr"
-                @blur="onBlur"
-                @input="debounceUpdate"
-              />
+              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr" @blur="onBlur" />
             </div>
           </div>
         </div>
         <div @click="setEditable('notes')">
-          <EditableInput
-            v-model="notes"
-            placeholder="Notes"
-            :is-editable="isEditable('notes')"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" />
         </div>
       </div>
     </div>
@@ -140,7 +110,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { events, models, currencySymbols } from '~/shared/constants'
 
 export default {
@@ -285,9 +254,6 @@ export default {
         }
       })
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
     currencySymbols() {
       return currencySymbols
     },
@@ -313,6 +279,7 @@ export default {
       return this.editable === field
     },
     onBlur() {
+      this.handleUpdate()
       this.editable = ''
     },
     handleUpdate() {

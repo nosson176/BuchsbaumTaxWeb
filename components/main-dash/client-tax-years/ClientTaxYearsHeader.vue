@@ -12,7 +12,6 @@
           :options="statusOptions"
           :is-editable="isEditable('status')"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="col-start-4 text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
@@ -21,7 +20,6 @@
           :options="periodicalOptions"
           :is-editable="isEditable('periodical')"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="col-start-5 text-sm">{{ formattedCreatedDate }}</div>
@@ -49,7 +47,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { categories, models, mutations } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
 
@@ -106,9 +103,6 @@ export default {
         this.selectedClientCopy.periodical = newVal
       },
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
     statusOptions() {
       return this.valueTypes.status || []
     },
@@ -152,11 +146,12 @@ export default {
       return this.editingId === editingId
     },
     onBlur() {
+      this.handleUpdate()
       this.editingId = ''
     },
     handleUpdate() {
       const client = this.selectedClientCopy
-      this.$api.updateClient(this.headers, { clientId: client.id, client })
+      return this.$api.updateClient(this.headers, { clientId: client.id, client })
     },
     openEditNameDialogue() {
       this.showEditNameDialogue = true
