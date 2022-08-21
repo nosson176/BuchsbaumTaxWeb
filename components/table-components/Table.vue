@@ -1,8 +1,8 @@
 <template>
   <div
     class="flex flex-col flex-grow overflow-hidden bg-white"
-    @keydown.prevent="emitKeyDown"
-    @keyup.prevent="emitKeyUp"
+    @keydown.tab.prevent="emitKeyDown"
+    @keyup.tab.prevent="emitKeyUp"
   >
     <slot name="header" />
     <div class="flex-grow overflow-auto">
