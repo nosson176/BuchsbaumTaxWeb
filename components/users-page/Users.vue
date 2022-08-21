@@ -23,14 +23,16 @@ export default {
     user() {
       return Object.values(this.users).find((user) => user.id === this.selectedUserId)
     },
+    headers() {
+      return this.$api.getHeaders()
+    },
   },
   methods: {
     setSelectedUserId(userId) {
       this.selectedUserId = userId
     },
     updateUser(user) {
-      console.log(user)
-      // this.$api.updateUser()
+      this.$api.updateUser(this.headers, { userId: user.id }, user)
     },
   },
 }
