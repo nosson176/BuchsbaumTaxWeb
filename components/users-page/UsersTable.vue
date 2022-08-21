@@ -55,9 +55,9 @@ export default {
       return userId === this.userId
     },
     onAddRowClick() {
-      const defaultValues = {}
-      const user = Object.assign({}, defaultValues)
-      this.$api.createUser(this.headers, { user })
+      // const defaultValues = {}
+      // const user = Object.assign({}, defaultValues)
+      // this.$api.createUser(this.headers, { user })
     },
   },
 }
