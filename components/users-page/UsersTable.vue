@@ -42,6 +42,11 @@ export default {
       default: 0,
     },
   },
+  computed: {
+    headers() {
+      return this.$api.getHeaders()
+    },
+  },
   methods: {
     setSelected(user) {
       this.$emit(events.click, user.id)
@@ -49,7 +54,11 @@ export default {
     isUserSelected(userId) {
       return userId === this.userId
     },
-    onAddRowClick() {},
+    onAddRowClick() {
+      const defaultValues = {}
+      const user = Object.assign({}, defaultValues)
+      this.$api.createUser(this.headers, { user })
+    },
   },
 }
 </script>
