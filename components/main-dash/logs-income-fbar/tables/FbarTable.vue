@@ -83,7 +83,7 @@
           <EditableCheckBoxCell
             v-model="fbar.include"
             :is-editable="isEditable(`${idx}-include`)"
-            @input="debounceUpdate"
+            @input="handleUpdate"
           />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary xs" @click="toggleEditable(`${idx}-years`, fbar.id)">
@@ -92,7 +92,6 @@
             :is-editable="isEditable(`${idx}-years`)"
             :options="yearNameOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
@@ -101,7 +100,6 @@
             :is-editable="isEditable(`${idx}-category`)"
             :options="categoryOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col sm" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
@@ -110,7 +108,6 @@
             :is-editable="isEditable(`${idx}-taxGroup`)"
             :options="taxGroupOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
@@ -119,7 +116,6 @@
             :is-editable="isEditable(`${idx}-taxType`)"
             :options="taxTypeOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
@@ -128,17 +124,10 @@
             :is-editable="isEditable(`${idx}-job`)"
             :options="jobOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
-          <EditableInputCell
-            v-model="fbar.amount"
-            :is-editable="isEditable(`${idx}-amount`)"
-            currency
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, fbar.id)">
           <EditableSelectCell
@@ -146,16 +135,10 @@
             :is-editable="isEditable(`${idx}-currency`)"
             :options="currencyOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, fbar.id)">
-          <EditableInputCell
-            v-model="fbar.frequency"
-            :is-editable="isEditable(`${idx}-frequency`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInputCell v-model="fbar.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id)">
           <EditableInputCell
@@ -165,7 +148,6 @@
             rounded
             currency
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-documents`" class="table-col xs" @click="toggleEditable(`${idx}-documents`, fbar.id)">
@@ -174,7 +156,6 @@
             :is-editable="isEditable(`${idx}-documents`)"
             :options="docOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-description`" class="table-col xl" @click="toggleEditable(`${idx}-description`, fbar.id)">
@@ -182,16 +163,10 @@
             v-model="fbar.description"
             :is-editable="isEditable(`${idx}-description`)"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id)">
-          <EditableInputCell
-            v-model="fbar.depend"
-            :is-editable="isEditable(`${idx}-depend`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(fbar.id)" />
@@ -219,7 +194,6 @@
 </template>
 
 <script>
-import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
@@ -284,9 +258,6 @@ export default {
       } else {
         return null
       }
-    },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
     },
     categoryOptions() {
       return this.valueTypes.category.filter((category) => category.show)
@@ -441,6 +412,7 @@ export default {
   },
   methods: {
     toggleEditable(id, fbarId) {
+      this.handleUpdate()
       this.editableFbarId = fbarId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -450,6 +422,7 @@ export default {
       return this.editableId === id
     },
     handleUpdate() {
+      if (!this.editableFbarId) return
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
       this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
     },
@@ -534,6 +507,7 @@ export default {
       }
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     filterFbars(fbar) {
