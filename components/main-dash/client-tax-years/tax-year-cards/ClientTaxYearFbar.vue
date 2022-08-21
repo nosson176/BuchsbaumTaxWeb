@@ -9,7 +9,6 @@
         :is-editable="isEditable('fileType')"
         placeholder="Type"
         @blur="onBlur"
-        @input="handleUpdate"
       />
     </div>
     <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-48">
@@ -20,7 +19,6 @@
         is-editable
         placeholder="Type"
         @blur="onBlur"
-        @input="handleUpdate"
       />
     </div>
     <div v-if="!isEditable('status')" class="mx-2" @click.stop="setEditable('status')">
@@ -31,7 +29,6 @@
         :is-editable="isEditable('status')"
         placeholder="Status"
         @blur="onBlur"
-        @input="handleUpdate"
       />
     </div>
     <div v-else v-click-outside="onBlur" class="absolute top-0 left-12 h-48 w-48">
@@ -42,7 +39,6 @@
         is-editable
         placeholder="Status"
         @blur="onBlur"
-        @input="handleUpdate"
       />
     </div>
     <div @click.stop="setEditable('statusDate')">
@@ -52,7 +48,6 @@
         type="date"
         :is-editable="isEditable('statusDate')"
         @blur="onBlur"
-        @input="handleUpdate"
       />
     </div>
   </div>
@@ -60,25 +55,24 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearFbar',
   directives: {
-    ClickOutside
+    ClickOutside,
   },
   props: {
     fbar: {
       type: Object,
-      default: ()=>{}
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
       editable: '',
-      formModel: null
+      formModel: null,
     }
   },
   computed: {
@@ -96,7 +90,7 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.fbar))
   },
-  methods:{
+  methods: {
     setEditable(editable) {
       this.editable = editable
     },
@@ -104,22 +98,16 @@ export default {
       return this.editable === value
     },
     onBlur() {
+      this.handleUpdate()
       this.setEditable('')
     },
     handleUpdate() {
-      this.$api.updateFiling(
-        this.headers,
-        { clientId: this.selectedClient.id, filingId: this.fbar.id },
-        this.formModel
-      )
-    },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
+      this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
     },
     emitDelete() {
       this.$emit(events.delete, this.fbar.id)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -134,5 +122,4 @@ export default {
   transform: rotate(270deg);
   min-width: 40px;
 }
-
 </style>

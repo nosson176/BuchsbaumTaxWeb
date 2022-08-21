@@ -79,7 +79,7 @@
           <EditableCheckBoxCell
             v-model="income.include"
             :is-editable="isEditable(`${idx}-include`)"
-            @input="debounceUpdate"
+            @input="handleUpdate"
           />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary xs" @click="toggleEditable(`${idx}-years`, income.id)">
@@ -88,7 +88,6 @@
             :is-editable="isEditable(`${idx}-years`)"
             :options="yearNameOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, income.id)">
@@ -97,7 +96,6 @@
             :is-editable="isEditable(`${idx}-category`)"
             :options="categoryOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col sm" @click="toggleEditable(`${idx}-taxGroup`, income.id)">
@@ -106,14 +104,13 @@
             :is-editable="isEditable(`${idx}-taxGroup`)"
             :options="taxGroupOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-exclusion`" class="table-col xs" @click="toggleEditable(`${idx}-exclusion`, income.id)">
           <EditableCheckBoxCell
             v-model="income.exclusion"
             :is-editable="isEditable(`${idx}-exclusion`)"
-            @input="debounceUpdate"
+            @input="handleUpdate"
           />
         </div>
         <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, income.id)">
@@ -122,7 +119,6 @@
             :is-editable="isEditable(`${idx}-taxType`)"
             :options="taxTypeOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, income.id)">
@@ -131,7 +127,6 @@
             :is-editable="isEditable(`${idx}-job`)"
             :options="jobOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div
@@ -145,7 +140,6 @@
             :is-editable="isEditable(`${idx}-amount`)"
             currency
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, income.id)">
@@ -154,7 +148,6 @@
             :is-editable="isEditable(`${idx}-currency`)"
             :options="currencyOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div
@@ -163,12 +156,7 @@
           tabindex="-1"
           @click="toggleEditable(`${idx}-frequency`, income.id)"
         >
-          <EditableInputCell
-            v-model="income.frequency"
-            :is-editable="isEditable(`${idx}-frequency`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInputCell v-model="income.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, income.id)">
           <EditableInputCell
@@ -178,7 +166,6 @@
             currency
             rounded
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div
@@ -192,7 +179,6 @@
             :is-editable="isEditable(`${idx}-documents`)"
             :options="docOptions"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div
@@ -205,7 +191,6 @@
             v-model="income.description"
             :is-editable="isEditable(`${idx}-description`)"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div
@@ -214,12 +199,7 @@
           class="table-col sm"
           @click="toggleEditable(`${idx}-depend`, income.id)"
         >
-          <EditableInputCell
-            v-model="income.depend"
-            :is-editable="isEditable(`${idx}-depend`)"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableInputCell v-model="income.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(income.id)" />
@@ -248,7 +228,6 @@
 </template>
 
 <script>
-import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
@@ -313,9 +292,6 @@ export default {
       } else {
         return null
       }
-    },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
     },
     categoryOptions() {
       return this.valueTypes.category.filter((category) => category.show)
@@ -463,6 +439,7 @@ export default {
   },
   methods: {
     toggleEditable(id, incomeId) {
+      this.handleUpdate()
       this.editableIncomeId = incomeId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -472,6 +449,7 @@ export default {
       return this.editableId === id
     },
     handleUpdate() {
+      if (!this.editableIncomeId) return
       const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
@@ -543,6 +521,7 @@ export default {
       }
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     filterIncomes(income) {
