@@ -4,6 +4,7 @@
       <div class="flex px-4 py-5 bg-gray-50 sm:px-6 justify-between">
         <input
           id="user-information-title"
+          ref="username"
           v-model="userObj.username"
           class="text-lg leading-6 font-medium text-gray-900 bg-gray-50"
           @blur="onBlur"
@@ -151,6 +152,9 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
+  },
+  mounted() {
+    this.$refs.username.focus()
   },
   created() {
     this.userObj = { ...this.user }
