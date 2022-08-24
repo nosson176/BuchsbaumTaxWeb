@@ -1,13 +1,16 @@
 <template>
   <section aria-labelledby="user-information-title">
     <div class="bg-white">
-      <div class="px-4 py-5 bg-gray-50 sm:px-6">
+      <div class="flex px-4 py-5 bg-gray-50 sm:px-6 justify-between">
         <input
           id="user-information-title"
           v-model="userObj.username"
           class="text-lg leading-6 font-medium text-gray-900 bg-gray-50"
           @blur="onBlur"
         />
+        <button class="bg-indigo-500 text-white rounded-md text-sm px-3 py-2" @click="emitClick">
+          Change Password
+        </button>
       </div>
       <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
@@ -147,6 +150,9 @@ export default {
     },
     emitChange() {
       this.$emit(events.change, this.userObj)
+    },
+    emitClick() {
+      this.$emit(events.click, this.userObj)
     },
   },
 }
