@@ -147,11 +147,11 @@ export default {
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
     },
-  },
-  resetOrder() {
-    const item = this.taxYearFbarStatus[0]
-    item.sortOrder = 0
-    this.$api.updateValueType(this.headers, { valueId: item.id }, item)
+    resetOrder() {
+      const item = this.taxYearFbarStatus[0]
+      item.sortOrder = 0
+      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
+    },
   },
 }
 </script>
