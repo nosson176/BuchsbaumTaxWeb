@@ -9,7 +9,7 @@
           <CheckBoxWithEyeIcon />
         </div>
         <div class="table-header w-full ml-1">Name</div>
-        <div class="table-header"></div>
+        <div class="table-header mr-1"><button v-if="!isDefaultOrder" @click="resetOrder">Reset</button></div>
       </TableHeader>
     </template>
     <template #body>
@@ -41,6 +41,7 @@
 <script>
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
+import draggable from 'vuedraggable'
 import { models, TRANSITION_NAME } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
@@ -48,6 +49,7 @@ const TABLE_TYPE = 'status'
 
 export default {
   name: 'ClientStatusTable',
+  components: { draggable },
   data() {
     return {
       editableId: null,
@@ -76,6 +78,9 @@ export default {
         return TRANSITION_NAME
       }
       return null
+    },
+    isDefaultOrder() {
+      return this.clientStatus?.every((status) => !status.sortOrder)
     },
   },
   methods: {
@@ -119,6 +124,11 @@ export default {
       item.sortOrder = evt.newIndex + 1
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
+    },
+    resetOrder() {
+      const item = this.clientStatus[0]
+      item.sortOrder = 0
+      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
     },
   },
 }
