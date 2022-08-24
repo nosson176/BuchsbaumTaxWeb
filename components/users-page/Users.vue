@@ -8,6 +8,9 @@
       @change="addUserRow"
     />
     <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" @change="updateUser" />
+    <Modal :showing="showChangePasswordModal" @hide="closeChangePasswordModal">
+      <ChangePasswordModal :user-id="selectedUserId" @hide="closeChangePasswordModal" />
+    </Modal>
   </div>
 </template>
 
@@ -50,7 +53,10 @@ export default {
     },
     addUserRow() {
       const user = userConstructor()
-      this.$api.createUser(this.headers, { user }).then(/* open password modal */)
+      this.$api.createUser(this.headers, { user }).then((user) => {
+        this.selectedUserId = user.id
+        this.openChangePasswordModal()
+      })
     },
     openChangePasswordModal() {
       this.showChangePasswordModal = true
