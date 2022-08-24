@@ -51,6 +51,7 @@ export default {
       await this.$api
         .updatePassword(headers, { userId }, { newPassword })
         .then(() => this.$toast.success(`${this.user.username}'s password changed successfully`))
+      this.emitHide()
       this.loading = false
     },
   },
