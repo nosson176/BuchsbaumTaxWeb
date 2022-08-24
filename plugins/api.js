@@ -27,6 +27,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   // GET
+  const getCurrentUser = (headers) => {
+    $axios
+      .get('users/current', {
+        headers,
+        loading: models.currentUser,
+        store: models.currentUser,
+      })
+      .catch(() => $toast.error('Error loading value types'))
+  }
+
   const getClientList = (headers, searchParam = '', searchOption = '') => {
     let endpoint = 'clients/'
     if (searchParam && searchOption) {
@@ -347,6 +357,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateValueType,
     updateUser,
     updateMessage,
+    getCurrentUser,
   }
 
   // Inject to context as $api
