@@ -1,6 +1,6 @@
 <template>
   <section aria-labelledby="user-information-title">
-    <div class="bg-white">
+    <form class="bg-white" @submit.prevent="updateUser">
       <div class="flex px-4 py-5 bg-gray-50 sm:px-6 justify-between">
         <input
           id="user-information-title"
@@ -8,7 +8,11 @@
           class="text-lg leading-6 font-medium text-gray-900 bg-gray-50"
           @blur="onBlur"
         />
-        <button class="bg-indigo-500 text-white rounded-md text-sm px-3 py-2" @click="emitClick">
+        <button
+          type="button"
+          class="bg-white text-indigo-600 border border-indigo-600 rounded-md text-sm px-3 py-2 hover:bg-indigo-600 hover:text-white"
+          @click="emitClick"
+        >
           Change Password
         </button>
       </div>
@@ -65,8 +69,21 @@
             </div>
           </div>
         </div>
+        <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+          <div class="sm:col-span-1"></div>
+          <div class="sm:col-span-1">
+            <button
+              :disabled="loading"
+              type="submit"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <LoadingIndicator v-if="loading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
+              <span v-else>Submit</span>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </form>
   </section>
 </template>
 
@@ -81,6 +98,11 @@ export default {
       default: () => null,
     },
   },
+  data() {
+    return {
+      loading: false,
+    }
+  },
   computed: {
     data() {
       return {
@@ -94,7 +116,6 @@ export default {
       },
       set(newVal) {
         this.userObj.userType = newVal
-        this.emitChange()
       },
     },
     selectable: {
@@ -103,7 +124,6 @@ export default {
       },
       set(newVal) {
         this.userObj.selectable = newVal
-        this.emitChange()
       },
     },
     allowTexting: {
@@ -112,7 +132,6 @@ export default {
       },
       set(newVal) {
         this.userObj.allowTextin = newVal
-        this.emitChange()
       },
     },
     notifyOfLogins: {
@@ -121,7 +140,6 @@ export default {
       },
       set(newVal) {
         this.userObj.notifyOfLogins = newVal
-        this.emitChange()
       },
     },
     userTypes() {
@@ -130,12 +148,15 @@ export default {
     isTypeEditable() {
       return this.editable === 'type'
     },
+    headers() {
+      return this.$api.getHeaders()
+    },
   },
   created() {
     this.userObj = { ...this.user }
   },
   methods: {
-    updateUser(newVal) {
+    updateUserObj(newVal) {
       this.userObj = Object.assign({}, this.user, newVal)
     },
     setEditable(field) {
@@ -143,10 +164,14 @@ export default {
     },
     onBlur() {
       this.setEditable('')
-      this.emitChange()
     },
     isEditable(field) {
       return this.editable === field
+    },
+    async updateUser() {
+      this.loading = true
+      await this.$api.updateUser(this.headers, { userId: this.user.id }, this.userObj)
+      this.loading = false
     },
     emitChange() {
       this.$emit(events.change, this.userObj)
