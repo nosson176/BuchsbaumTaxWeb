@@ -47,8 +47,8 @@ export default {
       this.loading = true
       const headers = this.$api.getHeaders()
       const userId = this.userId
-      const password = this.newPassword
-      await this.$api.updatePassword(headers, { userId }, { password })
+      const newPassword = this.newPassword
+      await this.$api.updatePassword(headers, { userId }, { newPassword })
       this.loading = false
     },
   },
