@@ -9,7 +9,7 @@
           <CheckBoxWithEyeIcon />
         </div>
         <div class="table-header w-full ml-1">Name</div>
-        <div class="table-header"></div>
+        <div class="table-header mr-1"><button v-if="!isDefaultOrder" @click="resetOrder">Reset</button></div>
       </TableHeader>
     </template>
     <template #body>
@@ -91,6 +91,9 @@ export default {
       }
       return null
     },
+    isDefaultOrder() {
+      return this.taxYearFbarStatus?.every((status) => !status.sortOrder)
+    },
   },
   methods: {
     toggleEditable(id) {
@@ -144,6 +147,11 @@ export default {
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
     },
+  },
+  resetOrder() {
+    const item = this.taxYearFbarStatus[0]
+    item.sortOrder = 0
+    this.$api.updateValueType(this.headers, { valueId: item.id }, item)
   },
 }
 </script>
