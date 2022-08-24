@@ -48,7 +48,9 @@ export default {
       const headers = this.$api.getHeaders()
       const userId = this.userId
       const newPassword = this.newPassword
-      await this.$api.updatePassword(headers, { userId }, { newPassword })
+      await this.$api
+        .updatePassword(headers, { userId }, { newPassword })
+        .then(() => this.$toast.success(`${this.user.username}'s password changed successfully`))
       this.loading = false
     },
   },
