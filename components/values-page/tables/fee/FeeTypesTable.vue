@@ -125,7 +125,7 @@ export default {
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
     },
-    sortOrder() {
+    resetOrder() {
       const item = this.feeTypes[0]
       item.sortOrder = 0
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
