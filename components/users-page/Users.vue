@@ -7,7 +7,7 @@
       @click="setSelectedUserId"
       @change="addUserRow"
     />
-    <UserDetails v-if="user" :key="user.id" :user="user" @change="updateUser" />
+    <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" @change="updateUser" />
   </div>
 </template>
 
@@ -15,15 +15,19 @@
 import { mapState } from 'vuex'
 import { models } from '~/shared/constants'
 import { userConstructor } from '~/shared/domain-utilities'
+
+const USER_TYPE_ADMIN = 'admin'
+
 export default {
   name: 'Users',
   data() {
     return {
       selectedUserId: null,
+      showChangePasswordModal: false,
     }
   },
   computed: {
-    ...mapState([models.users]),
+    ...mapState([models.users, models.currentUser]),
     usersCopy() {
       return Object.values(JSON.parse(JSON.stringify(this.users)))
     },
@@ -32,6 +36,9 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+    isCurrentUserAdmin() {
+      return this.currentUser.userType === USER_TYPE_ADMIN
     },
   },
   methods: {
@@ -43,8 +50,13 @@ export default {
     },
     addUserRow() {
       const user = userConstructor()
-      this.usersCopy.push(user)
-      this.usersCopy.splice(this.usersCopy.length)
+      this.$api.createUser(this.headers, { user }).then(/* open password modal */)
+    },
+    openChangePasswordModal() {
+      this.showChangePasswordModal = true
+    },
+    closeChangePasswordModal() {
+      this.showChangePasswordModal = false
     },
   },
 }
