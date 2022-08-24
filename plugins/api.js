@@ -274,7 +274,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const updatePassword = (headers, { userId }, newPassword) =>
     $axios
       .put(`/users/${userId}/password`, newPassword, { headers })
-      .catch((e) => $toast.error('Error updating password'))
+      .catch((e) => $toast.error('Error updating password ' + e.response.data.message))
 
   const updateMessage = (headers, { messageId }, value) =>
     $axios
