@@ -9,7 +9,7 @@
           <CheckBoxWithEyeIcon />
         </div>
         <div class="table-header w-full ml-1">Name</div>
-        <div class="table-header"><button v-if="!defaultOrder" @click="resetOrder">Reset</button></div>
+        <div class="table-header mr-1"><button v-if="!isDefaultOrder" @click="resetOrder">Reset</button></div>
       </TableHeader>
     </template>
     <template #body>
