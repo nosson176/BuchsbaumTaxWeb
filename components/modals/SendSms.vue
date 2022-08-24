@@ -6,16 +6,12 @@
           <h3 class="text-lg leading-6 font-medium text-gray-900">This will send an SMS</h3>
           <div class="mt-2 w-full">
             <label>
-              <div class="mb-1">
-                Message
-              </div>
-              <textarea v-model="message" class="w-full border-gray-300 rounded" rows="3" />
+              <div class="mb-1">Message</div>
+              <textarea v-model="message" spellcheck class="w-full border-gray-300 rounded" rows="3" />
             </label>
             <div class="mt-4 h-20">
               <div class="flex justify-between">
-                <div>
-                  Send to:
-                </div>
+                <div>Send to:</div>
                 <AddRowButton title="Add phone number" @click.native="toggleAddNumberMode" />
               </div>
               <HeaderSelectOption v-model="telId" :options="mappedPhoneNumbers" />
@@ -28,9 +24,7 @@
         <div class="flex items-center justify-center mt-7">
           <div class="text-xs text-right">
             Name: <input v-model="newPhoneName" type="text" class="mb-2" />
-            <div>
-              +972 <input v-model="newPhoneNumber" type="tel" />
-            </div>
+            <div>+972 <input v-model="newPhoneNumber" type="tel" /></div>
           </div>
           <div class="flex items-center ml-3">
             <CheckIcon class="h-5 w-5 mr-1 text-green-500 cursor-pointer" @click.native="addPhoneNumber" />
@@ -64,26 +58,26 @@ import { mapState } from 'vuex'
 import { events, models } from '~/shared/constants'
 export default {
   name: 'SendSms',
-  data(){
+  data() {
     return {
       message: '',
       telId: '',
       addNumberMode: false,
       newPhoneNumber: '',
-      newPhoneName: ''
+      newPhoneName: '',
     }
   },
-  computed:{
+  computed: {
     ...mapState([models.phoneNumbers]),
-    phoneNumbersState(){
+    phoneNumbersState() {
       return this.phoneNumbers
     },
-    mappedPhoneNumbers(){
+    mappedPhoneNumbers() {
       const phoneNumberArr = []
-      for(const key in this.phoneNumbersState){
+      for (const key in this.phoneNumbersState) {
         phoneNumberArr.push({
           name: this.phoneNumbersState[key].phoneNumber + ' (' + this.phoneNumbersState[key].name + ')',
-          value: this.phoneNumbersState[key].id.toString()
+          value: this.phoneNumbersState[key].id.toString(),
         })
       }
       return phoneNumberArr
@@ -91,36 +85,34 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
-    isDisabled(){
+    isDisabled() {
       return !this.message || !this.telId
-    }
+    },
   },
-  created(){
+  created() {
     this.loadPhoneNumbers()
   },
   methods: {
     emitHide() {
       this.$emit(events.hide)
     },
-    async loadPhoneNumbers(){
+    async loadPhoneNumbers() {
       await this.$api.getPhoneNumbers(this.headers)
-      if(!this.telId){
+      if (!this.telId) {
         this.telId = this.phoneNumbersState ? this.phoneNumbersState[0]?.id.toString() : ''
       }
     },
-    toggleAddNumberMode(){
+    toggleAddNumberMode() {
       this.addNumberMode = !this.addNumberMode
     },
-    addPhoneNumber(){
-      if(!this.newPhoneNumber || !this.newPhoneName){
+    addPhoneNumber() {
+      if (!this.newPhoneNumber || !this.newPhoneName) {
         return
       }
-      if(isNaN(this.newPhoneNumber)){
-        this.newPhoneNumber = this.newPhoneNumber.replaceAll('-', '')
-          .replaceAll(' ', '')
-          .trim()
+      if (isNaN(this.newPhoneNumber)) {
+        this.newPhoneNumber = this.newPhoneNumber.replaceAll('-', '').replaceAll(' ', '').trim()
       }
-      if(this.newPhoneNumber[0] === '0'){
+      if (this.newPhoneNumber[0] === '0') {
         this.newPhoneNumber = this.newPhoneNumber.substring(1)
       }
       const formattedNumber = '+972' + this.newPhoneNumber
@@ -130,15 +122,14 @@ export default {
       })
       this.toggleAddNumberMode()
     },
-    sendSms(){
+    sendSms() {
       const sms = { phoneNumberId: this.telId, message: this.message }
       this.$api.sendSms(this.headers, { sms }).then(this.emitHide)
-    }
+    },
   },
 }
 </script>
 <style scoped>
-
 .modal {
   height: 355px;
 }
@@ -146,7 +137,6 @@ export default {
 input {
   @apply border-gray-300 rounded;
 
-  height:22px;
+  height: 22px;
 }
-
 </style>
