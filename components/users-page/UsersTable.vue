@@ -3,7 +3,7 @@
     <template #header>
       <TableHeader>
         <div class="table-header">
-          <AddRowButton @click="onAddRowClick" />
+          <AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" />
         </div>
         <div class="table-header w-full">Name</div>
       </TableHeader>
@@ -21,7 +21,7 @@
           <span class="font-light">({{ user.userType }})</span>
         </div>
         <div class="table-col">
-          <DeleteButton @click="onDeleteClick(user)" />
+          <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
         </div>
         <Modal :showing="showDelete" @hide="closeDeleteModal">
           <DeleteType :label="user.username" @hide="closeDeleteModal" @delete="deleteUser" />
@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import { events } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, models, USER_TYPE_ADMIN } from '~/shared/constants'
 export default {
   name: 'UsersTable',
   props: {
@@ -52,8 +53,12 @@ export default {
     }
   },
   computed: {
+    ...mapState([models.currentUser]),
     headers() {
       return this.$api.getHeaders()
+    },
+    isCurrentUserAdmin() {
+      return this.currentUser.userType === USER_TYPE_ADMIN
     },
   },
   methods: {

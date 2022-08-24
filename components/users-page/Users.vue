@@ -7,7 +7,7 @@
       @click="setSelectedUserId"
       @change="addUserRow"
     />
-    <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" @change="updateUser" />
+    <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" />
     <Modal :showing="showChangePasswordModal" @hide="closeChangePasswordModal">
       <ChangePasswordModal :user-id="selectedUserId" @hide="closeChangePasswordModal" />
     </Modal>
@@ -16,10 +16,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, USER_TYPE_ADMIN } from '~/shared/constants'
 import { userConstructor } from '~/shared/domain-utilities'
-
-const USER_TYPE_ADMIN = 'admin'
 
 export default {
   name: 'Users',
@@ -46,10 +44,9 @@ export default {
   },
   methods: {
     setSelectedUserId(userId) {
-      this.selectedUserId = userId
-    },
-    updateUser(user) {
-      this.$api.updateUser(this.headers, { userId: user.id }, user)
+      if (this.isCurrentUserAdmin) {
+        this.selectedUserId = userId
+      }
     },
     addUserRow() {
       const user = userConstructor()
