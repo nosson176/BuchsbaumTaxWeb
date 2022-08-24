@@ -9,11 +9,11 @@
           <CheckBoxWithEyeIcon />
         </div>
         <div class="table-header w-full ml-1">Name</div>
-        <div class="table-header"></div>
+        <div class="table-header mr-1"><button v-if="!isDefaultOrder" @click="resetOrder">Reset</button></div>
       </TableHeader>
     </template>
     <template #body>
-      <draggable :value="feeStatus" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+      <draggable :value="feeTypes" v-bind="dragOptions" @start="startDrag" @end="onDrop">
         <transition-group type="transition" :name="transitionName">
           <TableRow v-for="(type, idx) in feeTypes" :key="type.id" class="pr-1">
             <div class="table-col bg-gray-200 mr-1">
@@ -79,6 +79,9 @@ export default {
       }
       return null
     },
+    isDefaultOrder() {
+      return this.feeTypes?.every((type) => !type.sortOrder)
+    },
   },
   methods: {
     toggleEditable(id) {
@@ -121,6 +124,11 @@ export default {
       item.sortOrder = evt.newIndex + 1
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
+    },
+    sortOrder() {
+      const item = this.feeTypes[0]
+      item.sortOrder = 0
+      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
     },
   },
 }
