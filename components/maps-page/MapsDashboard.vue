@@ -8,10 +8,8 @@
 </template>
 
 <script>
-import MapView from './MapView.vue'
 export default {
   name: 'MapsDashboard',
-  components: { MapView },
   data() {
     return {}
   },
