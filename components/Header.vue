@@ -19,6 +19,9 @@
             <BellIcon class="h-3 w-3" />
           </div>
         </div>
+        <nuxt-link :to="mapsRoute">
+          <MapIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </nuxt-link>
         <nuxt-link :to="usersRoute">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -90,6 +93,9 @@ export default {
       return {
         name: routes.users,
       }
+    },
+    mapsRoute() {
+      return { name: routes.maps }
     },
     headers() {
       return this.$api.getHeaders()
