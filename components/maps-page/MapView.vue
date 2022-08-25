@@ -22,8 +22,11 @@ export default {
   computed: {
     ...mapState([models.selectedContact]),
     mapSrc() {
-      const location = `${this.selectedContact.mainDetail} ${this.selectedContact.secondaryDetail}`
-      const query = encodeURIComponent(location) || 'Jerusalem'
+      let location = 'Jerusalem'
+      if (this.selectedContact.mainDetail) {
+        location = `${this.selectedContact.mainDetail} ${this.selectedContact.secondaryDetail}`
+      }
+      const query = encodeURIComponent(location)
       return `https://www.google.com/maps/embed/v1/place?q=${query}&key=${process.env.GOOGLE_API_KEY}`
     },
   },
