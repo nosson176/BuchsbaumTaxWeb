@@ -3,20 +3,38 @@
     <template #header>
       <TableHeader>
         <div class="table-header"></div>
-        <div class="table-header"></div>
-        <div class="table-header w-full ml-1">Name</div>
+        <div class="table-header">Type</div>
+        <div class="table-header w-full ml-1">Address/Number</div>
         <div class="table-header"></div>
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(contact, idx) in displayedContacts" :key="contact.id" class="pr-1">
+      <TableRow
+        v-for="(contact, idx) in displayedContacts"
+        :key="contact.id"
+        class="pr-1"
+        :class="{ selected: isSelected(contact) }"
+      >
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell>{{ idx + 1 }}</ClickCell>
         </div>
-        <div class="table-col"></div>
-        <div class="table-col w-full">{{ contact.mainDetail }}</div>
         <div class="table-col">
-          <DeleteButton />
+          <EditableCheckBoxCell v-model="contact.enabled" />
+        </div>
+        <div class="table-col">
+          {{ contact.type }}
+        </div>
+        <div class="table-col w-full">
+          {{ contact.mainDetail }}
+          <span v-if="contact.secondaryDetail"
+            >, <br />
+            {{ contact.secondaryDetail }}
+          </span>
+        </div>
+        <div class="table-col">
+          <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
+            <MapIcon class="w-4 h-4 text-indigo-500" />
+          </button>
         </div>
       </TableRow>
     </template>
@@ -25,7 +43,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models } from '~/shared/constants'
+import { models, mutations } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 export default {
@@ -34,7 +52,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search, models.selectedContact]),
     displayedContacts() {
       const contacts = this.filteredContacts
       contacts?.map((contact) => {
@@ -58,8 +76,23 @@ export default {
     },
   },
   mounted() {},
-  methods: {},
+  methods: {
+    setCurrentMapLocation(contact) {
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedContact, data: contact })
+    },
+    isTypeAddress({ contactType }) {
+      return contactType?.toLowerCase().includes('address')
+    },
+    isSelected({ id }) {
+      console.log(this.selectedContact.id === id)
+      return this.selectedContact.id === id
+    },
+  },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.selected {
+  @apply bg-indigo-200;
+}
+</style>
