@@ -20,7 +20,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState([models.selectedContact]),
+    ...mapState([models.selectedContactId, models.selectedClient]),
     mapSrc() {
       let location = 'Jerusalem'
       if (this.selectedContact.mainDetail) {
@@ -28,6 +28,9 @@ export default {
       }
       const query = encodeURIComponent(location)
       return `https://www.google.com/maps/embed/v1/place?q=${query}&key=${process.env.GOOGLE_API_KEY}`
+    },
+    selectedContact() {
+      return this.selectedClient.contacts.find((contact) => contact.id === this.selectedContactId)
     },
   },
 

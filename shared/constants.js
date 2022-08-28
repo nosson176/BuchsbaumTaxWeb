@@ -24,7 +24,7 @@ export const models = Object.freeze({
   inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
   promptOnClientChange: 'promptOnClientChange',
-  selectedContact: 'selectedContact',
+  selectedContactId: 'selectedContactId',
 })
 
 // Store Mutations

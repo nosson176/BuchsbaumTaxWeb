@@ -52,7 +52,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.search, models.selectedContact]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search, models.selectedContactId]),
     displayedContacts() {
       const contacts = this.filteredContacts
       contacts?.map((contact) => {
@@ -78,13 +78,13 @@ export default {
   mounted() {},
   methods: {
     setCurrentMapLocation(contact) {
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedContact, data: contact })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedContactId, data: contact.id })
     },
     isTypeAddress({ contactType }) {
       return contactType?.toLowerCase().includes('address')
     },
     isSelected({ id }) {
-      return this.selectedContact.id === id
+      return this.selectedContactId === id
     },
   },
 }

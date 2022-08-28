@@ -244,7 +244,7 @@ export default {
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
     },
     setCurrentMapLocation(contact) {
-      this.$store.commit(mutations.setModelResponse, { model: models.selectedContact, data: contact })
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedContactId, data: contact.id })
       this.$router.push({ name: routes.maps })
     },
     isTypeAddress({ contactType }) {
