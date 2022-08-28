@@ -24,7 +24,13 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.shownTaxYears, models.shownTaxYears, models.loading]),
+    ...mapState([
+      models.selectedClient,
+      models.shownTaxYears,
+      models.shownTaxYears,
+      models.loading,
+      models.selectedTaxYearId,
+    ]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
@@ -96,6 +102,9 @@ export default {
           data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years, label: taxYear.year } } },
         })
       }
+    },
+    isSelected({ id }) {
+      return this.selectedTaxYearId === id
     },
   },
 }
