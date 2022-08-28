@@ -115,13 +115,6 @@ export default {
       const clonedData = JSON.parse(JSON.stringify(this.yearData))
       return clonedData.filings
         .filter((filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar)
-        .sort((a, b) => {
-          if (a.sortOrder > b.sortOrder) return 1
-          if (a.sortOrder < b.sortOrder) return -1
-          if (a.filingType > b.filingType) return 1
-          if (a.filingType < b.filingType) return -1
-          return 0
-        })
     },
     displayedFilingInfo() {
       return this.filings[this.activeFilingIndex]
