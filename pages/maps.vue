@@ -8,7 +8,11 @@
 <script>
 export default {
   name: 'MapsPage',
-
+  async asyncData({ $api }) {
+    const headers = $api.getHeaders()
+    await $api.getClientList(headers)
+    await $api.getSmartviews(headers)
+  },
   data() {
     return {}
   },

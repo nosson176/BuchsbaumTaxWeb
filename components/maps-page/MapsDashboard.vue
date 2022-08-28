@@ -1,7 +1,15 @@
 <template>
-  <div class="grid grid-cols-6 h-full">
-    <MapView class="col-span-4 col-start-2" />
-    <div class="col-span-1 col-start-6">
+  <div class="grid grid-cols-6 grid-rows-4 max-h-screen gap-2 p-2">
+    <div class="shadow rounded flex col-start-1 col-span-1 row-start-1 flex-col row-span-3 bg-white overflow-hidden">
+      <ClientListHeader @change="toggleShowArchivedClients" />
+      <ClientList :show-archived="showArchivedClients" />
+    </div>
+    <div class="shadow rounded flex flex-col bg-white col-start-1 row-start-4">
+      <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
+      <Smartviews :show-archived="showArchivedSmartviews" />
+    </div>
+    <MapView class="col-span-4 col-start-2 row-start-1 row-span-4" />
+    <div class="col-span-1 col-start-6 row-span-4 row-start-1">
       <ContactsList />
     </div>
   </div>
@@ -11,10 +19,20 @@
 export default {
   name: 'MapsDashboard',
   data() {
-    return {}
+    return {
+      showArchivedSmartviews: false,
+      showArchivedClients: false,
+    }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    toggleShowArchivedSmartviews() {
+      this.showArchivedSmartviews = !this.showArchivedSmartviews
+    },
+    toggleShowArchivedClients() {
+      this.showArchivedClients = !this.showArchivedClients
+    },
+  },
 }
 </script>
 
