@@ -22,7 +22,7 @@
           <EditableCheckBoxCell v-model="contact.enabled" />
         </div>
         <div class="table-col">
-          {{ contact.type }}
+          {{ contact.contactType }}
         </div>
         <div class="table-col w-full">
           {{ contact.mainDetail }}
