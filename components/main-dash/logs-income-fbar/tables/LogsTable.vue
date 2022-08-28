@@ -52,7 +52,6 @@
           <EditablePrioritySelectCell
             v-model="log.priority"
             :is-editable="isEditable(`${idx}-priority`)"
-            @input="debounceUpdate"
             @blur="onBlur"
             @tab="onTabPress"
           />
@@ -63,7 +62,6 @@
               v-model="log.years"
               :is-editable="isEditable(`${idx}-years`)"
               :options="yearOptions"
-              @input="debounceUpdate"
               @blur="onBlur"
             />
             <template #popper>
@@ -76,28 +74,16 @@
           </Tooltip>
         </div>
         <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <EditableTextAreaCell
-            v-model="log.note"
-            :is-editable="isEditable(`${idx}-note`)"
-            @input="debounceUpdate"
-            @tab="onTabPress"
-            @blur="onBlur"
-          />
+          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
-          <EditableDateCell
-            v-model="log.logDate"
-            :is-editable="isEditable(`${idx}-logDate`)"
-            @input="debounceUpdate"
-            @blur="onBlur"
-          />
+          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
           <EditableDateCell
             v-model="log.alarmDate"
             type="date"
             :is-editable="isEditable(`${idx}-alarmDate`)"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -113,7 +99,6 @@
             v-model="log.alarmUserName"
             :is-editable="isEditable(`${idx}-alarmUserName`)"
             :options="userOptions"
-            @input="debounceUpdate"
             @blur="onBlur"
           />
         </div>
@@ -135,7 +120,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
 import { models, mutations, secondsNeededToDisplayModal, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
@@ -192,9 +176,6 @@ export default {
       } else {
         return null
       }
-    },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
     },
     yearOptions() {
       return this.valueTypes.year_name.filter((year) => year.show)
@@ -274,6 +255,7 @@ export default {
   },
   methods: {
     toggleEditable(id, logId) {
+      this.handleUpdate()
       this.editableLogId = logId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -283,13 +265,14 @@ export default {
       return this.editableId === id
     },
     handleUpdate() {
+      if (!this.editableLogId) return
       const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
       for (const key in this.users) {
         if (this.users[key].username === log.alarmUserName) {
           log.alarmUserId = this.users[key].id
         }
       }
-      this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
+      return this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
     },
     onDeleteClick(logId) {
       if (this.showArchived) {
@@ -299,7 +282,7 @@ export default {
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: logId, type: tabs.logs } } },
+          data: { delete: { showing: true, data: { id: logId, type: tabs.logs, label: 'log note' } } },
         })
       }
     },
@@ -322,7 +305,7 @@ export default {
           await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
             if (this.selectedLogIds.length === idx + 1) {
               await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`${logIndex}-${columns[0]}`, data.id)
+              this.toggleEditable(`${logIndex}-${columns[1]}`, data.id)
             }
           })
         })
@@ -330,13 +313,14 @@ export default {
         const log = Object.assign({}, defaultValues)
         this.$api.createLog(this.headers, { log }).then(async (data) => {
           await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.toggleEditable(`0-${columns[0]}`, data.id)
+          this.toggleEditable(`0-${columns[1]}`, data.id)
         })
       }
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     isTodayOrPast(date) {
@@ -352,7 +336,7 @@ export default {
         log.alarmComplete = true
       }
       this.editableLogId = log.id
-      this.debounceUpdate()
+      this.handleUpdate()
     },
     filterLogs(log) {
       const hasAlarm = log.alarmDate
@@ -430,7 +414,6 @@ export default {
         return false
       }
       log.secondsSpent = timeArr[0] * 3600 + timeArr[1] * 60
-      this.handleUpdate()
       this.onBlur()
     },
   },

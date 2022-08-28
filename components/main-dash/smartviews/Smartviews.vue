@@ -1,46 +1,59 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <div
-      v-for="smartview in displayedSmartviews"
-      :ref="smartview.id"
-      :key="smartview.id"
-      class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center group hover:text-white hover:bg-gray-400"
-      :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
-      @click="selectSmartview(smartview)"
-    >
-      <div class="flex items-center space-x-2">
-        <PenIcon class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
-        <span class="font-medium text-gray-900 group-hover:text-white">{{ smartview.name }}</span>
-      </div>
-      <div class="flex space-x-1">
-        <span>{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
-        <DeleteButton @click="archiveSmartview(smartview)" />
-      </div>
-    </div>
+    <draggable :value="displayedSmartviews" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+      <transition-group type="transition" :name="transitionName">
+        <div
+          v-for="smartview in displayedSmartviews"
+          :ref="smartview.id"
+          :key="smartview.id"
+          class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center group hover:text-white hover:bg-gray-400"
+          :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
+          @click="selectSmartview(smartview)"
+        >
+          <div class="flex items-center space-x-2">
+            <PenIcon class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
+            <span class="font-medium text-gray-900 select-none group-hover:text-white">{{ smartview.name }}</span>
+          </div>
+          <div class="flex space-x-1">
+            <span class="select-none">{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
+            <DeleteButton @click="archiveSmartview(smartview)" />
+          </div>
+        </div>
+      </transition-group>
+    </draggable>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations, tabs } from '~/shared/constants'
+import draggable from 'vuedraggable'
+import { models, mutations, tabs, TRANSITION_NAME } from '~/shared/constants'
 
 export default {
   name: 'Smartviews',
+  components: { draggable },
   props: {
     showArchived: {
       type: Boolean,
       default: false,
     },
   },
+  data() {
+    return {
+      dragActive: false,
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'ghost',
+      },
+    }
+  },
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews() {
       if (this.smartviews) {
-        return Object.fromEntries(
-          Object.entries(JSON.parse(JSON.stringify(this.smartviews))).filter(
-            ([key, smartview]) => this.showArchived === smartview.archived
-          )
-        )
+        return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
+          .filter((smartview) => this.showArchived === smartview.archived)
+          .sort((a, b) => a.sortNumber - b.sortNumber)
       } else {
         return []
       }
@@ -50,6 +63,12 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+    transitionName() {
+      if (!this.dragActive) {
+        return TRANSITION_NAME
+      }
+      return null
     },
   },
   methods: {
@@ -79,6 +98,15 @@ export default {
           data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews, label: smartview.name } } },
         })
       }
+    },
+    startDrag() {
+      this.dragActive = true
+    },
+    onDrop(evt) {
+      const item = this.displayedSmartviews[evt.oldIndex]
+      item.sortNumber = evt.newIndex + 1
+      this.$api.updateSmartview(this.headers, { smartviewId: item.id }, item)
+      this.dragActive = false
     },
   },
 }

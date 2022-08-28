@@ -9,7 +9,6 @@
           :is-editable="isEditable('state')"
           placeholder="State"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div v-else class="mb-1" @click="setEditable('taxForm')">
@@ -19,7 +18,6 @@
           :is-editable="isEditable('taxForm')"
           placeholder="Tax Form"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="mb-1" @click="setEditable('statusDate')">
@@ -29,7 +27,6 @@
           type="date"
           :is-editable="isEditable('statusDate')"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="mb-1" @click="setEditable('status')">
@@ -39,7 +36,6 @@
           :is-editable="isEditable('status')"
           placeholder="Status"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="mb-1" @click="setEditable('statusDetail')">
@@ -49,7 +45,6 @@
           :is-editable="isEditable('statusDetail')"
           placeholder="Detail"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <div class="col-span-2 cursor-pointer mb-1" @click="setEditable('memo')">
@@ -69,7 +64,6 @@
               v-model="includeInRefund"
               :is-editable="isEditable('includeInRefund')"
               @blur="onBlur"
-              @input="debounceUpdate"
             />
           </div>
           <div class="flex flex-col">
@@ -80,7 +74,6 @@
                 currency
                 :is-editable="isEditable('owes')"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
             <div @click="setEditable('paid')">
@@ -90,19 +83,13 @@
                 currency
                 :is-editable="isEditable('paid')"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
           </div>
         </div>
         <div class="flex items-center ml-3">
           <div @click="setEditable('includeFee')">
-            <EditableCheckBoxCell
-              v-model="includeFee"
-              :is-editable="isEditable('includeFee')"
-              @blur="onBlur"
-              @input="debounceUpdate"
-            />
+            <EditableCheckBoxCell v-model="includeFee" :is-editable="isEditable('includeFee')" @blur="onBlur" />
           </div>
           <div class="flex flex-col">
             <div @click="setEditable('owesFee')">
@@ -112,7 +99,6 @@
                 currency
                 :is-editable="isEditable('owesFee')"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
             <div @click="setEditable('paidFee')">
@@ -122,7 +108,6 @@
                 currency
                 :is-editable="isEditable('paidFee')"
                 @blur="onBlur"
-                @input="debounceUpdate"
               />
             </div>
           </div>
@@ -135,7 +120,6 @@
           :is-editable="isEditable('fileType')"
           placeholder="File Type"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
       <!-- spacing -->
@@ -149,7 +133,6 @@
             currency
             :is-editable="isEditable('refund')"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
         <div class="ml-3" @click="setEditable('rebate')">
@@ -159,7 +142,6 @@
             currency
             :is-editable="isEditable('rebate')"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
       </div>
@@ -170,35 +152,31 @@
           </span>
         </div>
         <div @click="setEditable('completed')">
-          <EditableCheckBoxCell
-            v-model="completed"
-            :is-editable="isEditable('completed')"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
+          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur" />
         </div>
       </div>
-      <div class="flex justify-center mb-1">
-        <div class="mr-3" @click="setEditable('deliveryContact')">
-          <EditableSelectCell
-            v-model="deliveryContact"
-            :options="contactTypeOptions"
-            :is-editable="isEditable('deliveryContact')"
-            placeholder="Delivery1"
-            @blur="onBlur"
-            @input="debounceUpdate"
-          />
-        </div>
-        <div class="ml-3" @click="setEditable('secondDeliveryContact')">
+      <div @click="setEditable('deliveryContact')">
+        <EditableSelectCell
+          v-model="deliveryContact"
+          :options="contactTypeOptions"
+          :is-editable="isEditable('deliveryContact')"
+          placeholder="Delivery1"
+          @blur="onBlur"
+        />
+      </div>
+      <div class="flex space-x-6 justify-center">
+        <div @click="setEditable('secondDeliveryContact')">
           <EditableSelectCell
             v-model="secondDeliveryContact"
             :options="contactTypeOptions"
             :is-editable="isEditable('secondDeliveryContact')"
             placeholder="Delivery2"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </div>
+        <button @click="setSecondDeliveryContact('CHECK')">
+          <font-awesome-icon icon="fa-light fa-money-check" />
+        </button>
       </div>
       <div @click="setEditable('dateFiled')">
         <EditableDate
@@ -207,7 +185,6 @@
           type="date"
           :is-editable="isEditable('dateFiled')"
           @blur="onBlur"
-          @input="debounceUpdate"
         />
       </div>
     </div>
@@ -216,7 +193,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { events, filingTypes, models } from '~/shared/constants'
 
 export default {
@@ -405,13 +381,10 @@ export default {
     filingType() {
       return this.filing.filingType
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
     taxFormOptions() {
       return this.valueTypes.tax_form.filter((taxForm) => taxForm.show)
     },
-    stateOptions(){
+    stateOptions() {
       return this.valueTypes.state
     },
     statusOptions() {
@@ -477,9 +450,10 @@ export default {
       return this.editable === value
     },
     onBlur() {
+      this.handleUpdate()
       this.setEditable('')
     },
-    onMemoBlur(){
+    onMemoBlur() {
       this.onBlur()
       this.handleUpdate()
     },
@@ -490,31 +464,32 @@ export default {
         this.formModel
       )
     },
-    setAsValidNumber(input){
+    setAsValidNumber(input) {
       let newNumber = 0
-      if(isNaN(input) || !input){
-        if(input.includes(',')){
+      if (isNaN(input) || !input) {
+        if (input.includes(',')) {
           newNumber = input.replace(',', '')
         }
-      }
-      else {
+      } else {
         newNumber = input
       }
       return newNumber
     },
-    emitDelete(id){
+    emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
-    }
-  }
+    },
+    setSecondDeliveryContact(value) {
+      this.secondDeliveryContact = value
+      this.handleUpdate()
+    },
+  },
 }
 </script>
 
 <style scoped>
-
 .delete-btn {
   @apply absolute;
 
   top: -5px;
 }
-
 </style>

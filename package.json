@@ -12,6 +12,13 @@
     "lint": "yarn lint:js && yarn lint:style"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.1.2",
+    "@fortawesome/pro-duotone-svg-icons": "^6.1.2",
+    "@fortawesome/pro-light-svg-icons": "^6.1.2",
+    "@fortawesome/pro-regular-svg-icons": "^6.1.2",
+    "@fortawesome/pro-solid-svg-icons": "^6.1.2",
+    "@fortawesome/pro-thin-svg-icons": "^6.1.2",
+    "@fortawesome/vue-fontawesome": "^2.0.8",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/dotenv": "^1.4.1",
     "@tailwindcss/forms": "^0.3.4",
@@ -33,6 +40,7 @@
     "@babel/eslint-parser": "^7.14.7",
     "@nuxtjs/eslint-config": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
+    "@nuxtjs/fontawesome": "^1.1.2",
     "@nuxtjs/stylelint-module": "^4.0.0",
     "@nuxtjs/tailwindcss": "^4.2.0",
     "eslint": "^7.29.0",

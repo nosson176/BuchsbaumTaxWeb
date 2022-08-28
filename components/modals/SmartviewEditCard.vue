@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-80 sm:p-6 sm:pb-4 flex flex-col justify-between">
+    <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-96 sm:p-6 sm:pb-4 flex flex-col justify-between">
       <div class="sm:flex sm:items-start">
         <div
           class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10"
@@ -14,7 +14,7 @@
           </div>
           <div v-if="hasLines" class="mt-4 shadow">
             <SmartviewLine
-              v-for="(line, idx) in smartview.smartviewLines"
+              v-for="(line, idx) in smartviewLines"
               :key="idx"
               :line="line"
               :idx="idx"
@@ -25,8 +25,8 @@
         </div>
       </div>
       <div class="flex items-center justify-end mt-2 mb-1 text-sm">
-          Send To Account:
-          <HeaderSelectOption v-model="sendToUserId" short class="ml-2" :options="usersArray" />
+        Send To Account:
+        <HeaderSelectOption v-model="sendToUserId" short class="ml-2" :options="usersArray" />
         <button
           type="button"
           :disabled="isSendDisabled"
@@ -93,7 +93,7 @@ export default {
   data() {
     return {
       isLoading: false,
-      sendToUserId: ''
+      sendToUserId: '',
     }
   },
   computed: {
@@ -131,12 +131,12 @@ export default {
       for (const key in this.users) {
         usersArray.push({
           value: this.users[key].id.toString(),
-          name: this.users[key].username
+          name: this.users[key].username,
         })
       }
       return usersArray
     },
-    isSendDisabled(){
+    isSendDisabled() {
       return !this.sendToUserId || this.sendToUserId === this.modals.smartview.data.userId?.toString()
     },
     selectedSmView() {
@@ -145,8 +145,11 @@ export default {
     hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
     },
+    smartviewLines() {
+      return [...this.smartview.smartviewLines].sort((a, b) => a.groupNum - b.groupNum)
+    },
   },
-  created(){
+  created() {
     const headers = this.$api.getHeaders()
     this.$api.getAllUsers(headers)
   },
@@ -191,7 +194,7 @@ export default {
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then((res) => {
         // Change the selectedsmartview to the updated value
-        if(this.hasSelectedSmartview){
+        if (this.hasSelectedSmartview) {
           this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: res })
         }
         this.isLoading = false
@@ -217,10 +220,10 @@ export default {
         data: { smartview: { showing: true, data: this.smartview } },
       })
     },
-    updateUserId(){
+    updateUserId() {
       this.$set(this.smartview, 'userId', this.sendToUserId)
       this.update()
-    }
+    },
   },
 }
 </script>

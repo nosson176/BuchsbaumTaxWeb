@@ -16,7 +16,6 @@
             :is-editable="isEditable('year')"
             @click.native="toggleEditable('year', yearData.id)"
             @blur="onBlur"
-            @input="debounceUpdate"
           />
         </h3>
       </div>
@@ -78,7 +77,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { debounce } from 'lodash'
 import { filingTypes, models } from '~/shared/constants'
 
 export default {
@@ -131,9 +129,6 @@ export default {
     yearOptions() {
       return this.$store.state.valueTypes.year_name.filter((year) => year.show)
     },
-    debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
-    },
     extensions() {
       return this.yearData.filings.filter((filing) => filing.filingType === filingTypes.ext)
     },
@@ -185,6 +180,7 @@ export default {
       return this.editableId === id
     },
     onBlur() {
+      this.handleUpdate()
       this.editableId = ''
     },
     handleUpdate() {
