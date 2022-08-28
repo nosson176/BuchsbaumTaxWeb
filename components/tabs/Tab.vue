@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center cursor-pointer border-transparent border-b-2 hover:border-gray-300 hover:text-gray-700"
+    class="inline-flex items-center cursor-pointer border-transparent border-b-2 hover:border-gray-300 hover:text-gray-700"
     :class="classObj"
     @click="emitClick"
   >
