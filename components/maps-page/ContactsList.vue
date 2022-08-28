@@ -84,7 +84,6 @@ export default {
       return contactType?.toLowerCase().includes('address')
     },
     isSelected({ id }) {
-      console.log(this.selectedContactId === id)
       return this.selectedContactId === id
     },
   },
