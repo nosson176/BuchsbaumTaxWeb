@@ -13,7 +13,7 @@ export default {
   props: {
     activeTab: {
       type: String,
-      default: tabs.tax_personals,
+      default: tabs.contact,
     },
   },
   computed: {
