@@ -16,7 +16,7 @@
         {{ client.displayName }}
       </div>
       <div class="w-5" @click.stop>
-        <DeleteButton @click="archiveClient(client)" />
+        <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
       </div>
     </div>
     <Modal :showing="showChangeClientModal" @hide="closeChangeClientModal">
@@ -32,7 +32,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, tabs } from '~/shared/constants'
+import { events, models, mutations, routes, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -68,6 +68,9 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+    hideDeleteButton() {
+      return this.$route.name === routes.maps
     },
   },
   watch: {
