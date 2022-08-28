@@ -11,7 +11,7 @@
     <template #body>
       <TableRow
         v-for="(contact, idx) in displayedContacts"
-        :key="contact.id"
+        :key="contact.id + isSelected(contact)"
         class="pr-1"
         :class="{ selected: isSelected(contact) }"
       >
