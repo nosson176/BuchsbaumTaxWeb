@@ -46,7 +46,7 @@ import { tabs, models, mutations } from '~/shared/constants'
 const initialState = () => ({
   currentFeesChecklistsTab: tabs.fees,
   currentLogsIncomeFbarTab: tabs.logs,
-  currentPersonalsTab: tabs.tax_personals,
+  currentPersonalsTab: tabs.contact,
   showArchivedClients: false,
   showArchivedSmartviews: false,
   showDeleteConfirmation: false,
@@ -143,11 +143,11 @@ export default {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
       })
     },
-    resetClock(){
-      if(this.$refs.logsBodyRef){
+    resetClock() {
+      if (this.$refs.logsBodyRef) {
         this.$refs.logsBodyRef.resetClock()
       }
-    }
+    },
   },
 }
 </script>
