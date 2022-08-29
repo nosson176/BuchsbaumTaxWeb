@@ -21,7 +21,7 @@
       </div>
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
-          class="flex flex-col border w-8 pt-5 z-10 bg-white"
+          class="flex flex-col border w-8 py-5"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
           :style="extensionColumnHeight"
         >
@@ -56,8 +56,8 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
           <div class="mt-2" />
         </div>
-        <div class="border pt-5 w-8 z-10 bg-white" :style="fbarColumnHeight">
-          <div v-for="fbar in fbars" :key="fbar.id" class="min-h-[250px]">
+        <div class="flex flex-col border pt-5 w-8" :style="fbarColumnHeight">
+          <div v-for="fbar in fbars" :key="fbar.id" class="min-h-[250px] h-full">
             <ClientTaxYearFbar :fbar="fbar" class="flex mt-2" @delete="startDelete($event, 'filing')" />
           </div>
         </div>
