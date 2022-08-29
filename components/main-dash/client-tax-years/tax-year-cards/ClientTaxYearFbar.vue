@@ -41,6 +41,26 @@
         @blur="onBlur"
       />
     </div>
+    <div v-if="!isEditable('statusDetail')" class="mx-2" @click.stop="setEditable('statusDetail')">
+      <EditableSelectCell
+        v-model="formModel.statusDetail"
+        :options="statusDetailOptions"
+        class="whitespace-nowrap"
+        :is-editable="isEditable('statusDetail')"
+        placeholder="Detail"
+        @blur="onBlur"
+      />
+    </div>
+    <div v-else v-click-outside="onBlur" class="absolute top-0 left-12 h-48 w-48">
+      <EditableSelectCell
+        v-model="formModel.statusDetail"
+        :options="statusDetailOptions"
+        class="whitespace-nowrap select-cell"
+        is-editable
+        placeholder="Detail"
+        @blur="onBlur"
+      />
+    </div>
     <div @click.stop="setEditable('statusDate')">
       <EditableDate
         v-model="formModel.statusDate"
@@ -82,6 +102,11 @@ export default {
     },
     statusOptions() {
       return this.valueTypes.fbar_status.filter((status) => status.show)
+    },
+    statusDetailOptions() {
+      return this.valueTypes.fbar_status_detail.filter(
+        (status) => this.formModel.status.id === status.parent && status.show
+      )
     },
     fileTypeOptions() {
       return this.valueTypes.fbar_filing.filter((fileType) => fileType.show)
