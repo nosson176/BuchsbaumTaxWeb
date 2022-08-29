@@ -190,7 +190,7 @@ export default {
       }
       const headers = this.$api.getHeaders()
       let sortOrder = this.yearData.filings.length + 1
-      // always keep federal filings in front
+      // always keep new federal filings in front of state
       if (filingType === filingTypes.federal) {
         const firstOccurenceOfStateFiling = this.yearData.filings.find(
           (filing) => filing.filingType === filingTypes.state
