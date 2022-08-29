@@ -21,7 +21,7 @@
       </div>
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
-          class="extension-column"
+          class="flex flex-col border w-8 pt-5 z-10 bg-white"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
           :style="extensionColumnHeight"
         >
@@ -56,17 +56,17 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
           <div class="mt-2" />
         </div>
-        <div class="fbar-column" :style="fbarColumnHeight">
-          <div v-for="fbar in fbars" :key="fbar.id" class="fbars-container">
-            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" @delete="startDelete($event, 'filing')" />
+        <div class="border pt-5 w-8 z-10 bg-white" :style="fbarColumnHeight">
+          <div v-for="fbar in fbars" :key="fbar.id" class="min-h-[250px]">
+            <ClientTaxYearFbar :fbar="fbar" class="flex mt-2" @delete="startDelete($event, 'filing')" />
           </div>
         </div>
       </div>
       <div class="flex">
-        <div class="bottom-tab">$</div>
-        <div class="bottom-tab">Tab</div>
-        <div class="bottom-tab">Win</div>
-        <div class="bottom-tab">Sub</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">$</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Tab</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Win</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Sub</div>
       </div>
     </div>
     <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
@@ -231,28 +231,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.extension-column {
-  @apply flex flex-col border;
-
-  width: 30px;
-}
-
-.fbar-column {
-  @apply border pt-5;
-
-  width: 30px;
-}
-
-.fbar-item {
-  @apply flex mt-2;
-}
-
-.fbars-container {
-  min-height: 250px;
-}
-
-.bottom-tab {
-  @apply border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center;
-}
-</style>
+<style scoped></style>
