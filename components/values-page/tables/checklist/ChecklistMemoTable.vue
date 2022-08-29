@@ -9,7 +9,9 @@
           <CheckBoxWithEyeIcon />
         </div>
         <div class="table-header w-full ml-1">Name</div>
-        <div class="table-header mr-1"><button v-if="!isDefaultOrder" @click="resetOrder">Reset</button></div>
+        <div class="table-header xs mr-1">
+          <button class="transform hover:text-indigo-500 hover:scale-110" @click="resetOrder">A-Z</button>
+        </div>
       </TableHeader>
     </template>
     <template #body>
@@ -25,7 +27,7 @@
             <div class="table-col w-full" @click="toggleEditable(memo.id)">
               <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @input="debounceUpdate" />
             </div>
-            <div class="table-col">
+            <div class="table-col xs">
               <DeleteButton @click="deleteValue(memo.id)" />
             </div>
           </TableRow>
@@ -78,9 +80,6 @@ export default {
         return TRANSITION_NAME
       }
       return null
-    },
-    isDefaultOrder() {
-      return this.checklistMemo?.every((memo) => !memo.sortOrder)
     },
   },
   methods: {
