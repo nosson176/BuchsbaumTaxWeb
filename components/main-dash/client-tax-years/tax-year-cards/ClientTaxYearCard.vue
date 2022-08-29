@@ -113,8 +113,9 @@ export default {
     },
     filings() {
       const clonedData = JSON.parse(JSON.stringify(this.yearData))
-      return clonedData.filings
-        .filter((filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar)
+      return clonedData.filings.filter(
+        (filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
+      )
     },
     displayedFilingInfo() {
       return this.filings[this.activeFilingIndex]
@@ -188,9 +189,18 @@ export default {
         return
       }
       const headers = this.$api.getHeaders()
+      let sortOrder = this.yearData.filings.length + 1
+      // always keep federal filings in front
+      if (filingType === filingTypes.federal) {
+        const firstOccurenceOfStateFiling = this.yearData.filings.find(
+          (filing) => filing.filingType === filingTypes.state
+        )
+        sortOrder = firstOccurenceOfStateFiling.sortOrder
+      }
       const defaultValues = {
         filingType,
         taxYearId: this.yearData.id,
+        sortOrder,
       }
       const filing = Object.assign({}, defaultValues)
       this.$api.createFiling(headers, { filing }).then((data) => {
