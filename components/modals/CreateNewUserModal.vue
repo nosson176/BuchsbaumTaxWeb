@@ -85,11 +85,11 @@ export default {
   methods: {
     submitCreateUser() {
       this.$api.createUser(this.headers, { user: this.formModel }).then((user) => {
-        this.selectedUserId = user.id
+        this.emitHide(user.id)
       })
     },
-    emitHide() {
-      return this.$emit(events.hide)
+    emitHide(id = null) {
+      return this.$emit(events.hide, id)
     },
     setEditable(field) {
       this.editable = field

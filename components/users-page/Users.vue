@@ -9,7 +9,7 @@
     />
     <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" />
     <Modal :showing="showCreateUserModal" @hide="closeCreateUserModal">
-      <CreateNewUserModal />
+      <CreateNewUserModal @hide="closeCreateUserModal" />
     </Modal>
     <Modal :showing="showChangePasswordModal" @hide="closeChangePasswordModal">
       <ChangePasswordModal :user-id="selectedUserId" @hide="closeChangePasswordModal" />
@@ -63,8 +63,9 @@ export default {
     openCreateUserModal() {
       this.showCreateUserModal = true
     },
-    closeCreateUserModal() {
+    closeCreateUserModal(id) {
       this.showCreateUserModal = false
+      this.selectedUserId = id
     },
   },
 }
