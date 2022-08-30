@@ -67,8 +67,8 @@ const userConstructor = () => {
     selectable: false,
     sendLoginNotifications: false,
     userType: 'user',
-    username: 'NEWUSER',
-    password: 'password1234',
+    username: '',
+    password: '',
   }
 }
 
