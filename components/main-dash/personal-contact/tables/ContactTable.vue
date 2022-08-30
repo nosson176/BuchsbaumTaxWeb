@@ -1,5 +1,5 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table @keydown.tab.prevent @keyup.tab.exact="goToNextColumn" @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
         <div class="table-header">
@@ -206,17 +206,32 @@ export default {
         this.toggleEditable(`0-${columns[0]}`, data.id)
       })
     },
-    onKeyDown() {
+    goToNextColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
       if (columnIndex < columns.length - 1) {
-        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        const nextCell = `${currentRow}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableContactId)
-      } else if (columnIndex === columns.length - 1) {
-        const row = Number(idArr[0]) + 1
-        const nextCell = `${row}-${columns[0]}`
+      } else if (columnIndex === columns.length - 1 && currentRow < this.displayedContacts.length - 1) {
+        const nextRow = currentRow + 1
+        const nextCell = `${nextRow}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableContactId)
+      }
+    },
+    goToPrevColumn() {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
+      if (columnIndex === 0 && currentRow > 0) {
+        const prevRow = currentRow - 1
+        const prevCell = `${prevRow}-${columns[columns.length - 1]}`
+        this.toggleEditable(prevCell, this.editableLogId)
+      } else if (columnIndex > 0) {
+        const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
+        this.toggleEditable(prevCell, this.editableLogId)
       }
     },
     onBlur() {
