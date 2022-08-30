@@ -14,7 +14,8 @@
         v-for="(contact, idx) in displayedContacts"
         :key="`${contact.id}  ${isSelected(contact)}`"
         class="pr-1"
-        :class="{ selected: isSelected(contact) }"
+        :idx="idx"
+        :selected="isSelected(contact)"
       >
         <div class="table-col xs bg-gray-200 mr-1">
           <ClickCell>{{ idx + 1 }}</ClickCell>
@@ -75,7 +76,6 @@ export default {
       }
     },
   },
-  mounted() {},
   methods: {
     setCurrentMapLocation(contact) {
       this.$store.commit(mutations.setModelResponse, { model: models.selectedContactId, data: contact.id })
@@ -90,8 +90,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.selected {
-  @apply bg-indigo-200;
-}
-</style>
+<style scoped></style>
