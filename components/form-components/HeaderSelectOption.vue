@@ -36,6 +36,8 @@
           :placeholder="shownValue"
           @keyup="onInputKeyup($event.key)"
           @click="onInputClick"
+          @focusin="toggleShowOptions"
+          @focusout="toggleShowOptions"
         />
         <span class="absolute inset-y-0 right-0 flex items-center pr-0 pointer-events-none">
           <!-- Heroicon name: solid/selector -->
