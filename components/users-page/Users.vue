@@ -8,6 +8,9 @@
       @change="addUserRow"
     />
     <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" />
+    <Modal :showing="showCreateUserModal" @hide="closeCreateUserModal">
+      <CreateNewUserModal />
+    </Modal>
     <Modal :showing="showChangePasswordModal" @hide="closeChangePasswordModal">
       <ChangePasswordModal :user-id="selectedUserId" @hide="closeChangePasswordModal" />
     </Modal>
@@ -17,13 +20,13 @@
 <script>
 import { mapState } from 'vuex'
 import { models, USER_TYPE_ADMIN } from '~/shared/constants'
-import { userConstructor } from '~/shared/domain-utilities'
 
 export default {
   name: 'Users',
   data() {
     return {
       selectedUserId: null,
+      showCreateUserModal: false,
       showChangePasswordModal: false,
     }
   },
@@ -49,16 +52,19 @@ export default {
       }
     },
     addUserRow() {
-      const user = userConstructor()
-      this.$api.createUser(this.headers, { user }).then((user) => {
-        this.selectedUserId = user.id
-      })
+      this.openCreateUserModal()
     },
     openChangePasswordModal() {
       this.showChangePasswordModal = true
     },
     closeChangePasswordModal() {
       this.showChangePasswordModal = false
+    },
+    openCreateUserModal() {
+      this.showCreateUserModal = true
+    },
+    closeCreateUserModal() {
+      this.showCreateUserModal = false
     },
   },
 }
