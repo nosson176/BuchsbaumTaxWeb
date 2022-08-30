@@ -2,10 +2,11 @@
   <Table class="h-auto shadow" @keydown.tab.prevent="onKeyDown">
     <template #header>
       <TableHeader>
-        <div class="table-header"></div>
-        <div class="table-header">Type</div>
+        <div class="table-header xs"></div>
+        <div class="table-header xs"></div>
+        <div class="table-header min-w-[5rem] w-1/3">Type</div>
         <div class="table-header w-full ml-1">Address/Number</div>
-        <div class="table-header"></div>
+        <div class="table-header xs"></div>
       </TableHeader>
     </template>
     <template #body>
@@ -15,23 +16,22 @@
         class="pr-1"
         :class="{ selected: isSelected(contact) }"
       >
-        <div class="table-col bg-gray-200 mr-1">
+        <div class="table-col xs bg-gray-200 mr-1">
           <ClickCell>{{ idx + 1 }}</ClickCell>
         </div>
-        <div class="table-col">
+        <div class="table-col xs">
           <EditableCheckBoxCell v-model="contact.enabled" />
         </div>
-        <div class="table-col">
+        <div class="table-col min-w-[5rem] w-1/3">
           {{ contact.contactType }}
         </div>
         <div class="table-col w-full">
           {{ contact.mainDetail }}
-          <span v-if="contact.secondaryDetail"
-            >, <br />
+          <span v-if="contact.secondaryDetail">
             {{ contact.secondaryDetail }}
           </span>
         </div>
-        <div class="table-col">
+        <div class="table-col xs">
           <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
             <MapIcon class="w-4 h-4 text-indigo-500" />
           </button>

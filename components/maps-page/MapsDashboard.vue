@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-6 grid-rows-4 max-h-screen gap-2 p-2">
+  <div class="grid grid-cols-9 grid-rows-4 max-h-screen gap-2 p-2">
     <div class="shadow rounded flex col-start-1 col-span-1 row-start-1 flex-col row-span-3 bg-white overflow-hidden">
       <ClientListHeader @change="toggleShowArchivedClients" />
       <ClientList :show-archived="showArchivedClients" />
@@ -8,8 +8,8 @@
       <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
       <Smartviews :show-archived="showArchivedSmartviews" />
     </div>
-    <MapView class="col-span-4 col-start-2 row-start-1 row-span-4" />
-    <div class="col-span-1 col-start-6 row-span-4 row-start-1">
+    <MapView class="col-span-6 col-start-2 row-start-1 row-span-4" />
+    <div class="col-span-2 col-start-8 row-span-4 row-start-1">
       <ContactsList />
     </div>
   </div>
