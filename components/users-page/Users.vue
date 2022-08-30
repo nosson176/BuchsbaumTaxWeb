@@ -52,7 +52,6 @@ export default {
       const user = userConstructor()
       this.$api.createUser(this.headers, { user }).then((user) => {
         this.selectedUserId = user.id
-        this.openChangePasswordModal()
       })
     },
     openChangePasswordModal() {
