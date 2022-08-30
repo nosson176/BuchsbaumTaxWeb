@@ -29,7 +29,6 @@
             @click="setAlarmFilter"
           />
         </div>
-        <div class="table-header xs">Time</div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Emp</span>
@@ -41,6 +40,7 @@
           <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="resetClock" />
           {{ currentTimeSpent }}
         </div>
+        <div class="table-header xs"></div>
       </TableHeader>
     </template>
     <template #body>
