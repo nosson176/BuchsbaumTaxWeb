@@ -2,9 +2,8 @@
   <SubmitCard :loading="loading" :disabled="!isUserValid" @hide="emitHide" @submit="submitCreateUser">
     <div class="w-full space-y-4">
       <span class="font-semibold">Create User</span>
-      <div class="rounded-md">
-        <FormInput ref="input" v-model="formModel.username" placeholder="Username" />
-      </div>
+      <FormInput ref="input" v-model="formModel.username" placeholder="Username" />
+
       <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
         <FormInput v-model="formModel.firstName" placeholder="First Name" :required="false" />
         <FormInput v-model="formModel.lastName" placeholder="Last Name" :required="false" />
