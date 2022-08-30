@@ -4,11 +4,11 @@
       <AddRowButton @click="onAddRowClick" />
     </div>
     <div
-      v-for="(client, idx) in displayedClients"
+      v-for="client in displayedClients"
       :ref="client.id"
-      :key="idx"
+      :key="`${client.id}  ${isSelected(client)}`"
       class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
-      :class="client.id === selectedClientId ? 'selected' : ''"
+      :class="{ selected: isSelected(client) }"
       @click="openChangeClientModal(client)"
     >
       <div class="w-full">
@@ -16,7 +16,7 @@
         {{ client.displayName }}
       </div>
       <div class="w-5" @click.stop>
-        <DeleteButton @click="archiveClient(client)" />
+        <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
       </div>
     </div>
     <Modal :showing="showChangeClientModal" @hide="closeChangeClientModal">
@@ -32,7 +32,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, tabs } from '~/shared/constants'
+import { events, models, mutations, routes, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -46,7 +46,7 @@ export default {
     return {
       selectedClientId: NaN,
       showChangeClientModal: false,
-      switchToClient: ''
+      switchToClient: '',
     }
   },
   computed: {
@@ -69,11 +69,17 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
+    hideDeleteButton() {
+      return this.$route.name === routes.maps
+    },
   },
   watch: {
     selectedClient() {
       this.scrollClientIntoView()
     },
+  },
+  mounted() {
+    this.selectedClientId = this.selectedClient.id
   },
   methods: {
     selectClient({ id }) {
@@ -121,33 +127,38 @@ export default {
         })
       }
     },
-    openChangeClientModal(client){
-      if(this.selectedClient?.id && this.$store.getters[models.secondsSpentOnClient] > 0
-        && this.$store.getters[models.promptOnClientChange]){
+    openChangeClientModal(client) {
+      if (
+        this.selectedClient?.id &&
+        this.$store.getters[models.secondsSpentOnClient] > 0 &&
+        this.$store.getters[models.promptOnClientChange]
+      ) {
         this.switchToClient = client
         this.showChangeClientModal = true
-      }
-      else {
+      } else {
         this.selectClient(client)
       }
     },
-    closeChangeClientModal(){
+    closeChangeClientModal() {
       this.showChangeClientModal = false
     },
-    addLog(){
+    addLog() {
       const defaultValues = {
         clientId: this.selectedClient.id,
         logDate: new Date(),
-        secondsSpent: this.$store.getters[models.secondsSpentOnClient]
+        secondsSpent: this.$store.getters[models.secondsSpentOnClient],
       }
-        const log = Object.assign({}, defaultValues)
-        this.$api.createLog(this.headers, { log }).then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-        })
-      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false})
+      const log = Object.assign({}, defaultValues)
+      this.$api.createLog(this.headers, { log }).then(async (data) => {
+        await this.$api.getClientData(this.headers, this.selectedClient.id)
+      })
+      this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$emit(events.resetClock)
-    }
-  }
+    },
+    isSelected({ id }) {
+      return id === this.selectedClientId
+    },
+  },
 }
 </script>
 

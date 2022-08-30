@@ -24,6 +24,7 @@ export const models = Object.freeze({
   inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
   promptOnClientChange: 'promptOnClientChange',
+  selectedContactId: 'selectedContactId',
 })
 
 // Store Mutations
@@ -38,6 +39,7 @@ export const routes = Object.freeze({
   root: 'index',
   users: 'users',
   values: 'values',
+  maps: 'maps',
 })
 
 // Meta Tags

@@ -1,28 +1,28 @@
 <template>
   <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
-    <div class="grid flex-grow overflow-hidden p-2">
-      <div class="shadow rounded flex flex-col client-list bg-white">
+    <div class="grid grid-cols-9 grid-rows-4 gap-2 flex-grow overflow-hidden p-2">
+      <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-3 bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />
       </div>
-      <div class="shadow rounded flex flex-col fees-checklists bg-white">
+      <div class="shadow rounded flex flex-col row-start-1 row-span-2 col-start-9 bg-white">
         <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
         <FeesChecklistsBody :current-tab="currentFeesChecklistsTab" />
       </div>
-      <div class="shadow rounded flex flex-col smart-views bg-white">
+      <div class="shadow rounded flex flex-col row-start-4 col-start-1 bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
-      <div class="shadow rounded flex flex-col logs-income-fbar bg-white">
+      <div class="shadow rounded flex flex-col row-start-3 row-span-2 col-start-2 col-span-5 bg-white">
         <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
         <LogsIncomeFbarBody ref="logsBodyRef" :current-tab="currentLogsIncomeFbarTab" />
       </div>
-      <div class="shadow rounded flex flex-col personal-contact bg-white">
+      <div class="shadow rounded flex flex-col row-start-3 row-span-2 col-start-7 col-span-3 bg-white">
         <PersonalContactHeader @click="switchPersonalsTab" />
         <PersonalContactBody :current-tab="currentPersonalsTab" />
       </div>
       <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
-      <div class="bg-white shadow-md rounded-t flex flex-col-reverse client-tax-years">
+      <div class="bg-white shadow-md rounded-t flex flex-col-reverse row-start-1 row-span-2 col-start-2 col-span-7">
         <ClientTaxYears />
         <ClientTaxYearsHeader />
       </div>
@@ -46,7 +46,7 @@ import { tabs, models, mutations } from '~/shared/constants'
 const initialState = () => ({
   currentFeesChecklistsTab: tabs.fees,
   currentLogsIncomeFbarTab: tabs.logs,
-  currentPersonalsTab: tabs.tax_personals,
+  currentPersonalsTab: tabs.contact,
   showArchivedClients: false,
   showArchivedSmartviews: false,
   showDeleteConfirmation: false,
@@ -143,43 +143,13 @@ export default {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
       })
     },
-    resetClock(){
-      if(this.$refs.logsBodyRef){
+    resetClock() {
+      if (this.$refs.logsBodyRef) {
         this.$refs.logsBodyRef.resetClock()
       }
-    }
+    },
   },
 }
 </script>
 
-<style scoped>
-.grid {
-  gap: 0.5rem;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-}
-
-.client-list {
-  @apply row-start-1 col-start-1 row-span-3;
-}
-
-.fees-checklists {
-  @apply row-start-1 row-span-2 col-start-9;
-}
-
-.client-tax-years {
-  @apply row-start-1 row-span-2 col-start-2 col-span-7;
-}
-
-.smart-views {
-  @apply row-start-4 col-start-1;
-}
-
-.logs-income-fbar {
-  @apply row-start-3 row-span-2 col-start-2 col-span-5;
-}
-
-.personal-contact {
-  @apply row-start-3 row-span-2 col-start-7 col-span-3;
-}
-</style>
+<style scoped></style>
