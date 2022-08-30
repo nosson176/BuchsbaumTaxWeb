@@ -2,8 +2,8 @@
   <SubmitCard :loading="loading" :disabled="!isPasswordValid" @hide="emitHide" @submit="submitPasswordChange">
     <div class="w-full space-y-2">
       <span class="font-semibold">Change {{ user.username }}'s Password</span>
-      <FormInput ref="input" v-model="newPassword" />
-      <FormInput v-model="confirmPassword" />
+      <FormInput ref="input" v-model="newPassword" placeholder="Password" />
+      <FormInput v-model="confirmPassword" placeholder="Confirm Password" />
     </div>
   </SubmitCard>
 </template>
