@@ -8,9 +8,8 @@
 <script>
 export default {
   name: 'IndexPage',
-  async asyncData({ $api }) {
-    const headers = $api.getHeaders()
-    await $api.getClientList(headers)
+  async fetch() {
+    await this.$api.getClientList(this.headers)
   },
   computed: {
     headers() {
