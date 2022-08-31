@@ -1,5 +1,5 @@
 <template>
-  <section aria-labelledby="user-information-title">
+  <section aria-labelledby="user-information-title" class="rounded-md shadow">
     <form class="bg-white" @submit.prevent="updateUser">
       <div class="flex px-4 py-5 bg-gray-50 sm:px-6 justify-between">
         <input
@@ -17,7 +17,7 @@
           Change Password
         </button>
       </div>
-      <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <div class="border-t border-gray-200 px-4 py-5 space-y-4 sm:px-6">
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">First Name</div>
@@ -36,7 +36,7 @@
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Privelage Set</div>
             <div class="mt-1 text-sm text-gray-900">
-              <div @click="setEditable('type')">
+              <div class="w-1/3" @click="setEditable('type')">
                 <HeaderSelectOption v-model="userType" :options="userTypes" :is-editable="isEditable('type')" />
               </div>
             </div>

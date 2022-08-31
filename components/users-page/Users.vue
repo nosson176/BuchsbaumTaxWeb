@@ -1,13 +1,14 @@
 <template>
-  <div class="w-full h-full grid grid-cols-2">
+  <div class="w-full h-full grid gap-2 grid-cols-3 px-8">
     <UsersTable
       :key="usersCopy.length"
+      class="col-span-1"
       :users="usersCopy"
       :user-id="selectedUserId"
       @click="setSelectedUserId"
       @change="addUserRow"
     />
-    <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" />
+    <UserDetails v-if="user" :key="user.id" class="col-span-2" :user="user" @click="openChangePasswordModal" />
     <Modal :showing="showCreateUserModal" @hide="closeCreateUserModal">
       <CreateNewUserModal @hide="closeCreateUserModal" />
     </Modal>

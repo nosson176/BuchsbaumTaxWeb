@@ -1,7 +1,7 @@
 <template>
-  <Table>
+  <Table class="rounded-md shadow">
     <template #header>
-      <TableHeader>
+      <TableHeader class="py-6">
         <div class="table-header">
           <AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" />
         </div>
@@ -12,11 +12,12 @@
       <TableRow
         v-for="(user, index) in users"
         :key="user.id"
-        class="px-2"
+        class="px-2 py-2"
         :idx="index"
         :class="isUserSelected(user.id) ? 'selected' : 'row'"
       >
-        <div class="table-col w-full cursor-pointer" @click="setSelected(user)">
+        <div class="table-col w-4"></div>
+        <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
           {{ user.username }}
           <span class="font-light">({{ user.userType }})</span>
         </div>

@@ -120,6 +120,6 @@ input.last {
 }
 
 input.rounded {
-  @apply rounded-md;
+  @apply rounded-md shadow-sm;
 }
 </style>
