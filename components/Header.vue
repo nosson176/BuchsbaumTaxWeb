@@ -115,7 +115,7 @@ export default {
     },
   },
   created() {
-    this.loadInbox()
+    // this.loadInbox()
   },
   methods: {
     getSelectedClient(selectedClientName) {
