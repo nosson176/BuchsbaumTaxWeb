@@ -104,9 +104,8 @@ export default {
       return this.valueTypes.fbar_status.filter((status) => status.show)
     },
     statusDetailOptions() {
-      return this.valueTypes.fbar_status_detail.filter(
-        (status) => this.formModel.status?.id === status.parent && status.show
-      )
+      const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status)?.id
+      return this.valueTypes.fbar_status_detail.filter((status) => status.parentId === parentId && status.show)
     },
     fileTypeOptions() {
       return this.valueTypes.fbar_filing.filter((fileType) => fileType.show)
