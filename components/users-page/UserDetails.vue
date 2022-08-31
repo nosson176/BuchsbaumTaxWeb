@@ -2,7 +2,7 @@
   <section aria-labelledby="user-information-title" class="rounded-md shadow">
     <form class="bg-white" @submit.prevent="updateUser">
       <div class="flex px-4 py-5 bg-gray-50 sm:px-6 justify-between">
-        <div id="user-information-title" class="text-lg leading-6 font-medium text-gray-900 bg-gray-50" @blur="onBlur">
+        <div id="user-information-title" class="text-lg leading-6 font-medium text-gray-900 bg-gray-50">
           {{ userObj.username }}
         </div>
         <button
@@ -18,7 +18,7 @@
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Username</div>
             <div class="mt-1 text-sm text-gray-900">
-              <FormInput ref="username" v-model="userObj.username" @blur="onBlur" />
+              <FormInput ref="username" v-model="userObj.username" />
             </div>
           </div>
         </div>
@@ -26,13 +26,13 @@
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">First Name</div>
             <div class="mt-1 text-sm text-gray-900">
-              <FormInput v-model="userObj.firstName" @blur="onBlur" />
+              <FormInput v-model="userObj.firstName" />
             </div>
           </div>
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Last Name</div>
             <div class="mt-1 text-sm text-gray-900">
-              <FormInput v-model="userObj.lastName" @blur="onBlur" />
+              <FormInput v-model="userObj.lastName" />
             </div>
           </div>
         </div>
@@ -40,15 +40,13 @@
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Privelage Set</div>
             <div class="mt-1 text-sm text-gray-900">
-              <div class="h-full" @click="setEditable('type')">
-                <HeaderSelectOption v-model="userType" large :options="userTypes" :is-editable="isEditable('type')" />
-              </div>
+              <HeaderSelectOption :key="userTypeChange" v-model="userType" large :options="userTypes" />
             </div>
           </div>
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Seconds in Day</div>
             <div class="mt-1 text-sm text-gray-900">
-              <FormInput v-model="userObj.secondsInDay" @blur="onBlur" />
+              <FormInput v-model="userObj.secondsInDay" />
             </div>
           </div>
         </div>
@@ -94,6 +92,7 @@
 
 <script>
 import { events, userTypes } from '~/shared/constants'
+import { userConstructor } from '~/shared/domain-utilities'
 
 export default {
   name: 'UserDetails',
@@ -106,22 +105,16 @@ export default {
   data() {
     return {
       loading: false,
+      userObj: userConstructor(),
     }
   },
   computed: {
-    data() {
-      return {
-        editable: '',
-        userObj: null,
-      }
-    },
     userType: {
       get() {
-        console.log(this.userObj.userType)
         return this.userObj.userType
       },
       set(newVal) {
-        this.$set(this.userObj, 'userType', newVal)
+        this.userObj.userType = newVal
       },
     },
     selectable: {
@@ -134,10 +127,10 @@ export default {
     },
     allowTexting: {
       get() {
-        return this.userObj.allowTextin
+        return this.userObj.allowTexting
       },
       set(newVal) {
-        this.userObj.allowTextin = newVal
+        this.userObj.allowTexting = newVal
       },
     },
     notifyOfLogins: {
@@ -151,9 +144,6 @@ export default {
     userTypes() {
       return userTypes
     },
-    isTypeEditable() {
-      return this.editable === 'type'
-    },
     headers() {
       return this.$api.getHeaders()
     },
@@ -162,20 +152,11 @@ export default {
     this.$refs.username.$refs.input.focus()
   },
   created() {
-    this.userObj = { ...this.user }
+    this.userObj = JSON.parse(JSON.stringify(this.user))
   },
   methods: {
     updateUserObj(newVal) {
       this.userObj = Object.assign({}, this.user, newVal)
-    },
-    setEditable(field) {
-      this.editable = field
-    },
-    onBlur() {
-      this.setEditable('')
-    },
-    isEditable(field) {
-      return this.editable === field
     },
     async updateUser() {
       this.loading = true
