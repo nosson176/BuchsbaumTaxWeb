@@ -3,11 +3,11 @@
     <div class="w-full space-y-2">
       <span class="font-semibold">Change {{ user.username }}'s Password</span>
       <div class="flex flex-col space-y-0.5">
-        <FormInput id="password" ref="input" v-model="newPassword" placeholder="Password" type="password" />
+        <FormInput id="password" ref="input" v-model="newPassword" placeholder="Password" type="password" required />
         <div v-if="showPasswordError" class="text-xs text-red-700">Must be lomger than 6 chars</div>
       </div>
       <div class="flex flex-col space-y-0.5">
-        <FormInput id="confirm" v-model="confirmPassword" placeholder="Confirm Password" type="password" />
+        <FormInput id="confirm" v-model="confirmPassword" placeholder="Confirm Password" type="password" required />
         <div v-if="showConfirmPasswordError" class="text-xs text-red-700">Must match the password</div>
       </div>
     </div>
