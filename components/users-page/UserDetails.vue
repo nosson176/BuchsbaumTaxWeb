@@ -2,13 +2,9 @@
   <section aria-labelledby="user-information-title" class="rounded-md shadow">
     <form class="bg-white" @submit.prevent="updateUser">
       <div class="flex px-4 py-5 bg-gray-50 sm:px-6 justify-between">
-        <input
-          id="user-information-title"
-          ref="username"
-          v-model="userObj.username"
-          class="text-lg leading-6 font-medium text-gray-900 bg-gray-50"
-          @blur="onBlur"
-        />
+        <div id="user-information-title" class="text-lg leading-6 font-medium text-gray-900 bg-gray-50" @blur="onBlur">
+          {{ userObj.username }}
+        </div>
         <button
           type="button"
           class="bg-white text-indigo-600 border border-indigo-600 rounded-md text-sm px-3 py-2 hover:bg-indigo-600 hover:text-white"
@@ -20,31 +16,39 @@
       <div class="border-t border-gray-200 px-4 py-5 space-y-4 sm:px-6">
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">First Name</div>
+            <div class="text-sm font-medium text-gray-500">Username</div>
             <div class="mt-1 text-sm text-gray-900">
-              <input v-model="userObj.firstName" @blur="onBlur" />
-            </div>
-          </div>
-          <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Last Name</div>
-            <div class="mt-1 text-sm text-gray-900">
-              <input v-model="userObj.lastName" @blur="onBlur" />
+              <FormInput ref="username" v-model="userObj.username" @blur="onBlur" />
             </div>
           </div>
         </div>
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
+            <div class="text-sm font-medium text-gray-500">First Name</div>
+            <div class="mt-1 text-sm text-gray-900">
+              <FormInput v-model="userObj.firstName" @blur="onBlur" />
+            </div>
+          </div>
+          <div class="sm:col-span-1">
+            <div class="text-sm font-medium text-gray-500">Last Name</div>
+            <div class="mt-1 text-sm text-gray-900">
+              <FormInput v-model="userObj.lastName" @blur="onBlur" />
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+          <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Privelage Set</div>
             <div class="mt-1 text-sm text-gray-900">
-              <div class="w-1/3" @click="setEditable('type')">
-                <HeaderSelectOption v-model="userType" :options="userTypes" :is-editable="isEditable('type')" />
+              <div class="h-full" @click="setEditable('type')">
+                <HeaderSelectOption v-model="userType" large :options="userTypes" :is-editable="isEditable('type')" />
               </div>
             </div>
           </div>
           <div class="sm:col-span-1">
             <div class="text-sm font-medium text-gray-500">Seconds in Day</div>
             <div class="mt-1 text-sm text-gray-900">
-              <input v-model="userObj.secondsInDay" @blur="onBlur" />
+              <FormInput v-model="userObj.secondsInDay" @blur="onBlur" />
             </div>
           </div>
         </div>
@@ -113,10 +117,11 @@ export default {
     },
     userType: {
       get() {
+        console.log(this.userObj.userType)
         return this.userObj.userType
       },
       set(newVal) {
-        this.userObj.userType = newVal
+        this.$set(this.userObj, 'userType', newVal)
       },
     },
     selectable: {
@@ -154,7 +159,7 @@ export default {
     },
   },
   mounted() {
-    this.$refs.username.focus()
+    this.$refs.username.$refs.input.focus()
   },
   created() {
     this.userObj = { ...this.user }
