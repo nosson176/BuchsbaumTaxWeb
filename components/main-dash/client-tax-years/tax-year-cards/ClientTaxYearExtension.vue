@@ -1,5 +1,5 @@
 <template>
-  <div class="extension">
+  <div class="text-xs flex transform -rotate-90">
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div class="mx-2" @click="setEditable('statusDate')">
       <EditableDate
@@ -25,7 +25,7 @@
     <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
       <EditableSelectCell
         v-model="formModel.status"
-        class="font-bold ml-2 whitespace-nowrap select-cell"
+        class="font-bold ml-2 whitespace-nowrap transform rotate-90"
         :options="statusOptions"
         is-editable
         placeholder="Status"
@@ -47,7 +47,7 @@
     <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
       <EditableSelectCell
         v-model="formModel.taxForm"
-        class="font-bold ml-2 whitespace-nowrap select-cell"
+        class="font-bold ml-2 whitespace-nowrap transform rotate-90"
         :options="taxFormOptions"
         is-editable
         placeholder="Tax Form"
@@ -66,18 +66,22 @@ import { events, models } from '~/shared/constants'
 export default {
   name: 'ClientTaxYearExtension',
   directives: {
-    ClickOutside
+    ClickOutside,
   },
   props: {
     extension: {
       type: Object,
-      default: ()=>{}
-    }
+      default: () => {},
+    },
+    idx: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
       editable: '',
-      formModel: null
+      formModel: null,
     }
   },
   computed: {
@@ -95,7 +99,7 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.extension))
   },
-  methods:{
+  methods: {
     setEditable(editable) {
       this.editable = editable
     },
@@ -114,20 +118,9 @@ export default {
     },
     emitDelete() {
       this.$emit(events.delete, this.extension.id)
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-.extension {
-  @apply text-xs flex;
-
-  transform: rotate(270deg);
-}
-
-.select-cell {
-  transform: rotate(90deg);
-}
-
-</style>
+<style scoped></style>
