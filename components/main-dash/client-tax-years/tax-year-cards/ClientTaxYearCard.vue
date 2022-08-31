@@ -38,7 +38,7 @@
           </div>
           <div v-for="extension in extensions" :key="extension.id">
             <ClientTaxYearExtension
-              :class="{ 'mt-56': extensions.length < 2 }"
+              :class="{ 'mt-44': extensions.length < 2 }"
               :extension="extension"
               @delete="startDelete($event, 'filing')"
             />
@@ -144,7 +144,7 @@ export default {
     extensionColumnHeight() {
       let style = ''
       if (this.extensions.length > 1) {
-        style = 'min-height:' + 270 * this.extensions.length + 'px'
+        style = 'min-height:' + 215 * this.extensions.length + 'px'
       }
       return style
     },
@@ -153,7 +153,7 @@ export default {
     },
     fbarColumnHeight() {
       const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
-      return 'min-height:' + 250 * longestItemLength + 'px'
+      return 'min-height:' + 165 * longestItemLength + 'px'
     },
   },
   methods: {
