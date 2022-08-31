@@ -105,7 +105,7 @@ export default {
     },
     statusDetailOptions() {
       return this.valueTypes.fbar_status_detail.filter(
-        (status) => this.formModel.status.id === status.parent && status.show
+        (status) => this.formModel.status?.id === status.parent && status.show
       )
     },
     fileTypeOptions() {
