@@ -9,6 +9,12 @@ export default function ({ $axios, store, redirect }) {
         status: true,
       })
     }
+    if ('loaded' in config) {
+      store.commit(mutations.setLoaded, {
+        model: config.loaded,
+        status: false,
+      })
+    }
     return config
   })
 
@@ -32,6 +38,12 @@ export default function ({ $axios, store, redirect }) {
         model: resp.config.loading,
         status: false,
       })
+      if ('loaded' in resp.config) {
+        store.commit(mutations.setLoaded, {
+          model: resp.config.loaded,
+          status: true,
+        })
+      }
     }
 
     let data = {}
@@ -59,6 +71,12 @@ export default function ({ $axios, store, redirect }) {
         model: err.config.loading,
         status: false,
       })
+      if ('loaded' in err.config) {
+        store.commit(mutations.setLoaded, {
+          model: err.config.loaded,
+          status: false,
+        })
+      }
     }
 
     return Promise.reject(err)
