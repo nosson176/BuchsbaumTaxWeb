@@ -149,9 +149,10 @@ export default {
       this.handleUpdate()
       this.editingId = ''
     },
-    handleUpdate() {
+    async handleUpdate() {
       const client = this.selectedClientCopy
-      return this.$api.updateClient(this.headers, { clientId: client.id, client })
+      await this.$api.updateClient(this.headers, { clientId: client.id, client })
+      this.closeEditNameDialogue()
     },
     openEditNameDialogue() {
       this.showEditNameDialogue = true

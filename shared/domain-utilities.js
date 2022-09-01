@@ -59,6 +59,19 @@ const isNotificationValid = (notification) => {
 const formatDateForClient = (date) => format(parseISO(date), dateformat.client)
 const formatDateForServer = (date) => formatISO(parse(date, dateformat.client, new Date()))
 
+const userConstructor = () => {
+  return {
+    allowTexting: false,
+    notifyOfLogins: false,
+    secondsInDay: 0,
+    selectable: false,
+    sendLoginNotifications: false,
+    userType: 'user',
+    username: '',
+    password: '',
+  }
+}
+
 export {
   isNameValid,
   isEmailValid,
@@ -76,4 +89,5 @@ export {
   isFieldEmpty,
   formatDateForClient,
   formatDateForServer,
+  userConstructor,
 }

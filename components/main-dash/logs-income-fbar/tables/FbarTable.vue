@@ -1,5 +1,10 @@
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent="onKeyDown">
+  <Table
+    v-if="isClientSelected"
+    @keydown.tab.prevent
+    @keyup.tab.exact="goToNextColumn"
+    @keyup.shift.tab.exact="goToPrevColumn"
+  >
     <template #header>
       <TableHeader>
         <div class="table-header w-6 flex flex-col">
@@ -473,17 +478,32 @@ export default {
         })
       }
     },
-    onKeyDown() {
+    goToNextColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
       if (columnIndex < columns.length - 1) {
-        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        const nextCell = `${currentRow}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableFbarId)
-      } else if (columnIndex === columns.length - 1) {
-        const row = Number(idArr[0]) + 1
-        const nextCell = `${row}-${columns[0]}`
+      } else if (columnIndex === columns.length - 1 && currentRow < this.displayedFbars.length - 1) {
+        const nextRow = currentRow + 1
+        const nextCell = `${nextRow}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableFbarId)
+      }
+    },
+    goToPrevColumn() {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
+      if (columnIndex === 0 && currentRow > 0) {
+        const prevRow = currentRow - 1
+        const prevCell = `${prevRow}-${columns[columns.length - 1]}`
+        this.toggleEditable(prevCell, this.editableFbarId)
+      } else if (columnIndex > 0) {
+        const prevCell = `${idArr[0]}-${columns[columnIndex - 1]}`
+        this.toggleEditable(prevCell, this.editableFbarId)
       }
     },
     onBlur() {

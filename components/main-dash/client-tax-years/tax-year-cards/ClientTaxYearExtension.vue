@@ -1,5 +1,10 @@
 <template>
-  <div class="text-xs flex transform -rotate-90">
+  <div
+    class="text-xs flex transform -rotate-90"
+    @keydown.tab.prevent
+    @keyup.tab.exact="goToNextItem"
+    @keyup.shift.tab.exact="goToPrevItem"
+  >
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div class="mx-2" @click="setEditable('statusDate')">
       <EditableDate
@@ -63,6 +68,8 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
+const items = ['statusDate', 'status', 'taxForm']
+
 export default {
   name: 'ClientTaxYearExtension',
   directives: {
@@ -72,10 +79,6 @@ export default {
     extension: {
       type: Object,
       default: () => {},
-    },
-    idx: {
-      type: Number,
-      default: 0,
     },
   },
   data() {
@@ -118,6 +121,24 @@ export default {
     },
     emitDelete() {
       this.$emit(events.delete, this.extension.id)
+    },
+    goToNextItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => {
+        return col === currentCell
+      })
+      if (itemIndex < items.length - 1) {
+        const nextCell = items[itemIndex + 1]
+        this.setEditable(nextCell)
+      }
+    },
+    goToPrevItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => col === currentCell)
+      if (itemIndex > 0) {
+        const prevCell = items[itemIndex - 1]
+        this.setEditable(prevCell)
+      }
     },
   },
 }

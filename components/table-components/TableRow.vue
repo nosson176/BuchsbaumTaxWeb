@@ -1,8 +1,8 @@
 <template>
   <div
     :draggable="draggable"
-    class="flex items-center bg-gray-50"
-    :class="idx % 2 === 0 ? 'even' : ''"
+    class="flex items-center"
+    :class="bgColorClassObj"
     @dragstart="emitDragstart($event)"
     @click="emitClick"
   >
@@ -24,6 +24,21 @@ export default {
       type: Boolean,
       default: false,
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    bgColorClassObj() {
+      if (this.selected) {
+        return { 'bg-indigo-200': true }
+      } else if (this.idx % 2 === 0) {
+        return { 'bg-white': true }
+      } else {
+        return { 'bg-gray-50': true }
+      }
+    },
   },
   methods: {
     emitDragstart(evt) {
@@ -36,8 +51,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.even {
-  @apply bg-white;
-}
-</style>
+<style scoped></style>

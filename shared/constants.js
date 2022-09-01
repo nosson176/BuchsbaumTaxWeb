@@ -24,6 +24,8 @@ export const models = Object.freeze({
   inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
   promptOnClientChange: 'promptOnClientChange',
+  selectedContactId: 'selectedContactId',
+  currentUser: 'currentUser',
 })
 
 // Store Mutations
@@ -38,6 +40,7 @@ export const routes = Object.freeze({
   root: 'index',
   users: 'users',
   values: 'values',
+  maps: 'maps',
 })
 
 // Meta Tags
@@ -139,6 +142,11 @@ export const categories = Object.freeze({
   secondary: 'SEC.',
   dependant: 'DEP.',
 })
+
+export const userTypes = Object.freeze([
+  { name: 'admin', value: 'admin' },
+  { name: 'user', value: 'user' },
+])
 
 export const priorityOptions = Object.freeze([
   { color: 'pink', value: 1 },
@@ -270,3 +278,5 @@ export const operators = Object.freeze([
 export const secondsNeededToDisplayModal = 600
 
 export const TRANSITION_NAME = 'flip-list'
+
+export const USER_TYPE_ADMIN = 'admin'
