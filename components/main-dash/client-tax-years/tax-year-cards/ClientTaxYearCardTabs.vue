@@ -1,7 +1,7 @@
 <template>
-  <div class="border-t border-gray-300 space-x-1 shadow">
-    <draggable :value="filings" v-bind="dragOptions" @start="startDrag" @end="onDrop">
-      <transition-group type="transition" :name="transitionName">
+  <div class="flex w-full border-t border-gray-300 space-x-1 shadow">
+    <draggable :value="filings" v-bind="dragOptions" class="flex w-full" @start="startDrag" @end="onDrop">
+      <transition-group type="transition" :name="transitionName" class="overflow-auto whitespace-nowrap">
         <Tab v-for="(filing, idx) in filings" :key="filing.id" :active="idx === activeFilingIdx">
           <span
             v-if="displayTab(filing)"
