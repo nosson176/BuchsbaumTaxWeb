@@ -27,6 +27,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   // GET
+  const getCurrentUser = (headers) => {
+    $axios
+      .get('users/current', {
+        headers,
+        loading: models.currentUser,
+        store: models.currentUser,
+      })
+      .catch(() => $toast.error('Error loading value types'))
+  }
+
   const getClientList = (headers, searchParam = '', searchOption = '') => {
     let endpoint = 'clients/'
     if (searchParam && searchOption) {
@@ -169,6 +179,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error creating smartview'))
       .finally(() => getSmartviews(headers))
 
+  const createUser = (headers, { user }) =>
+    $axios
+      .post('/users', user, { headers })
+      .catch(() => $toast.error('Error creating user'))
+      .finally(() => getAllUsers(headers))
+
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
 
@@ -258,6 +274,17 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating value type'))
       .finally(() => getValueTypes(headers))
 
+  const updateUser = (headers, { userId }, user) =>
+    $axios
+      .put(`/users/${userId}`, user, { headers })
+      .catch((e) => $toast.error('Error updating user: ' + e.response.data.message))
+      .finally(() => getAllUsers(headers))
+
+  const updatePassword = (headers, { userId }, newPassword) =>
+    $axios
+      .put(`/users/${userId}/password`, newPassword, { headers })
+      .catch((e) => $toast.error('Error updating password ' + e.response.data.message))
+
   const updateMessage = (headers, { messageId }, value) =>
     $axios
       .put(`/users/current/messages/${messageId}`, value, { headers })
@@ -289,6 +316,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error deleting filing'))
       .finally(() => getClientData(headers, clientId))
 
+  const deleteUser = (headers, { userId }) =>
+    $axios
+      .delete(`/users/${userId}`, { headers })
+      .catch(() => $toast.error('Error deleting user'))
+      .finally(() => getAllUsers(headers))
+
   const api = {
     createChecklist,
     createClient,
@@ -303,10 +336,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createSmartview,
     createTaxPersonal,
     createTaxYear,
+    createUser,
     deleteValueType,
     deleteClient,
     deleteSmartview,
     deleteFiling,
+    deleteUser,
     getAllClientFees,
     getAllUsers,
     getClientData,
@@ -334,7 +369,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateTaxPersonal,
     updateTaxYear,
     updateValueType,
+    updateUser,
+    updatePassword,
     updateMessage,
+    getCurrentUser,
   }
 
   // Inject to context as $api

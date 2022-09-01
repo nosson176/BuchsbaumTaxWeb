@@ -23,6 +23,7 @@ export default {
     this.$api.getAllClientFees(this.headers)
     this.$api.getClientsHistory(this.headers)
     this.$api.getSmartviews(this.headers)
+    this.$api.getCurrentUser(this.headers)
   },
 }
 </script>

@@ -49,7 +49,7 @@ export default {
     },
     required: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     valid: {
       type: Boolean,
@@ -94,7 +94,8 @@ export default {
       const invalid = this.shouldShowValidation
       const first = this.first
       const last = this.last
-      return { invalid, first, last }
+      const rounded = !this.first && !this.last
+      return { invalid, first, last, rounded }
     },
   },
   methods: {
@@ -116,5 +117,9 @@ input.first {
 
 input.last {
   @apply rounded-b-md;
+}
+
+input.rounded {
+  @apply rounded-md shadow-sm;
 }
 </style>
