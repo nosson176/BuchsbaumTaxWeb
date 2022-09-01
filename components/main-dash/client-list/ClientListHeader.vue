@@ -42,11 +42,11 @@ export default {
     },
     searchOptionValue: {
       get() {
-        return  this.clientSearchOption.length > 0 ? this.clientSearchOption : ''
+        return this.clientSearchOption.length > 0 ? this.clientSearchOption : ''
       },
       set(value) {
-        this.$store.commit(mutations.setModelResponse, { model: models.clientSearchOption, data: value})
-      }
+        this.$store.commit(mutations.setModelResponse, { model: models.clientSearchOption, data: value })
+      },
     },
     clientCount() {
       if (this.searchInput) {
@@ -58,6 +58,11 @@ export default {
     hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     },
+  },
+  mounted() {
+    if (this.searchInput) {
+      this.searchClients()
+    }
   },
   methods: {
     emitChange(value) {
