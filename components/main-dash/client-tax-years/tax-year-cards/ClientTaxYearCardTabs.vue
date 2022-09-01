@@ -1,17 +1,26 @@
 <template>
   <div class="flex w-full border-t border-gray-300 space-x-1 shadow">
     <draggable :value="filings" v-bind="dragOptions" class="flex w-full" @start="startDrag" @end="onDrop">
-      <transition-group type="transition" :name="transitionName" class="overflow-auto whitespace-nowrap">
-        <Tab v-for="(filing, idx) in filings" :key="filing.id" :active="idx === activeFilingIdx">
-          <span
-            v-if="displayTab(filing)"
-            class="tab-text"
-            :class="{ 'text-gray-300': !filing.taxForm && !filing.state }"
-            @click="handleClick(idx)"
-          >
-            {{ filing.taxForm || filing.state || filing.filingType }}
-          </span>
-        </Tab>
+      <transition-group
+        ref="group"
+        type="transition"
+        :name="transitionName"
+        class="flex overflow-auto whitespace-nowrap"
+        @mouseenter="mouseOver = true"
+      >
+        <div v-for="(filing, idx) in filings" :key="filing.id">
+          <sup class="text-[10px] text-indigo-300"> {{ isOverflowing && idx === 4 ? '&raquo;' : '' }}</sup>
+          <Tab :active="idx === activeFilingIdx">
+            <span
+              v-if="displayTab(filing)"
+              class="tab-text"
+              :class="{ 'text-gray-300': !filing.taxForm && !filing.state }"
+              @click="handleClick(idx)"
+            >
+              {{ filing.taxForm || filing.state || filing.filingType }}
+            </span>
+          </Tab>
+        </div>
       </transition-group>
     </draggable>
   </div>
@@ -41,6 +50,8 @@ export default {
   },
   data() {
     return {
+      isOverflowing: false,
+      mouseOver: false,
       dragActive: false,
       dragOptions: {
         animation: 200,
@@ -61,6 +72,9 @@ export default {
       return null
     },
   },
+  mounted() {
+    this.isOverflowing = this.checkOverflow()
+  },
   methods: {
     handleClick(filingIdx) {
       this.emitClick(filingIdx)
@@ -79,6 +93,18 @@ export default {
       item.sortOrder = evt.newIndex + 1
       this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: item.id }, item)
       this.dragActive = false
+    },
+    checkOverflow() {
+      const el = this.$refs.group.$el
+      const curOverflow = el.style.overflow
+
+      if (!curOverflow || curOverflow === 'visible') el.style.overflow = 'hidden'
+
+      const isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight
+
+      el.style.overflow = curOverflow
+
+      return isOverflowing
     },
   },
 }
