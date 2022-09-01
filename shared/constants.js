@@ -5,6 +5,7 @@ export const models = Object.freeze({
   clients: 'clients',
   clientsHistory: 'clientsHistory',
   loading: 'loading',
+  loaded: 'loaded',
   modals: 'modals',
   search: 'search',
   selectedClient: 'selectedClient',
@@ -32,6 +33,7 @@ export const models = Object.freeze({
 export const mutations = Object.freeze({
   setModelResponse: 'setModelResponse',
   setLoading: 'setLoading',
+  setLoaded: 'setLoaded',
 })
 
 // Route names

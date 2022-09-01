@@ -48,6 +48,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get(endpoint, {
         headers,
         loading: models.clients,
+        loaded: models.clients,
         store: models.clients,
       })
       .catch((e) => {
@@ -60,6 +61,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get(`/clients/${id}/data`, {
         headers,
         loading: models.selectedClient,
+        loaded: models.selectedClient,
         store: models.selectedClient,
       })
       .then(() => getClientsHistory(headers))
@@ -70,6 +72,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('values', {
         headers,
         loading: models.valueTypes,
+        loaded: models.valueTypes,
         store: models.valueTypes,
       })
       .catch(() => $toast.error('Error loading value types'))
@@ -79,6 +82,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('values/tax-groups', {
         headers,
         loading: models.valueTaxGroups,
+        loaded: models.valueTaxGroups,
         store: models.valueTaxGroups,
       })
       .catch(() => $toast.error('Error loading value tax groups'))
@@ -88,13 +92,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/fees', {
         headers,
         loading: models.allClientFees,
+        loaded: models.allClientFees,
         store: models.allClientFees,
       })
       .catch(() => $toast.error('Error loading all client fees'))
 
   const getAllUsers = (headers) =>
     $axios
-      .get('/users', { headers, loading: models.users, store: models.users })
+      .get('/users', { headers, loading: models.users, loaded: models.users, store: models.users })
       .catch(() => $toast.error('Error loading all users'))
 
   const getClientsHistory = (headers) =>
@@ -102,6 +107,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/clients/history', {
         headers,
         loading: models.clientsHistory,
+        loaded: models.clientsHistory,
         store: models.clientsHistory,
       })
       .catch(() => $toast.error('Error loading clients history'))
@@ -111,6 +117,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/smartviews', {
         headers,
         loading: models.smartviews,
+        loaded: models.smartviews,
         store: models.smartviews,
       })
       .catch(() => $toast.error('Error loading smartviews'))
@@ -120,6 +127,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/sms/phone_numbers', {
         headers,
         loading: models.phoneNumbers,
+        loaded: models.phoneNumbers,
         store: models.phoneNumbers,
       })
       .catch(() => $toast.error('Error loading phone numbers'))
@@ -129,6 +137,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/users/current/messages', {
         headers,
         loading: models.inbox,
+        loaded: models.inbox,
         store: models.inbox,
       })
       .catch(() => $toast.error('Error loading messages'))

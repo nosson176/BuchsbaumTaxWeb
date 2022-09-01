@@ -1,8 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <Header />
-    <p v-if="$fetchState.pending">Fetching Data...</p>
-    <Home v-else />
+    <Home />
   </div>
 </template>
 
@@ -17,14 +16,14 @@ export default {
       return this.$api.getHeaders()
     },
   },
-  async created() {
-    await this.$api.getValueTypes(this.headers)
-    await this.$api.getAllUsers(this.headers)
-    await this.$api.getValueTaxGroups(this.headers)
-    await this.$api.getAllClientFees(this.headers)
-    await this.$api.getClientsHistory(this.headers)
-    await this.$api.getSmartviews(this.headers)
-    await this.$api.getCurrentUser(this.headers)
+  mounted() {
+    this.$api.getValueTypes(this.headers)
+    this.$api.getAllUsers(this.headers)
+    this.$api.getValueTaxGroups(this.headers)
+    this.$api.getAllClientFees(this.headers)
+    this.$api.getClientsHistory(this.headers)
+    this.$api.getSmartviews(this.headers)
+    this.$api.getCurrentUser(this.headers)
   },
 }
 </script>
