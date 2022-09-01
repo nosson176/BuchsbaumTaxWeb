@@ -21,7 +21,7 @@
       </div>
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
-          class="extension-column"
+          class="flex flex-col border w-8 py-5 z-10"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
           :style="extensionColumnHeight"
         >
@@ -38,7 +38,7 @@
           </div>
           <div v-for="extension in extensions" :key="extension.id">
             <ClientTaxYearExtension
-              :class="{ 'mt-56': extensions.length < 2 }"
+              :class="{ 'mt-44': extensions.length < 2 }"
               :extension="extension"
               @delete="startDelete($event, 'filing')"
             />
@@ -56,17 +56,17 @@
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
           <div class="mt-2" />
         </div>
-        <div class="fbar-column" :style="fbarColumnHeight">
-          <div v-for="fbar in fbars" :key="fbar.id" class="fbars-container">
-            <ClientTaxYearFbar :fbar="fbar" class="fbar-item" @delete="startDelete($event, 'filing')" />
+        <div class="flex flex-col border pt-5 w-8 z-10" :style="fbarColumnHeight">
+          <div v-for="fbar in fbars" :key="fbar.id" class="min-h-[250px] h-full">
+            <ClientTaxYearFbar :fbar="fbar" class="flex mt-2" @delete="startDelete($event, 'filing')" />
           </div>
         </div>
       </div>
       <div class="flex">
-        <div class="bottom-tab">$</div>
-        <div class="bottom-tab">Tab</div>
-        <div class="bottom-tab">Win</div>
-        <div class="bottom-tab">Sub</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">$</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Tab</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Win</div>
+        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Sub</div>
       </div>
     </div>
     <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
@@ -113,8 +113,9 @@ export default {
     },
     filings() {
       const clonedData = JSON.parse(JSON.stringify(this.yearData))
-      return clonedData.filings
-        .filter((filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar)
+      return clonedData.filings.filter(
+        (filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
+      )
     },
     displayedFilingInfo() {
       return this.filings[this.activeFilingIndex]
@@ -143,7 +144,7 @@ export default {
     extensionColumnHeight() {
       let style = ''
       if (this.extensions.length > 1) {
-        style = 'min-height:' + 270 * this.extensions.length + 'px'
+        style = 'min-height:' + 215 * this.extensions.length + 'px'
       }
       return style
     },
@@ -152,7 +153,7 @@ export default {
     },
     fbarColumnHeight() {
       const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
-      return 'min-height:' + 250 * longestItemLength + 'px'
+      return 'min-height:' + 165 * longestItemLength + 'px'
     },
   },
   methods: {
@@ -188,9 +189,18 @@ export default {
         return
       }
       const headers = this.$api.getHeaders()
+      let sortOrder = this.yearData.filings.length + 1
+      // always keep new federal filings in front of state
+      if (filingType === filingTypes.federal) {
+        const firstOccurenceOfStateFiling = this.yearData.filings.find(
+          (filing) => filing.filingType === filingTypes.state
+        )
+        sortOrder = firstOccurenceOfStateFiling.sortOrder
+      }
       const defaultValues = {
         filingType,
         taxYearId: this.yearData.id,
+        sortOrder,
       }
       const filing = Object.assign({}, defaultValues)
       this.$api.createFiling(headers, { filing }).then((data) => {
@@ -221,28 +231,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.extension-column {
-  @apply flex flex-col border;
-
-  width: 30px;
-}
-
-.fbar-column {
-  @apply border pt-5;
-
-  width: 30px;
-}
-
-.fbar-item {
-  @apply flex mt-2;
-}
-
-.fbars-container {
-  min-height: 250px;
-}
-
-.bottom-tab {
-  @apply border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center;
-}
-</style>
+<style scoped></style>
