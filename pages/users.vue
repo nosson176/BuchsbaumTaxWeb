@@ -8,9 +8,10 @@
 <script>
 export default {
   name: 'UsersPage',
-  created() {
+  async created() {
     const headers = this.$api.getHeaders()
-    this.$api.getAllUsers(headers)
+    await this.$api.getAllUsers(headers)
+    await this.$api.getCurrentUser(headers)
   },
 }
 </script>

@@ -24,6 +24,7 @@ export default {
     await this.$api.getAllClientFees(this.headers)
     await this.$api.getClientsHistory(this.headers)
     await this.$api.getSmartviews(this.headers)
+    await this.$api.getCurrentUser(this.headers)
   },
 }
 </script>

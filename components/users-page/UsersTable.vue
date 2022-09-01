@@ -1,9 +1,9 @@
 <template>
-  <Table>
+  <Table class="rounded-md shadow">
     <template #header>
-      <TableHeader>
+      <TableHeader class="py-6">
         <div class="table-header">
-          <AddRowButton @click="onAddRowClick" />
+          <AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" />
         </div>
         <div class="table-header w-full">Name</div>
       </TableHeader>
@@ -12,24 +12,29 @@
       <TableRow
         v-for="(user, index) in users"
         :key="user.id"
-        class="px-2"
+        class="px-2 py-2"
         :idx="index"
         :class="isUserSelected(user.id) ? 'selected' : 'row'"
       >
-        <div class="table-col w-full cursor-pointer" @click="setSelected(user)">
+        <div class="table-col w-4"></div>
+        <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
           {{ user.username }}
           <span class="font-light">({{ user.userType }})</span>
         </div>
         <div class="table-col">
-          <DeleteButton />
+          <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
         </div>
+        <Modal :showing="showDelete" @hide="closeDeleteModal">
+          <DeleteType :label="user.username" @hide="closeDeleteModal" @delete="deleteUser" />
+        </Modal>
       </TableRow>
     </template>
   </Table>
 </template>
 
 <script>
-import { events } from '~/shared/constants'
+import { mapState } from 'vuex'
+import { events, models, USER_TYPE_ADMIN } from '~/shared/constants'
 export default {
   name: 'UsersTable',
   props: {
@@ -42,6 +47,21 @@ export default {
       default: 0,
     },
   },
+  data() {
+    return {
+      showDelete: false,
+      deleteUserId: null,
+    }
+  },
+  computed: {
+    ...mapState([models.currentUser]),
+    headers() {
+      return this.$api.getHeaders()
+    },
+    isCurrentUserAdmin() {
+      return this.currentUser.userType === USER_TYPE_ADMIN
+    },
+  },
   methods: {
     setSelected(user) {
       this.$emit(events.click, user.id)
@@ -49,7 +69,20 @@ export default {
     isUserSelected(userId) {
       return userId === this.userId
     },
-    onAddRowClick() {},
+    onAddRowClick() {
+      this.$emit(events.change)
+    },
+    onDeleteClick(user) {
+      this.deleteUserId = user.id
+      this.showDelete = true
+    },
+    deleteUser() {
+      this.$api.deleteUser(this.headers, { userId: this.deleteUserId })
+      this.closeDeleteModal()
+    },
+    closeDeleteModal() {
+      this.showDelete = false
+    },
   },
 }
 </script>
