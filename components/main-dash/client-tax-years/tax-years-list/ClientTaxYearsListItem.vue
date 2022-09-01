@@ -1,12 +1,18 @@
 <template>
   <div>
     <div
-      class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
+      class="flex h-20 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
       :class="classObj"
       @click="toggleShowing"
     >
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col space-y-3">
+          <div class="flex justify-between pr-2 text-xs text-gray-600">
+            <span>{{ amountFederalFilings }} Federal</span>
+            <span>{{ amountStateFilings }} State</span>
+            <span>{{ amountFbarFilings }} Fbar</span>
+            <span>{{ amountExtFilings }} Ext</span>
+          </div>
           <div class="flex">
             <span class="font-bold mr-2">{{ year }}</span>
             <span> {{ status }}</span>
@@ -45,8 +51,32 @@ export default {
   },
   computed: {
     ...mapState([models.shownTaxYears]),
+    federalFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)
+    },
+    fbarFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.fbar)
+    },
+    stateFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.state)
+    },
+    extFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.ext)
+    },
+    amountFederalFilings() {
+      return this.federalFilings.length
+    },
+    amountFbarFilings() {
+      return this.fbarFilings.length
+    },
+    amountStateFilings() {
+      return this.stateFilings.length
+    },
+    amountExtFilings() {
+      return this.extFilings.length
+    },
     federalFilingInfo() {
-      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)[0]
+      return this.federalFilings[0]
     },
     year() {
       return this.taxYear.year
