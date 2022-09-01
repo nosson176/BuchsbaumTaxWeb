@@ -9,6 +9,7 @@
       :placeholder="placeholder"
       :class="resize ? '' : 'resize-none'"
       :rows="rows"
+      spellcheck
       @blur="onBlur"
       @keydown.tab.prevent
     />

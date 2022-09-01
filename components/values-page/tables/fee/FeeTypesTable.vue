@@ -9,11 +9,13 @@
           <CheckBoxWithEyeIcon />
         </div>
         <div class="table-header w-full ml-1">Name</div>
-        <div class="table-header"></div>
+        <div class="table-header xs mr-1">
+          <button class="transform hover:text-indigo-500 hover:scale-110" @click="resetOrder">A-Z</button>
+        </div>
       </TableHeader>
     </template>
     <template #body>
-      <draggable :value="feeStatus" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+      <draggable :value="feeTypes" v-bind="dragOptions" @start="startDrag" @end="onDrop">
         <transition-group type="transition" :name="transitionName">
           <TableRow v-for="(type, idx) in feeTypes" :key="type.id" class="pr-1">
             <div class="table-col bg-gray-200 mr-1">
@@ -25,7 +27,7 @@
             <div class="table-col w-full" @click="toggleEditable(type.id)">
               <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
             </div>
-            <div class="table-col">
+            <div class="table-col xs">
               <DeleteButton @click="deleteValue(type.id)" />
             </div>
           </TableRow>
@@ -121,6 +123,11 @@ export default {
       item.sortOrder = evt.newIndex + 1
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
       this.dragActive = false
+    },
+    resetOrder() {
+      const item = this.feeTypes[0]
+      item.sortOrder = 0
+      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
     },
   },
 }

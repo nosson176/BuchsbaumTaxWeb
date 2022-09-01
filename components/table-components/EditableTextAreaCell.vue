@@ -9,6 +9,7 @@
       v-model="computedValue"
       tabindex="0"
       class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full z-20"
+      spellcheck
       @click.prevent
       @keydown.tab.prevent="emitTab"
       @keydown.enter.prevent="emitTab"
@@ -40,8 +41,8 @@ export default {
     },
     showOverflow: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     computedValue: {
@@ -52,12 +53,12 @@ export default {
         this.$emit(events.input, newVal)
       },
     },
-    classObj(){
+    classObj() {
       const editMode = this.isEditable
       const readMode = !this.isEditable
       const overFlow = this.showOverflow
       return { editMode, readMode, overFlow }
-    }
+    },
   },
   watch: {
     async isEditable(val) {
