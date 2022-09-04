@@ -87,7 +87,7 @@ export default {
     toggleSelectTaxYear() {
       if (this.selectedTaxYearId === this.taxYear.id) {
         this.showing = false
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: null })
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
       } else {
         this.showing = true
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: this.taxYear.id })
