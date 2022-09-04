@@ -53,7 +53,7 @@ export default {
   computed: {
     modalMaxWidth() {
       if (this.fullWidth) {
-        return ''
+        return 'sm:max-w-full'
       } else if (this.wide) {
         return 'sm:max-w-2xl'
       } else {
