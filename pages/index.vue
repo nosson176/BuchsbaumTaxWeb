@@ -6,12 +6,16 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { models } from '~/shared/constants'
+
 export default {
   name: 'IndexPage',
   async fetch() {
     await this.$api.getClientList(this.headers)
   },
   computed: {
+    ...mapState([models.clientSearchValue]),
     headers() {
       return this.$api.getHeaders()
     },
