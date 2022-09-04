@@ -12,10 +12,7 @@ import { models } from '~/shared/constants'
 export default {
   name: 'IndexPage',
   async fetch() {
-    // if there is a search value dont refresh the list
-    if (!this.clientSearchValue && !Array.isArray(this.clientSearchValue)) {
-      await this.$api.getClientList(this.headers)
-    }
+    await this.$api.getClientList(this.headers)
   },
   computed: {
     ...mapState([models.clientSearchValue]),

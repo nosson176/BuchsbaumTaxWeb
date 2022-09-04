@@ -13,10 +13,7 @@ export default {
   name: 'MapsPage',
   async fetch() {
     const headers = this.$api.getHeaders()
-    // if there is a search value dont refresh the list
-    if (!this.clientSearchValue && !Array.isArray(this.clientSearchValue)) {
-      await this.$api.getClientList(headers)
-    }
+    await this.$api.getClientList(headers)
     await this.$api.getSmartviews(headers)
   },
   computed: {

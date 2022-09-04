@@ -59,11 +59,6 @@ export default {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     },
   },
-  mounted() {
-    if (this.searchInput) {
-      this.$nextTick(() => this.searchClients())
-    }
-  },
   methods: {
     emitChange(value) {
       this.showActive = value
@@ -71,7 +66,7 @@ export default {
     },
     searchClients() {
       const headers = this.$api.getHeaders()
-      this.$api.getClientList(headers, this.searchInput, this.searchOptionValue)
+      this.$api.getClientList(headers)
     },
     clearSearch() {
       this.searchInput = ''
