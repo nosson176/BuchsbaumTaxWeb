@@ -18,10 +18,10 @@
             <span class="ml-auto">{{ paid }}</span>
           </div>
           <div class="flex justify-between pr-2 text-xs text-gray-600">
-            <span>{{ amountFederalFilings }} Federal</span>
-            <span>{{ amountStateFilings }} State</span>
-            <span>{{ amountFbarFilings }} Fbar</span>
-            <span>{{ amountExtFilings }} Ext</span>
+            <span v-if="amountFederalFilings">{{ amountFederalFilings }} Federal</span>
+            <span v-if="amountStateFilings">{{ amountStateFilings }} State</span>
+            <span v-if="amountFbarFilings">{{ amountFbarFilings }} Fbar</span>
+            <span v-if="amountExtFilings">{{ amountExtFilings }} Ext</span>
           </div>
         </div>
       </div>
