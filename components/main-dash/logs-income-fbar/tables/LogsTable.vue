@@ -291,7 +291,7 @@ export default {
         })
       }
     },
-    onAddRowClick(addSecondsSpent) {
+    onAddRowClick(addSecondsSpent = false) {
       if (!this.selectedClient) {
         return
       }
@@ -301,6 +301,7 @@ export default {
       }
       if (addSecondsSpent) {
         defaultValues.secondsSpent = this.$store.getters[models.secondsSpentOnClient]
+        this.resetClock()
       }
       if (this.isCopyingLogs) {
         this.selectedLogIds.forEach(async (logId, idx) => {
