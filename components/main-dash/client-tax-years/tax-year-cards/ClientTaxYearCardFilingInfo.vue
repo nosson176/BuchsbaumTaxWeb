@@ -454,7 +454,16 @@ export default {
       return this.valueTypes.file_type.filter((fileType) => fileType.show)
     },
     contactTypeOptions() {
-      return this.valueTypes.contact_type.filter((contactType) => contactType.show)
+      return this.valueTypes.contact_type.filter((contactType) => {
+        return contactType.show && this.selectedClientContactTypes[contactType.value]
+      })
+    },
+    selectedClientContactTypes() {
+      const contactTypes = {}
+      this.selectedClient.contacts.forEach((contact) => {
+        contactTypes[contact.contactType] = true
+      })
+      return contactTypes
     },
   },
   watch: {
