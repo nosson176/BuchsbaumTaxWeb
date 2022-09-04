@@ -6,20 +6,22 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { models } from '~/shared/constants'
+
 export default {
   name: 'MapsPage',
-  data() {
-    return {}
-  },
   async fetch() {
     const headers = this.$api.getHeaders()
-    await this.$api.getClientList(headers)
+    // if there is a search value dont refresh the list
+    if (!this.clientSearchValue && !Array.isArray(this.clientSearchValue)) {
+      await this.$api.getClientList(headers)
+    }
     await this.$api.getSmartviews(headers)
   },
-
-  mounted() {},
-
-  methods: {},
+  computed: {
+    ...mapState([models.clientSearchValue]),
+  },
 }
 </script>
 

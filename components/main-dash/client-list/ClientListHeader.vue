@@ -61,7 +61,7 @@ export default {
   },
   mounted() {
     if (this.searchInput) {
-      this.searchClients()
+      this.$nextTick(() => this.searchClients())
     }
   },
   methods: {
