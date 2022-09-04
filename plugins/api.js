@@ -37,11 +37,13 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error loading value types'))
   }
 
-  const getClientList = (headers, searchParam = '', searchOption = '') => {
+  const getClientList = (headers) => {
+    const searchParam = store.state.clientSearchValue
+    const searchOption = store.state.clientSearchOption
     let endpoint = 'clients/'
-    if (searchParam && searchOption) {
+    if (searchParam.length > 0 && searchOption.length > 0) {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
-    } else if (searchParam) {
+    } else if (searchParam.length > 0) {
       endpoint = endpoint.concat(`?q=${searchParam}`)
     }
     return $axios
