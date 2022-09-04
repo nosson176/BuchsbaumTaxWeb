@@ -72,6 +72,14 @@ export default {
       return null
     },
   },
+  watch: {
+    filings: {
+      handler(newVal) {
+        this.checkOverflow()
+      },
+      deep: true,
+    },
+  },
   mounted() {
     this.isOverflowing = this.checkOverflow()
   },
