@@ -6,15 +6,9 @@
       @click="toggleShowing"
     >
       <div class="text-xs tracking-tighter cursor-pointer w-full">
-        <div class="flex flex-col space-y-3">
-          <div class="flex justify-between pr-2 text-xs text-gray-600">
-            <span>{{ amountFederalFilings }} Federal</span>
-            <span>{{ amountStateFilings }} State</span>
-            <span>{{ amountFbarFilings }} Fbar</span>
-            <span>{{ amountExtFilings }} Ext</span>
-          </div>
+        <div class="flex flex-col space-y-2.5">
           <div class="flex">
-            <span class="font-bold mr-2">{{ year }}</span>
+            <span class="font-bold text-sm mr-2">{{ year }}</span>
             <span> {{ status }}</span>
             <span class="ml-auto">{{ owes }}</span>
           </div>
@@ -22,6 +16,12 @@
             <span class="mr-2"> {{ taxForm }}</span>
             <span>{{ statusDetail }}</span>
             <span class="ml-auto">{{ paid }}</span>
+          </div>
+          <div class="flex justify-between pr-2 text-xs text-gray-600">
+            <span>{{ amountFederalFilings }} Federal</span>
+            <span>{{ amountStateFilings }} State</span>
+            <span>{{ amountFbarFilings }} Fbar</span>
+            <span>{{ amountExtFilings }} Ext</span>
           </div>
         </div>
       </div>
