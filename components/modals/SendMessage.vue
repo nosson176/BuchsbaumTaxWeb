@@ -83,7 +83,10 @@ export default {
   },
   mounted() {
     if (this.responseId) {
-      console.log(this.responseTo)
+      const respondToUser = this.usersList.find((user) => {
+        return Number(user.value) === Number(this.responseTo.senderId)
+      })
+      this.selectedUsers.push(respondToUser)
     }
   },
   methods: {
@@ -92,6 +95,9 @@ export default {
     },
     sendMessage() {
       const messageObj = { recipients: this.userIds, message: this.message }
+      if (this.responseId) {
+        messageObj.parentId = this.responseId
+      }
       this.$api.sendMessage(this.headers, { messageObj }).then(this.emitHide)
     },
   },
