@@ -15,6 +15,7 @@ export default {
     const headers = this.$api.getHeaders()
     await this.$api.getClientList(headers)
     await this.$api.getSmartviews(headers)
+    await this.$api.getAllUsers(headers)
   },
   computed: {
     ...mapState([models.clientSearchValue]),
