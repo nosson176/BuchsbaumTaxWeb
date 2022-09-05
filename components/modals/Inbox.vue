@@ -29,6 +29,7 @@
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Message</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created At</th>
                     <th></th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white overflow-auto">
@@ -50,6 +51,11 @@
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex flex-col">
                       <div>{{ message.date }}</div>
                       <div>{{ message.time }}</div>
+                    </td>
+                    <td>
+                      <button class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110">
+                        <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
+                      </button>
                     </td>
                     <td>
                       <DeleteButton @click="deleteMessage(message)" />
@@ -99,7 +105,7 @@ export default {
       const messages = []
       for (const key in this.inboxState) {
         const message = this.inboxState[key]
-        message.sender = this.usersHash[this.inboxState[key].senderId].username
+        message.sender = this.usersHash[this.inboxState[key].senderId]?.username
         message.date = formatDateForClient(this.inboxState[key].created)
         message.time = format(parseISO(this.inboxState[key].created), dateformat.time)
         messages.push(message)
