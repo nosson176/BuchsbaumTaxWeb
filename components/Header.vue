@@ -19,6 +19,9 @@
             <BellIcon class="h-3 w-3" />
           </div>
         </div>
+        <nuxt-link :to="shekelatorRoute">
+          <DollarIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </nuxt-link>
         <nuxt-link :to="mapsRoute">
           <MapIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -96,6 +99,9 @@ export default {
     },
     mapsRoute() {
       return { name: routes.maps }
+    },
+    shekelatorRoute() {
+      return { name: routes.shekelator }
     },
     headers() {
       return this.$api.getHeaders()
