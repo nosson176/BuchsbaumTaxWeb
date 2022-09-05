@@ -324,6 +324,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error deleting user'))
       .finally(() => getAllUsers(headers))
 
+  const deleteMessage = (headers, { messageId }) =>
+    $axios
+      .delete(`/users/current/messages/${messageId}`, { headers })
+      .catch(() => $toast.error('Error deleting message'))
+      .finally(() => getInbox(headers))
+
   const api = {
     createChecklist,
     createClient,
@@ -375,6 +381,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updatePassword,
     updateMessage,
     getCurrentUser,
+    deleteMessage,
   }
 
   // Inject to context as $api
