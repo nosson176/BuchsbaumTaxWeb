@@ -41,6 +41,12 @@ import { mapState } from 'vuex'
 import { events, models } from '~/shared/constants'
 export default {
   name: 'SendMessage',
+  props: {
+    responseId: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
       selectedUsers: [],
@@ -48,7 +54,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.users]),
+    ...mapState([models.users, models.inbox]),
     usersState() {
       return this.users
     },
@@ -71,6 +77,14 @@ export default {
     userIds() {
       return this.selectedUsers.map((users) => users.value)
     },
+    responseTo() {
+      return Object.values(this.inbox).find((message) => message.id === this.responseId)
+    },
+  },
+  mounted() {
+    if (this.responseId) {
+      console.log(this.responseTo)
+    }
   },
   methods: {
     emitHide() {

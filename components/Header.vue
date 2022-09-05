@@ -40,10 +40,10 @@
       <SendSms @hide="closeSmsModal" />
     </Modal>
     <Modal full-width :showing="showInboxModal" @hide="closeInboxModal">
-      <Inbox @hide="closeInboxModal" @newMessage="openMessageModal" />
+      <Inbox @hide="closeInboxModal" @newMessage="createNewMessage" />
     </Modal>
     <Modal :showing="showMessageModal" @hide="closeMessageModal">
-      <SendMessage @hide="closeMessageModal" />
+      <SendMessage :response-id="responseId" @hide="closeMessageModal" />
     </Modal>
   </div>
 </template>
@@ -59,6 +59,7 @@ export default {
       showSmsModal: false,
       showInboxModal: false,
       showMessageModal: false,
+      responseId: null,
     }
   },
   computed: {
@@ -147,6 +148,10 @@ export default {
     },
     logout() {
       this.$api.signout()
+    },
+    createNewMessage(responseId) {
+      this.responseId = responseId
+      this.openMessageModal()
     },
   },
 }
