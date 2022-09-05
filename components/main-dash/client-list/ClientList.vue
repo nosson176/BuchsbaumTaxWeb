@@ -32,7 +32,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, routes, tabs } from '~/shared/constants'
+import { events, models, mutations, routes, secondsNeededToDisplayModal, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -130,7 +130,7 @@ export default {
     openChangeClientModal(client) {
       if (
         this.selectedClient?.id &&
-        this.$store.getters[models.secondsSpentOnClient] > 0 &&
+        this.$store.getters[models.secondsSpentOnClient] > secondsNeededToDisplayModal &&
         this.$store.getters[models.promptOnClientChange]
       ) {
         this.switchToClient = client
