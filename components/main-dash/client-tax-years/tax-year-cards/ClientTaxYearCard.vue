@@ -21,7 +21,7 @@
       </div>
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
-          class="flex flex-col border w-8 py-5 z-10"
+          class="flex flex-col border w-8 z-10"
           :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
           :style="extensionColumnHeight"
         >
