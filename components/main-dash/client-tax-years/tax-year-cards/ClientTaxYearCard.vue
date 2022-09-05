@@ -63,7 +63,9 @@
         </div>
       </div>
       <div class="flex">
-        <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">$</div>
+        <nuxt-link :to="shekelatorRoute" class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center"
+          >$</nuxt-link
+        >
         <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Tab</div>
         <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Win</div>
         <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Sub</div>
@@ -77,7 +79,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { filingTypes, models } from '~/shared/constants'
+import { filingTypes, models, routes } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearCard',
@@ -154,6 +156,9 @@ export default {
     fbarColumnHeight() {
       const longestItemLength = this.extensions.length >= this.fbars.length ? this.extensions.length : this.fbars.length
       return 'min-height:' + 165 * longestItemLength + 'px'
+    },
+    shekelatorRoute() {
+      return { name: routes.shekelator }
     },
   },
   methods: {
