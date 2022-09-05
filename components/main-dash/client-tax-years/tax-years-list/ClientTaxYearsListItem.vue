@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-center w-3 space-y-3.5">
+      <div class="flex flex-col items-center w-3 space-y-3.5" @click.stop>
         <CheckBoxWithEyeIcon v-model="showing" />
         <DeleteButton small @click="onDeleteClick()" />
       </div>
@@ -76,6 +76,9 @@ export default {
         return this.shownTaxYears.includes(this.taxYear.id)
       },
       set(newVal) {
+        if (!newVal && this.taxYear.id === this.selectedTaxYearId) {
+          this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
+        }
         this.$emit(events.change, newVal)
       },
     },
@@ -86,7 +89,6 @@ export default {
     },
     toggleSelectTaxYear() {
       if (this.selectedTaxYearId === this.taxYear.id) {
-        this.showing = false
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
       } else {
         this.showing = true
