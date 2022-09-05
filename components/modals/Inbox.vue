@@ -33,37 +33,67 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white overflow-auto">
-                  <tr
-                    v-for="(message, idx) in formattedMessages"
-                    :key="idx"
-                    :class="{ 'bg-gray-100 cursor-pointer': message.status === 'unread' }"
-                    @click="markAsRead(message)"
-                  >
-                    <td
-                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                      :class="{ 'font-bold': message.status === 'unread' }"
+                  <template v-for="message in formattedMessages">
+                    <tr
+                      :key="message.id"
+                      :class="{ 'bg-gray-100 cursor-pointer': message.status === 'unread' }"
+                      @click="markAsRead(message)"
                     >
-                      {{ message.sender }}
-                    </td>
-                    <td class="message px-3 py-4 text-sm text-gray-500">
-                      {{ message.message }}
-                    </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex flex-col">
-                      <div>{{ message.date }}</div>
-                      <div>{{ message.time }}</div>
-                    </td>
-                    <td>
-                      <button
-                        class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
-                        @click="replyTo(message)"
+                      <td
+                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                        :class="{ 'font-bold': message.status === 'unread' }"
                       >
-                        <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
-                      </button>
-                    </td>
-                    <td>
-                      <DeleteButton @click="deleteMessage(message)" />
-                    </td>
-                  </tr>
+                        {{ message.sender }}
+                      </td>
+                      <td class="message px-3 py-4 text-sm text-gray-500">
+                        {{ message.message }}
+                      </td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex flex-col">
+                        <div>{{ message.date }}</div>
+                        <div>{{ message.time }}</div>
+                      </td>
+                      <td>
+                        <button
+                          v-if="currentUser.id !== message.senderId"
+                          class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
+                          @click="replyTo(message)"
+                        >
+                          <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
+                        </button>
+                      </td>
+                      <td>
+                        <DeleteButton @click="deleteMessage(message)" />
+                      </td>
+                    </tr>
+                    <tr v-for="response in message.responses" :key="response.id" class="bg-gray-100">
+                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-xs font-medium text-gray-700 sm:pl-6">
+                        <div class="flex items-center space-x-2">
+                          <ReplyIcon class="text-indigo-300 w-6 h-6 transform rotate-180" /><span>{{
+                            response.sender
+                          }}</span>
+                        </div>
+                      </td>
+                      <td class="message px-3 py-4 text-sm text-gray-500">
+                        {{ response.message }}
+                      </td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 flex flex-col">
+                        <div>{{ response.date }}</div>
+                        <div>{{ response.time }}</div>
+                      </td>
+                      <td>
+                        <button
+                          v-if="currentUser.id !== response.senderId"
+                          class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
+                          @click="replyTo(response)"
+                        >
+                          <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
+                        </button>
+                      </td>
+                      <td class="py-4 pl-4 pr-3 sm:pl-6">
+                        <DeleteButton @click="deleteMessage(response)" />
+                      </td>
+                    </tr>
+                  </template>
                 </tbody>
               </table>
             </div>
@@ -84,7 +114,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState([models.inbox, models.users, models.loading]),
+    ...mapState([models.inbox, models.users, models.loading, models.currentUser]),
     inboxState() {
       return this.inbox
     },
@@ -107,11 +137,7 @@ export default {
     formattedMessages() {
       const messages = []
       for (const key in this.inboxState) {
-        const message = this.inboxState[key]
-        message.sender = this.usersHash[this.inboxState[key].senderId]?.username
-        message.date = formatDateForClient(this.inboxState[key].created)
-        message.time = format(parseISO(this.inboxState[key].created), dateformat.time)
-        messages.push(message)
+        messages.push(this.formatMessage(this.inboxState[key]))
       }
       return messages
     },
@@ -135,6 +161,20 @@ export default {
     },
     replyTo({ id }) {
       this.$emit(events.newMessage, id)
+    },
+    formatMessage(message) {
+      const responses = []
+      const messageCopy = { ...message }
+      messageCopy.sender = this.usersHash[messageCopy.senderId]?.username
+      messageCopy.date = formatDateForClient(messageCopy.created)
+      messageCopy.time = format(parseISO(messageCopy.created), dateformat.time)
+      if (messageCopy.responses) {
+        for (const response of messageCopy.responses) {
+          responses.push(this.formatMessage(response))
+        }
+        messageCopy.responses = responses
+      }
+      return messageCopy
     },
   },
 }
