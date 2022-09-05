@@ -53,7 +53,10 @@
                       <div>{{ message.time }}</div>
                     </td>
                     <td>
-                      <button class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110">
+                      <button
+                        class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
+                        @click="replyTo(message)"
+                      >
                         <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
                       </button>
                     </td>
@@ -129,6 +132,9 @@ export default {
     },
     deleteMessage({ id }) {
       this.$api.deleteMessage(this.headers, { messageId: id })
+    },
+    replyTo({ id }) {
+      this.$emit(events.newMessage, id)
     },
   },
 }
