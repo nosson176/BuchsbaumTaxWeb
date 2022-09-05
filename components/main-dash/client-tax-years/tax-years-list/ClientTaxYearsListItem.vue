@@ -1,14 +1,14 @@
 <template>
   <div>
     <div
-      class="flex h-16 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
+      class="flex h-20 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
       :class="classObj"
       @click="toggleShowing"
     >
       <div class="text-xs tracking-tighter cursor-pointer w-full">
-        <div class="flex flex-col space-y-3">
+        <div class="flex flex-col space-y-2.5">
           <div class="flex">
-            <span class="font-bold mr-2">{{ year }}</span>
+            <span class="font-bold text-sm mr-2">{{ year }}</span>
             <span> {{ status }}</span>
             <span class="ml-auto">{{ owes }}</span>
           </div>
@@ -16,6 +16,12 @@
             <span class="mr-2"> {{ taxForm }}</span>
             <span>{{ statusDetail }}</span>
             <span class="ml-auto">{{ paid }}</span>
+          </div>
+          <div class="flex justify-between pr-2 text-xs text-gray-600">
+            <span v-if="amountFederalFilings">{{ amountFederalFilings }} Federal</span>
+            <span v-if="amountStateFilings">{{ amountStateFilings }} State</span>
+            <span v-if="amountFbarFilings">{{ amountFbarFilings }} Fbar</span>
+            <span v-if="amountExtFilings">{{ amountExtFilings }} Ext</span>
           </div>
         </div>
       </div>
@@ -45,8 +51,32 @@ export default {
   },
   computed: {
     ...mapState([models.shownTaxYears]),
+    federalFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)
+    },
+    fbarFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.fbar)
+    },
+    stateFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.state)
+    },
+    extFilings() {
+      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.ext)
+    },
+    amountFederalFilings() {
+      return this.federalFilings.length
+    },
+    amountFbarFilings() {
+      return this.fbarFilings.length
+    },
+    amountStateFilings() {
+      return this.stateFilings.length
+    },
+    amountExtFilings() {
+      return this.extFilings.length
+    },
     federalFilingInfo() {
-      return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)[0]
+      return this.federalFilings[0]
     },
     year() {
       return this.taxYear.year
