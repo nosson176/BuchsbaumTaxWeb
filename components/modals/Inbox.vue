@@ -28,6 +28,7 @@
                     </th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Message</th>
                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created At</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white overflow-auto">
