@@ -126,7 +126,7 @@
 <script>
 import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
-import { models, mutations, secondsNeededToDisplayModal, tableGroups, tabs } from '~/shared/constants'
+import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'secondsSpent', 'delete']
@@ -249,7 +249,7 @@ export default {
     if (this.$store.getters[models.selectedClient]?.id) {
       this.intervalId = setInterval(() => {
         const timeSpent = this.getCurrentTimeSpent()
-        if (timeSpent >= secondsNeededToDisplayModal) {
+        if (timeSpent) {
           this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent })
         }
       }, 1000)
@@ -273,7 +273,7 @@ export default {
       if (!this.editableLogId) return
       const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
       for (const key in this.users) {
-        if (this.users[key].username === log.alarmUserName) {
+        if (this.users[key].username === log?.alarmUserName) {
           log.alarmUserId = this.users[key].id
         }
       }
@@ -300,7 +300,7 @@ export default {
         logDate: new Date(),
       }
       if (addSecondsSpent) {
-        defaultValues.secondsSpent = this.$store.getters[models.secondsSpentOnClient]
+        defaultValues.secondsSpent = this.secondsSpentOnClient
         this.resetClock()
       }
       if (this.isCopyingLogs) {
