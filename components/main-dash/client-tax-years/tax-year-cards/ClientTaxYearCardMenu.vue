@@ -17,14 +17,23 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.shownTaxYears]),
+    ...mapState([models.selectedClient, models.shownTaxYears, models.selectedTaxYearId]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
-        return Object.assign(
+        const items = Object.assign(
           Object.values(this.selectedClient.taxYearData)
             .filter((taxYear) => this.shownTaxYears?.includes(taxYear.id))
-            .reverse()
+            .sort((a, b) => {
+              return a.year - b.year
+            })
         )
+        const hasSelectedTaxYear = !Array.isArray(this.selectedTaxYearId) && this.selectedTaxYearId
+        if (hasSelectedTaxYear) {
+          const selectedIndex = items.findIndex((item) => item.id === this.selectedTaxYearId)
+          const selectedItem = items.splice(selectedIndex, 1)
+          items.unshift(selectedItem[0])
+        }
+        return items
       } else {
         return null
       }

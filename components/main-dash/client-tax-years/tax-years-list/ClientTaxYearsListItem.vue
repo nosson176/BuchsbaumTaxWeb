@@ -3,7 +3,7 @@
     <div
       class="flex h-20 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
       :class="classObj"
-      @click="toggleShowing"
+      @click="toggleSelectTaxYear"
     >
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col space-y-2.5">
@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-center w-3 space-y-3.5">
+      <div class="flex flex-col items-center w-3 space-y-3.5" @click.stop>
         <CheckBoxWithEyeIcon v-model="showing" />
         <DeleteButton small @click="onDeleteClick()" />
       </div>
@@ -35,7 +35,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes, models, mutations } from '~/shared/constants'
 import { formatAsILCurrency } from '~/shared/utility'
 export default {
   name: 'ClientTaxYearsListItem',
@@ -50,7 +50,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.shownTaxYears]),
+    ...mapState([models.shownTaxYears, models.selectedTaxYearId]),
     federalFilings() {
       return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)
     },
@@ -97,14 +97,18 @@ export default {
       return this.federalFilingInfo?.paid ? this.formatAsILS(this.federalFilingInfo.paid).split('.')[0] : ''
     },
     classObj() {
+      const selected = this.selectedTaxYearId === this.taxYear.id
       const even = this.idx % 2 === 0
-      return { even }
+      return { even, selected }
     },
     showing: {
       get() {
         return this.shownTaxYears.includes(this.taxYear.id)
       },
       set(newVal) {
+        if (!newVal && this.taxYear.id === this.selectedTaxYearId) {
+          this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
+        }
         this.$emit(events.change, newVal)
       },
     },
@@ -113,8 +117,13 @@ export default {
     formatAsILS(amt) {
       return formatAsILCurrency(amt)
     },
-    toggleShowing() {
-      this.showing = !this.showing
+    toggleSelectTaxYear() {
+      if (this.selectedTaxYearId === this.taxYear.id) {
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
+      } else {
+        this.showing = true
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: this.taxYear.id })
+      }
     },
     onDeleteClick() {
       this.$emit(events.delete, this.taxYear.id)
@@ -126,5 +135,9 @@ export default {
 <style scoped>
 .even {
   @apply bg-gray-50;
+}
+
+.selected {
+  @apply border-opacity-100 border-indigo-500;
 }
 </style>

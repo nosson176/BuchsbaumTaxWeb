@@ -27,6 +27,7 @@ export const models = Object.freeze({
   promptOnClientChange: 'promptOnClientChange',
   selectedContactId: 'selectedContactId',
   currentUser: 'currentUser',
+  selectedTaxYearId: 'selectedTaxYearId',
 })
 
 // Store Mutations
