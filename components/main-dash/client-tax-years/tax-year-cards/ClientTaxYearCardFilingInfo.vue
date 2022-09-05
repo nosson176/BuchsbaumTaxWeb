@@ -1,6 +1,11 @@
 <template>
   <div v-if="filing" class="p-2 flex flex-grow">
-    <div class="w-full text-center text-xs relative">
+    <div
+      class="w-full text-center text-xs relative"
+      @keydown.tab.prevent
+      @keyup.tab.exact="goToNextItem"
+      @keyup.shift.tab.exact="goToPrevItem"
+    >
       <DeleteButton class="delete-btn" small @click="emitDelete(filing.id)" />
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('state')">
         <EditableSelectCell
@@ -194,6 +199,27 @@
 <script>
 import { mapState } from 'vuex'
 import { events, filingTypes, models } from '~/shared/constants'
+
+const items = [
+  'taxForm',
+  'statusDate',
+  'status',
+  'statusDetail',
+  'memo',
+  'includeInRefund',
+  'owes',
+  'paid',
+  'includeFee',
+  'owesFee',
+  'paidFee',
+  'fileType',
+  'refund',
+  'rebate',
+  'completed',
+  'deliveryContact',
+  'secondDeliveryContact',
+  'dateFiled',
+]
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -428,7 +454,16 @@ export default {
       return this.valueTypes.file_type.filter((fileType) => fileType.show)
     },
     contactTypeOptions() {
-      return this.valueTypes.contact_type.filter((contactType) => contactType.show)
+      return this.valueTypes.contact_type.filter((contactType) => {
+        return contactType.show && this.selectedClientContactTypes[contactType.value]
+      })
+    },
+    selectedClientContactTypes() {
+      const contactTypes = {}
+      this.selectedClient.contacts.forEach((contact) => {
+        contactTypes[contact.contactType] = true
+      })
+      return contactTypes
     },
   },
   watch: {
@@ -441,6 +476,12 @@ export default {
   },
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.filing))
+  },
+  updated() {
+    // if its state or not for the tabbing
+    if (this.filingType === 'state') {
+      items[0] = 'state'
+    }
   },
   methods: {
     setEditable(editable) {
@@ -481,6 +522,24 @@ export default {
     setSecondDeliveryContact(value) {
       this.secondDeliveryContact = value
       this.handleUpdate()
+    },
+    goToNextItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => {
+        return col === currentCell
+      })
+      if (itemIndex < items.length - 1) {
+        const nextCell = items[itemIndex + 1]
+        this.setEditable(nextCell)
+      }
+    },
+    goToPrevItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => col === currentCell)
+      if (itemIndex > 0) {
+        const prevCell = items[itemIndex - 1]
+        this.setEditable(prevCell)
+      }
     },
   },
 }

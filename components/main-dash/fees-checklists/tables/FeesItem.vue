@@ -3,6 +3,9 @@
     <div
       class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100"
       :class="classObj"
+      @keydown.tab.prevent
+      @keyup.tab.exact="goToNextItem"
+      @keyup.shift.tab.exact="goToPrevItem"
     >
       <div class="flex h-full flex-col space-y-1.5 justify-center">
         <div class="flex justify-end pt-1">
@@ -111,6 +114,20 @@
 <script>
 import { mapState } from 'vuex'
 import { events, models, currencySymbols } from '~/shared/constants'
+
+const items = [
+  'feeType',
+  'year',
+  'status',
+  'statusDetail',
+  'sum',
+  'manualAmount',
+  'paidAmount',
+  'include',
+  'dateFee',
+  'rate',
+  'notes',
+]
 
 export default {
   name: 'FeesItem',
@@ -287,6 +304,24 @@ export default {
     },
     onDeleteClick() {
       this.$emit(events.delete, this.fee.id)
+    },
+    goToNextItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => {
+        return col === currentCell
+      })
+      if (itemIndex < items.length - 1) {
+        const nextCell = items[itemIndex + 1]
+        this.setEditable(nextCell)
+      }
+    },
+    goToPrevItem() {
+      const currentCell = this.editable
+      const itemIndex = items.findIndex((col) => col === currentCell)
+      if (itemIndex > 0) {
+        const prevCell = items[itemIndex - 1]
+        this.setEditable(prevCell)
+      }
     },
   },
 }

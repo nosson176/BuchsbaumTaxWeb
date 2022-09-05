@@ -1,5 +1,5 @@
 <template>
-  <Table @keydown.tab.prevent="onKeyDown">
+  <Table @keydown.tab.prevent @keyup.tab.exact="goToNextColumn" @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
         <div class="table-header">
@@ -8,6 +8,7 @@
         <div class="xs table-header" />
         <div class="table-header normal">Type</div>
         <div class="table-header normal">Memo</div>
+        <div class="table-header sm"></div>
         <div class="table-header lg">Address / Phone / Routing</div>
         <div class="table-header lg">City / Account</div>
         <div class="table-header xs">St</div>
@@ -48,6 +49,11 @@
             </div>
             <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
               <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" />
+            </div>
+            <div class="table-header sm">
+              <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
+                <MapIcon class="w-4 h-4 text-indigo-500" />
+              </button>
             </div>
             <div
               :id="`${idx}-mainDetail`"
@@ -90,7 +96,7 @@
 <script>
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { models, mutations, tableGroups, tabs, TRANSITION_NAME } from '~/shared/constants'
+import { models, mutations, routes, tableGroups, tabs, TRANSITION_NAME } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['disabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete']
@@ -206,17 +212,32 @@ export default {
         this.toggleEditable(`0-${columns[0]}`, data.id)
       })
     },
-    onKeyDown() {
+    goToNextColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
       if (columnIndex < columns.length - 1) {
-        const nextCell = `${idArr[0]}-${columns[columnIndex + 1]}`
+        const nextCell = `${currentRow}-${columns[columnIndex + 1]}`
         this.toggleEditable(nextCell, this.editableContactId)
-      } else if (columnIndex === columns.length - 1) {
-        const row = Number(idArr[0]) + 1
-        const nextCell = `${row}-${columns[0]}`
+      } else if (columnIndex === columns.length - 1 && currentRow < this.displayedContacts.length - 1) {
+        const nextRow = currentRow + 1
+        const nextCell = `${nextRow}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableContactId)
+      }
+    },
+    goToPrevColumn() {
+      const currentCell = this.editableId
+      const idArr = currentCell.split('-')
+      const columnIndex = columns.findIndex((col) => col === idArr[1])
+      const currentRow = Number(idArr[0])
+      if (columnIndex === 0 && currentRow > 0) {
+        const prevRow = currentRow - 1
+        const prevCell = `${prevRow}-${columns[columns.length - 1]}`
+        this.toggleEditable(prevCell, this.editableLogId)
+      } else if (columnIndex > 0) {
+        const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
+        this.toggleEditable(prevCell, this.editableLogId)
       }
     },
     onBlur() {
@@ -236,6 +257,13 @@ export default {
       const item = this.displayedContacts[0]
       item.sortOrder = 0
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
+    },
+    setCurrentMapLocation(contact) {
+      this.$store.commit(mutations.setModelResponse, { model: models.selectedContactId, data: contact.id })
+      this.$router.push({ name: routes.maps })
+    },
+    isTypeAddress({ contactType }) {
+      return contactType?.toLowerCase().includes('address')
     },
   },
 }

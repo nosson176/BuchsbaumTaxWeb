@@ -27,17 +27,30 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   // GET
-  const getClientList = (headers, searchParam = '', searchOption = '') => {
+  const getCurrentUser = (headers) => {
+    $axios
+      .get('users/current', {
+        headers,
+        loading: models.currentUser,
+        store: models.currentUser,
+      })
+      .catch(() => $toast.error('Error loading value types'))
+  }
+
+  const getClientList = (headers) => {
+    const searchParam = store.state.clientSearchValue
+    const searchOption = store.state.clientSearchOption
     let endpoint = 'clients/'
-    if (searchParam && searchOption) {
+    if (searchParam.length > 0 && searchOption.length > 0) {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
-    } else if (searchParam) {
+    } else if (searchParam.length > 0) {
       endpoint = endpoint.concat(`?q=${searchParam}`)
     }
     return $axios
       .get(endpoint, {
         headers,
         loading: models.clients,
+        loaded: models.clients,
         store: models.clients,
       })
       .catch((e) => {
@@ -50,6 +63,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get(`/clients/${id}/data`, {
         headers,
         loading: models.selectedClient,
+        loaded: models.selectedClient,
         store: models.selectedClient,
       })
       .then(() => getClientsHistory(headers))
@@ -60,6 +74,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('values', {
         headers,
         loading: models.valueTypes,
+        loaded: models.valueTypes,
         store: models.valueTypes,
       })
       .catch(() => $toast.error('Error loading value types'))
@@ -69,6 +84,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('values/tax-groups', {
         headers,
         loading: models.valueTaxGroups,
+        loaded: models.valueTaxGroups,
         store: models.valueTaxGroups,
       })
       .catch(() => $toast.error('Error loading value tax groups'))
@@ -78,13 +94,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/fees', {
         headers,
         loading: models.allClientFees,
+        loaded: models.allClientFees,
         store: models.allClientFees,
       })
       .catch(() => $toast.error('Error loading all client fees'))
 
   const getAllUsers = (headers) =>
     $axios
-      .get('/users', { headers, loading: models.users, store: models.users })
+      .get('/users', { headers, loading: models.users, loaded: models.users, store: models.users })
       .catch(() => $toast.error('Error loading all users'))
 
   const getClientsHistory = (headers) =>
@@ -92,6 +109,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/clients/history', {
         headers,
         loading: models.clientsHistory,
+        loaded: models.clientsHistory,
         store: models.clientsHistory,
       })
       .catch(() => $toast.error('Error loading clients history'))
@@ -101,15 +119,17 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/smartviews', {
         headers,
         loading: models.smartviews,
+        loaded: models.smartviews,
         store: models.smartviews,
       })
       .catch(() => $toast.error('Error loading smartviews'))
 
   const getPhoneNumbers = (headers) =>
-     $axios
+    $axios
       .get('/sms/phone_numbers', {
         headers,
         loading: models.phoneNumbers,
+        loaded: models.phoneNumbers,
         store: models.phoneNumbers,
       })
       .catch(() => $toast.error('Error loading phone numbers'))
@@ -119,6 +139,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .get('/users/current/messages', {
         headers,
         loading: models.inbox,
+        loaded: models.inbox,
         store: models.inbox,
       })
       .catch(() => $toast.error('Error loading messages'))
@@ -159,6 +180,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .post('/smartviews', smartview, { headers })
       .catch(() => $toast.error('Error creating smartview'))
       .finally(() => getSmartviews(headers))
+
+  const createUser = (headers, { user }) =>
+    $axios
+      .post('/users', user, { headers })
+      .catch(() => $toast.error('Error creating user'))
+      .finally(() => getAllUsers(headers))
 
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
@@ -249,6 +276,17 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating value type'))
       .finally(() => getValueTypes(headers))
 
+  const updateUser = (headers, { userId }, user) =>
+    $axios
+      .put(`/users/${userId}`, user, { headers })
+      .catch((e) => $toast.error('Error updating user: ' + e.response.data.message))
+      .finally(() => getAllUsers(headers))
+
+  const updatePassword = (headers, { userId }, newPassword) =>
+    $axios
+      .put(`/users/${userId}/password`, newPassword, { headers })
+      .catch((e) => $toast.error('Error updating password ' + e.response.data.message))
+
   const updateMessage = (headers, { messageId }, value) =>
     $axios
       .put(`/users/current/messages/${messageId}`, value, { headers })
@@ -280,6 +318,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error deleting filing'))
       .finally(() => getClientData(headers, clientId))
 
+  const deleteUser = (headers, { userId }) =>
+    $axios
+      .delete(`/users/${userId}`, { headers })
+      .catch(() => $toast.error('Error deleting user'))
+      .finally(() => getAllUsers(headers))
+
   const api = {
     createChecklist,
     createClient,
@@ -294,10 +338,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createSmartview,
     createTaxPersonal,
     createTaxYear,
+    createUser,
     deleteValueType,
     deleteClient,
     deleteSmartview,
     deleteFiling,
+    deleteUser,
     getAllClientFees,
     getAllUsers,
     getClientData,
@@ -325,7 +371,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateTaxPersonal,
     updateTaxYear,
     updateValueType,
-    updateMessage
+    updateUser,
+    updatePassword,
+    updateMessage,
+    getCurrentUser,
   }
 
   // Inject to context as $api

@@ -10,7 +10,7 @@
           </div>
           <div class="mt-2 w-full">
             <label>
-              <textarea v-model="message" class="w-full border-gray-300 rounded" rows="7" />
+              <textarea v-model="message" spellcheck class="w-full border-gray-300 rounded" rows="7" />
             </label>
           </div>
         </div>

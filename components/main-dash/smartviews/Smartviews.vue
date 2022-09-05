@@ -11,12 +11,12 @@
           @click="selectSmartview(smartview)"
         >
           <div class="flex items-center space-x-2">
-            <PenIcon class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
+            <PenIcon v-if="!hideEditButtons" class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
             <span class="font-medium text-gray-900 select-none group-hover:text-white">{{ smartview.name }}</span>
           </div>
           <div class="flex space-x-1">
             <span class="select-none">{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
-            <DeleteButton @click="archiveSmartview(smartview)" />
+            <DeleteButton v-if="!hideEditButtons" @click="archiveSmartview(smartview)" />
           </div>
         </div>
       </transition-group>
@@ -27,7 +27,7 @@
 <script>
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { models, mutations, tabs, TRANSITION_NAME } from '~/shared/constants'
+import { models, mutations, tabs, TRANSITION_NAME, routes } from '~/shared/constants'
 
 export default {
   name: 'Smartviews',
@@ -69,6 +69,9 @@ export default {
         return TRANSITION_NAME
       }
       return null
+    },
+    hideEditButtons() {
+      return this.$route.name === routes.maps
     },
   },
   methods: {

@@ -32,10 +32,13 @@
           ref="filter"
           v-model="computedValue"
           type="text"
-          class="bg-white text-xs text-gray-900 w-full border border-gray-300 rounded-md shadow-sm pl-0.5 pr-0.5 py-0.5 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          class="bg-white text-gray-900 w-full border border-gray-300 rounded-md shadow-sm text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          :class="sizeClassObj"
           :placeholder="shownValue"
           @keyup="onInputKeyup($event.key)"
           @click="onInputClick"
+          @focusin="toggleShowOptions"
+          @focusout="toggleShowOptions"
         />
         <span class="absolute inset-y-0 right-0 flex items-center pr-0 pointer-events-none">
           <!-- Heroicon name: solid/selector -->
@@ -62,9 +65,9 @@
     >
       <ul
         v-if="showOptions"
-        class="absolute z-20 mt-1 w-auto bg-white text-xs shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
+        class="absolute z-20 mt-1 w-auto bg-white shadow-lg rounded-md py-1 ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
         tabindex="-1"
-        :class="dropdownHeight"
+        :class="[dropdownHeight, sizeClassObj]"
         role="listbox"
         aria-labelledby="listbox-label"
         aria-activedescendant="listbox-option-3"
@@ -76,7 +79,7 @@
           ref="li"
           :key="option.id"
           :class="selectedItem(idx)"
-          class="text-gray-900 cursor-default select-none relative bg-white py-px pl-3 pr-9 hover:text-white hover:bg-indigo-600"
+          class="text-gray-900 cursor-default select-none relative bg-white pl-3 pr-9 group hover:text-white hover:bg-indigo-600"
           role="option"
           @click="setSelectOption(option)"
         >
@@ -85,7 +88,7 @@
           }}</span>
           <span
             v-if="isSelected(option)"
-            class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4 hover:text-white"
+            class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4 group-hover:text-white"
           >
             <!-- Heroicon name: solid/check -->
             <svg
@@ -138,6 +141,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    large: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -184,6 +191,11 @@ export default {
       } else {
         return 'max-h-60'
       }
+    },
+    sizeClassObj() {
+      const large = this.large
+      const base = !this.large
+      return { large, base }
     },
   },
   watch: {
@@ -262,5 +274,29 @@ export default {
 <style scoped>
 .keyboardHover {
   @apply text-white bg-indigo-600;
+}
+
+input.large {
+  @apply p-2 text-base;
+}
+
+input.base {
+  @apply p-0.5 text-xs;
+}
+
+ul.large {
+  @apply text-base;
+}
+
+ul.base {
+  @apply text-xs;
+}
+
+ul.large li {
+  @apply py-2;
+}
+
+ul.base li {
+  @apply py-px;
 }
 </style>

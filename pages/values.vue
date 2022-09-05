@@ -1,8 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <Header />
-    <p v-if="$fetchState.pending">Fetching Values...</p>
-    <Values v-else />
+    <Values />
   </div>
 </template>
 
