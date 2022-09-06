@@ -18,7 +18,19 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.shownTaxYears]),
+    ...mapState([
+      models.selectedClient,
+      models.valueTypes,
+      models.shownTaxYears,
+      models.cmdPressed,
+      models.selectedTaxYearId,
+    ]),
+    selectedTaxYear() {
+      return this.selectedClient.taxYearData.find((taxYear) => taxYear.id === this.selectedTaxYearId)
+    },
+    isCmdPressed() {
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
+    },
   },
   methods: {
     emitChange() {
@@ -30,10 +42,17 @@ export default {
       }
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
-      const taxYear = {
-        clientId,
+      let taxYear = {}
+      if (this.isCmdPressed && this.selectedTaxYear) {
+        taxYear = Object.assign({}, this.selectedTaxYear)
+      } else {
+        taxYear = { clientId }
       }
-      this.$api.createTaxYear(headers, { taxYear }).then((data) => {
+      this.$api.createTaxYear(headers, { taxYear }).then(async (data) => {
+        for (const initFiling of taxYear.filings) {
+          const filing = Object.assign({}, initFiling, { taxYearId: data.id })
+          await this.$api.createFiling(headers, { filing })
+        }
         this.$api.getClientData(headers, clientId).then(() => {
           this.$store.commit(mutations.setModelResponse, {
             model: models.shownTaxYears,
