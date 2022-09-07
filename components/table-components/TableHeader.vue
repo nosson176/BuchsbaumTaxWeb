@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-gray-50 z-10 shadow sticky top-0">
+  <div class="header">
     <slot />
   </div>
 </template>
@@ -10,4 +10,14 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.header {
+  @apply w-min flex bg-gray-50 z-10 shadow sticky top-0;
+}
+
+@media screen and (min-width: 1919px) {
+  .header {
+    @apply w-auto;
+  }
+}
+</style>
