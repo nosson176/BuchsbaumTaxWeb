@@ -19,73 +19,44 @@
 }
 
 .table-col.xs,
+.table-header.xs,
 .table-col-primary.xs {
   min-width: 3rem;
 }
 
 .table-col.sm,
+.table-header.sm,
 .table-col-primary.sm {
   min-width: 5rem;
 }
 
 .table-col.normal,
+.table-header.normal,
 .table-col-primary.normal {
   min-width: 8rem;
 }
 
 .table-col.lg,
+.table-header.lg,
 .table-col-primary.lg {
   min-width: 13rem;
 }
 
 .table-col.xl,
+.table-header.xl,
 .table-col-primary.xl {
   min-width: 21rem;
 }
 
 .table-col.xxl,
+.table-header.xxl,
 .table-col-primary.xxl {
   min-width: 34rem;
 }
 
-.table-header.xs {
-  @apply w-1/12;
-
-  min-width: 1.5rem;
-}
-
-.table-header.sm {
-  @apply w-2/12;
-
-  min-width: 2rem;
-}
-
-.table-header.normal {
-  @apply w-1/5;
-
-  min-width: 3rem;
-}
-
-.table-header.lg {
-  @apply w-3/12;
-
-  min-width: 8rem;
-}
-
-.table-header.xl {
-  @apply w-6/12;
-
-  min-width: 20rem;
-}
-
-.table-header.xxl {
-  @apply w-9/12;
-
-  min-width: 48rem;
-}
-
-@media screen and (min-width: 1920px) {
+@media screen and (min-width: 1919px) {
   .table-col.xs,
+  .table-header.xs,
   .table-col-primary.xs {
     @apply w-1/12;
 
@@ -93,6 +64,7 @@
   }
 
   .table-col.sm,
+  .table-header.sm,
   .table-col-primary.sm {
     @apply w-2/12;
 
@@ -100,6 +72,7 @@
   }
 
   .table-col.normal,
+  .table-header.normal,
   .table-col-primary.normal {
     @apply w-1/5;
 
@@ -107,6 +80,7 @@
   }
 
   .table-col.lg,
+  .table-header.lg,
   .table-col-primary.lg {
     @apply w-3/12;
 
@@ -114,6 +88,7 @@
   }
 
   .table-col.xl,
+  .table-header.xl,
   .table-col-primary.xl {
     @apply w-6/12;
 
@@ -121,6 +96,7 @@
   }
 
   .table-col.xxl,
+  .table-header.xxl,
   .table-col-primary.xxl {
     @apply w-9/12;
 

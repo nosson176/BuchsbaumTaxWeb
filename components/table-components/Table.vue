@@ -4,8 +4,8 @@
     @keydown.tab.prevent="emitKeyDown"
     @keyup.tab.prevent="emitKeyUp"
   >
-    <slot name="header" />
-    <div class="flex-grow overflow-auto">
+    <div class="overflow-auto">
+      <slot name="header" />
       <slot name="body" />
     </div>
   </div>

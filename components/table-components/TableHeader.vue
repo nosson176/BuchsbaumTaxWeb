@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-gray-50 z-10 shadow">
+  <div class="flex bg-gray-50 z-10 shadow sticky top-0">
     <slot />
   </div>
 </template>
