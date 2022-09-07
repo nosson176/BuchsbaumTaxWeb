@@ -1,33 +1,30 @@
 <template>
-  <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100 p-2 space-y-4">
-      <div class="flex space-x-4 max-h-full">
-        <div class="client-list">
-          <ClientListHeader @change="toggleShowArchivedClients" />
-          <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />
-        </div>
-        <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
-        <div class="bg-white shadow-md rounded-t flex flex-col-reverse w-full">
-          <ClientTaxYears />
-          <ClientTaxYearsHeader />
-        </div>
-        <div class="shadow rounded flex flex-col bg-white">
-          <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
-          <FeesChecklistsBody :current-tab="currentFeesChecklistsTab" />
-        </div>
+  <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
+    <div class="main-grid">
+      <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-3 bg-white">
+        <ClientListHeader @change="toggleShowArchivedClients" />
+        <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />
       </div>
-      <div class="flex space-x-4">
-        <div class="shadow rounded flex flex-col min-w-[60px] bg-white">
-          <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
-          <Smartviews :show-archived="showArchivedSmartviews" />
-        </div>
-        <div class="shadow rounded flex flex-col w-full bg-white">
-          <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
-          <LogsIncomeFbarBody ref="logsBodyRef" :current-tab="currentLogsIncomeFbarTab" />
-        </div>
-        <div class="shadow rounded flex flex-col bg-white">
-          <PersonalContactHeader @click="switchPersonalsTab" />
-          <PersonalContactBody :current-tab="currentPersonalsTab" />
-        </div>
+      <div class="shadow rounded flex flex-col row-start-1 row-span-2 col-start-9 bg-white">
+        <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
+        <FeesChecklistsBody :current-tab="currentFeesChecklistsTab" />
+      </div>
+      <div class="shadow rounded flex flex-col row-start-4 col-start-1 bg-white">
+        <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
+        <Smartviews :show-archived="showArchivedSmartviews" />
+      </div>
+      <div class="shadow rounded flex flex-col row-start-3 row-span-2 col-start-2 col-span-5 bg-white">
+        <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
+        <LogsIncomeFbarBody ref="logsBodyRef" :current-tab="currentLogsIncomeFbarTab" />
+      </div>
+      <div class="shadow rounded flex flex-col row-start-3 row-span-2 col-start-7 col-span-3 bg-white">
+        <PersonalContactHeader @click="switchPersonalsTab" />
+        <PersonalContactBody :current-tab="currentPersonalsTab" />
+      </div>
+      <!-- because of some weird z-indexing this is at the bottom and flex-col-reverse -->
+      <div class="bg-white shadow-md rounded-t flex flex-col-reverse row-start-1 row-span-2 col-start-2 col-span-7">
+        <ClientTaxYears />
+        <ClientTaxYearsHeader />
       </div>
       <Modal :showing="showDeleteModal">
         <DeleteCard @hide="closeDeleteModal" />
@@ -156,9 +153,12 @@ export default {
 </script>
 
 <style scoped>
-  .client-list {
-    @apply shadow rounded flex flex-col w-60 bg-white;
+.main-grid {
+  @apply grid gap-2 flex-grow overflow-hidden p-2;
 
-    height: 60%;
-  }
+  grid-template-columns:
+    minmax(240px, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)
+    minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(220px, 1fr) minmax(220px, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+}
 </style>
