@@ -9,6 +9,8 @@
       <TableHeader>
         <div class="table-header flex items-start">
           <AddRowButton @click="onAddRowClick" />
+        </div>
+        <div class="xs table-header">
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
         <div class="table-header sm flex flex-col">
