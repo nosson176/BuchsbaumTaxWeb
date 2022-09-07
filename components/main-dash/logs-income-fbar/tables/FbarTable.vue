@@ -74,7 +74,8 @@
         v-for="(fbar, idx) in displayedFbars"
         :key="fbar.id"
         :idx="idx"
-        :class="{ disabled: !fbar.include, selected: isSelected(fbar.id) }"
+        :selected="isSelected(fbar.id)"
+        :class="{ disabled: !fbar.include }"
       >
         <div class="table-col w-6 bg-gray-200">
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
@@ -534,8 +535,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.selected {
-  @apply bg-indigo-200;
-}
-</style>
+<style scoped></style>

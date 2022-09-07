@@ -2,9 +2,10 @@
   <Table @keydown.tab.prevent @keyup.tab.exact="goToNextColumn" @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
-        <div class="xs table-header">
+        <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
+        <div class="table-header xs"></div>
         <div class="sm table-header">Cat</div>
         <div class="normal table-header">First</div>
         <div class="xs table-header">M</div>

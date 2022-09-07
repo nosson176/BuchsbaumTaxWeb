@@ -3,11 +3,15 @@
 }
 
 .table-col {
-  @apply px-px py-1 whitespace-nowrap text-xs text-gray-500;
+  @apply h-7 flex items-center px-px py-1 whitespace-nowrap text-xs text-gray-500;
+
+  background-color: inherit;
 }
 
 .table-col-primary {
-  @apply px-px py-1 whitespace-nowrap text-xs font-medium text-gray-900;
+  @apply h-7 flex items-center px-px py-1 whitespace-nowrap text-xs font-medium text-gray-900;
+
+  background-color: inherit;
 }
 
 .disabled .table-col {
@@ -21,47 +25,85 @@
 .table-col.xs,
 .table-header.xs,
 .table-col-primary.xs {
-  @apply w-1/12;
-
-  min-width: 1.5rem;
+  min-width: 3rem;
 }
 
 .table-col.sm,
 .table-header.sm,
 .table-col-primary.sm {
-  @apply w-2/12;
-
-  min-width: 2rem;
+  min-width: 8rem;
 }
 
 .table-col.normal,
 .table-header.normal,
 .table-col-primary.normal {
-  @apply w-1/5;
-
-  min-width: 3rem;
+  min-width: 8rem;
 }
 
 .table-col.lg,
 .table-header.lg,
 .table-col-primary.lg {
-  @apply w-3/12;
-
-  min-width: 8rem;
+  min-width: 13rem;
 }
 
 .table-col.xl,
 .table-header.xl,
 .table-col-primary.xl {
-  @apply w-6/12;
-
-  min-width: 20rem;
+  min-width: 21rem;
 }
 
 .table-col.xxl,
 .table-header.xxl,
 .table-col-primary.xxl {
-  @apply w-9/12;
+  min-width: 34rem;
+}
 
-  min-width: 48rem;
+@media screen and (min-width: 1919px) {
+  .table-col.xs,
+  .table-header.xs,
+  .table-col-primary.xs {
+    @apply w-1/12;
+
+    min-width: 1.5rem;
+  }
+
+  .table-col.sm,
+  .table-header.sm,
+  .table-col-primary.sm {
+    @apply w-2/12;
+
+    min-width: 2rem;
+  }
+
+  .table-col.normal,
+  .table-header.normal,
+  .table-col-primary.normal {
+    @apply w-1/5;
+
+    min-width: 3rem;
+  }
+
+  .table-col.lg,
+  .table-header.lg,
+  .table-col-primary.lg {
+    @apply w-3/12;
+
+    min-width: 8rem;
+  }
+
+  .table-col.xl,
+  .table-header.xl,
+  .table-col-primary.xl {
+    @apply w-6/12;
+
+    min-width: 20rem;
+  }
+
+  .table-col.xxl,
+  .table-header.xxl,
+  .table-col-primary.xxl {
+    @apply w-9/12;
+
+    min-width: 48rem;
+  }
 }

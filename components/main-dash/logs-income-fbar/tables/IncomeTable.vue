@@ -75,7 +75,8 @@
         v-for="(income, idx) in displayedIncomes"
         :key="income.id"
         :idx="idx"
-        :class="{ disabled: !income.include, selected: isSelected(income.id) }"
+        :selected="isSelected(income.id)"
+        :class="{ disabled: !income.include }"
       >
         <div class="table-col bg-gray-200 w-6">
           <ClickCell @click="toggleSelected(income)">{{ idx + 1 }}</ClickCell>
@@ -568,8 +569,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.selected {
-  @apply bg-indigo-200;
-}
-</style>
+<style scoped></style>
