@@ -48,17 +48,21 @@ export default {
       let taxYear = {}
       if (this.isCopying) {
         taxYear = Object.assign({}, this.selectedTaxYear)
+        for (const filing of taxYear.filings) {
+          delete filing.taxYearId
+        }
       } else {
         taxYear = { clientId }
-      }
-      for (const filing of taxYear.filings) {
-        delete filing.taxYearId
       }
       this.$api.createTaxYear(headers, { taxYear }).then((data) => {
         this.$api.getClientData(headers, clientId).then(() => {
           this.$store.commit(mutations.setModelResponse, {
             model: models.shownTaxYears,
             data: [...this.shownTaxYears, data.id],
+          })
+          this.$store.commit(mutations.setModelResponse, {
+            model: models.selectedTaxYearId,
+            data: data.id,
           })
         })
       })
