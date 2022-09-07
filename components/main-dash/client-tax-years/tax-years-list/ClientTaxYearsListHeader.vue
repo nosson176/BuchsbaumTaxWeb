@@ -54,7 +54,6 @@ export default {
       for (const filing of taxYear.filings) {
         delete filing.taxYearId
       }
-      console.log(taxYear)
       this.$api.createTaxYear(headers, { taxYear }).then((data) => {
         this.$api.getClientData(headers, clientId).then(() => {
           this.$store.commit(mutations.setModelResponse, {
