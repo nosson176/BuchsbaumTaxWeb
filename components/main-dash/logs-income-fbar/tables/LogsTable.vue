@@ -11,7 +11,6 @@
           <AddRowButton @click="onAddRowClick" />
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
-        <div class="xs table-header" />
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Year</span>
