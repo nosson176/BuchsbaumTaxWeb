@@ -431,13 +431,13 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true })
     },
     updateSecondsSpent(log) {
+      this.onBlur()
       const timeArr = log.timeSpent.split(':')
       if (timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {
         log.timeSpent = this.getTimeSpentOnClient(log)
         return false
       }
       log.secondsSpent = timeArr[0] * 3600 + timeArr[1] * 60
-      this.onBlur()
     },
   },
 }
