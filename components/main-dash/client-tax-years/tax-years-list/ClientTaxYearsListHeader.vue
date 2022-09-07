@@ -51,11 +51,11 @@ export default {
       } else {
         taxYear = { clientId }
       }
-      this.$api.createTaxYear(headers, { taxYear }).then(async (data) => {
-        for (const initFiling of taxYear.filings) {
-          const filing = Object.assign({}, initFiling, { taxYearId: data.id })
-          await this.$api.createFiling(headers, { filing })
-        }
+      for (const filing of taxYear.filings) {
+        delete filing.taxYearId
+      }
+      console.log(taxYear)
+      this.$api.createTaxYear(headers, { taxYear }).then((data) => {
         this.$api.getClientData(headers, clientId).then(() => {
           this.$store.commit(mutations.setModelResponse, {
             model: models.shownTaxYears,
