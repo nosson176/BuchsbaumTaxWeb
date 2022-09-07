@@ -4,11 +4,13 @@
 
 .table-col {
   @apply h-7 flex items-center px-px py-1 whitespace-nowrap text-xs text-gray-500;
+
   background-color: inherit;
 }
 
 .table-col-primary {
   @apply h-7 flex items-center px-px py-1 whitespace-nowrap text-xs font-medium text-gray-900;
+
   background-color: inherit;
 }
 
