@@ -31,6 +31,9 @@ export default {
     isCmdPressed() {
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
+    isCopying() {
+      return this.isCmdPressed && this.selectedTaxYear
+    },
   },
   methods: {
     emitChange() {
@@ -43,7 +46,7 @@ export default {
       const headers = this.$api.getHeaders()
       const clientId = this.selectedClient.id
       let taxYear = {}
-      if (this.isCmdPressed && this.selectedTaxYear) {
+      if (this.isCopying) {
         taxYear = Object.assign({}, this.selectedTaxYear)
       } else {
         taxYear = { clientId }
