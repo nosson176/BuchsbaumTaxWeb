@@ -21,7 +21,7 @@
             v-for="(type, idx) in taxYearStatus"
             :key="type.id"
             class="pr-1"
-            :class="isSelected(type) ? 'selected' : ''"
+            :selected="isSelected(type)"
             @click="toggleSelected(type)"
           >
             <div class="table-col bg-gray-200 mr-1">
@@ -155,8 +155,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.selected {
-  @apply bg-indigo-200;
-}
-</style>
+<style scoped></style>

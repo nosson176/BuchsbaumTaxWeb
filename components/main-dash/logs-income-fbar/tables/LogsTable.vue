@@ -49,7 +49,8 @@
         v-for="(log, idx) in displayedLogs"
         :key="log.id"
         :idx="idx"
-        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete, selected: isSelected(log.id) }"
+        :selected="isSelected(log.id)"
+        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }"
       >
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
@@ -445,9 +446,5 @@ export default {
 <style scoped>
 .alarm {
   @apply bg-indigo-100;
-}
-
-.selected {
-  @apply bg-indigo-200;
 }
 </style>
