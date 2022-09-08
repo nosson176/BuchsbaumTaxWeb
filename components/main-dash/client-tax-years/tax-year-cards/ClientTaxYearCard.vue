@@ -13,6 +13,7 @@
             v-model="year"
             :class="{ 'tracking-widest': !isEditable('year') }"
             :options="yearOptions"
+            placeholder="Year"
             :is-editable="isEditable('year')"
             @click.native="toggleEditable('year', yearData.id)"
             @blur="onBlur"
