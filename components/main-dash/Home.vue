@@ -1,6 +1,6 @@
 <template>
   <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
-    <div class="grid grid-cols-9 grid-rows-4 gap-2 flex-grow overflow-hidden p-2">
+    <div class="main-grid">
       <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-3 bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />
@@ -152,4 +152,11 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.main-grid {
+  @apply grid gap-2 flex-grow overflow-hidden p-2;
+
+  grid-template-columns: minmax(240px, 1fr) repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 300px) repeat(2, minmax(0, 1fr));
+}
+</style>
