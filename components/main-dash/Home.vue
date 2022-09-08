@@ -157,6 +157,6 @@ export default {
   @apply grid gap-2 flex-grow overflow-hidden p-2;
 
   grid-template-columns: minmax(240px, 1fr) repeat(8, minmax(0, 1fr));
-  grid-template-rows: repeat(2, 240px) repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 300px) repeat(2, minmax(0, 1fr));
 }
 </style>
