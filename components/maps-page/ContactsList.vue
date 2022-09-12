@@ -31,6 +31,7 @@
           <EditableInputCell
             v-model="contact.mainDetail"
             :is-editable="isEditable(`${idx}-mainDetail`)"
+            @submit="onBlur"
             @blur="onBlur"
           />
         </div>
@@ -42,6 +43,7 @@
           <EditableInputCell
             v-model="contact.secondaryDetail"
             :is-editable="isEditable(`${idx}-secondaryDetail`)"
+            @submit="onBlur"
             @blur="onBlur"
           />
         </div>
