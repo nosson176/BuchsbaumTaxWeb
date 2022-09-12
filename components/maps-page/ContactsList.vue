@@ -4,8 +4,9 @@
       <TableHeader>
         <div class="table-header xs"></div>
         <div class="table-header xs"></div>
-        <div class="table-header min-w-[5rem] w-1/3">Type</div>
-        <div class="table-header w-full ml-1">Address/Number</div>
+        <div class="table-header min-w-[4.25rem] w-1/3">Type</div>
+        <div class="table-header lg">Address / Phone / Routing</div>
+        <div class="table-header lg">City / Account</div>
         <div class="table-header xs"></div>
       </TableHeader>
     </template>
@@ -23,14 +24,26 @@
         <div class="table-col xs">
           <EditableCheckBoxCell v-model="contact.enabled" />
         </div>
-        <div class="table-col min-w-[5rem] w-1/3">
+        <div class="table-col min-w-[4.25rem] w-1/3">
           {{ contact.contactType }}
         </div>
-        <div class="table-col w-full">
-          {{ contact.mainDetail }}
-          <span v-if="contact.secondaryDetail">
-            {{ contact.secondaryDetail }}
-          </span>
+        <div :id="`${idx}-mainDetail`" class="table-col lg" @click="toggleEditable(`${idx}-mainDetail`, contact.id)">
+          <EditableInputCell
+            v-model="contact.mainDetail"
+            :is-editable="isEditable(`${idx}-mainDetail`)"
+            @blur="onBlur"
+          />
+        </div>
+        <div
+          :id="`${idx}-secondaryDetail`"
+          class="table-col lg"
+          @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)"
+        >
+          <EditableInputCell
+            v-model="contact.secondaryDetail"
+            :is-editable="isEditable(`${idx}-secondaryDetail`)"
+            @blur="onBlur"
+          />
         </div>
         <div class="table-col xs">
           <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
@@ -50,7 +63,10 @@ import { searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'ContactsList',
   data() {
-    return {}
+    return {
+      editableId: '',
+      editableContactId: '',
+    }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.selectedContactId]),
@@ -75,6 +91,9 @@ export default {
         return null
       }
     },
+    headers() {
+      return this.$api.getHeaders()
+    },
   },
   methods: {
     setCurrentMapLocation(contact) {
@@ -85,6 +104,29 @@ export default {
     },
     isSelected({ id }) {
       return this.selectedContactId === id
+    },
+    toggleEditable(id, contactId) {
+      this.handleUpdate()
+      this.editableContactId = contactId
+      if (!(this.editableId === id)) {
+        this.editableId = id
+      }
+    },
+    isEditable(id) {
+      return this.editableId === id
+    },
+    handleUpdate() {
+      if (!this.editableContactId) return
+      const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId)
+      this.$api.updateContact(
+        this.headers,
+        { clientId: this.selectedClient.id, contactId: this.editableContactId },
+        contact
+      )
+    },
+    onBlur() {
+      this.handleUpdate()
+      this.editableId = ''
     },
   },
 }
