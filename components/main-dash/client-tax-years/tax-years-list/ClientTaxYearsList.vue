@@ -34,12 +34,7 @@ export default {
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
-          Object.values(this.selectedClient.taxYearData)
-            .filter((taxYear) => this.showArchived === taxYear.archived)
-            .map((taxYear) => {
-              const shown = this.shownTaxYears.includes(taxYear.id)
-              return { shown, ...taxYear }
-            })
+          Object.values(this.selectedClient.taxYearData).filter((taxYear) => this.showArchived === taxYear.archived)
         )
         return displayedTaxYearData
       } else {
@@ -65,7 +60,7 @@ export default {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
           data: this.displayedTaxYearData
-            ?.filter((taxYear) => taxYear.show)
+            ?.filter((taxYear) => taxYear.show || this.shownTaxYears.includes(taxYear.id))
             .slice(0, 4)
             .map((taxYear) => taxYear.id),
         })

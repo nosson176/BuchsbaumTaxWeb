@@ -121,7 +121,6 @@ export default {
       if (this.selectedTaxYearId === this.taxYear.id) {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
       } else {
-        this.showing = true
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: this.taxYear.id })
       }
     },
