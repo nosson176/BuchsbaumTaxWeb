@@ -405,7 +405,7 @@ export default {
       },
     },
     filingType() {
-      return this.filing.filingType
+      return this.filing?.filingType
     },
     taxFormOptions() {
       return this.valueTypes.tax_form.filter((taxForm) => taxForm.show)
@@ -501,7 +501,7 @@ export default {
     handleUpdate() {
       this.$api.updateFiling(
         this.headers,
-        { clientId: this.selectedClient.id, filingId: this.filing.id },
+        { clientId: this.selectedClient.id, filingId: this.filing?.id },
         this.formModel
       )
     },
