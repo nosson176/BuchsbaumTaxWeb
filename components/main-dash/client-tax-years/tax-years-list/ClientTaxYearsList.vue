@@ -83,6 +83,10 @@ export default {
   },
   methods: {
     toggleItemShown(setValue, taxYear) {
+      taxYear.show = !taxYear.show
+      this.$api
+        .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId: taxYear.id }, taxYear)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       if (setValue) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
