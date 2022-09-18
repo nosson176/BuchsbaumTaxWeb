@@ -103,7 +103,7 @@ export default {
     },
     showing: {
       get() {
-        return this.shownTaxYears.includes(this.taxYear.id)
+        return this.taxYear.show
       },
       set(newVal) {
         if (!newVal && this.taxYear.id === this.selectedTaxYearId) {
