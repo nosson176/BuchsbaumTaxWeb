@@ -4,7 +4,7 @@
       <TableHeader>
         <div class="table-header xs"></div>
         <div class="table-header xs"></div>
-        <div class="table-header min-w-[4.25rem] w-1/3">Type</div>
+        <div class="table-header min-w-[3rem] w-1/6">Type</div>
         <div class="table-header lg">Address / Phone / Routing</div>
         <div class="table-header lg">City / Account</div>
         <div class="table-header xs"></div>
@@ -24,7 +24,7 @@
         <div class="table-col xs">
           <EditableCheckBoxCell v-model="contact.enabled" />
         </div>
-        <div class="table-col min-w-[4.25rem] w-1/3">
+        <div class="table-col min-w-[3rem] w-1/6">
           {{ contact.contactType }}
         </div>
         <div :id="`${idx}-mainDetail`" class="table-col lg" @click="toggleEditable(`${idx}-mainDetail`, contact.id)">
