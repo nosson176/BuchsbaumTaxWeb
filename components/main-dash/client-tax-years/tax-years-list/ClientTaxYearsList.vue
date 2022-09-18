@@ -64,14 +64,20 @@ export default {
       if (!isLoading) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
-          data: this.displayedTaxYearData?.slice(0, 4).map((taxYear) => taxYear.id),
+          data: this.displayedTaxYearData
+            ?.filter((taxYear) => taxYear.show)
+            .slice(0, 4)
+            .map((taxYear) => taxYear.id),
         })
       }
     },
     showArchived() {
       this.$store.commit(mutations.setModelResponse, {
         model: models.shownTaxYears,
-        data: this.displayedTaxYearData.slice(0, 4).map((taxYear) => taxYear.id),
+        data: this.displayedTaxYearData
+          ?.filter((taxYear) => taxYear.show)
+          .slice(0, 4)
+          .map((taxYear) => taxYear.id),
       })
     },
   },
@@ -93,6 +99,7 @@ export default {
       if (this.showArchived) {
         const taxYear = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId)
         taxYear.archived = false
+        taxYear.show = true
         this.$api
           .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
           .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
