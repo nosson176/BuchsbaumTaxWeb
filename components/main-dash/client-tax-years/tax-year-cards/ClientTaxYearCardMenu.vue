@@ -27,12 +27,6 @@ export default {
               return a.year - b.year
             })
         )
-        const hasSelectedTaxYear = !Array.isArray(this.selectedTaxYearId) && this.selectedTaxYearId
-        if (hasSelectedTaxYear) {
-          const selectedIndex = items.findIndex((item) => item.id === this.selectedTaxYearId)
-          const selectedItem = items.splice(selectedIndex, 1)
-          items.unshift(selectedItem[0])
-        }
         return items
       } else {
         return null
