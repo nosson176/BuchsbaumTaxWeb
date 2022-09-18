@@ -23,7 +23,7 @@
       <div class="flex flex-grow h-3/4 w-full overflow-auto">
         <div
           class="flex flex-col border w-8 z-10"
-          :class="extensions.length > 1 ? 'justify-between' : 'justify-start'"
+          :class="extensions.length > 1 ? 'space-y-48' : 'justify-start'"
           :style="extensionColumnHeight"
         >
           <div class="mx-auto">
