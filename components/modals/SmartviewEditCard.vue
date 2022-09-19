@@ -43,7 +43,7 @@
         :disabled="!smartviewIsValid"
         type="button"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-        :class="!smartviewIsValid ? 'cursor-not-allowed' : 'cursor-pointer'"
+        :class="!smartviewIsValid ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'"
         @click="handleUpdateCreate"
       >
         <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
@@ -146,7 +146,7 @@ export default {
       return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
     },
     smartviewLines() {
-      return [...this.smartview.smartviewLines].sort((a, b) => a.groupNum - b.groupNum)
+      return [...this.smartview.smartviewLines]
     },
   },
   created() {
@@ -164,7 +164,8 @@ export default {
       this.$emit(events.hide)
     },
     updateSmartviewLine(line) {
-      this.smartview.smartviewLines[line.idx] = line.newVal
+      const updatedLineIndex = this.smartview.smartviewLines.findIndex((l) => l.id === line.id)
+      this.smartview.smartviewLines[updatedLineIndex] = line
       this.updateSmartview()
     },
     addSmartViewLine() {
@@ -176,7 +177,7 @@ export default {
       this.updateSmartview()
     },
     create() {
-      if (this.isLoading) {
+      if (this.isLoading || !this.smartviewIsValid) {
         return
       }
       this.isLoading = true
@@ -187,7 +188,7 @@ export default {
       })
     },
     update() {
-      if (this.isLoading) {
+      if (this.isLoading || !this.smartviewIsValid) {
         return
       }
       this.isLoading = true
