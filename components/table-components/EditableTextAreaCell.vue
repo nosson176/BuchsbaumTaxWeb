@@ -91,7 +91,7 @@ export default {
 
 <style scoped>
 .editMode {
-  @apply relative z-10 overflow-visible outline-none h-8;
+  @apply relative z-10 overflow-visible outline-none h-8 w-full;
 }
 
 .readMode {

@@ -12,6 +12,7 @@
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full z-20"
       tabindex="0"
       :placeholder="placeholder"
+      @keydown.enter="emitEnter"
     />
     <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
   </div>
@@ -83,13 +84,16 @@ export default {
     onBlur() {
       this.$emit(events.blur)
     },
+    emitEnter() {
+      this.$emit(events.submit)
+    },
   },
 }
 </script>
 
 <style scoped>
 .edit-mode {
-  @apply relative z-10 overflow-visible -mt-2.5 outline-none;
+  @apply relative z-10 overflow-visible -mt-2.5 outline-none w-full;
 }
 
 .read-mode {
