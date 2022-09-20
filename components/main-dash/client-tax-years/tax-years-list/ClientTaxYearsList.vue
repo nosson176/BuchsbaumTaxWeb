@@ -34,12 +34,7 @@ export default {
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
-          Object.values(this.selectedClient.taxYearData)
-            .filter((taxYear) => this.showArchived === taxYear.archived)
-            .map((taxYear) => {
-              const shown = this.shownTaxYears.includes(taxYear.id)
-              return { shown, ...taxYear }
-            })
+          Object.values(this.selectedClient.taxYearData).filter((taxYear) => this.showArchived === taxYear.archived)
         )
         return displayedTaxYearData
       } else {
@@ -64,28 +59,38 @@ export default {
       if (!isLoading) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
-          data: this.displayedTaxYearData?.slice(0, 4).map((taxYear) => taxYear.id),
+          data: this.displayedTaxYearData
+            ?.filter((taxYear) => taxYear.show || this.shownTaxYears.includes(taxYear.id))
+            .slice(0, 4)
+            .map((taxYear) => taxYear.id),
         })
       }
     },
     showArchived() {
       this.$store.commit(mutations.setModelResponse, {
         model: models.shownTaxYears,
-        data: this.displayedTaxYearData.slice(0, 4).map((taxYear) => taxYear.id),
+        data: this.displayedTaxYearData
+          ?.filter((taxYear) => taxYear.show)
+          .slice(0, 4)
+          .map((taxYear) => taxYear.id),
       })
     },
   },
   methods: {
     toggleItemShown(setValue, taxYear) {
+      const updatedTaxYear = Object.assign({}, taxYear, { show: !taxYear.show })
+      this.$api
+        .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId: updatedTaxYear.id }, updatedTaxYear)
+        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       if (setValue) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
-          data: [...this.shownTaxYears, taxYear.id],
+          data: [...this.shownTaxYears, updatedTaxYear.id],
         })
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
-          data: this.shownTaxYears.filter((id) => id !== taxYear.id),
+          data: this.shownTaxYears.filter((id) => id !== updatedTaxYear.id),
         })
       }
     },
@@ -93,6 +98,7 @@ export default {
       if (this.showArchived) {
         const taxYear = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId)
         taxYear.archived = false
+        taxYear.show = true
         this.$api
           .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
           .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))

@@ -103,7 +103,7 @@ export default {
     },
     showing: {
       get() {
-        return this.shownTaxYears.includes(this.taxYear.id)
+        return this.taxYear.show
       },
       set(newVal) {
         if (!newVal && this.taxYear.id === this.selectedTaxYearId) {
@@ -120,9 +120,16 @@ export default {
     toggleSelectTaxYear() {
       if (this.selectedTaxYearId === this.taxYear.id) {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.shownTaxYears,
+          data: this.shownTaxYears.filter((id) => id !== this.taxYear.id),
+        })
       } else {
-        this.showing = true
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: this.taxYear.id })
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.shownTaxYears,
+          data: [...this.shownTaxYears, this.taxYear.id],
+        })
       }
     },
     onDeleteClick() {
