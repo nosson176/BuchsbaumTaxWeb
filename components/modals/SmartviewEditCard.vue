@@ -146,7 +146,7 @@ export default {
       return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
     },
     smartviewLines() {
-      return [...this.smartview.smartviewLines]
+      return [...this.smartview.smartviewLines].sort((a, b) => a.groupNum - b.groupNum)
     },
   },
   created() {
