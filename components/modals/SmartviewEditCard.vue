@@ -15,7 +15,7 @@
           <div v-if="hasLines" class="mt-4 shadow">
             <SmartviewLine
               v-for="(line, idx) in smartviewLines"
-              :key="idx"
+              :key="line.id"
               :line="line"
               :idx="idx"
               @input="updateSmartviewLine"
