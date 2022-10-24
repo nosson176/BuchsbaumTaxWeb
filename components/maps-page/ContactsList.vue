@@ -7,6 +7,8 @@
         <div class="table-header min-w-[3rem] w-1/6">Type</div>
         <div class="table-header lg">Address / Phone / Routing</div>
         <div class="table-header lg">City / Account</div>
+        <div class="table-header xs">St</div>
+        <div class="table-header xs">Zip</div>
         <div class="table-header xs"></div>
       </TableHeader>
     </template>
@@ -43,6 +45,22 @@
           <EditableInputCell
             v-model="contact.secondaryDetail"
             :is-editable="isEditable(`${idx}-secondaryDetail`)"
+            @submit="onBlur"
+            @blur="onBlur"
+          />
+        </div>
+        <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
+          <EditableInputCell
+            v-model="contact.state"
+            :is-editable="isEditable(`${idx}-state`)"
+            @submit="onBlur"
+            @blur="onBlur"
+          />
+        </div>
+        <div :id="`${idx}-zip`" class="table-col xs" @click="toggleEditable(`${idx}-zip`, contact.id)">
+          <EditableInputCell
+            v-model="contact.zip"
+            :is-editable="isEditable(`${idx}-zip`)"
             @submit="onBlur"
             @blur="onBlur"
           />
