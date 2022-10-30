@@ -13,7 +13,7 @@
         <div class="xs table-header">
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
-        <div class="table-header sm flex flex-col">
+        <div class="table-header flex flex-col min-w-[3rem] max-w-[4rem]">
           <div class="flex items-center space-x-0.5">
             <span>Year</span>
             <DeleteButton small @click="yearFilterValue = ''" />
@@ -63,7 +63,11 @@
             @tab="goToNextColumn"
           />
         </div>
-        <div :id="`${idx}-years`" class="table-col sm" @click="toggleEditable(`${idx}-years`, log.id)">
+        <div
+          :id="`${idx}-years`"
+          class="table-col min-w-[3rem] max-w-[4rem]"
+          @click="toggleEditable(`${idx}-years`, log.id)"
+        >
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell
               v-model="log.years"
