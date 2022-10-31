@@ -73,11 +73,18 @@ export default {
       return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.secondary)[0]
     },
     formattedCreatedDate() {
+      if (this.logs.length) {
+        const firstLog = this.logs[this.logs.length - 1]
+        return formatDateForClient(firstLog.logDate)
+      }
       if (this.selectedClientCopy.created) {
         return formatDateForClient(this.selectedClientCopy.created)
       } else {
         return ''
       }
+    },
+    logs() {
+      return this.selectedClient.logs
     },
     lastName: {
       get() {
