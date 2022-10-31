@@ -24,13 +24,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      models.selectedClient,
-      models.shownTaxYears,
-      models.shownTaxYears,
-      models.loading,
-      models.selectedTaxYearId,
-    ]),
+    ...mapState([models.selectedClient, models.loading, models.selectedTaxYearId]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
@@ -54,45 +48,12 @@ export default {
       return this.loading.selectedClient
     },
   },
-  watch: {
-    isClientLoading(isLoading) {
-      if (!isLoading) {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.shownTaxYears,
-          data: this.displayedTaxYearData
-            ?.filter((taxYear) => taxYear.show || this.shownTaxYears.includes(taxYear.id))
-            .slice(0, 4)
-            .map((taxYear) => taxYear.id),
-        })
-      }
-    },
-    showArchived() {
-      this.$store.commit(mutations.setModelResponse, {
-        model: models.shownTaxYears,
-        data: this.displayedTaxYearData
-          ?.filter((taxYear) => taxYear.show)
-          .slice(0, 4)
-          .map((taxYear) => taxYear.id),
-      })
-    },
-  },
   methods: {
     toggleItemShown(setValue, taxYear) {
       const updatedTaxYear = Object.assign({}, taxYear, { show: !taxYear.show })
       this.$api
         .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId: updatedTaxYear.id }, updatedTaxYear)
         .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
-      if (setValue) {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.shownTaxYears,
-          data: [...this.shownTaxYears, updatedTaxYear.id],
-        })
-      } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.shownTaxYears,
-          data: this.shownTaxYears.filter((id) => id !== updatedTaxYear.id),
-        })
-      }
     },
     onDeleteClick(taxYearId, taxYear) {
       if (this.showArchived) {

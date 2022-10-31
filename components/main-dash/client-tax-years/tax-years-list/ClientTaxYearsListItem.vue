@@ -50,7 +50,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.shownTaxYears, models.selectedTaxYearId]),
+    ...mapState([models.selectedTaxYearId]),
     federalFilings() {
       return this.taxYear.filings.filter((filing) => filing.filingType === filingTypes.federal)
     },
@@ -120,16 +120,8 @@ export default {
     toggleSelectTaxYear() {
       if (this.selectedTaxYearId === this.taxYear.id) {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.shownTaxYears,
-          data: this.shownTaxYears.filter((id) => id !== this.taxYear.id),
-        })
       } else {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: this.taxYear.id })
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.shownTaxYears,
-          data: [...this.shownTaxYears, this.taxYear.id],
-        })
       }
     },
     onDeleteClick() {

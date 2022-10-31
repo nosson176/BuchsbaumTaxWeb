@@ -18,13 +18,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      models.selectedClient,
-      models.valueTypes,
-      models.shownTaxYears,
-      models.cmdPressed,
-      models.selectedTaxYearId,
-    ]),
+    ...mapState([models.selectedClient, models.valueTypes, models.cmdPressed, models.selectedTaxYearId]),
     selectedTaxYear() {
       return this.selectedClient.taxYearData.find((taxYear) => taxYear.id === this.selectedTaxYearId)
     },
@@ -56,10 +50,6 @@ export default {
       }
       this.$api.createTaxYear(headers, { taxYear }).then((data) => {
         this.$api.getClientData(headers, clientId).then(() => {
-          this.$store.commit(mutations.setModelResponse, {
-            model: models.shownTaxYears,
-            data: [...this.shownTaxYears, data.id],
-          })
           this.$store.commit(mutations.setModelResponse, {
             model: models.selectedTaxYearId,
             data: data.id,
