@@ -8,8 +8,8 @@
       <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
       <Smartviews :show-archived="showArchivedSmartviews" />
     </div>
-    <MapView class="col-span-6 col-start-2 row-start-1 row-span-4" />
-    <div class="col-span-2 col-start-8 row-span-4 row-start-1">
+    <MapView class="col-span-5 col-start-2 row-start-1 row-span-4" />
+    <div class="col-span-3 col-start-7 row-span-4 row-start-1">
       <ContactsList />
     </div>
   </div>
