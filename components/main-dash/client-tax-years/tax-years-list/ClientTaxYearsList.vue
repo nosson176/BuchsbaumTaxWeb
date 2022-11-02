@@ -30,6 +30,7 @@ export default {
       models.shownTaxYears,
       models.loading,
       models.selectedTaxYearId,
+      models.clientClicked,
     ]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
@@ -55,8 +56,21 @@ export default {
     },
   },
   watch: {
-    isClientLoading(isLoading) {
-      if (!isLoading) {
+    // on client change
+    selectedClient(newClient, oldClient) {
+      if (newClient.id !== oldClient.id) {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.shownTaxYears,
+          data: this.displayedTaxYearData
+            ?.filter((taxYear) => taxYear.show || this.shownTaxYears.includes(taxYear.id))
+            .slice(0, 4)
+            .map((taxYear) => taxYear.id),
+        })
+      }
+    },
+    // on click on same client as well, this helps keep the shown cards on filing update
+    clientClicked() {
+      if (!this.isClientLoading) {
         this.$store.commit(mutations.setModelResponse, {
           model: models.shownTaxYears,
           data: this.displayedTaxYearData

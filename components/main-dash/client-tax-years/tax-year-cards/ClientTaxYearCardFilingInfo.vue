@@ -131,7 +131,8 @@
       <div />
       <!-- end of spacing -->
       <div class="flex justify-center mb-1">
-        <div class="mr-3" @click="setEditable('refund')">
+        <div class="mr-3 flex items-center" @click="setEditable('refund')">
+          <span v-if="refund">$</span>
           <EditableInput
             v-model="refund"
             placeholder="Refund"
@@ -140,7 +141,8 @@
             @blur="onBlur"
           />
         </div>
-        <div class="ml-3" @click="setEditable('rebate')">
+        <div class="ml-3 flex items-center" @click="setEditable('rebate')">
+          <span v-if="rebate">$</span>
           <EditableInput
             v-model="rebate"
             placeholder="Rebate"
@@ -152,9 +154,7 @@
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
         <div>
-          <span class="text-white font-semibold text-sm">
-            {{ sum }}
-          </span>
+          <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
         </div>
         <div @click="setEditable('completed')">
           <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur" />
@@ -199,6 +199,7 @@
 <script>
 import { mapState } from 'vuex'
 import { events, filingTypes, models } from '~/shared/constants'
+import { formatAsNumber } from '~/shared/utility'
 
 const items = [
   'taxForm',
@@ -369,7 +370,14 @@ export default {
       },
     },
     sum() {
-      return this.refund + this.rebate
+      return Number(this.refund) + Number(this.rebate)
+    },
+    formattedSum() {
+      if (this.sum) {
+        return formatAsNumber(this.sum)
+      } else {
+        return 0
+      }
     },
     sumClassObj() {
       return {
