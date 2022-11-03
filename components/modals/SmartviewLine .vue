@@ -39,7 +39,7 @@ export default {
         return this.line
       },
       set(newVal) {
-        this.$emit(events.input, { newVal, idx: this.idx })
+        this.$emit(events.input, newVal)
       },
     },
     groupNum: {
