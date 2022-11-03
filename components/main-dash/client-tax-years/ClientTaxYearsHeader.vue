@@ -73,7 +73,7 @@ export default {
       return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.secondary)[0]
     },
     formattedCreatedDate() {
-      if (this.logs.length) {
+      if (this.logs?.length) {
         const firstLog = this.logs[this.logs.length - 1]
         return formatDateForClient(firstLog.logDate)
       }
