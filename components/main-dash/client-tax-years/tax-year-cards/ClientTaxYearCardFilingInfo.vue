@@ -139,7 +139,9 @@
           @blur="onBlur"
         />
       </div>
+      <!-- spacing -->
       <div />
+      <!-- end of spacing -->
       <div class="flex justify-center mb-1">
         <div class="mr-3 flex items-center" @click="setEditable('refund')">
           <span v-if="refund">{{ currencySymbol }}</span>
