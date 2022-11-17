@@ -85,7 +85,7 @@ export default {
       return this.federalFilingInfo?.status
     },
     owes() {
-      return this.federalFilingInfo?.owes ? this.formatAsILS(this.federalFilingInfo.owes).split('.')[0] : ''
+      return this.federalFilingInfo?.owes ? this.formatAsILS(this.federalFilingInfo.owes) : ''
     },
     taxForm() {
       return this.federalFilingInfo?.taxForm
@@ -94,7 +94,7 @@ export default {
       return this.federalFilingInfo?.statusDetail
     },
     paid() {
-      return this.federalFilingInfo?.paid ? this.formatAsILS(this.federalFilingInfo.paid).split('.')[0] : ''
+      return this.federalFilingInfo?.paid ? this.formatAsILS(this.federalFilingInfo.paid) : ''
     },
     classObj() {
       const selected = this.selectedTaxYearId === this.taxYear.id
