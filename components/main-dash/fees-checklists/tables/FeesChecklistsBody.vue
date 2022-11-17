@@ -3,9 +3,21 @@
     <div class="flex flex-col bg-blue-200 p-0.5" :class="showFees ? '' : 'shadow'">
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
+      <table class="text-xs mt-auto">
+        <tr>
+          <th>Owes</th>
+          <td>{{ feesOwesDollars }}</td>
+          <td>{{ feesOwesShekels }}</td>
+        </tr>
+        <tr>
+          <th>Paid</th>
+          <td>{{ feesPaidDollars }}</td>
+          <td>{{ feesPaidShekels }}</td>
+        </tr>
+      </table>
     </div>
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
-    <div v-else>
+    <div v-else class="flex flex-col">
       <FeesTable v-if="showFees" :show-archived="!showFeesActive" />
       <ChecklistsTable v-else-if="showChecklists" :show-archived="!showChecklistsActive" />
     </div>
@@ -15,6 +27,7 @@
 <script>
 import { mapState } from 'vuex'
 import { tabs, mutations, models, tableGroups } from '~/shared/constants'
+import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
 
 const initialState = () => ({
   searchInputFees: '',
@@ -36,7 +49,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.loading, models.clientClicked]),
+    ...mapState([models.loading, models.clientClicked, models.selectedClient]),
     showFees() {
       return this.currentTab === tabs.fees
     },
@@ -75,6 +88,18 @@ export default {
     },
     showLoadingSpinner() {
       return this.isSelectedClientLoading && this.clickOnClient
+    },
+    feesOwesDollars() {
+      return formatAsUSCurrency(this.selectedClient.feesOwesDollars)
+    },
+    feesOwesShekels() {
+      return formatAsILCurrency(this.selectedClient.feesOwesShekels)
+    },
+    feesPaidDollars() {
+      return formatAsUSCurrency(this.selectedClient.feesPaidDollars)
+    },
+    feesPaidShekels() {
+      return formatAsILCurrency(this.selectedClient.feesPaidShekels)
     },
   },
   watch: {
