@@ -284,3 +284,8 @@ export const secondsNeededToDisplayModal = 600
 export const TRANSITION_NAME = 'flip-list'
 
 export const USER_TYPE_ADMIN = 'admin'
+
+export const currencies = {
+  NIS: { type: 'USD', symbol: '$' },
+  USD: { type: 'ILS', symbol: '₪' },
+}

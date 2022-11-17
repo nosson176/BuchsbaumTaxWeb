@@ -211,7 +211,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes, models, currencies } from '~/shared/constants'
 import { formatAsNumber } from '~/shared/utility'
 
 const items = [
@@ -227,6 +227,7 @@ const items = [
   'owesFee',
   'paidFee',
   'fileType',
+  'currency',
   'refund',
   'rebate',
   'completed',
@@ -234,11 +235,6 @@ const items = [
   'secondDeliveryContact',
   'dateFiled',
 ]
-
-const USD_SYMBOL = '$'
-const NIS_SYMBOL = '₪'
-const USD_TYPE = 'USD'
-const NIS_TYPE = 'ILS'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -500,14 +496,14 @@ export default {
       return contactTypes
     },
     currencySymbol() {
-      if (this.currency === NIS_TYPE) {
-        return NIS_SYMBOL
+      if (this.currency === currencies.NIS.type) {
+        return currencies.NIS.symbol
       } else {
-        return USD_SYMBOL
+        return currencies.USD.symbol
       }
     },
     currencyOptions() {
-      return [{ value: USD_TYPE }, { value: NIS_TYPE }]
+      return [{ value: currencies.USD.type }, { value: currencies.NIS.type }]
     },
   },
   watch: {
