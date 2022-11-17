@@ -72,7 +72,17 @@
             />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('owes')">
+            <div @click="setEditable('currency')">
+              <EditableSelectCell
+                v-model="currency"
+                :options="currencyOptions"
+                :is-editable="isEditable('currency')"
+                placeholder="Currency"
+                @blur="onBlur"
+              />
+            </div>
+            <div class="flex items-center" @click="setEditable('owes')">
+              <span v-if="owes">{{ currencySymbol }}</span>
               <EditableInput
                 v-model="owes"
                 placeholder="Owes"
@@ -81,7 +91,8 @@
                 @blur="onBlur"
               />
             </div>
-            <div @click="setEditable('paid')">
+            <div class="flex items-center" @click="setEditable('paid')">
+              <span v-if="paid">{{ currencySymbol }}</span>
               <EditableInput
                 v-model="paid"
                 placeholder="Paid"
@@ -130,21 +141,9 @@
       <!-- spacing -->
       <div />
       <!-- end of spacing -->
-      <div @click="setEditable('currency')">
-        <EditableSelectCell
-          v-model="currency"
-          :options="currencyOptions"
-          :is-editable="isEditable('currency')"
-          placeholder="Currency"
-          @blur="onBlur"
-        />
-      </div>
-      <!-- spacing -->
-      <div />
-      <!-- end of spacing -->
       <div class="flex justify-center mb-1">
         <div class="mr-3 flex items-center" @click="setEditable('refund')">
-          <span v-if="refund">{{ currencySymbol }}</span>
+          <span v-if="refund">$</span>
           <EditableInput
             v-model="refund"
             placeholder="Refund"
@@ -154,7 +153,7 @@
           />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
-          <span v-if="rebate">{{ currencySymbol }}</span>
+          <span v-if="rebate">$</span>
           <EditableInput
             v-model="rebate"
             placeholder="Rebate"
@@ -166,10 +165,7 @@
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
         <div>
-          <span class="text-white font-semibold text-sm">
-            <span>{{ currencySymbol }}</span
-            >{{ formattedSum }}
-          </span>
+          <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
         </div>
         <div @click="setEditable('completed')">
           <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur" />
@@ -226,10 +222,10 @@ const items = [
   'owes',
   'paid',
   'includeFee',
+  'currency',
   'owesFee',
   'paidFee',
   'fileType',
-  'currency',
   'refund',
   'rebate',
   'completed',
