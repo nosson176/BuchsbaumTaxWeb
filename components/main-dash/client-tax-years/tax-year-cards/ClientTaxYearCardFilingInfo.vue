@@ -130,9 +130,19 @@
       <!-- spacing -->
       <div />
       <!-- end of spacing -->
+      <div @click="setEditable('currency')">
+        <EditableSelectCell
+          v-model="currency"
+          :options="currencyOptions"
+          :is-editable="isEditable('currency')"
+          placeholder="Currency"
+          @blur="onBlur"
+        />
+      </div>
+      <div />
       <div class="flex justify-center mb-1">
         <div class="mr-3 flex items-center" @click="setEditable('refund')">
-          <span v-if="refund">$</span>
+          <span v-if="refund">{{ currencySymbol }}</span>
           <EditableInput
             v-model="refund"
             placeholder="Refund"
@@ -142,7 +152,7 @@
           />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
-          <span v-if="rebate">$</span>
+          <span v-if="rebate">{{ currencySymbol }}</span>
           <EditableInput
             v-model="rebate"
             placeholder="Rebate"
@@ -154,7 +164,10 @@
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
         <div>
-          <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
+          <span class="text-white font-semibold text-sm">
+            <span>{{ currencySymbol }}</span
+            >{{ formattedSum }}
+          </span>
         </div>
         <div @click="setEditable('completed')">
           <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur" />
@@ -221,6 +234,11 @@ const items = [
   'secondDeliveryContact',
   'dateFiled',
 ]
+
+const USD_SYMBOL = '$'
+const NIS_SYMBOL = '₪'
+const USD_TYPE = 'USD'
+const NIS_TYPE = 'ILS'
 
 export default {
   name: 'ClientTaxYearCardFilingInfo',
@@ -412,6 +430,14 @@ export default {
         this.formModel.dateFiled = newVal
       },
     },
+    currency: {
+      get() {
+        return this.formModel.currency
+      },
+      set(newVal) {
+        this.formModel.currency = newVal
+      },
+    },
     filingType() {
       return this.filing?.filingType
     },
@@ -472,6 +498,16 @@ export default {
         contactTypes[contact.contactType] = true
       })
       return contactTypes
+    },
+    currencySymbol() {
+      if (this.currency === NIS_TYPE) {
+        return NIS_SYMBOL
+      } else {
+        return USD_SYMBOL
+      }
+    },
+    currencyOptions() {
+      return [{ value: USD_TYPE }, { value: NIS_TYPE }]
     },
   },
   watch: {
