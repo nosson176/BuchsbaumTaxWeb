@@ -6,6 +6,7 @@ const formatAsUSCurrency = (s) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
+    maximumFractionDigits: 0,
   }).format(s)
 }
 
@@ -13,6 +14,7 @@ const formatAsILCurrency = (s) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'ILS',
+    maximumFractionDigits: 0,
   }).format(s)
 }
 
