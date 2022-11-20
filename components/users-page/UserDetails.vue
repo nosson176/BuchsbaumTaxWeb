@@ -38,7 +38,7 @@
         </div>
         <div class="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Privelage Set</div>
+            <div class="text-sm font-medium text-gray-500">Privilege Set</div>
             <div class="mt-1 text-sm text-gray-900">
               <HeaderSelectOption :key="userTypeChange" v-model="userType" large :options="userTypes" />
             </div>
@@ -69,6 +69,12 @@
             <div class="text-sm font-medium text-gray-500">Notify of Logins</div>
             <div class="mt-1 text-sm text-gray-900">
               <EditableCheckBoxCell v-model="notifyOfLogins" />
+            </div>
+          </div>
+          <div class="sm:col-span-1">
+            <div class="text-sm font-medium text-gray-500">Send Log In/Out Texts</div>
+            <div class="mt-1 text-sm text-gray-900">
+              <EditableCheckBoxCell v-model="sendLoginNotifications" />
             </div>
           </div>
         </div>
@@ -141,6 +147,14 @@ export default {
         this.userObj.notifyOfLogins = newVal
       },
     },
+    sendLoginNotifications: {
+      get() {
+        return this.userObj.sendLoginNotifications
+      },
+      set(newVal) {
+        this.userObj.sendLoginNotifications = newVal
+      },
+    },
     userTypes() {
       return userTypes
     },
@@ -155,9 +169,6 @@ export default {
     this.userObj = JSON.parse(JSON.stringify(this.user))
   },
   methods: {
-    updateUserObj(newVal) {
-      this.userObj = Object.assign({}, this.user, newVal)
-    },
     async updateUser() {
       this.loading = true
       await this.$api.updateUser(this.headers, { userId: this.user.id }, this.userObj)
