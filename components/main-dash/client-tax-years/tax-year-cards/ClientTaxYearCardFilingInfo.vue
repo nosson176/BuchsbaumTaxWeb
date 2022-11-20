@@ -72,17 +72,8 @@
             />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('currency')">
-              <EditableSelectCell
-                v-model="currency"
-                :options="currencyOptions"
-                :is-editable="isEditable('currency')"
-                placeholder="Currency"
-                @blur="onBlur"
-              />
-            </div>
             <div class="flex items-center" @click="setEditable('owes')">
-              <span v-if="owes">{{ currencySymbol }}</span>
+              <HeaderSelectOption v-if="owes" v-model="currency" :options="currencyOptions" currency />
               <EditableInput
                 v-model="owes"
                 placeholder="Owes"
@@ -92,7 +83,7 @@
               />
             </div>
             <div class="flex items-center" @click="setEditable('paid')">
-              <span v-if="paid">{{ currencySymbol }}</span>
+              <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency />
               <EditableInput
                 v-model="paid"
                 placeholder="Paid"

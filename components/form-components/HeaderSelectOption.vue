@@ -27,6 +27,9 @@
         </button>
       </div>
       <AddRowButton v-else-if="addIcon" @click.native="toggleShowOptions" />
+      <div v-else-if="currency" class="mx-2 cursor-pointer" @click.stop="toggleShowOptions">
+        {{ selectedCurrency }}
+      </div>
       <div v-else>
         <input
           ref="filter"
@@ -137,6 +140,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    currency: {
+      type: Boolean,
+      default: false,
+    },
     long: {
       type: Boolean,
       default: false,
@@ -182,6 +189,9 @@ export default {
     },
     shownValue() {
       return this.options.find((option) => option.value === this.value)?.name
+    },
+    selectedCurrency() {
+      return this.computedValue === 'USD' ? '$' : '₪'
     },
     dropdownHeight() {
       if (this.short) {
