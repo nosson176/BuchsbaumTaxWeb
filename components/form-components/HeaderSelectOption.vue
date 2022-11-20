@@ -27,7 +27,7 @@
         </button>
       </div>
       <AddRowButton v-else-if="addIcon" @click.native="toggleShowOptions" />
-      <div v-else-if="currency" class="mx-2 cursor-pointer" @click.stop="toggleShowOptions">
+      <div v-else-if="currency" class="mx-2 font-bold cursor-pointer" @click.stop="toggleShowOptions">
         {{ selectedCurrency }}
       </div>
       <div v-else>

@@ -58,17 +58,8 @@
               <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur" />
             </div>
             <div class="flex flex-col">
-              <div @click="setEditable('currency')">
-                <EditableSelectCell
-                  v-model="currency"
-                  :options="currencyOptions"
-                  :is-editable="isEditable('currency')"
-                  placeholder="Currency"
-                  @blur="onBlur"
-                />
-              </div>
               <div class="flex items-center" @click="setEditable('manualAmount')">
-                <span v-if="manualAmount">{{ currencySymbol }}</span>
+                <HeaderSelectOption v-if="manualAmount" v-model="currency" :options="currencyOptions" currency />
                 <EditableInput
                   v-model="manualAmount"
                   placeholder="Amount"
@@ -79,7 +70,7 @@
                 <div v-if="isEditable('manualAmount')" />
               </div>
               <div class="flex items-center" @click="setEditable('paidAmount')">
-                <span v-if="paidAmount">{{ currencySymbol }}</span>
+                <HeaderSelectOption v-if="paidAmount" v-model="currency" :options="currencyOptions" currency />
                 <EditableInput
                   v-model="paidAmount"
                   placeholder="Paid"
