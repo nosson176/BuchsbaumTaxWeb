@@ -59,7 +59,13 @@
             </div>
             <div class="flex flex-col">
               <div class="flex items-center" @click="setEditable('manualAmount')">
-                <HeaderSelectOption v-if="manualAmount" v-model="currency" :options="currencyOptions" currency />
+                <HeaderSelectOption
+                  v-if="manualAmount"
+                  v-model="currency"
+                  :options="currencyOptions"
+                  currency
+                  @input="onBlur"
+                />
                 <EditableInput
                   v-model="manualAmount"
                   placeholder="Amount"
@@ -70,7 +76,13 @@
                 <div v-if="isEditable('manualAmount')" />
               </div>
               <div class="flex items-center" @click="setEditable('paidAmount')">
-                <HeaderSelectOption v-if="paidAmount" v-model="currency" :options="currencyOptions" currency />
+                <HeaderSelectOption
+                  v-if="paidAmount"
+                  v-model="currency"
+                  :options="currencyOptions"
+                  currency
+                  @input="onBlur"
+                />
                 <EditableInput
                   v-model="paidAmount"
                   placeholder="Paid"
