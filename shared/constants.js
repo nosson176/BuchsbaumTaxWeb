@@ -281,6 +281,6 @@ export const TRANSITION_NAME = 'flip-list'
 export const USER_TYPE_ADMIN = 'admin'
 
 export const currencies = {
-  NIS: { type: 'USD', symbol: '$' },
-  USD: { type: 'ILS', symbol: '₪' },
+  USD: { type: 'USD', symbol: '$' },
+  NIS: { type: 'NIS', symbol: '₪' },
 }
