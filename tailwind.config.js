@@ -19,6 +19,9 @@ module.exports = {
         '7/10': '70%',
         '9/10': '90%',
       },
+      spacing: {
+        128: '32rem',
+      },
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
