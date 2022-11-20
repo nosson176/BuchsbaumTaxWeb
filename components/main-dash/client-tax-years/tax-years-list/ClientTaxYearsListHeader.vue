@@ -50,16 +50,16 @@ export default {
       return this.isCmdPressed && this.selectedTaxYear
     },
     owesDollars() {
-      return formatAsUSCurrency(this.selectedClient.owesDollars)
+      return !isNaN(this.selectedClient.owesDollars) ? formatAsUSCurrency(this.selectedClient.owesDollars) : ''
     },
     owesShekels() {
-      return formatAsILCurrency(this.selectedClient.owesShekels)
+      return !isNaN(this.selectedClient.owesShekels) ? formatAsILCurrency(this.selectedClient.owesShekels) : ''
     },
     paidDollars() {
-      return formatAsUSCurrency(this.selectedClient.paidDollars)
+      return !isNaN(this.selectedClient.paidDollars) ? formatAsUSCurrency(this.selectedClient.paidDollars) : ''
     },
     paidShekels() {
-      return formatAsILCurrency(this.selectedClient.paidShekels)
+      return !isNaN(this.selectedClient.paidShekels) ? formatAsILCurrency(this.selectedClient.paidShekels) : ''
     },
   },
   methods: {
