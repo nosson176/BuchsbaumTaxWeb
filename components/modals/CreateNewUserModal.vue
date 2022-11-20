@@ -2,40 +2,49 @@
   <SubmitCard :loading="loading" :disabled="!isUserValid" @hide="emitHide" @submit="submitCreateUser">
     <div class="w-full space-y-4">
       <span class="font-semibold">Create User</span>
-      <FormInput ref="input" v-model="formModel.username" placeholder="Username" required />
+      <FormInput ref="input" v-model="formModel.username" placeholder="USERNAME" required />
 
       <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
-        <FormInput v-model="formModel.firstName" placeholder="First Name" />
-        <FormInput v-model="formModel.lastName" placeholder="Last Name" />
+        <FormInput v-model="formModel.firstName" placeholder="FIRST NAME" />
+        <FormInput v-model="formModel.lastName" placeholder="LAST NAME" />
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
         <div class="flex flex-col space-y-0.5">
-          <FormInput v-model="formModel.password" placeholder="Password" type="password" required />
+          <FormInput v-model="formModel.password" placeholder="PASSWORD" type="password" required />
           <div v-if="showPasswordError" class="text-xs text-red-700">Must be lomger than 6 chars</div>
         </div>
         <div class="flex flex-col space-y-0.5">
-          <FormInput v-model="confirmPassword" placeholder="Confirm Password" type="password" required />
+          <FormInput v-model="confirmPassword" placeholder="Confirm PASSWORD" type="password" required />
           <div v-if="showConfirmPasswordError" class="text-xs text-red-700">Must match the password</div>
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
         <div @click="setEditable('type')">
-          <HeaderSelectOption v-model="formModel.userType" :options="userTypes" :is-editable="isEditable('type')" />
+          <HeaderSelectOption
+            v-model="formModel.userType"
+            :options="userTypes"
+            large
+            :is-editable="isEditable('type')"
+          />
         </div>
         <FormInput v-model="formModel.secondsInDay" placeholder="Seconds in Day" />
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
         <div class="flex space-x-1 items-center">
           <EditableCheckBoxCell v-model="formModel.selectable" />
-          <div class="text-sm font-medium text-gray-500">Selectable</div>
+          <div class="text-xs font-bold text-gray-500">SELECTABLE</div>
         </div>
         <div class="flex space-x-1 items-center">
           <EditableCheckBoxCell v-model="formModel.allowTexting" />
-          <div class="text-sm font-medium text-gray-500">Allow Texting</div>
+          <div class="text-xs font-bold text-gray-500">ALLOW TEXTING</div>
         </div>
         <div class="flex space-x-1 items-center">
           <EditableCheckBoxCell v-model="formModel.notifyOfLogins" />
-          <div class="text-sm font-medium text-gray-500">Notify of Logins</div>
+          <div class="text-xs font-bold text-gray-500">NOTIFY OF LOGINS</div>
+        </div>
+        <div class="flex space-x-1 items-center">
+          <EditableCheckBoxCell v-model="formModel.sendLoginNotifications" />
+          <div class="text-xs font-bold text-gray-500">SEND LOGIN/OUT TEXTS</div>
         </div>
       </div>
     </div>
