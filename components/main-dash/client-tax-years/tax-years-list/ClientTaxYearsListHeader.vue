@@ -6,7 +6,7 @@
     </div>
     <table class="text-xs mt-auto">
       <tr>
-        <th>Owes</th>
+        <th>Owed</th>
         <td>{{ owesDollars }}</td>
         <td>{{ owesShekels }}</td>
       </tr>

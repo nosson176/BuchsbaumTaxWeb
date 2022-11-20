@@ -5,7 +5,7 @@
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
       <table class="text-xs mt-auto">
         <tr>
-          <th>Owes</th>
+          <th>Owed</th>
           <td>{{ feesOwesDollars }}</td>
           <td>{{ feesOwesShekels }}</td>
         </tr>
