@@ -89,9 +89,12 @@ export default {
 
 <style scoped>
 .selected,
-.selected.even,
-.row:hover {
+.selected.even {
   @apply bg-gray-700;
+}
+
+.row:hover {
+  @apply bg-gray-400;
 }
 
 .selected .table-col,
