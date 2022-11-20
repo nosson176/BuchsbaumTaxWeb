@@ -24,7 +24,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.loading, models.selectedTaxYearId, models.clientClicked]),
+    ...mapState([models.selectedClient, models.loading, models.selectedTaxYearId]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
@@ -43,9 +43,6 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
-    },
-    isClientLoading() {
-      return this.loading.selectedClient
     },
   },
   methods: {
