@@ -16,7 +16,7 @@
       <div class="border-t border-gray-200 px-4 py-5 space-y-4 sm:px-6">
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Username</div>
+            <div class="text-xs font-bold text-gray-500">USERNAME</div>
             <div class="mt-1 text-sm text-gray-900">
               <FormInput ref="username" v-model="userObj.username" />
             </div>
@@ -24,13 +24,13 @@
         </div>
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">First Name</div>
+            <div class="text-xs font-bold text-gray-500">FIRST NAME</div>
             <div class="mt-1 text-sm text-gray-900">
               <FormInput v-model="userObj.firstName" />
             </div>
           </div>
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Last Name</div>
+            <div class="text-xs font-bold text-gray-500">LAST NAME</div>
             <div class="mt-1 text-sm text-gray-900">
               <FormInput v-model="userObj.lastName" />
             </div>
@@ -38,13 +38,13 @@
         </div>
         <div class="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Privilege Set</div>
+            <div class="text-xs font-bold text-gray-500">PRIVILEGE SET</div>
             <div class="mt-1 text-sm text-gray-900">
               <HeaderSelectOption :key="userTypeChange" v-model="userType" large :options="userTypes" />
             </div>
           </div>
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Seconds in Day</div>
+            <div class="text-xs font-bold text-gray-500">SECONDS IN DAY</div>
             <div class="mt-1 text-sm text-gray-900">
               <FormInput v-model="userObj.secondsInDay" />
             </div>
@@ -52,13 +52,13 @@
         </div>
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Selectable</div>
+            <div class="text-xs font-bold text-gray-500">SELECTABLE</div>
             <div class="mt-1 text-sm text-gray-900">
               <EditableCheckBoxCell v-model="selectable" />
             </div>
           </div>
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Allow Texting</div>
+            <div class="text-xs font-bold text-gray-500">ALLOW TEXTING</div>
             <div class="mt-1 text-sm text-gray-900">
               <EditableCheckBoxCell v-model="allowTexting" />
             </div>
@@ -66,13 +66,13 @@
         </div>
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Notify of Logins</div>
+            <div class="text-xs font-bold text-gray-500">NOTIFY OF LOGINS</div>
             <div class="mt-1 text-sm text-gray-900">
               <EditableCheckBoxCell v-model="notifyOfLogins" />
             </div>
           </div>
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Send Log In/Out Texts</div>
+            <div class="text-xs font-bold text-gray-500">SEND LOGIN/OUT TEXTS</div>
             <div class="mt-1 text-sm text-gray-900">
               <EditableCheckBoxCell v-model="sendLoginNotifications" />
             </div>
@@ -80,7 +80,7 @@
         </div>
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <div class="text-sm font-medium text-gray-500">Phone Number</div>
+            <div class="text-xs font-bold text-gray-500">PHONE NUMBER</div>
             <div class="mt-1 text-sm text-gray-900">
               <FormInput v-model="userObj.phoneNumber" />
             </div>
