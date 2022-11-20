@@ -19,7 +19,7 @@
         <div class="table-col w-4"></div>
         <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
           {{ user.username }}
-          <span class="font-light">({{ user.userType }})</span>
+          <span class="font-light">&nbsp;({{ user.userType }})</span>
         </div>
         <div class="table-col">
           <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
