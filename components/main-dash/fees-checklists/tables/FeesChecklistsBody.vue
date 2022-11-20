@@ -90,16 +90,16 @@ export default {
       return this.isSelectedClientLoading && this.clickOnClient
     },
     feesOwesDollars() {
-      return formatAsUSCurrency(this.selectedClient.feesOwesDollars)
+      return !isNaN(this.selectedClient.feesOwesDollars) ? formatAsUSCurrency(this.selectedClient.feesOwesDollars) : ''
     },
     feesOwesShekels() {
-      return formatAsILCurrency(this.selectedClient.feesOwesShekels)
+      return !isNaN(this.selectedClient.feesOwesShekels) ? formatAsILCurrency(this.selectedClient.feesOwesShekels) : ''
     },
     feesPaidDollars() {
-      return formatAsUSCurrency(this.selectedClient.feesPaidDollars)
+      return !isNaN(this.selectedClient.feesPaidDollars) ? formatAsUSCurrency(this.selectedClient.feesPaidDollars) : ''
     },
     feesPaidShekels() {
-      return formatAsILCurrency(this.selectedClient.feesPaidShekels)
+      return !isNaN(this.selectedClient.feesPaidShekels) ? formatAsILCurrency(this.selectedClient.feesPaidShekels) : ''
     },
   },
   watch: {
