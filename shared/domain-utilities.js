@@ -17,7 +17,7 @@ const userConstructor = () => {
     secondsInDay: 0,
     selectable: false,
     sendLoginNotifications: false,
-    userType: 'user',
+    userType: 'User',
     username: '',
     password: '',
     phoneNumber: '',
