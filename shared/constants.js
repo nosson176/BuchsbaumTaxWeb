@@ -176,11 +176,6 @@ export const tableGroups = Object.freeze({
   personalContact: 'personalContact',
 })
 
-export const currencySymbols = Object.freeze({
-  us: '$',
-  il: '₪',
-})
-
 export const searchOptions = Object.freeze([
   { name: 'Default Search', value: '' },
   { name: 'CLIENT::last_name', value: 'clients::last_name' },
@@ -284,3 +279,8 @@ export const secondsNeededToDisplayModal = 600
 export const TRANSITION_NAME = 'flip-list'
 
 export const USER_TYPE_ADMIN = 'admin'
+
+export const currencies = {
+  USD: { type: 'USD', symbol: '$' },
+  NIS: { type: 'NIS', symbol: '₪' },
+}

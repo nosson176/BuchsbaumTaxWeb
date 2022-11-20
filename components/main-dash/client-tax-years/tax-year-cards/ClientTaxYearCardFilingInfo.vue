@@ -72,7 +72,17 @@
             />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('owes')">
+            <div @click="setEditable('currency')">
+              <EditableSelectCell
+                v-model="currency"
+                :options="currencyOptions"
+                :is-editable="isEditable('currency')"
+                placeholder="Currency"
+                @blur="onBlur"
+              />
+            </div>
+            <div class="flex items-center" @click="setEditable('owes')">
+              <span v-if="owes">{{ currencySymbol }}</span>
               <EditableInput
                 v-model="owes"
                 placeholder="Owes"
@@ -81,7 +91,8 @@
                 @blur="onBlur"
               />
             </div>
-            <div @click="setEditable('paid')">
+            <div class="flex items-center" @click="setEditable('paid')">
+              <span v-if="paid">{{ currencySymbol }}</span>
               <EditableInput
                 v-model="paid"
                 placeholder="Paid"
@@ -198,7 +209,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes, models, currencies } from '~/shared/constants'
 import { formatAsNumber } from '~/shared/utility'
 
 const items = [
@@ -211,6 +222,7 @@ const items = [
   'owes',
   'paid',
   'includeFee',
+  'currency',
   'owesFee',
   'paidFee',
   'fileType',
@@ -412,6 +424,14 @@ export default {
         this.formModel.dateFiled = newVal
       },
     },
+    currency: {
+      get() {
+        return this.formModel.currency
+      },
+      set(newVal) {
+        this.formModel.currency = newVal
+      },
+    },
     filingType() {
       return this.filing?.filingType
     },
@@ -472,6 +492,16 @@ export default {
         contactTypes[contact.contactType] = true
       })
       return contactTypes
+    },
+    currencySymbol() {
+      if (this.currency === currencies.NIS.type) {
+        return currencies.NIS.symbol
+      } else {
+        return currencies.USD.symbol
+      }
+    },
+    currencyOptions() {
+      return [{ value: currencies.USD.type }, { value: currencies.NIS.type }]
     },
   },
   watch: {

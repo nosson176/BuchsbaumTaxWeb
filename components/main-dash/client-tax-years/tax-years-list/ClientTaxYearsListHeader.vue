@@ -1,13 +1,28 @@
 <template>
-  <div class="flex bg-blue-200 px-1 justify-between items-center z-10 shadow">
-    <AddRowButton @click="onAddRowClick" />
-    <ViewArchivedHeader :view-active="!showArchived" @change="emitChange" />
+  <div class="flex flex-col bg-blue-200 px-1 justify-between z-10 shadow">
+    <div class="flex justify-between items-center">
+      <AddRowButton @click="onAddRowClick" />
+      <ViewArchivedHeader :view-active="!showArchived" @change="emitChange" />
+    </div>
+    <table class="text-xs mt-auto">
+      <tr>
+        <th>Owes</th>
+        <td>{{ owesDollars }}</td>
+        <td>{{ owesShekels }}</td>
+      </tr>
+      <tr>
+        <th>Paid</th>
+        <td>{{ paidDollars }}</td>
+        <td>{{ paidShekels }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { events, models, mutations } from '~/shared/constants'
+import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
 
 export default {
   name: 'ClientTaxYearsListHeader',
@@ -33,6 +48,18 @@ export default {
     },
     isCopying() {
       return this.isCmdPressed && this.selectedTaxYear
+    },
+    owesDollars() {
+      return !isNaN(this.selectedClient.owesDollars) ? formatAsUSCurrency(this.selectedClient.owesDollars) : ''
+    },
+    owesShekels() {
+      return !isNaN(this.selectedClient.owesShekels) ? formatAsILCurrency(this.selectedClient.owesShekels) : ''
+    },
+    paidDollars() {
+      return !isNaN(this.selectedClient.paidDollars) ? formatAsUSCurrency(this.selectedClient.paidDollars) : ''
+    },
+    paidShekels() {
+      return !isNaN(this.selectedClient.paidShekels) ? formatAsILCurrency(this.selectedClient.paidShekels) : ''
     },
   },
   methods: {

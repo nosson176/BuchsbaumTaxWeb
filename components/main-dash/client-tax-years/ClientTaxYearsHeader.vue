@@ -33,6 +33,8 @@
           <span v-else class="capitalize">Delete</span>
         </button>
       </div>
+      <div>{{ summationDollars }}</div>
+      <div>{{ summationShekels }}</div>
     </div>
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
@@ -49,6 +51,7 @@
 import { mapState } from 'vuex'
 import { categories, models, mutations } from '~/shared/constants'
 import { formatDateForClient } from '~/shared/domain-utilities'
+import { formatAsILCurrency, formatAsUSCurrency } from '~/shared/utility'
 
 export default {
   name: 'ClientTaxYearsHeader',
@@ -132,6 +135,18 @@ export default {
     },
     headers() {
       return this.$api.getHeaders()
+    },
+    summationDollars() {
+      const owes = this.selectedClient.owesDollars + this.selectedClient.feesOwesDollars
+      const paid = this.selectedClient.paidDollars + this.selectedClient.feesPaidDollars
+      const totalOwed = owes - paid
+      return !isNaN(totalOwed) ? formatAsUSCurrency(totalOwed) : ''
+    },
+    summationShekels() {
+      const owes = this.selectedClient.owesShekels + this.selectedClient.feesOwesShekels
+      const paid = this.selectedClient.paidShekels + this.selectedClient.feesPaidShekels
+      const totalOwed = owes - paid
+      return !isNaN(totalOwed) ? formatAsILCurrency(owes - paid) : ''
     },
   },
   watch: {

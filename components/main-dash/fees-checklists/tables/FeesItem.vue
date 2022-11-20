@@ -58,7 +58,17 @@
               <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur" />
             </div>
             <div class="flex flex-col">
-              <div @click="setEditable('manualAmount')">
+              <div @click="setEditable('currency')">
+                <EditableSelectCell
+                  v-model="currency"
+                  :options="currencyOptions"
+                  :is-editable="isEditable('currency')"
+                  placeholder="Currency"
+                  @blur="onBlur"
+                />
+              </div>
+              <div class="flex items-center" @click="setEditable('manualAmount')">
+                <span v-if="manualAmount">{{ currencySymbol }}</span>
                 <EditableInput
                   v-model="manualAmount"
                   placeholder="Amount"
@@ -68,7 +78,8 @@
                 />
                 <div v-if="isEditable('manualAmount')" />
               </div>
-              <div @click="setEditable('paidAmount')">
+              <div class="flex items-center" @click="setEditable('paidAmount')">
+                <span v-if="paidAmount">{{ currencySymbol }}</span>
                 <EditableInput
                   v-model="paidAmount"
                   placeholder="Paid"
@@ -113,7 +124,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, currencySymbols } from '~/shared/constants'
+import { events, models, currencies } from '~/shared/constants'
 
 const items = [
   'feeType',
@@ -252,6 +263,14 @@ export default {
         this.formModel.sum = newVal
       },
     },
+    currency: {
+      get() {
+        return this.formModel.currency
+      },
+      set(newVal) {
+        this.formModel.currency = newVal
+      },
+    },
     yearOptions() {
       return this.valueTypes.year_name.filter((year) => year.show)
     },
@@ -271,8 +290,15 @@ export default {
         }
       })
     },
-    currencySymbols() {
-      return currencySymbols
+    currencySymbol() {
+      if (this.currency === currencies.NIS.type) {
+        return currencies.NIS.symbol
+      } else {
+        return currencies.USD.symbol
+      }
+    },
+    currencyOptions() {
+      return [{ value: currencies.USD.type }, { value: currencies.NIS.type }]
     },
     isRedBG() {
       return this.year === 'ITIN'
