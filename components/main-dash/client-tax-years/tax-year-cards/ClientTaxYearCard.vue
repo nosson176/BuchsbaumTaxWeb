@@ -102,7 +102,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient]),
+    ...mapState([models.selectedClient, models.selectedTaxYearId]),
     year: {
       get() {
         return this.yearData.year
@@ -160,6 +160,13 @@ export default {
     },
     shekelatorRoute() {
       return { name: routes.shekelator }
+    },
+  },
+  watch: {
+    selectedTaxYearId(id) {
+      if (id === this.yearData.id) {
+        this.$el.scrollIntoView({ behavior: 'smooth', inline: 'start' })
+      }
     },
   },
   methods: {
