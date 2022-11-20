@@ -14,7 +14,7 @@
           <div v-if="showPasswordError" class="text-xs text-red-700">Must be lomger than 6 chars</div>
         </div>
         <div class="flex flex-col space-y-0.5">
-          <FormInput v-model="confirmPassword" placeholder="Confirm PASSWORD" type="password" required />
+          <FormInput v-model="confirmPassword" placeholder="CONFIRM PASSWORD" type="password" required />
           <div v-if="showConfirmPasswordError" class="text-xs text-red-700">Must match the password</div>
         </div>
       </div>

@@ -2,10 +2,7 @@
   <Table class="rounded-md shadow">
     <template #header>
       <TableHeader class="py-6">
-        <div class="table-header">
-          <AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" />
-        </div>
-        <div class="table-header w-full">Name</div>
+        <div class="table-header"><AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" /> USERS</div>
       </TableHeader>
     </template>
     <template #body>
@@ -98,7 +95,11 @@ export default {
 }
 
 .selected .table-col,
-.row .table-col:hover {
+.selected.even .table-col {
+  @apply text-gray-100;
+}
+
+.row:hover .table-col {
   @apply text-gray-100;
 }
 </style>
