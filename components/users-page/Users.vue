@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full grid gap-2 grid-cols-2 px-64">
+  <div v-if="isCurrentUserAdmin" class="w-full h-full grid gap-2 grid-cols-2 px-64">
     <UsersTable
       :key="usersCopy.length"
       :users="usersCopy"
