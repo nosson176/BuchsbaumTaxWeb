@@ -119,9 +119,6 @@ export default {
         this.filterOptionsValue = value
       },
     },
-    multiple() {
-      return this.splitOptions.length > 1
-    },
     splitOptions() {
       return this.value.split('\u000B')
     },
