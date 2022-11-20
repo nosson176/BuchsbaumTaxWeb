@@ -147,8 +147,8 @@ export const categories = Object.freeze({
 })
 
 export const userTypes = Object.freeze([
-  { name: 'admin', value: 'admin' },
-  { name: 'user', value: 'user' },
+  { name: 'Admin', value: 'Admin' },
+  { name: 'User', value: 'User' },
 ])
 
 export const priorityOptions = Object.freeze([
@@ -173,11 +173,6 @@ export const tableGroups = Object.freeze({
   feesChecklists: 'feesChecklists',
   logsIncomeFbar: 'logsIncomeFbar',
   personalContact: 'personalContact',
-})
-
-export const currencySymbols = Object.freeze({
-  us: '$',
-  il: '₪',
 })
 
 export const searchOptions = Object.freeze([
@@ -282,4 +277,9 @@ export const secondsNeededToDisplayModal = 600
 
 export const TRANSITION_NAME = 'flip-list'
 
-export const USER_TYPE_ADMIN = 'admin'
+export const USER_TYPE_ADMIN = 'Admin'
+
+export const currencies = {
+  USD: { type: 'USD', symbol: '$' },
+  NIS: { type: 'NIS', symbol: '₪' },
+}

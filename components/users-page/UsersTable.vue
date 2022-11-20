@@ -2,10 +2,7 @@
   <Table class="rounded-md shadow">
     <template #header>
       <TableHeader class="py-6">
-        <div class="table-header">
-          <AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" />
-        </div>
-        <div class="table-header w-full">Name</div>
+        <div class="table-header"><AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" /> USERS</div>
       </TableHeader>
     </template>
     <template #body>
@@ -19,7 +16,7 @@
         <div class="table-col w-4"></div>
         <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
           {{ user.username }}
-          <span class="font-light">({{ user.userType }})</span>
+          <span class="font-light">&nbsp;({{ user.userType }})</span>
         </div>
         <div class="table-col">
           <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
@@ -89,13 +86,20 @@ export default {
 
 <style scoped>
 .selected,
-.selected.even,
-.row:hover {
+.selected.even {
   @apply bg-gray-700;
 }
 
+.row:hover {
+  @apply bg-gray-400;
+}
+
 .selected .table-col,
-.row .table-col:hover {
+.selected.even .table-col {
+  @apply text-gray-100;
+}
+
+.row:hover .table-col {
   @apply text-gray-100;
 }
 </style>

@@ -35,8 +35,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, filingTypes, models, mutations } from '~/shared/constants'
-import { formatAsILCurrency } from '~/shared/utility'
+import { currencies, events, filingTypes, models, mutations } from '~/shared/constants'
+import { formatAsNumber } from '~/shared/utility'
 export default {
   name: 'ClientTaxYearsListItem',
   props: {
@@ -85,7 +85,7 @@ export default {
       return this.federalFilingInfo?.status
     },
     owes() {
-      return this.federalFilingInfo?.owes ? this.formatAsILS(this.federalFilingInfo.owes).split('.')[0] : ''
+      return this.federalFilingInfo?.owes ? this.currencySymbol + formatAsNumber(this.federalFilingInfo.owes) : ''
     },
     taxForm() {
       return this.federalFilingInfo?.taxForm
@@ -94,7 +94,7 @@ export default {
       return this.federalFilingInfo?.statusDetail
     },
     paid() {
-      return this.federalFilingInfo?.paid ? this.formatAsILS(this.federalFilingInfo.paid).split('.')[0] : ''
+      return this.federalFilingInfo?.paid ? this.currencySymbol + formatAsNumber(this.federalFilingInfo.paid) : ''
     },
     classObj() {
       const selected = this.selectedTaxYearId === this.taxYear.id
@@ -112,11 +112,21 @@ export default {
         this.$emit(events.change, newVal)
       },
     },
+    currency() {
+      return this.federalFilingInfo?.currency
+    },
+    currencySymbol() {
+      if (this.currency === currencies.NIS.type) {
+        return currencies.NIS.symbol
+      } else {
+        return currencies.USD.symbol
+      }
+    },
+    currencyOptions() {
+      return [{ value: currencies.USD.type }, { value: currencies.NIS.type }]
+    },
   },
   methods: {
-    formatAsILS(amt) {
-      return formatAsILCurrency(amt)
-    },
     toggleSelectTaxYear() {
       if (this.selectedTaxYearId === this.taxYear.id) {
         this.$store.commit(mutations.setModelResponse, { model: models.selectedTaxYearId, data: [] })

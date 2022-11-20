@@ -72,7 +72,17 @@
             />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('owes')">
+            <div @click="setEditable('currency')">
+              <EditableSelectCell
+                v-model="currency"
+                :options="currencyOptions"
+                :is-editable="isEditable('currency')"
+                placeholder="Currency"
+                @blur="onBlur"
+              />
+            </div>
+            <div class="flex items-center" @click="setEditable('owes')">
+              <span v-if="owes">{{ currencySymbol }}</span>
               <EditableInput
                 v-model="owes"
                 placeholder="Owes"
@@ -81,7 +91,8 @@
                 @blur="onBlur"
               />
             </div>
-            <div @click="setEditable('paid')">
+            <div class="flex items-center" @click="setEditable('paid')">
+              <span v-if="paid">{{ currencySymbol }}</span>
               <EditableInput
                 v-model="paid"
                 placeholder="Paid"
@@ -131,7 +142,8 @@
       <div />
       <!-- end of spacing -->
       <div class="flex justify-center mb-1">
-        <div class="mr-3" @click="setEditable('refund')">
+        <div class="mr-3 flex items-center" @click="setEditable('refund')">
+          <span v-if="refund">$</span>
           <EditableInput
             v-model="refund"
             placeholder="Refund"
@@ -140,7 +152,8 @@
             @blur="onBlur"
           />
         </div>
-        <div class="ml-3" @click="setEditable('rebate')">
+        <div class="ml-3 flex items-center" @click="setEditable('rebate')">
+          <span v-if="rebate">$</span>
           <EditableInput
             v-model="rebate"
             placeholder="Rebate"
@@ -152,9 +165,7 @@
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
         <div>
-          <span class="text-white font-semibold text-sm">
-            {{ sum }}
-          </span>
+          <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
         </div>
         <div @click="setEditable('completed')">
           <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur" />
@@ -198,7 +209,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, filingTypes, models } from '~/shared/constants'
+import { events, filingTypes, models, currencies } from '~/shared/constants'
+import { formatAsNumber } from '~/shared/utility'
 
 const items = [
   'taxForm',
@@ -210,6 +222,7 @@ const items = [
   'owes',
   'paid',
   'includeFee',
+  'currency',
   'owesFee',
   'paidFee',
   'fileType',
@@ -369,7 +382,14 @@ export default {
       },
     },
     sum() {
-      return this.refund + this.rebate
+      return Number(this.refund) + Number(this.rebate)
+    },
+    formattedSum() {
+      if (this.sum) {
+        return formatAsNumber(this.sum)
+      } else {
+        return 0
+      }
     },
     sumClassObj() {
       return {
@@ -402,6 +422,14 @@ export default {
       },
       set(newVal) {
         this.formModel.dateFiled = newVal
+      },
+    },
+    currency: {
+      get() {
+        return this.formModel.currency
+      },
+      set(newVal) {
+        this.formModel.currency = newVal
       },
     },
     filingType() {
@@ -464,6 +492,16 @@ export default {
         contactTypes[contact.contactType] = true
       })
       return contactTypes
+    },
+    currencySymbol() {
+      if (this.currency === currencies.NIS.type) {
+        return currencies.NIS.symbol
+      } else {
+        return currencies.USD.symbol
+      }
+    },
+    currencyOptions() {
+      return [{ value: currencies.USD.type }, { value: currencies.NIS.type }]
     },
   },
   watch: {

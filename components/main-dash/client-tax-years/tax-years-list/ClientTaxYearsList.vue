@@ -24,7 +24,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.loading, models.selectedTaxYearId]),
+    ...mapState([models.selectedClient, models.loading, models.selectedTaxYearId, models.clientClicked]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
