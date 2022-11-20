@@ -139,12 +139,14 @@ export default {
     summationDollars() {
       const owes = this.selectedClient.owesDollars + this.selectedClient.feesOwesDollars
       const paid = this.selectedClient.paidDollars + this.selectedClient.feesPaidDollars
-      return formatAsUSCurrency(owes - paid)
+      const totalOwed = owes - paid
+      return !isNaN(totalOwed) ? formatAsUSCurrency(totalOwed) : ''
     },
     summationShekels() {
       const owes = this.selectedClient.owesShekels + this.selectedClient.feesOwesShekels
       const paid = this.selectedClient.paidShekels + this.selectedClient.feesPaidShekels
-      return formatAsILCurrency(owes - paid)
+      const totalOwed = owes - paid
+      return !isNaN(totalOwed) ? formatAsILCurrency(owes - paid) : ''
     },
   },
   watch: {
