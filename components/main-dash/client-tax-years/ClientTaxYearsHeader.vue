@@ -1,18 +1,18 @@
 <template>
   <div class="header">
-    <div v-if="selectedClientCopy" class="w-full grid grid-cols-8 gap-x-4 grid-rows-1 items-center">
+    <div v-if="isClientSelected" class="w-full flex">
       <div>
         <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
         <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
       </div>
-      <div class="font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">
+      <div class="font-bold text-2xl cursor-pointer ml-4" @click="openEditNameDialogue">
         {{ lastName }}
       </div>
-      <div>
+      <div class="ml-12">
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
         <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
       </div>
-      <div class="font-bold text-white flex justify-center text-2xl" @click="setEditable('status')">
+      <div class="font-bold text-white flex justify-center text-2xl ml-20" @click="setEditable('status')">
         <EditableSelectCell
           v-model="statusValue"
           :options="statusOptions"
@@ -20,7 +20,7 @@
           @blur="onBlur"
         />
       </div>
-      <div class="text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
+      <div class="text-gray-100 flex text-sm justify-center ml-20" @click="setEditable('periodical')">
         <EditableSelectCell
           v-model="periodical"
           :options="periodicalOptions"
@@ -28,7 +28,7 @@
           @blur="onBlur"
         />
       </div>
-      <div class="text-sm">{{ formattedCreatedDate }}</div>
+      <div class="text-sm ml-24">{{ formattedCreatedDate }}</div>
       <div v-if="isArchived" class="place-self-end">
         <button
           type="button"
@@ -39,8 +39,8 @@
           <span v-else class="capitalize">Delete</span>
         </button>
       </div>
-      <div>{{ summationDollars }}</div>
-      <div>{{ summationShekels }}</div>
+      <div class="ml-20">{{ summationDollars }}</div>
+      <div class="ml-4">{{ summationShekels }}</div>
     </div>
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
@@ -75,6 +75,9 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser]),
     selectedClientCopy() {
       return JSON.parse(JSON.stringify(this.selectedClient))
+    },
+    isClientSelected() {
+      return this.selectedClient.length || Object.entries(this.selectedClient).length
     },
     flagColor() {
       return this.selectedClientCopy?.flag || 4

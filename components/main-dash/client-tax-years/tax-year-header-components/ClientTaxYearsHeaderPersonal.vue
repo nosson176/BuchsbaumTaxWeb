@@ -1,6 +1,6 @@
 <template>
-  <div v-if="personal" class="flex w-full justify-end text-xs">
-    <span class="mr-auto">{{ category }}</span
+  <div v-if="personal" class="flex w-full text-xs">
+    <span class="mr-2">{{ category }}</span
     ><span>{{ firstName }}</span
     >&nbsp;(<span>{{ relationFirstLetter }}</span> <span v-if="showComma">,</span><span>{{ lang }}</span
     >)
