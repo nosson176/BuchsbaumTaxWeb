@@ -197,7 +197,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios.post('/sms/send', sms, { headers }).catch(() => $toast.error('Error sending SMS'))
 
   const sendMessage = (headers, { messageObj }) =>
-    $axios.post('/users/current/messages', messageObj, { headers }).catch(() => $toast.error('Error sending message'))
+    $axios
+      .post('/users/current/messages', messageObj, { headers })
+      .catch(() => $toast.error('Error sending message'))
+      .finally(() => getInbox(headers))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) =>
@@ -291,7 +294,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/users/current/messages/${messageId}`, value, { headers })
       .catch(() => $toast.error('Error updating message'))
-      .finally(() => getValueTypes(headers))
+      .finally(() => getInbox(headers))
 
   // DELETE
   const deleteValueType = (headers, { valueId }) =>

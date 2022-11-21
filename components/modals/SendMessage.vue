@@ -46,6 +46,10 @@ export default {
       type: Number,
       default: null,
     },
+    threadId: {
+      type: Number,
+      default: null,
+    },
   },
   data() {
     return {
@@ -78,13 +82,24 @@ export default {
       return this.selectedUsers.map((users) => users.value)
     },
     responseTo() {
-      return Object.values(this.inbox).find((message) => message.id === this.responseId)
+      for (const key in this.inbox) {
+        const message = this.inbox[key]
+        if (message.id === this.responseId) {
+          return message.senderId
+        }
+        for (const response of message.responses) {
+          if (response.id === this.responseId) {
+            return response.senderId
+          }
+        }
+      }
+      return null
     },
   },
   mounted() {
     if (this.responseId) {
       const respondToUser = this.usersList.find((user) => {
-        return Number(user.value) === Number(this.responseTo.senderId)
+        return Number(user.value) === Number(this.responseTo)
       })
       this.selectedUsers.push(respondToUser)
     }
@@ -97,6 +112,7 @@ export default {
       const messageObj = { recipients: this.userIds, message: this.message }
       if (this.responseId) {
         messageObj.parentId = this.responseId
+        messageObj.threadId = this.threadId
       }
       this.$api.sendMessage(this.headers, { messageObj }).then(this.emitHide)
     },

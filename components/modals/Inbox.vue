@@ -56,7 +56,7 @@
                         <button
                           v-if="currentUser.id !== message.senderId"
                           class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
-                          @click="replyTo(message)"
+                          @click="replyTo(message.id, message.id)"
                         >
                           <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
                         </button>
@@ -84,7 +84,7 @@
                         <button
                           v-if="currentUser.id !== response.senderId"
                           class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
-                          @click="replyTo(response)"
+                          @click="replyTo(response.id, message.id)"
                         >
                           <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
                         </button>
@@ -159,8 +159,8 @@ export default {
     deleteMessage({ id }) {
       this.$api.deleteMessage(this.headers, { messageId: id })
     },
-    replyTo({ id }) {
-      this.$emit(events.newMessage, id)
+    replyTo(parentId, threadId) {
+      this.$emit(events.newMessage, parentId, threadId)
     },
     formatMessage(message) {
       const responses = []

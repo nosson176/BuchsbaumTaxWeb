@@ -46,7 +46,7 @@
       <Inbox @hide="closeInboxModal" @newMessage="createNewMessage" />
     </Modal>
     <Modal :showing="showMessageModal" @hide="closeMessageModal">
-      <SendMessage :response-id="responseId" @hide="closeMessageModal" />
+      <SendMessage :response-id="responseId" :thread-id="threadId" @hide="closeMessageModal" />
     </Modal>
   </div>
 </template>
@@ -63,6 +63,7 @@ export default {
       showInboxModal: false,
       showMessageModal: false,
       responseId: null,
+      threadId: null,
     }
   },
   computed: {
@@ -155,8 +156,9 @@ export default {
     logout() {
       this.$api.signout()
     },
-    createNewMessage(responseId) {
+    createNewMessage(responseId, threadId) {
       this.responseId = responseId
+      this.threadId = threadId
       this.openMessageModal()
     },
   },
