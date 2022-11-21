@@ -188,10 +188,7 @@ export const searchOptions = Object.freeze([
   { name: 'CONTACT::type', value: 'contacts::contact_type' },
   { name: 'CONTACT::zip', value: 'contacts::zip' },
   { name: 'CONTACT::memo', value: 'contacts::memo' },
-  {
-    name: 'INCOME_BREAKDOWN::description',
-    value: 'income_breakdowns::description',
-  },
+  { name: 'INCOME_BREAKDOWN::description', value: 'income_breakdowns::description' },
   { name: 'LOG::employee_alarm', value: 'logs::alarm_user_name' },
   { name: 'LOG::alarm_date', value: 'logs::alarm_date' },
   { name: 'LOG::date_of_log', value: 'logs::log_date' },
