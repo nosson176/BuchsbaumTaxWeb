@@ -3,14 +3,12 @@
     <div class="flex flex-col bg-blue-200 p-0.5" :class="showFees ? '' : 'shadow'">
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
-      <table class="text-xs mt-auto">
+      <table class="text-xs my-1 pl-2">
         <tr>
-          <th>Owed</th>
           <td>{{ feesOwesDollars }}</td>
           <td>{{ feesOwesShekels }}</td>
         </tr>
         <tr>
-          <th>Paid</th>
           <td>{{ feesPaidDollars }}</td>
           <td>{{ feesPaidShekels }}</td>
         </tr>
@@ -90,16 +88,24 @@ export default {
       return this.isSelectedClientLoading && this.clickOnClient
     },
     feesOwesDollars() {
-      return !isNaN(this.selectedClient.feesOwesDollars) ? formatAsUSCurrency(this.selectedClient.feesOwesDollars) : ''
+      return !isNaN(this.selectedClient.feesOwesDollars)
+        ? `Owed ${formatAsUSCurrency(this.selectedClient.feesOwesDollars)}`
+        : ''
     },
     feesOwesShekels() {
-      return !isNaN(this.selectedClient.feesOwesShekels) ? formatAsILCurrency(this.selectedClient.feesOwesShekels) : ''
+      return !isNaN(this.selectedClient.feesOwesShekels)
+        ? `Owed ${formatAsILCurrency(this.selectedClient.feesOwesShekels)}`
+        : ''
     },
     feesPaidDollars() {
-      return !isNaN(this.selectedClient.feesPaidDollars) ? formatAsUSCurrency(this.selectedClient.feesPaidDollars) : ''
+      return !isNaN(this.selectedClient.feesPaidDollars)
+        ? `Paid ${formatAsUSCurrency(this.selectedClient.feesPaidDollars)}`
+        : ''
     },
     feesPaidShekels() {
-      return !isNaN(this.selectedClient.feesPaidShekels) ? formatAsILCurrency(this.selectedClient.feesPaidShekels) : ''
+      return !isNaN(this.selectedClient.feesPaidShekels)
+        ? `Paid ${formatAsILCurrency(this.selectedClient.feesPaidShekels)}`
+        : ''
     },
   },
   watch: {
