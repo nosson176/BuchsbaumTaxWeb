@@ -64,6 +64,7 @@ export default {
       showMessageModal: false,
       responseId: null,
       threadId: null,
+      intervalId: null,
     }
   },
   computed: {
@@ -124,6 +125,14 @@ export default {
   },
   created() {
     this.loadInbox()
+  },
+  mounted() {
+    this.intervalId = setInterval(() => {
+      this.loadInbox()
+    }, 60000)
+  },
+  beforeDestroy() {
+    clearInterval(this.intervalId)
   },
   methods: {
     getSelectedClient(selectedClientName) {
