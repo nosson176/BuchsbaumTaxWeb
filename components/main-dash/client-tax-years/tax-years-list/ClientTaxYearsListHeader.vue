@@ -6,12 +6,10 @@
     </div>
     <table class="text-xs mt-auto">
       <tr>
-        <th>Owed</th>
         <td>{{ owesDollars }}</td>
         <td>{{ owesShekels }}</td>
       </tr>
       <tr>
-        <th>Paid</th>
         <td>{{ paidDollars }}</td>
         <td>{{ paidShekels }}</td>
       </tr>
@@ -44,16 +42,24 @@ export default {
       return this.isCmdPressed && this.selectedTaxYear
     },
     owesDollars() {
-      return !isNaN(this.selectedClient.owesDollars) ? formatAsUSCurrency(this.selectedClient.owesDollars) : ''
+      return !isNaN(this.selectedClient.owesDollars)
+        ? `Owed ${formatAsUSCurrency(this.selectedClient.owesDollars)}`
+        : ''
     },
     owesShekels() {
-      return !isNaN(this.selectedClient.owesShekels) ? formatAsILCurrency(this.selectedClient.owesShekels) : ''
+      return !isNaN(this.selectedClient.owesShekels)
+        ? `Owed ${formatAsILCurrency(this.selectedClient.owesShekels)}`
+        : ''
     },
     paidDollars() {
-      return !isNaN(this.selectedClient.paidDollars) ? formatAsUSCurrency(this.selectedClient.paidDollars) : ''
+      return !isNaN(this.selectedClient.paidDollars)
+        ? `Paid ${formatAsUSCurrency(this.selectedClient.paidDollars)}`
+        : ''
     },
     paidShekels() {
-      return !isNaN(this.selectedClient.paidShekels) ? formatAsILCurrency(this.selectedClient.paidShekels) : ''
+      return !isNaN(this.selectedClient.paidShekels)
+        ? `Paid ${formatAsILCurrency(this.selectedClient.paidShekels)}`
+        : ''
     },
   },
   methods: {
