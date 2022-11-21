@@ -3,7 +3,7 @@
     <div v-if="selectedClientCopy" class="w-full grid grid-cols-8 gap-x-4 grid-rows-1 items-center">
       <div>
         <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
-        <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" />
+        <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
       </div>
       <div class="font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">
         {{ lastName }}
