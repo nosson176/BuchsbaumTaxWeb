@@ -24,7 +24,6 @@ export default {
     this.$api.getValueTypes(this.headers)
     this.$api.getAllUsers(this.headers)
     this.$api.getValueTaxGroups(this.headers)
-    this.$api.getAllClientFees(this.headers)
     this.$api.getClientsHistory(this.headers)
     this.$api.getSmartviews(this.headers)
     this.$api.getCurrentUser(this.headers)

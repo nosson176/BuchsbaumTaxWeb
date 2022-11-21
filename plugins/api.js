@@ -89,16 +89,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error loading value tax groups'))
 
-  const getAllClientFees = (headers) =>
-    $axios
-      .get('/fees', {
-        headers,
-        loading: models.allClientFees,
-        loaded: models.allClientFees,
-        store: models.allClientFees,
-      })
-      .catch(() => $toast.error('Error loading all client fees'))
-
   const getAllUsers = (headers) =>
     $axios
       .get('/users', { headers, loading: models.users, loaded: models.users, store: models.users })
@@ -353,7 +343,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     deleteSmartview,
     deleteFiling,
     deleteUser,
-    getAllClientFees,
     getAllUsers,
     getClientData,
     getClientList,

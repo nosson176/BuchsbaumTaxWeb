@@ -1,6 +1,5 @@
 // Store State Models
 export const models = Object.freeze({
-  allClientFees: 'allClientFees',
   appWidth: 'appWidth',
   clients: 'clients',
   clientsHistory: 'clientsHistory',
