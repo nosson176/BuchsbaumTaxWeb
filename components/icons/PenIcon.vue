@@ -11,6 +11,7 @@
 
 <script>
 import { events } from '~/shared/constants'
+
 export default {
   name: 'PenIcon',
   methods: {

@@ -11,8 +11,11 @@
       :class="{ selected: isSelected(client) }"
       @click="openChangeClientModal(client)"
     >
+      <div class="w-5">
+        <FlagIcon class="w-4 h-4" :color="flagColor(client)" />
+      </div>
       <div class="w-full">
-        <span class="font-medium text-gray-900 group-hover:text-white">{{ client.lastName }}</span>
+        <span class="font-medium text-gray-900 group-hover:text-white"> {{ client.lastName }}</span>
         {{ client.displayName }}
       </div>
       <div class="w-5" @click.stop>
@@ -50,7 +53,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clients, models.selectedClient, models.selectedSmartview]),
+    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser]),
     displayedClients() {
       return this.filteredClients
     },
@@ -138,6 +141,14 @@ export default {
       } else {
         this.selectClient(client)
       }
+    },
+    flagColor(client) {
+      for (const flag of client.flags) {
+        if (flag.userId === this.currentUser.id) {
+          return flag.flag
+        }
+      }
+      return 4
     },
     closeChangeClientModal() {
       this.showChangeClientModal = false
