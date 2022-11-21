@@ -199,6 +199,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating client'))
       .finally(() => getClientData(headers, clientId))
 
+  const updateClientFlag = (headers, { clientId, clientFlag }) =>
+    $axios
+      .put('/users/current/client-flags', clientFlag, { headers })
+      .catch(() => $toast.error('Error updating client flag'))
+      .finally(() => getClientData(headers, clientId))
+
   const updateLog = (headers, { clientId, logId }, log) =>
     $axios
       .put(`/logs/${logId}`, log, { headers })
@@ -359,6 +365,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     sendMessage,
     updateChecklist,
     updateClient,
+    updateClientFlag,
     updateContact,
     updateFbar,
     updateFee,

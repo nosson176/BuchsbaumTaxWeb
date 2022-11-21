@@ -1,12 +1,18 @@
 <template>
   <div class="header">
-    <div v-if="selectedClientCopy" class="w-full grid grid-cols-7 gap-x-4 grid-rows-1 items-center">
-      <div class="col-start-1 font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">{{ lastName }}</div>
-      <div class="col-start-2">
+    <div v-if="selectedClientCopy" class="w-full grid grid-cols-8 gap-x-4 grid-rows-1 items-center">
+      <div>
+        <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
+        <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" />
+      </div>
+      <div class="font-bold text-2xl cursor-pointer" @click="openEditNameDialogue">
+        {{ lastName }}
+      </div>
+      <div>
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
         <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
       </div>
-      <div class="col-start-3 font-bold text-white flex justify-center text-2xl" @click="setEditable('status')">
+      <div class="font-bold text-white flex justify-center text-2xl" @click="setEditable('status')">
         <EditableSelectCell
           v-model="statusValue"
           :options="statusOptions"
@@ -14,7 +20,7 @@
           @blur="onBlur"
         />
       </div>
-      <div class="col-start-4 text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
+      <div class="text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
         <EditableSelectCell
           v-model="periodical"
           :options="periodicalOptions"
@@ -22,8 +28,8 @@
           @blur="onBlur"
         />
       </div>
-      <div class="col-start-5 text-sm">{{ formattedCreatedDate }}</div>
-      <div v-if="isArchived" class="col-start-7 place-self-end">
+      <div class="text-sm">{{ formattedCreatedDate }}</div>
+      <div v-if="isArchived" class="place-self-end">
         <button
           type="button"
           class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -62,12 +68,16 @@ export default {
       isLastNameUpdateLoading: false,
       isLoading: false,
       showDelete: false,
+      showFlagDropdown: false,
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.clients]),
+    ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser]),
     selectedClientCopy() {
       return JSON.parse(JSON.stringify(this.selectedClient))
+    },
+    flagColor() {
+      return this.selectedClientCopy?.flag || 4
     },
     primaryPersonal() {
       return this.selectedClientCopy?.taxPersonals?.filter((personal) => personal.category === categories.primary)[0]
@@ -87,7 +97,7 @@ export default {
       }
     },
     logs() {
-      return this.selectedClient.logs
+      return this.selectedClientCopy?.logs
     },
     lastName: {
       get() {
@@ -182,6 +192,9 @@ export default {
     closeEditNameDialogue() {
       this.showEditNameDialogue = false
     },
+    toggleShowFlagDropdown() {
+      this.showFlagDropdown = !this.showFlagDropdown
+    },
     confirmDelete() {
       if (this.isLoading) {
         return
@@ -190,6 +203,16 @@ export default {
     },
     closeDeleteModal() {
       this.showDelete = false
+    },
+    async handleFlag(flag) {
+      const client = this.selectedClientCopy
+      const clientFlag = {
+        clientId: client.id,
+        userId: this.currentUser.id,
+        flag,
+      }
+      await this.$api.updateClientFlag(this.headers, { clientId: client.id, clientFlag })
+      this.showFlagDropdown = false
     },
     async handleDelete() {
       if (this.isLoading) {
