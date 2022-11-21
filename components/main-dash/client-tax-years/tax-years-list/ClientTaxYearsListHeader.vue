@@ -4,7 +4,7 @@
       <AddRowButton @click="onAddRowClick" />
       <ViewArchivedHeader :view-active="!showArchived" @change="emitChange" />
     </div>
-    <table class="text-xs mt-auto">
+    <table class="text-xs my-1">
       <tr>
         <td>{{ owesDollars }}</td>
         <td>{{ owesShekels }}</td>

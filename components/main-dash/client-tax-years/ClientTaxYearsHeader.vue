@@ -39,8 +39,8 @@
           <span v-else class="capitalize">Delete</span>
         </button>
       </div>
-      <div class="ml-20">{{ summationDollars }}</div>
-      <div class="ml-4">{{ summationShekels }}</div>
+      <div class="ml-24 font-bold text-lg" :class="dollarsClassObj">{{ summationDollars }}</div>
+      <div class="ml-6 font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
     </div>
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
@@ -149,17 +149,33 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
-    summationDollars() {
+    totalOwedDollars() {
       const owes = this.selectedClient.owesDollars + this.selectedClient.feesOwesDollars
       const paid = this.selectedClient.paidDollars + this.selectedClient.feesPaidDollars
-      const totalOwed = owes - paid
-      return !isNaN(totalOwed) ? formatAsUSCurrency(totalOwed) : ''
+      return owes - paid
     },
-    summationShekels() {
+    totalOwedShekels() {
       const owes = this.selectedClient.owesShekels + this.selectedClient.feesOwesShekels
       const paid = this.selectedClient.paidShekels + this.selectedClient.feesPaidShekels
-      const totalOwed = owes - paid
-      return !isNaN(totalOwed) ? formatAsILCurrency(owes - paid) : ''
+      return owes - paid
+    },
+    dollarsClassObj() {
+      return {
+        'text-green-400': this.totalOwedDollars <= 0,
+        'text-red-400': this.totalOwedDollars > 0,
+      }
+    },
+    shekelsClassObj() {
+      return {
+        'text-green-400': this.totalOwedShekels <= 0,
+        'text-red-400': this.totalOwedShekels > 0,
+      }
+    },
+    summationDollars() {
+      return !isNaN(this.totalOwedDollars) ? formatAsUSCurrency(this.totalOwedDollars) : ''
+    },
+    summationShekels() {
+      return !isNaN(this.totalOwedShekels) ? formatAsILCurrency(this.totalOwedShekels) : ''
     },
   },
   watch: {
