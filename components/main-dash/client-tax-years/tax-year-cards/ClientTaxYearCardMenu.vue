@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row-reverse overflow-x-auto overflow-y-hidden space-x-4 pl-4 pr-128">
     <template v-for="(yearData, idx) in displayedTaxYearData">
-      <div v-if="idx === 0" :key="yearData.id" class="mr-52"></div>
+      <div v-if="idx === 0" :key="yearData.id + 'd'" class="mr-52"></div>
       <ClientTaxYearCard :key="yearData.id" :year-data="yearData" />
     </template>
   </div>
