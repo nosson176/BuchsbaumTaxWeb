@@ -6,18 +6,18 @@
       @click="toggleSelectTaxYear"
     >
       <div class="text-xs tracking-tighter cursor-pointer w-full">
-        <div class="flex flex-col space-y-2.5">
+        <div class="flex flex-col">
           <div class="flex">
-            <span class="font-bold text-sm mr-2">{{ year }}</span>
+            <span class="font-bold mr-4">{{ year }}</span>
             <span> {{ status }}</span>
             <span class="ml-auto">{{ owes }}</span>
           </div>
           <div class="flex">
-            <span class="mr-2"> {{ taxForm }}</span>
+            <span class="mr-5"> {{ taxForm }}</span>
             <span>{{ statusDetail }}</span>
             <span class="ml-auto">{{ paid }}</span>
           </div>
-          <div class="flex justify-between pr-2 text-xs text-gray-600">
+          <div class="flex justify-between pt-6 pr-2 text-xs text-gray-600">
             <span v-if="amountFederalFilings">{{ amountFederalFilings }} Federal</span>
             <span v-if="amountStateFilings">{{ amountStateFilings }} State</span>
             <span v-if="amountFbarFilings">{{ amountFbarFilings }} Fbar</span>
@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col items-center w-3 space-y-3.5" @click.stop>
+      <div class="flex flex-col items-center w-3 space-y-3.5 pl-2 pr-1" @click.stop>
         <CheckBoxWithEyeIcon v-model="showing" />
         <DeleteButton small @click="onDeleteClick()" />
       </div>
