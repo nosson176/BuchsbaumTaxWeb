@@ -25,7 +25,7 @@
         <nuxt-link :to="mapsRoute">
           <MapIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
-        <nuxt-link :to="usersRoute">
+        <nuxt-link v-if="isCurrentUserAdmin" :to="usersRoute">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
         <nuxt-link :to="valuesRoute">
@@ -53,7 +53,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, routes } from '~/shared/constants'
+import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
 
 export default {
   name: 'Header',
@@ -68,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clientsHistory, models.inbox]),
+    ...mapState([models.clientsHistory, models.inbox, models.currentUser]),
     mappedClientHistory() {
       if (this.clientsHistoryLoaded) {
         return Object.values(this.clientsHistory).map((item) => {
@@ -111,6 +111,9 @@ export default {
     },
     inboxMessages() {
       return this.inbox
+    },
+    isCurrentUserAdmin() {
+      return this.currentUser.userType === USER_TYPE_ADMIN
     },
     hasUnreadMessages() {
       let unread = false
