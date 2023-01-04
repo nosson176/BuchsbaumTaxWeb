@@ -5,10 +5,10 @@
         <div class="table-header">
           <AddRowButton @click="onAddRowClick" />
         </div>
-        <div class="xs table-header" />
+        <div class="table-header xs" />
         <div class="table-header normal">Type</div>
         <div class="table-header normal">Memo</div>
-        <div class="table-header sm"></div>
+        <div class="table-header xs"></div>
         <div class="table-header lg">Address / Phone / Routing</div>
         <div class="table-header lg">City / Account</div>
         <div class="table-header xs">St</div>
@@ -50,7 +50,7 @@
             <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
               <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" />
             </div>
-            <div class="table-header sm">
+            <div class="table-col xs">
               <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
                 <MapIcon class="w-4 h-4 text-indigo-500" />
               </button>
