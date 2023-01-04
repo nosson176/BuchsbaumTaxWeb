@@ -232,6 +232,7 @@ export default {
       }
       await this.$api.updateClientFlag(this.headers, { clientId: client.id, clientFlag })
       this.showFlagDropdown = false
+      this.$api.getClientList(this.headers)
     },
     async handleDelete() {
       if (this.isLoading) {
