@@ -7,6 +7,7 @@
         </div>
         <div class="table-header xs"></div>
         <div class="sm table-header">Cat</div>
+        <div class="xs table-header"></div>
         <div class="normal table-header">First</div>
         <div class="xs table-header">M</div>
         <div class="normal table-header">Last</div>
@@ -46,6 +47,11 @@
             :options="categoryOptions"
             @blur="onBlur"
           />
+        </div>
+        <div class="table-col xs">
+          <button v-if="isPriSec(personal)" @click="irsPopup">
+            <GlobeIcon class="w-4 h-4 text-indigo-500" />
+          </button>
         </div>
         <div :id="`${idx}-firstName`" class="normal table-col" @click="toggleEditable(`${idx}-firstName`, personal.id)">
           <EditableInputCell
@@ -112,7 +118,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
+import { categories, models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
@@ -282,6 +288,12 @@ export default {
     },
     isRedText(ssn) {
       return ssn?.charAt(0) === '9'
+    },
+    isPriSec(personal) {
+      return personal.category === categories.primary || personal.category === categories.secondary
+    },
+    irsPopup() {
+      window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
     },
     ssnClassObj(ssn, include) {
       if (this.isRedText(ssn) && include) {
