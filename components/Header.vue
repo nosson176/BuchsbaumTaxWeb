@@ -173,7 +173,6 @@ export default {
     },
     irsPopup() {
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
-      return false
     },
     createNewMessage(responseId, threadId) {
       this.responseId = responseId
