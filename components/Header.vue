@@ -19,6 +19,9 @@
             <BellIcon class="h-3 w-3" />
           </div>
         </div>
+        <a href="#" @click="irsPopup">
+          <GlobeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </a>
         <nuxt-link :to="shekelatorRoute">
           <DollarIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -167,6 +170,10 @@ export default {
     },
     logout() {
       this.$api.signout()
+    },
+    irsPopup() {
+      window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
+      return false
     },
     createNewMessage(responseId, threadId) {
       this.responseId = responseId
