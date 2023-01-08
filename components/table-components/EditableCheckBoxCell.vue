@@ -7,6 +7,7 @@
       autofocus
       type="checkbox"
       class="h-3 w-3 text-indigo-600 border-gray-300 rounded cursor-pointer outline-none"
+      @blur="onBlur"
     />
   </div>
 </template>
@@ -40,6 +41,11 @@ export default {
       if (newValue) {
         this.$refs.checkbox.focus()
       }
+    },
+  },
+  methods: {
+    onBlur() {
+      this.$emit(events.blur)
     },
   },
 }
