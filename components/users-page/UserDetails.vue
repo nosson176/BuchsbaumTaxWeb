@@ -40,7 +40,7 @@
           <div class="sm:col-span-1">
             <div class="text-xs font-bold text-gray-500">PRIVILEGE SET</div>
             <div class="mt-1 text-sm text-gray-900">
-              <HeaderSelectOption :key="userTypeChange" v-model="userType" large :options="userTypes" />
+              <HeaderSelectOption v-model="userType" large :options="userTypes" />
             </div>
           </div>
           <div class="sm:col-span-1">
