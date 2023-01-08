@@ -305,7 +305,7 @@ export default {
         return this.formModel.owes
       },
       set(newVal) {
-        this.formModel.owes = newVal
+        this.formModel.owes = this.setAsValidNumber(newVal)
       },
     },
     paid: {
@@ -313,7 +313,7 @@ export default {
         return this.formModel.paid
       },
       set(newVal) {
-        this.formModel.paid = newVal
+        this.formModel.paid = this.setAsValidNumber(newVal)
       },
     },
     includeFee: {
@@ -329,7 +329,7 @@ export default {
         return this.formModel.owesFee
       },
       set(newVal) {
-        this.formModel.owesFee = newVal
+        this.formModel.owesFee = this.setAsValidNumber(newVal)
       },
     },
     paidFee: {
@@ -337,7 +337,7 @@ export default {
         return this.formModel.paidFee
       },
       set(newVal) {
-        this.formModel.paidFee = newVal
+        this.formModel.paidFee = this.setAsValidNumber(newVal)
       },
     },
     fileType: {
