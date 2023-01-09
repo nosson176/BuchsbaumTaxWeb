@@ -18,7 +18,6 @@ export const models = Object.freeze({
   cmdPressed: 'cmdPressed',
   clientSearchValue: 'clientSearchValue',
   clientClicked: 'clientClicked',
-  phoneNumbers: 'phoneNumbers',
   clientSearchOption: 'clientSearchOption',
   inbox: 'inbox',
   secondsSpentOnClient: 'secondsSpentOnClient',
