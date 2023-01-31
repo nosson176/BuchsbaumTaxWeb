@@ -236,7 +236,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
+import { formatAsNumber, searchArrOfObjs, setAsValidNumber } from '~/shared/utility'
 
 const columns = [
   'include',
@@ -457,6 +457,7 @@ export default {
     handleUpdate() {
       if (!this.editableIncomeId) return
       const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
+      income.amount = setAsValidNumber(income.amount)
       this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId: this.editableIncomeId }, income)
     },
     handleUpdateIncludeAll() {
