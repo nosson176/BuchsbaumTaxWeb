@@ -201,7 +201,7 @@
 <script>
 import { mapState } from 'vuex'
 import { events, filingTypes, models, currencies } from '~/shared/constants'
-import { formatAsNumber } from '~/shared/utility'
+import { formatAsNumber, setAsValidNumber } from '~/shared/utility'
 
 const items = [
   'taxForm',
@@ -305,7 +305,7 @@ export default {
         return this.formModel.owes
       },
       set(newVal) {
-        this.formModel.owes = this.setAsValidNumber(newVal)
+        this.formModel.owes = setAsValidNumber(newVal)
       },
     },
     paid: {
@@ -313,7 +313,7 @@ export default {
         return this.formModel.paid
       },
       set(newVal) {
-        this.formModel.paid = this.setAsValidNumber(newVal)
+        this.formModel.paid = setAsValidNumber(newVal)
       },
     },
     includeFee: {
@@ -329,7 +329,7 @@ export default {
         return this.formModel.owesFee
       },
       set(newVal) {
-        this.formModel.owesFee = this.setAsValidNumber(newVal)
+        this.formModel.owesFee = setAsValidNumber(newVal)
       },
     },
     paidFee: {
@@ -337,7 +337,7 @@ export default {
         return this.formModel.paidFee
       },
       set(newVal) {
-        this.formModel.paidFee = this.setAsValidNumber(newVal)
+        this.formModel.paidFee = setAsValidNumber(newVal)
       },
     },
     fileType: {
@@ -353,7 +353,7 @@ export default {
         return this.formModel.refund
       },
       set(newVal) {
-        this.formModel.refund = this.setAsValidNumber(newVal)
+        this.formModel.refund = setAsValidNumber(newVal)
       },
     },
     rebate: {
@@ -361,7 +361,7 @@ export default {
         return this.formModel.rebate
       },
       set(newVal) {
-        this.formModel.rebate = this.setAsValidNumber(newVal)
+        this.formModel.rebate = setAsValidNumber(newVal)
       },
     },
     completed: {
@@ -533,17 +533,6 @@ export default {
         { clientId: this.selectedClient.id, filingId: this.filing?.id },
         this.formModel
       )
-    },
-    setAsValidNumber(input) {
-      let newNumber = 0
-      if (isNaN(input) || !input) {
-        if (input.includes(',')) {
-          newNumber = input.replace(',', '')
-        }
-      } else {
-        newNumber = input
-      }
-      return newNumber
     },
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)

@@ -18,6 +18,18 @@ const formatAsNumber = (s) => {
   return s.toLocaleString('en-US')
 }
 
+const setAsValidNumber = (input) => {
+  let newNumber = 0
+  if (isNaN(input) || !input) {
+    if (input.includes(',')) {
+      newNumber = input.replace(',', '')
+    }
+  } else {
+    newNumber = input
+  }
+  return newNumber
+}
+
 const searchArrOfObjs = (arr, searchKey) => {
   if (!arr) {
     return []
@@ -43,4 +55,11 @@ const capitalizeFirstLetter = (string) => {
   return arr.join(' ')
 }
 
-export { formatAsUSCurrency, formatAsILCurrency, formatAsNumber, searchArrOfObjs, capitalizeFirstLetter }
+export {
+  formatAsUSCurrency,
+  formatAsILCurrency,
+  formatAsNumber,
+  searchArrOfObjs,
+  capitalizeFirstLetter,
+  setAsValidNumber,
+}
