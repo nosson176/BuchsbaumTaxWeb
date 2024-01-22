@@ -74,7 +74,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: (process.env.NODE_ENV = 'development' ? process.env.BACKEND_URL : process.env.BACKEND_URL_P),
+    baseURL: process.env.NODE_ENV === 'development' ? process.env.BACKEND_URL : process.env.BACKEND_URL_P,
     responseType: 'json',
 
     // Override the default serializer to switch params from becoming []id=a&[]id=b ...
