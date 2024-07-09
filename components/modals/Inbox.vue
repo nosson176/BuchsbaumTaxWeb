@@ -157,7 +157,10 @@ export default {
       await this.$api.getInbox(this.headers)
     },
     deleteMessage({ id }) {
-      this.$api.deleteMessage(this.headers, { messageId: id })
+      const result = prompt('Delete message? (yes/no)')
+      if (result === 'no') return
+      if (result === 'yes') this.$api.deleteMessage(this.headers, { messageId: id })
+      else alert('Please use just yes or no')
     },
     replyTo(parentId, threadId) {
       this.$emit(events.newMessage, parentId, threadId)
@@ -177,6 +180,10 @@ export default {
       return messageCopy
     },
   },
+  // mounted() {
+  //   const rawInboxState = JSON.parse(JSON.stringify(this.inboxState))
+  //   console.log('Inbox State (Raw):', rawInboxState)
+  // },
 }
 </script>
 <style scoped>

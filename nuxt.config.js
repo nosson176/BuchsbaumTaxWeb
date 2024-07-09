@@ -1,5 +1,4 @@
 import qs from 'qs'
-console.log('hi!')
 console.log('=>: ', process.env.NODE_ENV)
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode

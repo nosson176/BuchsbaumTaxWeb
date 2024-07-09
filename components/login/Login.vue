@@ -53,12 +53,23 @@
       <div>
         <button
           type="submit"
-          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          :disabled="isSubmitButtonDisabled"
+          class="relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <LockIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" />
+          <span class="absolute left-200 inset-y-0 flex items-center pl-3" v-if="isLoading">
+            <svg class="animate-spin h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.001 8.001 0 0112 4.472v3.32l-2.539 2.54zm10.956-2.539A8.001 8.001 0 0112 19.528v-3.32l2.539-2.54z"
+              ></path>
+            </svg>
           </span>
-          Sign in
+          <span class="flex items-center justify-center" v-if="!isLoading">
+            <LockIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" />
+            <span class="ml-2">Sign in</span>
+          </span>
         </button>
       </div>
     </form>
@@ -82,7 +93,9 @@ export default {
   data() {
     return {
       formModel: null,
+      // formModel: null,
       loginError: false,
+      isLoading: false,
     }
   },
   computed: {
@@ -110,6 +123,7 @@ export default {
   },
   methods: {
     handleSubmit() {
+      this.isLoading = true
       this.$api
         .login(this.loginPayload)
         .then(async (data) => {
@@ -118,6 +132,9 @@ export default {
         })
         .catch((e) => {
           this.loginError = true
+        })
+        .finally(() => {
+          this.isLoading = false // Reset loading state
         })
     },
     setSessionKey({ token }) {
