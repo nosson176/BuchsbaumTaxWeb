@@ -62,6 +62,7 @@ export default {
   computed: {
     computedValue: {
       get() {
+        console.log("newVal")
         return this.value
       },
       set(newVal) {
@@ -92,6 +93,7 @@ export default {
       this.showPicker = true
     },
     onInput(newVal) {
+      console.log("new",newVal)
       this.computedValue = newVal
     },
     onBlur() {

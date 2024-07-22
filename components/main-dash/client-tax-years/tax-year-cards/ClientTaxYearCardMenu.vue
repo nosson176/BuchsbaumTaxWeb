@@ -30,7 +30,7 @@ export default {
             return a.year - b.year
           })
         )
-        console.log(JSON.stringify(items))
+        // console.log(JSON.stringify(items))
         return items.reverse()
       } else {
         return null

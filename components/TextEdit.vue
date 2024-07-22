@@ -1,7 +1,7 @@
 <template>
   <div>
     <p class="text-base text-gray-800 cursor-pointer" contenteditable="true" @click="makeEditable">
-      Click to edit this text
+      Click to edit this text2
     </p>
 
     <!-- Tooltip for styling options -->

@@ -125,16 +125,13 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search]),
     displayedContacts() {
-      console.log("1")
       const contacts = this.filteredContacts
       contacts?.map((contact) => {
         return { enabled: !contact.disabled, ...contact }
       })
-      console.log("2")
       return searchArrOfObjs(contacts, this.searchInput)
     },
     filteredContacts() {
-      console.log("3")
       if (this.contacts) {
         return this.contacts.filter((contact) => this.showArchived === contact.archived)
       } else {
@@ -145,18 +142,13 @@ export default {
       return this.valueTypes.contact_type.filter((type) => type.show)
     },
     headers() {
-      console.log("4")
       return this.$api.getHeaders()
     },
     clientId() {
-      console.log("5")
       return this.selectedClient.id
     },
     contacts() {
-      console.log("6")
       if (this.selectedClient.contacts) {
-        console.log("7",this.selectedClient.contacts)
-        console.log(JSON.parse(JSON.stringify(this.selectedClient.contacts)))
         return JSON.parse(JSON.stringify(this.selectedClient.contacts))
       } else {
         return null
