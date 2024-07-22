@@ -45,6 +45,7 @@
       </TableHeader>
     </template>
     <template #body>
+      <TextEdit>sadas</TextEdit>
       <TableRow
         v-for="(log, idx) in displayedLogs"
         :key="log.id"

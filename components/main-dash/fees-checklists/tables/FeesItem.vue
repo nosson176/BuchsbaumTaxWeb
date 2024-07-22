@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <div
       class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100"
@@ -11,7 +11,7 @@
         <div class="flex justify-end pt-1">
           <DeleteButton small @click="onDeleteClick()" />
         </div>
-        <div class="flex justify-between">
+        <div  class="flex justify-between">
           <div class="flex flex-col w-1/3">
             <div @click="setEditable('feeType')">
               <EditableSelectCell
@@ -123,6 +123,132 @@
       </div>
     </div>
   </div>
+</template> -->
+<template>
+  <div>
+    <div
+      class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100"
+      :class="classObj"
+      @keydown.tab.prevent
+      @keyup.tab.exact="goToNextItem"
+      @keyup.shift.tab.exact="goToPrevItem"
+    >
+      <div class="flex h-full flex-col space-y-1.5 justify-center">
+        <div class="flex justify-end pt-1">
+          <DeleteButton small @click="onDeleteClick()" />
+        </div>
+        <div class="flex justify-between">
+          <div class="flex flex-col w-1/3">
+            <div @click="setEditable('feeType')">
+              <EditableSelectCell
+                v-model="feeType"
+                placeholder="Type"
+                :is-editable="isEditable('feeType')"
+                :options="feeTypeOptions"
+                @blur="onBlur('feeType')"
+              />
+            </div>
+            <div @click="setEditable('year')">
+              <EditableSelectCell
+                v-model="year"
+                :class="isRedBG ? 'text-red-500' : ''"
+                placeholder="Year"
+                :is-editable="isEditable('year')"
+                :options="yearOptions"
+                @blur="onBlur('year')"
+              />
+            </div>
+          </div>
+          <div class="flex flex-col w-1/3">
+            <div @click="setEditable('status')">
+              <EditableSelectCell
+                v-model="status"
+                placeholder="Status"
+                :is-editable="isEditable('status')"
+                :options="feeStatusOptions"
+                @blur="onBlur('status')"
+              />
+            </div>
+            <div @click="setEditable('statusDetail')">
+              <EditableSelectCell
+                v-model="statusDetail"
+                placeholder="Detail"
+                :is-editable="isEditable('statusDetail')"
+                :options="feeStatusDetailOptions"
+                @blur="onBlur('statusDetail')"
+              />
+            </div>
+          </div>
+          <div class="flex items-center w-1/3 space-x-1">
+            <div @click="setEditable('sum')">
+              <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur('sum')" />
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center" @click="setEditable('manualAmount')">
+                <HeaderSelectOption
+                  v-if="manualAmount"
+                  v-model="currency"
+                  :options="currencyOptions"
+                  currency
+                  @input="onBlur"
+                />
+                <EditableInput
+                  v-model="manualAmount"
+                  placeholder="Amount"
+                  currency
+                  :is-editable="isEditable('manualAmount')"
+                  @blur="onBlur('manualAmount')"
+                />
+                <div v-if="isEditable('manualAmount')" />
+              </div>
+              <div class="flex items-center" @click="setEditable('paidAmount')">
+                <HeaderSelectOption
+                  v-if="paidAmount"
+                  v-model="currency"
+                  :options="currencyOptions"
+                  currency
+                  @input="onBlur"
+                />
+                <EditableInput
+                  v-model="paidAmount"
+                  placeholder="Paid"
+                  currency
+                  :is-editable="isEditable('paidAmount')"
+                  @blur="onBlur('paidAmount')"
+                />
+                <div v-if="isEditable('paidAmount')" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-between">
+          <div @click="setEditable('include')">
+            <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @blur="onBlur('include')" />
+          </div>
+          <div class="flex space-x-2">
+            <span class="missing">Time</span>
+            <div @click="setEditable('dateFee')">
+              <EditableDate
+                v-model="dateFee"
+                placeholder="Date"
+                type="date"
+                :is-editable="isEditable('dateFee')"
+                @blur="onBlur('dateFee')"
+              />
+            </div>
+          </div>
+          <div class="w-1/3">
+            <div @click="setEditable('rate')">
+              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr" @blur="onBlur('rate')" />
+            </div>
+          </div>
+        </div>
+        <div @click="setEditable('notes')">
+          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur('notes')" />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -162,6 +288,7 @@ export default {
   data() {
     return {
       editable: '',
+      oldValue:''
     }
   },
   computed: {
@@ -171,6 +298,7 @@ export default {
       return { even }
     },
     formModel() {
+      console.log(this.fee)
       return {
         ...this.fee,
       }
@@ -319,17 +447,24 @@ export default {
   },
   methods: {
     setEditable(field) {
+      console.log("run")
       this.editable = field
+      this.oldValue = this.formModel[field]
     },
     isEditable(field) {
+
       return this.editable === field
     },
-    onBlur() {
+    onBlur(e) {
+      if(this.oldValue === this.formModel[e]){
+        this.editable = ''
+        return
+      }
       this.handleUpdate()
-      this.editable = ''
     },
-    handleUpdate() {
-      this.$emit(events.input, this.formModel)
+    handleUpdate(e) {
+     this.$emit(events.input, this.formModel)
+      this.goToNextItem()
     },
     onDeleteClick() {
       this.$emit(events.delete, this.fee.id)

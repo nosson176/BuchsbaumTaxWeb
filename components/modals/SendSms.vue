@@ -55,6 +55,7 @@ export default {
     mappedPhoneNumbers() {
       const phoneNumberArr = []
       for (const key in this.users) {
+        // console.log(JSON.stringify(this.users[key]))
         if (this.users[key].phoneNumber) {
           phoneNumberArr.push({
             name: `${this.users[key].phoneNumber} (${this.users[key].username})`,

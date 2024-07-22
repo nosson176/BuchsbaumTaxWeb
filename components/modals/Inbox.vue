@@ -140,7 +140,7 @@ export default {
         messages.push(this.formatMessage(this.inboxState[key]))
       }
       return messages
-    },
+    }
   },
   methods: {
     emitHide() {
@@ -157,8 +157,19 @@ export default {
       await this.$api.getInbox(this.headers)
     },
     deleteMessage({ id }) {
-      this.$api.deleteMessage(this.headers, { messageId: id })
+      let result = prompt('Delete message? (yes/no)')
+      if (result === null) return // User canceled the prompt
+      result = result.toLowerCase()
+      while (result !== 'yes' && result !== 'no') {
+        alert('Please use just yes or no')
+        result = prompt('Delete message? (yes/no)')
+        if (result === null) return // User canceled the prompt during the loop
+        result = result.toLowerCase()
+      }
+      if (result === 'no') return
+      if (result === 'yes') this.$api.deleteMessage(this.headers, { messageId: id })
     },
+
     replyTo(parentId, threadId) {
       this.$emit(events.newMessage, parentId, threadId)
     },
@@ -175,8 +186,12 @@ export default {
         messageCopy.responses = responses
       }
       return messageCopy
-    },
-  },
+    }
+  }
+  // mounted() {
+  //   const rawInboxState = JSON.parse(JSON.stringify(this.inboxState))
+  //   console.log('Inbox State (Raw):', rawInboxState)
+  // },
 }
 </script>
 <style scoped>

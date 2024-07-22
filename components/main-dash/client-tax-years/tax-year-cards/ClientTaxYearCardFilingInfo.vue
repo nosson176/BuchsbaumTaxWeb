@@ -533,6 +533,7 @@ export default {
         { clientId: this.selectedClient.id, filingId: this.filing?.id },
         this.formModel
       )
+      // this.goToNextItem()
     },
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)

@@ -154,6 +154,7 @@ export default {
       this.showSmsModal = false
     },
     openInboxModal() {
+      // this.$api.getInbox(this.headers)
       this.showInboxModal = true
     },
     closeInboxModal() {

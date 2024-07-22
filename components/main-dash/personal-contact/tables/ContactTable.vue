@@ -1,3 +1,4 @@
+\\ ימין תחתון דף ראשי חלון
 <template>
   <Table @keydown.tab.prevent @keyup.tab.exact="goToNextColumn" @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>

@@ -59,33 +59,36 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const getClientData = (headers, id) =>
-    $axios
-      .get(`/clients/${id}/data`, {
-        headers,
-        loading: models.selectedClient,
-        loaded: models.selectedClient,
-        store: models.selectedClient,
-      })
-      .then(() => getClientsHistory(headers))
-      .catch(() => $toast.error('Error loading client data'))
+  $axios
+  .get(`/clients/${id}/data`, {
+    headers,
+    loading: models.selectedClient,
+    loaded: models.selectedClient,
+    store: models.selectedClient,
+  })
+  .then((res) => {
+    getClientsHistory(headers)
 
+  })
+  .catch(() => $toast.error('Error loading client data'))
+  
   const getValueTypes = (headers) =>
     $axios
-      .get('values', {
-        headers,
-        loading: models.valueTypes,
-        loaded: models.valueTypes,
-        store: models.valueTypes,
-      })
-      .catch(() => $toast.error('Error loading value types'))
-
+  .get('values', {
+    headers,
+    loading: models.valueTypes,
+    loaded: models.valueTypes,
+    store: models.valueTypes,
+  })
+  .catch(() => $toast.error('Error loading value types'))
+  
   const getValueTaxGroups = (headers) =>
     $axios
-      .get('values/tax-groups', {
-        headers,
-        loading: models.valueTaxGroups,
-        loaded: models.valueTaxGroups,
-        store: models.valueTaxGroups,
+  .get('values/tax-groups', {
+    headers,
+    loading: models.valueTaxGroups,
+    loaded: models.valueTaxGroups,
+    store: models.valueTaxGroups,
       })
       .catch(() => $toast.error('Error loading value tax groups'))
 
