@@ -447,6 +447,7 @@ export default {
   },
   methods: {
     setEditable(field) {
+      console.log("run")
       this.editable = field
       this.oldValue = this.formModel[field]
     },
