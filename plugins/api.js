@@ -67,7 +67,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     store: models.selectedClient,
   })
   .then((res) => {
-    console.log(JSON.parse(JSON.stringify(res)))
     getClientsHistory(headers)
 
   })

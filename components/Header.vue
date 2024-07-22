@@ -161,7 +161,6 @@ export default {
       this.showInboxModal = false
     },
     openMessageModal() {
-      console.log(models)
       this.showMessageModal = true
     },
     closeMessageModal() {

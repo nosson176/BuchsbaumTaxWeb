@@ -242,7 +242,6 @@ export default {
   computed: {
     ...mapState([models.valueTypes, models.selectedClient]),
     headers() {
-      console.log("run")
       return this.$api.getHeaders()
     },
     taxForm: {
@@ -515,7 +514,6 @@ export default {
   },
   methods: {
     setEditable(editable) {
-      console.log("22=>" , editable)
       this.editable = editable
     },
     isEditable(value) {
@@ -530,7 +528,6 @@ export default {
       this.handleUpdate()
     },
     handleUpdate() {
-      console.log("handleUpdate")
       this.$api.updateFiling(
         this.headers,
         { clientId: this.selectedClient.id, filingId: this.filing?.id },

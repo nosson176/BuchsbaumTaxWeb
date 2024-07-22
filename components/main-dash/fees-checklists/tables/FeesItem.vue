@@ -145,7 +145,7 @@
                 placeholder="Type"
                 :is-editable="isEditable('feeType')"
                 :options="feeTypeOptions"
-                @blur="onBlur"
+                @blur="onBlur('feeType')"
               />
             </div>
             <div @click="setEditable('year')">
@@ -155,7 +155,7 @@
                 placeholder="Year"
                 :is-editable="isEditable('year')"
                 :options="yearOptions"
-                @blur="onBlur"
+                @blur="onBlur('year')"
               />
             </div>
           </div>
@@ -166,7 +166,7 @@
                 placeholder="Status"
                 :is-editable="isEditable('status')"
                 :options="feeStatusOptions"
-                @blur="onBlur"
+                @blur="onBlur('status')"
               />
             </div>
             <div @click="setEditable('statusDetail')">
@@ -175,13 +175,13 @@
                 placeholder="Detail"
                 :is-editable="isEditable('statusDetail')"
                 :options="feeStatusDetailOptions"
-                @blur="onBlur"
+                @blur="onBlur('statusDetail')"
               />
             </div>
           </div>
           <div class="flex items-center w-1/3 space-x-1">
             <div @click="setEditable('sum')">
-              <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur" />
+              <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur('sum')" />
             </div>
             <div class="flex flex-col">
               <div class="flex items-center" @click="setEditable('manualAmount')">
@@ -197,7 +197,7 @@
                   placeholder="Amount"
                   currency
                   :is-editable="isEditable('manualAmount')"
-                  @blur="onBlur"
+                  @blur="onBlur('manualAmount')"
                 />
                 <div v-if="isEditable('manualAmount')" />
               </div>
@@ -214,7 +214,7 @@
                   placeholder="Paid"
                   currency
                   :is-editable="isEditable('paidAmount')"
-                  @blur="onBlur"
+                  @blur="onBlur('paidAmount')"
                 />
                 <div v-if="isEditable('paidAmount')" />
               </div>
@@ -223,7 +223,7 @@
         </div>
         <div class="flex justify-between">
           <div @click="setEditable('include')">
-            <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @blur="onBlur" />
+            <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @blur="onBlur('include')" />
           </div>
           <div class="flex space-x-2">
             <span class="missing">Time</span>
@@ -233,18 +233,18 @@
                 placeholder="Date"
                 type="date"
                 :is-editable="isEditable('dateFee')"
-                @blur="onBlur"
+                @blur="onBlur('dateFee')"
               />
             </div>
           </div>
           <div class="w-1/3">
             <div @click="setEditable('rate')">
-              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr" @blur="onBlur" />
+              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr" @blur="onBlur('rate')" />
             </div>
           </div>
         </div>
         <div @click="setEditable('notes')">
-          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" />
+          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur('notes')" />
         </div>
       </div>
     </div>
@@ -288,6 +288,7 @@ export default {
   data() {
     return {
       editable: '',
+      oldValue:''
     }
   },
   computed: {
@@ -297,6 +298,7 @@ export default {
       return { even }
     },
     formModel() {
+      console.log(this.fee)
       return {
         ...this.fee,
       }
@@ -354,11 +356,9 @@ export default {
     },
     dateFee: {
       get() {
-        console.log("run222")
         return this.formModel.dateFee
       },
       set(newVal) {
-        console.log("run")
         this.formModel.dateFee = newVal
       },
     },
@@ -448,16 +448,22 @@ export default {
   methods: {
     setEditable(field) {
       this.editable = field
+      this.oldValue = this.formModel[field]
     },
     isEditable(field) {
+
       return this.editable === field
     },
-    onBlur() {
+    onBlur(e) {
+      if(this.oldValue === this.formModel[e]){
+        this.editable = ''
+        return
+      }
       this.handleUpdate()
-      this.editable = ''
     },
-    handleUpdate() {
-      this.$emit(events.input, this.formModel)
+    handleUpdate(e) {
+     this.$emit(events.input, this.formModel)
+      this.goToNextItem()
     },
     onDeleteClick() {
       this.$emit(events.delete, this.fee.id)
