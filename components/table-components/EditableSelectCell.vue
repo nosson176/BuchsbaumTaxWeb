@@ -387,8 +387,9 @@ export default {
       return this.value.split('\u000B')[0] || this.placeholder;
     },
     filteredOptions() {
+      console.log("run111")
       return this.options.filter((option) =>
-        option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        option?.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
       );
     },
   },

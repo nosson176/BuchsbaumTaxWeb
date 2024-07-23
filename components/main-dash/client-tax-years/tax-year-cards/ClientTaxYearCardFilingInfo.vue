@@ -13,7 +13,7 @@
           :options="stateOptions"
           :is-editable="isEditable('state')"
           placeholder="State"
-          @blur="onBlur"
+          @blur="onBlur('state')"
         />
       </div>
       <div v-else class="mb-1" @click="setEditable('taxForm')">
@@ -22,7 +22,7 @@
           :options="taxFormOptions"
           :is-editable="isEditable('taxForm')"
           placeholder="Tax Form"
-          @blur="onBlur"
+          @blur="onBlur('taxForm')"
         />
       </div>
       <div class="mb-1" @click="setEditable('statusDate')">
@@ -31,7 +31,7 @@
           placeholder="Date"
           type="date"
           :is-editable="isEditable('statusDate')"
-          @blur="onBlur"
+          @blur="onBlur('statusDate')"
         />
       </div>
       <div class="mb-1" @click="setEditable('status')">
@@ -40,7 +40,7 @@
           :options="statusOptions"
           :is-editable="isEditable('status')"
           placeholder="Status"
-          @blur="onBlur"
+          @blur="onBlur('status')"
         />
       </div>
       <div class="mb-1" @click="setEditable('statusDetail')">
@@ -49,7 +49,8 @@
           :options="statusDetailOptions"
           :is-editable="isEditable('statusDetail')"
           placeholder="Detail"
-          @blur="onBlur"
+          @blur="onBlur('statusDetail')"
+          @keyup.enter.native="onBlur('statusDetail')"
         />
       </div>
       <div class="col-span-2 cursor-pointer mb-1" @click="setEditable('memo')">
@@ -68,7 +69,7 @@
             <EditableCheckBoxCell
               v-model="includeInRefund"
               :is-editable="isEditable('includeInRefund')"
-              @blur="onBlur"
+              @blur="onBlur('includeInRefund')"
             />
           </div>
           <div class="flex flex-col">
@@ -79,7 +80,9 @@
                 placeholder="Owes"
                 currency
                 :is-editable="isEditable('owes')"
-                @blur="onBlur"
+                @blur="onBlur('owes')"
+                @click="onBlur('owes')"
+                @keyup.enter.native="onBlur('owes')"
               />
             </div>
             <div class="flex items-center" @click="setEditable('paid')">
@@ -89,32 +92,36 @@
                 placeholder="Paid"
                 currency
                 :is-editable="isEditable('paid')"
-                @blur="onBlur"
+                @blur="onBlur('paid')"
+                @click="onBlur('paid')"
+                @keyup.enter.native="onBlur('paid')"
               />
             </div>
           </div>
         </div>
         <div class="flex items-center ml-3">
           <div @click="setEditable('includeFee')">
-            <EditableCheckBoxCell v-model="includeFee" :is-editable="isEditable('includeFee')" @blur="onBlur" />
+            <EditableCheckBoxCell v-model="includeFee" :is-editable="isEditable('includeFee')" @blur="onBlur('includeFee')" />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('owesFee')">
-              <EditableInput
-                v-model="owesFee"
-                placeholder="FC"
-                currency
-                :is-editable="isEditable('owesFee')"
-                @blur="onBlur"
-              />
-            </div>
             <div @click="setEditable('paidFee')">
               <EditableInput
                 v-model="paidFee"
                 placeholder="Insur"
                 currency
                 :is-editable="isEditable('paidFee')"
-                @blur="onBlur"
+                @blur="onBlur('paidFee')"
+                @keyup.enter.native="onBlur('paidFee')"
+              />
+            </div>
+            <div @click="setEditable('owesFee')">
+              <EditableInput
+                v-model="owesFee"
+                placeholder="FC"
+                currency
+                :is-editable="isEditable('owesFee')"
+                @blur="onBlur('owesFee')"
+                @keyup.enter.native="onBlur('owesFee')"
               />
             </div>
           </div>
@@ -126,7 +133,7 @@
           :options="fileTypeOptions"
           :is-editable="isEditable('fileType')"
           placeholder="File Type"
-          @blur="onBlur"
+          @blur="onBlur('fileType')"
         />
       </div>
       <!-- spacing -->
@@ -140,7 +147,7 @@
             placeholder="Refund"
             currency
             :is-editable="isEditable('refund')"
-            @blur="onBlur"
+            @blur="onBlur('refund')"
           />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
@@ -150,7 +157,7 @@
             placeholder="Rebate"
             currency
             :is-editable="isEditable('rebate')"
-            @blur="onBlur"
+            @blur="onBlur('rebate')"
           />
         </div>
       </div>
@@ -168,7 +175,7 @@
           :options="contactTypeOptions"
           :is-editable="isEditable('deliveryContact')"
           placeholder="Delivery1"
-          @blur="onBlur"
+          @blur="onBlur('deliveryContact')"
         />
       </div>
       <div class="flex space-x-6 justify-center">
@@ -178,7 +185,7 @@
             :options="contactTypeOptions"
             :is-editable="isEditable('secondDeliveryContact')"
             placeholder="Delivery2"
-            @blur="onBlur"
+            @blur="onBlur('secondDeliveryContact')"
           />
         </div>
         <button @click="setSecondDeliveryContact('CHECK')">
@@ -191,7 +198,7 @@
           placeholder="Date Filed"
           type="date"
           :is-editable="isEditable('dateFiled')"
-          @blur="onBlur"
+          @blur="onBlur('dateFiled')"
         />
       </div>
     </div>
@@ -202,6 +209,7 @@
 import { mapState } from 'vuex'
 import { events, filingTypes, models, currencies } from '~/shared/constants'
 import { formatAsNumber, setAsValidNumber } from '~/shared/utility'
+// import { state } from '~/store';
 
 const items = [
   'taxForm',
@@ -214,8 +222,8 @@ const items = [
   'paid',
   'includeFee',
   'currency',
-  'owesFee',
   'paidFee',
+  'owesFee',
   'fileType',
   'refund',
   'rebate',
@@ -236,6 +244,7 @@ export default {
   data() {
     return {
       editable: '',
+      oldValue:'',
       formModel: null,
     }
   },
@@ -515,13 +524,21 @@ export default {
   methods: {
     setEditable(editable) {
       this.editable = editable
+      this.oldValue = this.formModel[editable]
     },
     isEditable(value) {
       return this.editable === value
     },
-    onBlur() {
+    onBlur(e) {
+      if(this.editable === 'statusDate'){
+        this.handleUpdate()
+        return
+      }
+      if(this.oldValue === this.formModel[e]){
+        this.editable = ''
+        return
+      }
       this.handleUpdate()
-      this.setEditable('')
     },
     onMemoBlur() {
       this.onBlur()
@@ -533,7 +550,7 @@ export default {
         { clientId: this.selectedClient.id, filingId: this.filing?.id },
         this.formModel
       )
-      // this.goToNextItem()
+      this.goToNextItem()
     },
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
@@ -550,6 +567,9 @@ export default {
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
         this.setEditable(nextCell)
+      }else{
+        this.editable = ''
+
       }
     },
     goToPrevItem() {
@@ -558,6 +578,9 @@ export default {
       if (itemIndex > 0) {
         const prevCell = items[itemIndex - 1]
         this.setEditable(prevCell)
+      }else{
+        this.editable = ''
+
       }
     },
   },
