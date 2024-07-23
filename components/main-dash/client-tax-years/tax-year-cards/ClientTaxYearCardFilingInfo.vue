@@ -148,6 +148,7 @@
             currency
             :is-editable="isEditable('refund')"
             @blur="onBlur('refund')"
+            @click="onBlur('refund')"
           />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
@@ -158,6 +159,7 @@
             currency
             :is-editable="isEditable('rebate')"
             @blur="onBlur('rebate')"
+            @click="onBlur('rebate')"
           />
         </div>
       </div>
@@ -166,7 +168,7 @@
           <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
         </div>
         <div @click="setEditable('completed')">
-          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur('completed')" @click="onBlur('completed')" />
+          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')"  @click="onBlur('completed')" />
         </div>
       </div>
       <div @click="setEditable('deliveryContact')">
