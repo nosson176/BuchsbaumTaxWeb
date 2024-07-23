@@ -69,10 +69,22 @@
             <EditableCheckBoxCell
               v-model="includeInRefund"
               :is-editable="isEditable('includeInRefund')"
-              @blur="onBlur('includeInRefund')"
+              @click="onBlur('includeInRefund')"
             />
           </div>
           <div class="flex flex-col">
+            <div class="flex items-center" @click="setEditable('paid')">
+              <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency @input="onBlur" />
+              <EditableInput
+              v-model="paid"
+              placeholder="Paid"
+              currency
+              :is-editable="isEditable('paid')"
+              @blur="onBlur('paid')"
+              @click="onBlur('paid')"
+              @keyup.enter.native="onBlur('paid')"
+              />
+            </div>
             <div class="flex items-center" @click="setEditable('owes')">
               <HeaderSelectOption v-if="owes" v-model="currency" :options="currencyOptions" currency @input="onBlur" />
               <EditableInput
@@ -85,23 +97,11 @@
                 @keyup.enter.native="onBlur('owes')"
               />
             </div>
-            <div class="flex items-center" @click="setEditable('paid')">
-              <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency @input="onBlur" />
-              <EditableInput
-                v-model="paid"
-                placeholder="Paid"
-                currency
-                :is-editable="isEditable('paid')"
-                @blur="onBlur('paid')"
-                @click="onBlur('paid')"
-                @keyup.enter.native="onBlur('paid')"
-              />
-            </div>
           </div>
         </div>
         <div class="flex items-center ml-3">
           <div @click="setEditable('includeFee')">
-            <EditableCheckBoxCell v-model="includeFee" :is-editable="isEditable('includeFee')" @blur="onBlur('includeFee')" />
+            <EditableCheckBoxCell v-model="includeFee" :is-editable="isEditable('includeFee')"  @click="onBlur('includeFee')" />
           </div>
           <div class="flex flex-col">
             <div @click="setEditable('paidFee')">
@@ -166,7 +166,7 @@
           <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
         </div>
         <div @click="setEditable('completed')">
-          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur" />
+          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @blur="onBlur('completed')" @click="onBlur('completed')" />
         </div>
       </div>
       <div @click="setEditable('deliveryContact')">
@@ -218,8 +218,8 @@ const items = [
   'statusDetail',
   'memo',
   'includeInRefund',
-  'owes',
   'paid',
+  'owes',
   'includeFee',
   'currency',
   'paidFee',
