@@ -76,6 +76,9 @@ export default {
     onBlur() {
       this.$emit(events.blur)
     },
+    onClick() {
+      this.$emit(events.blur)
+    },
   },
 }
 </script>
