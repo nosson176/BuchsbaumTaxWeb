@@ -9,6 +9,7 @@
       class="h-3 w-3 text-indigo-600 border-gray-300 rounded cursor-pointer outline-none"
       @blur="onBlur"
       @click="onClick"
+      @change="onChange"
     />
   </div>
 </template>
@@ -49,6 +50,9 @@ export default {
       this.$emit(events.blur)
     },
     onClick() {
+      this.$emit(events.click)
+    },
+    onChange() {
       this.$emit(events.click)
     },
   },
