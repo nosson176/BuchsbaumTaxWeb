@@ -46,9 +46,11 @@ export default {
   computed: {
     computedValue: {
       get() {
+        console.log(this.value)
         return this.value
       },
       set(newVal) {
+        console.log(newVal)
         this.$emit(events.input, newVal)
       },
     },

@@ -39,7 +39,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const getClientList = (headers) => {
     const searchParam = store.state.clientSearchValue
+    console.log(searchParam)
     const searchOption = store.state.clientSearchOption
+    console.log(searchOption)
     let endpoint = 'clients/'
     if (searchParam.length > 0 && searchOption.length > 0) {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
