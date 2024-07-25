@@ -25,7 +25,7 @@
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
             <div class="table-col w-full" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur" @input="debounceUpdate" />
             </div>
             <div class="table-col xs">
               <DeleteButton @click="deleteValue(type.id)" />
@@ -107,6 +107,9 @@ export default {
         sortOrder: this.valueTypes[TABLE_TYPE].length + 1,
       })
       this.$api.createValueType(this.headers, { value })
+    },
+    onBlur() {
+      this.editableId = null
     },
     handleUpdate() {
       const value = Object.values(this.taxYearStateStatusDetails).find((type) => type.id === this.editableId)
