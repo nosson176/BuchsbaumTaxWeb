@@ -25,7 +25,12 @@
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
             <div class="table-col w-full" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+              <EditableInput
+                v-model="type.value"
+                :is-editable="isEditable(type.id)"
+                @input="debounceUpdate"
+                @blur="onBlur"
+              />
             </div>
             <div class="table-col xs">
               <DeleteButton @click="deleteValue(type.id)" />
@@ -89,6 +94,9 @@ export default {
     isEditable(id) {
       return this.editableId === id
     },
+    onBlur() {
+      this.editableId = null
+    },
     deleteValue(valueId) {
       this.deleteId = valueId
       this.showDelete = true
@@ -102,8 +110,14 @@ export default {
       this.$api.createValueType(this.headers, { value })
     },
     handleUpdate() {
-      const value = Object.values(this.taxYearTaxForms).find((type) => type.id === this.editableId)
-      this.$api.updateValueType(this.headers, { valueId: value.id }, value)
+      const value = this.taxYearTaxForms.find((type) => type.id === this.editableId)
+      if (value) {
+        this.$api.updateValueType(this.headers, { valueId: value.id }, value)
+          .then(response => console.log('Update successful:', response))
+          .catch(error => console.error('Update failed:', error))
+      } else {
+        console.error('No value found for ID:', this.editableId)
+      }
     },
     deleteItem() {
       this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then(() => {

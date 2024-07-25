@@ -25,7 +25,7 @@
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
             <div class="table-col w-full" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" @blur="onBlur" />
             </div>
             <div class="table-col xs">
               <DeleteButton @click="deleteValue(type.id)" />
@@ -95,6 +95,9 @@ export default {
     },
     isEditable(id) {
       return this.editableId === id
+    },
+    onBlur() {
+      this.editableId = null
     },
     deleteValue(valueId) {
       this.deleteId = valueId

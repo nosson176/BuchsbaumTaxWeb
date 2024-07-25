@@ -184,6 +184,8 @@ export default {
       return this.options.filter((option) => {
         const nameFilter = option.name?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
         const valueFilter = option.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+        console.log("nameFilter =>" ,nameFilter)
+        console.log("valueFilter =>" ,valueFilter)
         return nameFilter || valueFilter
       })
     },

@@ -30,8 +30,15 @@
             <div class="table-col">
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
-            <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+            <div
+              class="table-col w-full flex justify-between items-center"
+              @click="toggleEditable(type.id)"
+            >
+              <EditableInput
+                v-model="type.value"
+                :is-editable="isEditable(type.id)"
+                @blur="onBlur"
+              />
               <span class="pr-1">{{ detailCount(type.id) }}</span>
             </div>
             <div class="table-col xs">
@@ -85,13 +92,10 @@ export default {
       return this.$api.getHeaders()
     },
     debounceUpdate() {
-      return debounce(this.handleUpdate, 500)
+      return debounce(this.handleUpdate, 2000)
     },
     transitionName() {
-      if (!this.dragActive) {
-        return TRANSITION_NAME
-      }
-      return null
+      return this.dragActive ? null : TRANSITION_NAME
     },
   },
   methods: {
@@ -114,8 +118,14 @@ export default {
       this.$api.createValueType(this.headers, { value })
     },
     handleUpdate() {
-      const value = Object.values(this.taxYearStatus).find((type) => type.id === this.editableId)
-      this.$api.updateValueType(this.headers, { valueId: value.id }, value)
+      const value = this.taxYearStatus.find((type) => type.id === this.editableId)
+      if (value) {
+        this.$api.updateValueType(this.headers, { valueId: value.id }, value)
+          .then(response => console.log('Update successful:', response))
+          .catch(error => console.error('Update failed:', error))
+      } else {
+        console.error('No value found for ID:', this.editableId)
+      }
     },
     deleteItem() {
       this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then(() => {
@@ -151,6 +161,11 @@ export default {
       item.sortOrder = 0
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
     },
+    onBlur() {
+      // Ensure to clear the editableId when the input loses focus
+      this.handleUpdate()
+      this.editableId = null
+    }
   },
 }
 </script>

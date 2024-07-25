@@ -31,7 +31,7 @@
         <nuxt-link v-if="isCurrentUserAdmin" :to="usersRoute">
           <UsersIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
-        <nuxt-link :to="valuesRoute">
+        <nuxt-link v-if="isCurrentUserAdmin" :to="valuesRoute">
           <ValuesIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
         <nuxt-link :to="homeRoute">
@@ -116,6 +116,7 @@ export default {
       return this.inbox
     },
     isCurrentUserAdmin() {
+      console.log("user =>",this.currentUser.userType === USER_TYPE_ADMIN)
       return this.currentUser.userType === USER_TYPE_ADMIN
     },
     hasUnreadMessages() {

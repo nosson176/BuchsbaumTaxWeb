@@ -31,7 +31,12 @@
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
             <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+              <EditableInput
+                v-model="type.value"
+                :is-editable="isEditable(type.id)"
+                @input="debounceUpdate"
+                @blur="onBlur"
+              />
               <span class="pr-1">{{ detailCount(type.id) }}</span>
             </div>
             <div class="table-col xs">
@@ -100,6 +105,9 @@ export default {
     },
     isEditable(id) {
       return this.editableId === id
+    },
+    onBlur() {
+      this.editableId = null
     },
     deleteValue(valueId) {
       this.deleteId = valueId

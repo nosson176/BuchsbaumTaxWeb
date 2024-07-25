@@ -31,7 +31,7 @@
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
             <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @input="debounceUpdate" />
+              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur" @input="debounceUpdate" />
               <span class="pr-1">{{ detailCount(type.id) }}</span>
             </div>
             <div class="table-col xs">
@@ -112,6 +112,9 @@ export default {
         sortOrder: this.valueTypes[TABLE_TYPE].length + 1,
       })
       this.$api.createValueType(this.headers, { value })
+    },
+    onBlur() {
+      this.editableId = null
     },
     handleUpdate() {
       const value = Object.values(this.taxYearStateStatus).find((type) => type.id === this.editableId)
