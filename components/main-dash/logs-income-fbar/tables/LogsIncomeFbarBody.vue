@@ -118,8 +118,8 @@ export default {
         this.showActiveFbar = value
       }
     },
-    resetClock(){
-      if(this.$refs.logsTableRef){
+    resetClock() {
+      if (this.$refs.logsTableRef) {
         this.$refs.logsTableRef.resetClock()
       }
     }

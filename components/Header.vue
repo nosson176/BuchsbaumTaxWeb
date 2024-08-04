@@ -1,12 +1,9 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
-      <button
-        type="button"
+      <button type="button"
         class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
-        aria-expanded="true"
-        @click="openSmsModal"
-      >
+        aria-expanded="true" @click="openSmsModal">
         Send SMS
       </button>
       <div class="ml-auto">
@@ -24,6 +21,9 @@
         </a>
         <nuxt-link :to="shekelatorRoute">
           <DollarIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </nuxt-link>
+        <nuxt-link :to="workTimeRoute">
+          <ClockIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
         <nuxt-link :to="mapsRoute">
           <MapIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
@@ -57,6 +57,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
+import { promptConfirm } from '~/shared/utility';
 
 export default {
   name: 'Header',
@@ -103,6 +104,11 @@ export default {
         name: routes.users,
       }
     },
+    workTimeRoute() {
+      return {
+        name: routes.clock
+      }
+    },
     mapsRoute() {
       return { name: routes.maps }
     },
@@ -116,7 +122,6 @@ export default {
       return this.inbox
     },
     isCurrentUserAdmin() {
-      console.log("user =>",this.currentUser.userType === USER_TYPE_ADMIN)
       return this.currentUser.userType === USER_TYPE_ADMIN
     },
     hasUnreadMessages() {
@@ -155,7 +160,6 @@ export default {
       this.showSmsModal = false
     },
     openInboxModal() {
-      // this.$api.getInbox(this.headers)
       this.showInboxModal = true
     },
     closeInboxModal() {
@@ -170,9 +174,17 @@ export default {
     async loadInbox() {
       await this.$api.getInbox(this.headers)
     },
-    logout() {
+    async logout() {
+      const headers = await this.$api.getHeaders()
+      const now = new Date()
+      const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      // const startRange = new Date(now.getFullYear(), now.getMonth()).getTime()
+      const result = promptConfirm()
+      if (result === 'yes') await this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
+
       this.$api.signout()
     },
+
     irsPopup() {
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
     },
