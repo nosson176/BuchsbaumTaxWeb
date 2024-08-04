@@ -277,52 +277,26 @@ export default {
       <div class="h-full" @click="onBlur" />
     </div>
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
-      <input
-        ref="button"
-        v-model="inputValue"
-        type="text"
-        tabindex="0"
+      <input ref="button" v-model="inputValue" type="text" tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
-        @click="onButtonClick"
-        @keyup="onInputKeyup($event.key)"
-      />
-      <ul
-        v-if="showOptions && isEditable"
-        ref="select"
+        @click="onButtonClick" @keyup="onInputKeyup($event.key)" />
+      <ul v-if="showOptions && isEditable" ref="select"
         class="absolute z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
-        :class="showOptions && isEditable ? 'opacity-100' : 'opacity-0'"
-        tabindex="-1"
-        role="listbox"
-        aria-labelledby="listbox-label"
-        aria-activedescendant="listbox-option-3"
-      >
-        <li
-          v-for="(option, idx) in filteredOptions"
-          :id="idx"
-          :key="idx"
-          ref="option"
+        :class="showOptions && isEditable ? 'opacity-100' : 'opacity-0'" tabindex="-1" role="listbox"
+        aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+        <li v-for="(option, idx) in filteredOptions" :id="idx" :key="idx" ref="option"
           class="text-xs cursor-default select-none relative py-0 pl-0 pr-1"
-          :class="hoverIndex === idx ? 'text-white bg-indigo-600' : 'text-gray-900'"
-          role="option"
-          @mouseover="onMouseOver(idx)"
-          @click.stop="emitChange(option.value)"
-        >
+          :class="hoverIndex === idx ? 'text-white bg-indigo-600' : 'text-gray-900'" role="option"
+          @mouseover="onMouseOver(idx)" @click.stop="emitChange(option.value)">
           <span class="ml-4 block truncate" :class="isSelected(option) ? 'font-semibold' : 'font-normal'">
             {{ option.value }}
           </span>
           <span v-if="isSelected(option)" class="text-indigo-600 absolute inset-y-0 left-0 flex items-center p-0">
-            <svg
-              class="h-3 w-3"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fill-rule="evenodd"
+            <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+              aria-hidden="true">
+              <path fill-rule="evenodd"
                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              />
+                clip-rule="evenodd" />
             </svg>
           </span>
         </li>
@@ -387,7 +361,6 @@ export default {
       return this.value.split('\u000B')[0] || this.placeholder;
     },
     filteredOptions() {
-      console.log("run111")
       return this.options.filter((option) =>
         option?.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
       );

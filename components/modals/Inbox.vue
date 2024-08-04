@@ -6,11 +6,9 @@
           <h1 class="text-xl font-semibold text-gray-900">Messages</h1>
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
+          <button type="button"
             class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-            @click="sendMessage"
-          >
+            @click="sendMessage">
             New Message
           </button>
         </div>
@@ -34,15 +32,10 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white overflow-auto">
                   <template v-for="message in formattedMessages">
-                    <tr
-                      :key="message.id"
-                      :class="{ 'bg-gray-100 cursor-pointer': message.status === 'unread' }"
-                      @click="markAsRead(message)"
-                    >
-                      <td
-                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                        :class="{ 'font-bold': message.status === 'unread' }"
-                      >
+                    <tr :key="message.id" :class="{ 'bg-gray-100 cursor-pointer': message.status === 'unread' }"
+                      @click="markAsRead(message)">
+                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                        :class="{ 'font-bold': message.status === 'unread' }">
                         {{ message.sender }}
                       </td>
                       <td class="message px-3 py-4 text-sm text-gray-500">
@@ -53,11 +46,9 @@
                         <div>{{ message.time }}</div>
                       </td>
                       <td>
-                        <button
-                          v-if="currentUser.id !== message.senderId"
+                        <button v-if="currentUser.id !== message.senderId"
                           class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
-                          @click="replyTo(message.id, message.id)"
-                        >
+                          @click="replyTo(message.id, message.id)">
                           <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
                         </button>
                       </td>
@@ -81,11 +72,9 @@
                         <div>{{ response.time }}</div>
                       </td>
                       <td>
-                        <button
-                          v-if="currentUser.id !== response.senderId"
+                        <button v-if="currentUser.id !== response.senderId"
                           class="flex items-center space-x-1 transform hover:text-indigo-400 hover:scale-110"
-                          @click="replyTo(response.id, message.id)"
-                        >
+                          @click="replyTo(response.id, message.id)">
                           <ReplyIcon class="w-5 h-5" /> <span>Reply</span>
                         </button>
                       </td>
@@ -148,7 +137,7 @@ export default {
     },
     sendMessage() {
       this.$emit(events.newMessage)
-      this.emitHide()
+      // this.emitHide()
     },
     markAsRead(message) {
       this.$api.updateMessage(this.headers, { messageId: message.id }, { status: 'read' }).then(this.loadInbox)
@@ -188,10 +177,6 @@ export default {
       return messageCopy
     }
   }
-  // mounted() {
-  //   const rawInboxState = JSON.parse(JSON.stringify(this.inboxState))
-  //   console.log('Inbox State (Raw):', rawInboxState)
-  // },
 }
 </script>
 <style scoped>

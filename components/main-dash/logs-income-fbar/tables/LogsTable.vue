@@ -1,10 +1,6 @@
 <template>
-  <Table
-    v-if="isClientSelected"
-    @keydown.tab.prevent
-    @keyup.tab.exact="goToNextColumn"
-    @keyup.shift.tab.exact="goToPrevColumn"
-  >
+  <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
+    @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
         <div class="table-header flex items-start">
@@ -24,11 +20,9 @@
         <div class="table-header sm">Date</div>
         <div class="table-header sm">Alarm</div>
         <div class="table-header xs">
-          <button
-            type="button"
+          <button type="button"
             class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            @click="setAlarmFilter"
-          />
+            @click="setAlarmFilter" />
         </div>
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
@@ -45,33 +39,19 @@
       </TableHeader>
     </template>
     <template #body>
-      <TextEdit>sadas</TextEdit>
-      <TableRow
-        v-for="(log, idx) in displayedLogs"
-        :key="log.id"
-        :idx="idx"
-        :selected="isSelected(log.id)"
-        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }"
-      >
+      <TableRow v-for="(log, idx) in displayedLogs" :key="log.id" :idx="idx" :selected="isSelected(log.id)"
+        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
         <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
-          <EditablePrioritySelectCell
-            v-model="log.priority"
-            :is-editable="isEditable(`${idx}-priority`)"
-            @blur="onBlur"
-            @tab="goToNextColumn"
-          />
+          <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @blur="onBlur"
+            @tab="goToNextColumn" />
         </div>
         <div :id="`${idx}-years`" class="table-col year" @click="toggleEditable(`${idx}-years`, log.id)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
-            <EditableSelectCell
-              v-model="log.years"
-              :is-editable="isEditable(`${idx}-years`)"
-              :options="yearOptions"
-              @blur="onBlur"
-            />
+            <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
+              @blur="onBlur" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
@@ -88,35 +68,20 @@
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
-          <EditableDateCell
-            v-model="log.alarmDate"
-            type="date"
-            :is-editable="isEditable(`${idx}-alarmDate`)"
-            @blur="onBlur"
-          />
+          <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)"
+            @blur="onBlur" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
-          <CheckIcon
-            v-if="log.alarmDate"
-            class="h-5 w-5 cursor-pointer"
-            :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'"
-          />
+          <CheckIcon v-if="log.alarmDate" class="h-5 w-5 cursor-pointer"
+            :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'" />
         </div>
         <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
-          <EditableSelectCell
-            v-model="log.alarmUserName"
-            :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions"
-            @blur="onBlur"
-          />
+          <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
+            :options="userOptions" @blur="onBlur" />
         </div>
         <div :id="`${idx}-secondsSpent`" class="table-col sm" @click="toggleEditable(`${idx}-secondsSpent`, log.id)">
-          <EditableInputCell
-            v-model="log.timeSpent"
-            :is-editable="isEditable(`${idx}-secondsSpent`)"
-            @blur="updateSecondsSpent(log)"
-            @keypress.native.enter="updateSecondsSpent(log)"
-          />
+          <EditableInputCell v-model="log.timeSpent" :is-editable="isEditable(`${idx}-secondsSpent`)"
+            @blur="updateSecondsSpent(log)" @keypress.native.enter="updateSecondsSpent(log)" />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(log.id)" />
@@ -130,7 +95,7 @@
 import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { searchArrOfObjs } from '~/shared/utility'
+import { boldSearchWord, searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'secondsSpent', 'delete']
 
@@ -176,7 +141,8 @@ export default {
         log.timeSpent = this.getTimeSpentOnClient(log)
         return log
       })
-      return searchArrOfObjs(mappedLogs, this.searchInput)
+      const filterBySearchInput = searchArrOfObjs(mappedLogs, this.searchInput)
+      return boldSearchWord(filterBySearchInput, this.searchInput)
     },
     shownLogs() {
       if (this.logs) {

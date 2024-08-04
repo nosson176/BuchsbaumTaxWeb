@@ -39,9 +39,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const getClientList = (headers) => {
     const searchParam = store.state.clientSearchValue
-    console.log(searchParam)
     const searchOption = store.state.clientSearchOption
-    console.log(searchOption)
     let endpoint = 'clients/'
     if (searchParam.length > 0 && searchOption.length > 0) {
       endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
@@ -128,6 +126,50 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.inbox,
       })
       .catch(() => $toast.error('Error loading messages'))
+      
+      const getTimeWorks = (headers) =>
+    $axios
+      .get(`/worktimes`, {
+        headers,
+        loading: models.worktimes,
+        loaded: models.worktimes,
+        store: models.worktimes,
+      })
+      .catch(() => $toast.error('Error loading messages'))
+      
+      const getAllTimeWorksByDate = (headers,startRange, endRange) =>
+    $axios
+      .get(`/worktimes/date-range`, {
+        headers,
+        params: { startRange, endRange },
+        loading: models.worktimes,
+        loaded: models.worktimes,
+        store: models.worktimes,
+      })
+      .catch(() => $toast.error('Error loading messages'))
+
+  const getTimeWorksByUserId = (headers,userId) =>
+    $axios
+      .get(`/worktimes/user/${userId}`, {
+        headers,
+        loading: models.worktimes,
+        loaded: models.worktimes,
+        store: models.worktimes,
+      })
+      .catch(() => $toast.error('Error loading messages'))
+  
+      const getTimeWorksByMonthAndUserId = (headers, userId, startDate, endDate) => {
+        return $axios
+          .get(`/worktimes/user/${userId}/date-range`, {
+            headers,
+            params: { startDate, endDate },
+            loading: models.worktimes,
+            loaded: models.worktimes,
+            store: models.worktimes,
+          })
+          .catch(() => $toast.error('Error loading messages'))
+      }
+      
 
   // CREATE
   const createLog = (headers, { log }) =>
@@ -171,6 +213,42 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .post('/users', user, { headers })
       .catch(() => $toast.error('Error creating user'))
       .finally(() => getAllUsers(headers))
+
+      const createWorkTime = (headers, userId, username, date) => {
+        const workTimeData = {
+          userId,
+          username,
+          date
+        };
+      
+        $axios
+          .post('/worktimes', workTimeData, { headers })
+          .then(() => {
+            $toast.success('Work time created successfully');
+          })
+          .catch(error => {
+            // Handle error
+            console.error('Error creating work time:', error);
+            $toast.error('Error creating work time');
+          });
+      };
+      const clockOutWorkTime = (headers, userId, date) => {
+        const workTimeData = {
+          userId,
+          date
+        };
+        $axios
+            .post(`/worktimes/clockout`,workTimeData,{headers})
+            .then(() => {
+                // Handle success
+                $toast.success('Clock out successful');
+            })
+            .catch(error => {
+                // Handle error
+                console.error('Error clocking out:', error);
+                $toast.error('Error clocking out');
+            });
+    };
 
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
@@ -283,6 +361,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .put(`/users/current/messages/${messageId}`, value, { headers })
       .catch(() => $toast.error('Error updating message'))
       .finally(() => getInbox(headers))
+  
+      const updateWorkTimeByWorkTimeId = (headers, workTime, currentUser) => {
+        // Add userType to the workTime object or include it in a separate payload object
+        const payload = { ...workTime, userType: currentUser.userType };
+
+        return $axios
+          .put(`/worktimes/${workTime.id}`, payload, { headers })
+          .then($toast.success('Work time update successful'))
+          .catch(() => $toast.error('Error updating workTime'));
+      };
 
   // DELETE
   const deleteValueType = (headers, { valueId }) =>
@@ -335,6 +423,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     createTaxPersonal,
     createTaxYear,
     createUser,
+    createWorkTime,
+    clockOutWorkTime,
     deleteValueType,
     deleteClient,
     deleteSmartview,
@@ -348,7 +438,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getSmartviews,
     getValueTaxGroups,
     getValueTypes,
+    getCurrentUser,
     getInbox,
+    getTimeWorksByUserId,
+    getTimeWorks,
+    getTimeWorksByMonthAndUserId,
+    getAllTimeWorksByDate,
     login,
     signout,
     sendSms,
@@ -369,7 +464,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateUser,
     updatePassword,
     updateMessage,
-    getCurrentUser,
+    updateWorkTimeByWorkTimeId,
     deleteMessage,
   }
 

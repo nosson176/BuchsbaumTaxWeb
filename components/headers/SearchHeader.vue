@@ -1,18 +1,12 @@
 <template>
   <div>
     <div class="mt-1 relative rounded-md shadow-sm">
-      <input
-        :id="id"
-        v-model="computedValue"
-        type="text"
-        :name="name"
+      <input :id="id" v-model="computedValue" type="text" :name="name"
         class="focus:ring-indigo-500 focus:border-indigo-500 block w-full py-0.5 pr-10 sm:text-sm border-gray-300 rounded-full"
-        :placeholder="placeholder"
-      />
+        :placeholder="placeholder" />
       <div class="absolute inset-y-0 right-0 pr-2 flex items-center cursor-pointer" @click="onClearClick">
         <div
-          class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center"
-        >
+          class="flex justify-center items-center rounded-full bg-gray-500 text-white w-4 h-4 leading-tight text-center">
           <CloseIcon class="w-3 h-3" />
         </div>
       </div>
@@ -46,11 +40,9 @@ export default {
   computed: {
     computedValue: {
       get() {
-        console.log(this.value)
         return this.value
       },
       set(newVal) {
-        console.log(newVal)
         this.$emit(events.input, newVal)
       },
     },

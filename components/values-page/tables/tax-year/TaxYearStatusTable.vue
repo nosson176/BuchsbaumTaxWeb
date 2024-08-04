@@ -17,28 +17,16 @@
     <template #body>
       <draggable :value="taxYearStatus" v-bind="dragOptions" @start="startDrag" @end="onDrop">
         <transition-group type="transition" :name="transitionName">
-          <TableRow
-            v-for="(type, idx) in taxYearStatus"
-            :key="type.id"
-            class="pr-1"
-            :selected="isSelected(type)"
-            @click="toggleSelected(type)"
-          >
+          <TableRow v-for="(type, idx) in taxYearStatus" :key="type.id" class="pr-1" :selected="isSelected(type)"
+            @click="toggleSelected(type)">
             <div class="table-col bg-gray-200 mr-1">
               <ClickCell>{{ idx + 1 }}</ClickCell>
             </div>
             <div class="table-col">
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
             </div>
-            <div
-              class="table-col w-full flex justify-between items-center"
-              @click="toggleEditable(type.id)"
-            >
-              <EditableInput
-                v-model="type.value"
-                :is-editable="isEditable(type.id)"
-                @blur="onBlur"
-              />
+            <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
+              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur" />
               <span class="pr-1">{{ detailCount(type.id) }}</span>
             </div>
             <div class="table-col xs">
@@ -121,7 +109,6 @@ export default {
       const value = this.taxYearStatus.find((type) => type.id === this.editableId)
       if (value) {
         this.$api.updateValueType(this.headers, { valueId: value.id }, value)
-          .then(response => console.log('Update successful:', response))
           .catch(error => console.error('Update failed:', error))
       } else {
         console.error('No value found for ID:', this.editableId)
