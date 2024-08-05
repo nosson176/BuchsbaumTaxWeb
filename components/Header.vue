@@ -37,7 +37,10 @@
         <nuxt-link :to="homeRoute">
           <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
-        <button @click="logout">
+        <!-- <button @click="openLogoutModal">
+          <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+        </button> -->
+        <button @click="openLogoutModal">
           <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </button>
       </div>
@@ -51,13 +54,16 @@
     <Modal :showing="showMessageModal" @hide="closeMessageModal">
       <SendMessage :response-id="responseId" :thread-id="threadId" @hide="closeMessageModal" />
     </Modal>
+    <Modal :showing="ShowLogoutConfirmationModel" @hide="closeLogoutConfirmationModel">
+      <LogoutConfirmationModal @confirm-logout="clockOutWorkTime" @hide="closeLogoutConfirmationModel" />
+    </Modal>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
-import { promptConfirm } from '~/shared/utility';
+// import { promptConfirm } from '~/shared/utility';
 
 export default {
   name: 'Header',
@@ -69,6 +75,7 @@ export default {
       responseId: null,
       threadId: null,
       intervalId: null,
+      ShowLogoutConfirmationModel: false
     }
   },
   computed: {
@@ -171,18 +178,40 @@ export default {
     closeMessageModal() {
       this.showMessageModal = false
     },
+    openLogoutModal() {
+      console.log("run")
+      this.ShowLogoutConfirmationModel = true
+    },
+    closeLogoutConfirmationModel() {
+      this.ShowLogoutConfirmationModel = false
+      this.$api.signout()
+    },
     async loadInbox() {
       await this.$api.getInbox(this.headers)
     },
-    async logout() {
-      const headers = await this.$api.getHeaders()
-      const now = new Date()
-      const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    logout() {
+      // const headers = await this.$api.getHeaders()
+      // const now = new Date()
+      // const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
       // const startRange = new Date(now.getFullYear(), now.getMonth()).getTime()
-      const result = promptConfirm()
-      if (result === 'yes') await this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
+      // const result = promptConfirm()
+      // if (result === 'yes') await this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
 
       this.$api.signout()
+    },
+
+    clockOutWorkTime() {
+      console.log("clockOutWorkTime");
+      // Logic to handle clock out work time
+      const headers = this.$api.getHeaders()
+      const now = new Date()
+      const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
+        .catch((error) => {
+          console.error("Error logging out:", error);
+        });
+      this.$api.signout(); // Log out the user
+
     },
 
     irsPopup() {
