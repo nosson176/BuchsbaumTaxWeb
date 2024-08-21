@@ -143,6 +143,8 @@ export default {
       this.$api.updateMessage(this.headers, { messageId: message.id }, { status: 'read' }).then(this.loadInbox)
     },
     async loadInbox() {
+      console.log("getInbox22222")
+
       await this.$api.getInbox(this.headers)
     },
     deleteMessage({ id }) {

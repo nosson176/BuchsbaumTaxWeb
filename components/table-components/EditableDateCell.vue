@@ -3,18 +3,8 @@
     <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <date-picker
-      v-if="isEditable"
-      ref="input"
-      v-model="computedValue"
-      tabindex="0"
-      :value-type="valueType"
-      :format="format"
-      autofocus
-      :type="type"
-      :open.sync="showPicker"
-      @focus="onFocus"
-    >
+    <date-picker v-if="isEditable" ref="input" v-model="computedValue" tabindex="0" :value-type="valueType"
+      :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus">
       <template #header="{ emit }">
         <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="emit(new Date())">
           Today

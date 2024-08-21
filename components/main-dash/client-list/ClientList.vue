@@ -3,14 +3,9 @@
     <div class="bg-white sticky top-0 shadow">
       <AddRowButton @click="onAddRowClick" />
     </div>
-    <div
-      v-for="client in displayedClients"
-      :ref="client.id"
-      :key="`${client.id}  ${isSelected(client)}`"
+    <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id}  ${isSelected(client)}`"
       class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
-      :class="{ selected: isSelected(client) }"
-      @click="openChangeClientModal(client)"
-    >
+      :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
       <div class="w-5">
         <FlagIcon class="w-4 h-4" :color="flagColor(client)" />
       </div>
@@ -23,12 +18,8 @@
       </div>
     </div>
     <Modal :showing="showChangeClientModal" @hide="closeChangeClientModal">
-      <ChangeClient
-        :switch-to-client-name="switchToClient.lastName"
-        @switchClients="selectClient(switchToClient)"
-        @addLog="addLog"
-        @hide="closeChangeClientModal"
-      />
+      <ChangeClient :switch-to-client-name="switchToClient.lastName" @switchClients="selectClient(switchToClient)"
+        @addLog="addLog" @hide="closeChangeClientModal" />
     </Modal>
   </div>
 </template>
@@ -85,11 +76,10 @@ export default {
     this.selectedClientId = this.selectedClient.id
   },
   methods: {
-    selectClient({ id }) {
+    async selectClient({ id }) {
       this.selectedClientId = id
       const headers = this.headers
-      this.$api.getClientData(headers, id)
-
+      await this.$api.getClientData(headers, id)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),

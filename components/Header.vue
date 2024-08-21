@@ -4,7 +4,8 @@
       <button type="button"
         class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         aria-expanded="true" @click="openSmsModal">
-        Send SMS
+        Send SMSda
+        <StopIcon />
       </button>
       <div class="ml-auto">
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
@@ -19,9 +20,9 @@
         <a href="#" @click="irsPopup">
           <GlobeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </a>
-        <nuxt-link :to="shekelatorRoute">
+        <a href="#" @click="shekelatorPopup">
           <DollarIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
-        </nuxt-link>
+        </a>
         <nuxt-link :to="workTimeRoute">
           <ClockIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
@@ -37,9 +38,6 @@
         <nuxt-link :to="homeRoute">
           <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
-        <!-- <button @click="openLogoutModal">
-          <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
-        </button> -->
         <button @click="openLogoutModal">
           <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </button>
@@ -63,7 +61,6 @@
 <script>
 import { mapState } from 'vuex'
 import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
-// import { promptConfirm } from '~/shared/utility';
 
 export default {
   name: 'Header',
@@ -119,9 +116,9 @@ export default {
     mapsRoute() {
       return { name: routes.maps }
     },
-    shekelatorRoute() {
-      return { name: routes.shekelator }
-    },
+    // shekelatorRoute() {
+    //   return { name: routes.shekelator }
+    // },
     headers() {
       return this.$api.getHeaders()
     },
@@ -145,11 +142,11 @@ export default {
   created() {
     this.loadInbox()
   },
-  mounted() {
-    this.intervalId = setInterval(() => {
-      this.loadInbox()
-    }, 60000)
-  },
+  // mounted() {
+  //   this.intervalId = setInterval(() => {
+  //     this.loadInbox()
+  //   }, 60000)
+  // },
   beforeDestroy() {
     clearInterval(this.intervalId)
   },
@@ -187,6 +184,7 @@ export default {
       this.$api.signout()
     },
     async loadInbox() {
+      console.log("getInbox")
       await this.$api.getInbox(this.headers)
     },
     logout() {
@@ -216,6 +214,9 @@ export default {
 
     irsPopup() {
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
+    },
+    shekelatorPopup() {
+      window.open('https://docs.google.com/spreadsheets/d/1YZcySBg-aRoG7xlUcZ3kU-9avK8PLMH-HLz352irqts/edit?gid=0#gid=0', 'popup', 'width=770,height=770')
     },
     createNewMessage(responseId, threadId) {
       this.responseId = responseId

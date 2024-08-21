@@ -26,6 +26,7 @@ export const models = Object.freeze({
   selectedContactId: 'selectedContactId',
   currentUser: 'currentUser',
   selectedTaxYearId: 'selectedTaxYearId',
+  fbars:'fbars'
 })
 
 // Store Mutations

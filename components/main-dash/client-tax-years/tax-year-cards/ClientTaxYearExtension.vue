@@ -1,67 +1,30 @@
 <template>
-  <div
-    class="text-xs flex transform -rotate-90"
-    @keydown.tab.prevent
-    @keyup.tab.exact="goToNextItem"
-    @keyup.shift.tab.exact="goToPrevItem"
-  >
+  <div class="text-xs flex transform -rotate-90" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
+    @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div class="mx-2" @click="setEditable('statusDate')">
-      <EditableDate
-        v-model="formModel.statusDate"
-        placeholder="Date"
-        type="date"
-        :is-editable="isEditable('statusDate')"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
+      <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
+        :is-editable="isEditable('statusDate')" @blur="onBlur" @input="handleUpdate" />
     </div>
     <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
-      <EditableSelectCell
-        v-model="formModel.status"
-        class="font-bold ml-2 whitespace-nowrap"
-        :options="statusOptions"
-        :is-editable="isEditable('status')"
-        placeholder="Status"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
+      <EditableSelectCell v-model="formModel.status" class="font-bold ml-2 whitespace-nowrap " :options="statusOptions"
+        :is-editable="isEditable('status')" placeholder="Status" @blur="onBlur" @input="handleUpdate" />
     </div>
     <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-      <EditableSelectCell
-        v-model="formModel.status"
-        class="font-bold ml-2 whitespace-nowrap transform rotate-90"
-        :options="statusOptions"
-        is-editable
-        placeholder="Status"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
+      <EditableSelectCell v-model="formModel.status" class="font-bold ml-2 whitespace-nowrap transform rotate-90"
+        :options="statusOptions" is-editable placeholder="Status" @blur="onBlur" @input="handleUpdate" />
     </div>
     <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
-      <EditableSelectCell
-        v-model="formModel.taxForm"
-        class="font-bold ml-2 whitespace-nowrap"
-        :options="taxFormOptions"
-        :is-editable="isEditable('taxForm')"
-        placeholder="Tax Form"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
+      <EditableSelectCell v-model="formModel.taxForm" class="font-bold ml-2 whitespace-nowrap" :options="taxFormOptions"
+        :is-editable="isEditable('taxForm')" placeholder="Tax Form" @blur="onBlur" @input="handleUpdate" />
     </div>
     <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-      <EditableSelectCell
-        v-model="formModel.taxForm"
-        class="font-bold ml-2 whitespace-nowrap transform rotate-90"
-        :options="taxFormOptions"
-        is-editable
-        placeholder="Tax Form"
-        @blur="onBlur"
-        @input="handleUpdate"
-      />
+      <EditableSelectCell v-model="formModel.taxForm" class="font-bold ml-2 whitespace-nowrap transform rotate-90"
+        :options="taxFormOptions" is-editable placeholder="Tax Form" @blur="onBlur" @input="handleUpdate" />
     </div>
   </div>
 </template>
+
 
 <script>
 import { mapState } from 'vuex'
@@ -78,7 +41,7 @@ export default {
   props: {
     extension: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   data() {
@@ -144,4 +107,16 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.ext-i {
+  position: relative;
+  transform: rotate(90deg);
+}
+
+
+.select-cell-ext {
+  transform: rotate(90deg);
+  min-width: 40px;
+
+}
+</style>

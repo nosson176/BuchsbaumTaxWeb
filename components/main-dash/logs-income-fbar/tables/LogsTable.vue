@@ -31,9 +31,13 @@
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
-        <div class="table-header sm flex">
-          <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="resetClock" />
+        <div v-if="playTime" class="table-header sm flex">
+          <PauseIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="stopTime" />
           {{ currentTimeSpent }}
+        </div>
+        <div v-else class="table-header sm flex">
+          <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="runTime" />
+          -- : --
         </div>
         <div class="table-header xs"></div>
       </TableHeader>
@@ -44,14 +48,15 @@
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-priority`" class="table-col xs" @click="toggleEditable(`${idx}-priority`, log.id)">
-          <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)" @blur="onBlur"
-            @tab="goToNextColumn" />
+        <div :id="`${idx}-priority`" class="table-col xs"
+          @click="toggleEditable(`${idx}-priority`, log.id, log.priority)">
+          <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)"
+            @blur="onBlur(log.priority)" @tab="goToNextColumn" />
         </div>
-        <div :id="`${idx}-years`" class="table-col year" @click="toggleEditable(`${idx}-years`, log.id)">
+        <div :id="`${idx}-years`" class="table-col year" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
-              @blur="onBlur" />
+              @blur="onBlur(log.years)" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
@@ -61,25 +66,30 @@
             </template>
           </Tooltip>
         </div>
-        <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id)">
-          <EditableTextAreaCell v-model="log.note" :is-editable="isEditable(`${idx}-note`)" @blur="onBlur" />
+        <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
+          <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note)"
+            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note)" />
         </div>
-        <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id)">
-          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)" @blur="onBlur" />
+        <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
+          <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
+            @blur="onBlur(log.logDate)" />
         </div>
-        <div :id="`${idx}-alarmDate`" class="table-col sm" @click="toggleEditable(`${idx}-alarmDate`, log.id)">
+        <div :id="`${idx}-alarmDate`" class="table-col sm"
+          @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
           <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)"
-            @blur="onBlur" />
+            @blur="onBlur(log.alarmDate)" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon v-if="log.alarmDate" class="h-5 w-5 cursor-pointer"
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'" />
         </div>
-        <div :id="`${idx}-alarmUserName`" class="table-col sm" @click="toggleEditable(`${idx}-alarmUserName`, log.id)">
+        <div :id="`${idx}-alarmUserName`" class="table-col sm"
+          @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions" @blur="onBlur" />
+            :options="userOptions" @blur="onBlur(log.alarmUserName)" />
         </div>
-        <div :id="`${idx}-secondsSpent`" class="table-col sm" @click="toggleEditable(`${idx}-secondsSpent`, log.id)">
+        <div :id="`${idx}-secondsSpent`" class="table-col sm"
+          @click="toggleEditable(`${idx}-secondsSpent`, log.id, log.timeSpent)">
           <EditableInputCell v-model="log.timeSpent" :is-editable="isEditable(`${idx}-secondsSpent`)"
             @blur="updateSecondsSpent(log)" @keypress.native.enter="updateSecondsSpent(log)" />
         </div>
@@ -120,7 +130,9 @@ export default {
       filterByAlarmStatusIndex: 0,
       currentTimeOnLoad: 0,
       currentTimeSpent: 0,
+      playTime: true,
       intervalId: '',
+      oldValue: '',
     }
   },
   computed: {
@@ -131,6 +143,8 @@ export default {
       models.search,
       models.cmdPressed,
       models.secondsSpentOnClient,
+      models.clientSearchOption,
+      models.clientSearchValue
     ]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
@@ -141,6 +155,14 @@ export default {
         log.timeSpent = this.getTimeSpentOnClient(log)
         return log
       })
+      if (
+        this.clientSearchOption === "logs::note" &&
+        this.clientSearchValue.length > 0 &&
+        (this.searchInput === '' || this.searchInput === undefined)
+      ) {
+        const filterBySearchInput = searchArrOfObjs(mappedLogs, this.clientSearchValue)
+        return boldSearchWord(filterBySearchInput, this.clientSearchValue)
+      }
       const filterBySearchInput = searchArrOfObjs(mappedLogs, this.searchInput)
       return boldSearchWord(filterBySearchInput, this.searchInput)
     },
@@ -214,7 +236,7 @@ export default {
     },
   },
   created() {
-    this.resetClock()
+    this.resetClock("created")
     if (this.$store.getters[models.selectedClient]?.id) {
       this.intervalId = setInterval(() => {
         const timeSpent = this.getCurrentTimeSpent()
@@ -228,11 +250,31 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
-    toggleEditable(id, logId) {
-      this.handleUpdate()
-      this.editableLogId = logId
-      if (!(this.editableId === id)) {
-        this.editableId = id
+    runTime() {
+      clearInterval(this.intervalId)
+      this.currentTimeOnLoad = new Date()
+      this.playTime = true
+      this.intervalId = setInterval(() => {
+        const timeSpent = this.getCurrentTimeSpent()
+        if (timeSpent) {
+          this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent })
+        }
+      }, 1000)
+    },
+    stopTime() {
+      clearInterval(this.intervalId)
+      this.resetClock()
+      this.playTime = false
+    },
+    toggleEditable(id, logId, value) {
+      if (!value) {
+        const val = id.split("-")[1]
+        const log = this.displayedLogs.find((log) => log.id === logId)
+        this.oldValue = log[val]
+      } else this.oldValue = value
+      if (this.editableId !== id) {
+        this.editableId = id;
+        this.editableLogId = logId;
       }
     },
     isEditable(id) {
@@ -294,9 +336,13 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
-    onBlur() {
-      this.handleUpdate()
-      this.editableId = ''
+    onBlur(val) {
+      if (this.oldValue !== val && this.oldValue !== undefined) {
+        this.handleUpdate()
+        this.goToNextColumn()
+        return
+      }
+      this.editableId = ""
     },
     isTodayOrPast(date) {
       const parsedDate = parseISO(date)
@@ -372,7 +418,8 @@ export default {
       const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
-      this.currentTimeSpent = `${hh}:${mm}`
+      const ss = duration.minutes < 10 ? '0' + duration.seconds : duration.seconds
+      this.currentTimeSpent = `${hh}:${mm}:${ss}`
       return this.formatToSeconds(duration)
     },
     formatToSeconds(duration) {
@@ -392,8 +439,8 @@ export default {
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
       return seconds > 59 ? `${hh}:${mm}` : ''
     },
-    resetClock() {
-      this.currentTimeOnLoad = new Date()
+    resetClock(e) {
+      if (e === "created") this.currentTimeOnLoad = new Date()
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true })
     },
