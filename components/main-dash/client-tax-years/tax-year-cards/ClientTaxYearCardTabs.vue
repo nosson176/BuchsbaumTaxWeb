@@ -1,22 +1,13 @@
 <template>
   <div class="flex w-full border-t border-gray-300 space-x-1 shadow">
     <draggable :value="filings" v-bind="dragOptions" class="flex w-full" @start="startDrag" @end="onDrop">
-      <transition-group
-        ref="group"
-        type="transition"
-        :name="transitionName"
-        class="flex overflow-auto whitespace-nowrap"
-        @mouseenter="mouseOver = true"
-      >
+      <transition-group ref="group" type="transition" :name="transitionName"
+        class="flex overflow-auto whitespace-nowrap" @mouseenter="mouseOver = true">
         <div v-for="(filing, idx) in filings" :key="filing.id">
           <sup class="text-[10px] text-indigo-300"> {{ isOverflowing && idx === 4 ? '&raquo;' : '' }}</sup>
           <Tab :active="idx === activeFilingIdx">
-            <span
-              v-if="displayTab(filing)"
-              class="tab-text"
-              :class="{ 'text-gray-300': !filing.taxForm && !filing.state }"
-              @click="handleClick(idx)"
-            >
+            <span v-if="displayTab(filing)" class="tab-text"
+              :class="{ 'text-gray-300': !filing.taxForm && !filing.state }" @click="handleClick(idx)">
               {{ filing.taxForm || filing.state || filing.filingType }}
             </span>
           </Tab>
@@ -98,6 +89,7 @@ export default {
     },
     onDrop(evt) {
       const item = JSON.parse(JSON.stringify(this.filings))[evt.oldIndex]
+      console.log(item)
       item.sortOrder = evt.newIndex + 1
       this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: item.id }, item)
       this.dragActive = false

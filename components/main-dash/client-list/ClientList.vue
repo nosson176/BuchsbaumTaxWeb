@@ -3,14 +3,9 @@
     <div class="bg-white sticky top-0 shadow">
       <AddRowButton @click="onAddRowClick" />
     </div>
-    <div
-      v-for="client in displayedClients"
-      :ref="client.id"
-      :key="`${client.id}  ${isSelected(client)}`"
+    <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id}  ${isSelected(client)}`"
       class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
-      :class="{ selected: isSelected(client) }"
-      @click="openChangeClientModal(client)"
-    >
+      :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
       <div class="w-5">
         <FlagIcon class="w-4 h-4" :color="flagColor(client)" />
       </div>
@@ -23,19 +18,15 @@
       </div>
     </div>
     <Modal :showing="showChangeClientModal" @hide="closeChangeClientModal">
-      <ChangeClient
-        :switch-to-client-name="switchToClient.lastName"
-        @switchClients="selectClient(switchToClient)"
-        @addLog="addLog"
-        @hide="closeChangeClientModal"
-      />
+      <ChangeClient :switch-to-client-name="switchToClient.lastName" @switchClients="selectClient(switchToClient)"
+        @addLog="addLog" @hide="closeChangeClientModal" />
     </Modal>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, routes, secondsNeededToDisplayModal, tabs } from '~/shared/constants'
+import { events, models, mutations, routes, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -53,7 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser]),
+    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1]),
     displayedClients() {
       return this.filteredClients
     },
@@ -85,11 +76,10 @@ export default {
     this.selectedClientId = this.selectedClient.id
   },
   methods: {
-    selectClient({ id }) {
+    async selectClient({ id }) {
       this.selectedClientId = id
       const headers = this.headers
-      this.$api.getClientData(headers, id)
-
+      await this.$api.getClientData(headers, id)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
@@ -131,9 +121,10 @@ export default {
       }
     },
     openChangeClientModal(client) {
+      console.log(this.$store.state.secondsNeededToDisplayModal1)
       if (
         this.selectedClient?.id &&
-        this.$store.getters[models.secondsSpentOnClient] > secondsNeededToDisplayModal &&
+        this.$store.getters[models.secondsSpentOnClient] > this.$store.state.secondsNeededToDisplayModal1 &&
         this.$store.getters[models.promptOnClientChange]
       ) {
         this.switchToClient = client

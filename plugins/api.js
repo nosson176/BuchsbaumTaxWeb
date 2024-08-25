@@ -287,11 +287,22 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating tax personal'))
       .finally(() => getClientData(headers, clientId))
 
-  const updateContact = (headers, { clientId, contactId = '' }, contact) =>
-    $axios
-      .put(`/contacts/${contactId}`, contact, { headers })
-      .catch(() => $toast.error('Error updating contact'))
-      .finally(() => getClientData(headers, clientId))
+      const updateContact = async (headers, { clientId, contactId = '' }, contact) => {
+        try {
+          await $axios.put(`/contacts/${contactId}`, contact, { headers });
+        } catch (error) {
+          console.error('Error updating contact:', error);
+          $toast.error('Error updating contact');
+        } finally {
+          try {
+            const data = await getClientData(headers, clientId);
+            console.log(data);
+          } catch (error) {
+            console.error('Error fetching client data:', error);
+            $toast.error('Error fetching client data');
+          }
+        }
+      };
 
   const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
     const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
@@ -320,6 +331,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .put(`/filings/${filingId}`, filing, { headers })
       .catch(() => $toast.error('Error updating filing'))
       .finally(() => getClientData(headers, clientId))
+  
+      const updateFilingDelivary = (headers, { clientId, oldContectDelivary, newContectDelivary }) =>
+        $axios
+          .put('/filings/updateFiling', {
+            clientId,
+            oldContectDelivary,
+            newContectDelivary
+          }, { headers })
+          .catch(() => $toast.error('Error updating filing'))
+          .finally(() => getClientData(headers, clientId));
 
   const updateTaxYear = (headers, { clientId, taxYearId }, taxYear) =>
     $axios
@@ -455,6 +476,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateFbar,
     updateFee,
     updateFiling,
+    updateFilingDelivary,
     updateIncome,
     updateLog,
     updateSmartview,

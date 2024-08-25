@@ -1,80 +1,42 @@
 <template>
-  <div
-    class="fbar"
-    @click="setEditable('')"
-    @keydown.tab.prevent
-    @keyup.tab.exact="goToNextItem"
-    @keyup.shift.tab.exact="goToPrevItem"
-  >
+  <div class="fbar" @click="setEditable('')" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
+    @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
-    <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
-      <EditableSelectCell
-        v-model="formModel.fileType"
-        class="font-bold ml-2 whitespace-nowrap"
-        :options="fileTypeOptions"
-        :is-editable="isEditable('fileType')"
-        placeholder="Type"
-        @blur="onBlur"
-      />
+    <div class="fbar-i">
+      <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
+        <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap"
+          :options="fileTypeOptions" :is-editable="false" placeholder="Type" />
+      </div>
+      <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
+        <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap select-cell"
+          :options="fileTypeOptions" :is-editable="true" placeholder="Type" @blur="onBlur" />
+      </div>
     </div>
-    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-48">
-      <EditableSelectCell
-        v-model="formModel.fileType"
-        class="font-bold ml-2 whitespace-nowrap select-cell"
-        :options="fileTypeOptions"
-        is-editable
-        placeholder="Type"
-        @blur="onBlur"
-      />
+    <div class="fbar-i">
+      <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
+        <EditableSelectCell v-model="formModel.status" :options="statusOptions" class="whitespace-nowrap"
+          :is-editable="false" placeholder="Status" />
+      </div>
+      <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40 ">
+        <EditableSelectCell v-model="formModel.status" :options="statusOptions" class="whitespace-nowrap select-cell"
+          :is-editable="true" placeholder="Status" @blur="onBlur" />
+      </div>
     </div>
-    <div v-if="!isEditable('status')" class="mx-2" @click.stop="setEditable('status')">
-      <EditableSelectCell
-        v-model="formModel.status"
-        :options="statusOptions"
-        class="whitespace-nowrap"
-        :is-editable="isEditable('status')"
-        placeholder="Status"
-        @blur="onBlur"
-      />
+    <div class="fbar-i">
+      <div v-if="!isEditable('statusDetail')" @click.stop="setEditable('statusDetail')">
+        <EditableSelectCell v-model="formModel.statusDetail" :options="statusDetailOptions" class="whitespace-nowrap"
+          :is-editable="false" placeholder="Detail" />
+      </div>
+      <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
+        <EditableSelectCell v-model="formModel.statusDetail" class="whitespace-nowrap select-cell"
+          :options="statusDetailOptions" :is-editable="true" placeholder="Detail" @blur="onBlur" />
+      </div>
     </div>
-    <div v-else v-click-outside="onBlur" class="absolute top-0 left-12 h-48 w-48">
-      <EditableSelectCell
-        v-model="formModel.status"
-        :options="statusOptions"
-        class="whitespace-nowrap select-cell"
-        is-editable
-        placeholder="Status"
-        @blur="onBlur"
-      />
-    </div>
-    <div v-if="!isEditable('statusDetail')" class="mx-2" @click.stop="setEditable('statusDetail')">
-      <EditableSelectCell
-        v-model="formModel.statusDetail"
-        :options="statusDetailOptions"
-        class="whitespace-nowrap"
-        :is-editable="isEditable('statusDetail')"
-        placeholder="Detail"
-        @blur="onBlur"
-      />
-    </div>
-    <div v-else v-click-outside="onBlur" class="absolute top-0 left-12 h-48 w-48">
-      <EditableSelectCell
-        v-model="formModel.statusDetail"
-        :options="statusDetailOptions"
-        class="whitespace-nowrap select-cell"
-        is-editable
-        placeholder="Detail"
-        @blur="onBlur"
-      />
-    </div>
-    <div @click.stop="setEditable('statusDate')">
-      <EditableDate
-        v-model="formModel.statusDate"
-        placeholder="Date"
-        type="date"
-        :is-editable="isEditable('statusDate')"
-        @blur="onBlur"
-      />
+    <div class="mt-85">
+      <div class="fbar-i" @click.stop="setEditable('statusDate')">
+        <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
+          :is-editable="isEditable('statusDate')" @blur="onBlur" />
+      </div>
     </div>
   </div>
 </template>
@@ -84,7 +46,7 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
-const items = ['fileType', 'status', 'statusDate']
+const items = ['fileType', 'status', 'statusDetail', 'statusDate']
 
 export default {
   name: 'ClientTaxYearFbar',
@@ -94,7 +56,7 @@ export default {
   props: {
     fbar: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
   },
   data() {
@@ -141,9 +103,7 @@ export default {
     },
     goToNextItem() {
       const currentCell = this.editable
-      const itemIndex = items.findIndex((col) => {
-        return col === currentCell
-      })
+      const itemIndex = items.findIndex((col) => col === currentCell)
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
         this.setEditable(nextCell)
@@ -163,13 +123,22 @@ export default {
 
 <style scoped>
 .fbar {
-  @apply text-xs flex relative;
+  @apply text-xs flex flex-col items-center p-2;
 
+  justify-content: space-between;
+  min-height: 250px;
+  width: 100%;
+}
+
+.fbar-i {
+  position: relative;
   transform: rotate(90deg);
 }
+
 
 .select-cell {
   transform: rotate(270deg);
   min-width: 40px;
+  margin-top: 55px;
 }
 </style>

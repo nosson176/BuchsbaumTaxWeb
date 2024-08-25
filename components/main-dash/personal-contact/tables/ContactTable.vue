@@ -20,69 +20,48 @@
     <template #body>
       <draggable :value="displayedContacts" v-bind="dragOptions" @start="startDrag" @end="onDrop">
         <transition-group type="transition" :name="transitionName">
-          <TableRow
-            v-for="(contact, idx) in displayedContacts"
-            :key="contact.id"
-            :idx="idx"
-            :class="{ disabled: !contact.enabled }"
-          >
+          <TableRow v-for="(contact, idx) in displayedContacts" :key="contact.id" :idx="idx"
+            :class="{ disabled: !contact.enabled }">
             <div class="table-col bg-gray-200 mr-1">
               <ClickCell>{{ idx + 1 }}</ClickCell>
             </div>
             <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
-              <EditableCheckBoxCell
-                v-model="contact.enabled"
-                :is-editable="isEditable(`${idx}-disabled`)"
-                @input="handleUpdate"
-              />
+              <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)"
+                @input="handleUpdate" />
             </div>
-            <div
-              :id="`${idx}-contactType`"
-              class="table-col-primary normal"
-              @click="toggleEditable(`${idx}-contactType`, contact.id)"
-            >
-              <EditableSelectCell
-                v-model="contact.contactType"
-                :is-editable="isEditable(`${idx}-contactType`)"
-                :options="contactTypeOptions"
-                @blur="onBlur"
-              />
+            <div :id="`${idx}-contactType`" class="table-col-primary normal"
+              @click="toggleEditable(`${idx}-contactType`, contact.id, contact.contactType)">
+              <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)"
+                :options="contactTypeOptions" @blur="onBlur(contact.contactType)" />
             </div>
-            <div :id="`${idx}-memo`" class="table-col normal" @click="toggleEditable(`${idx}-memo`, contact.id)">
-              <EditableInputCell v-model="contact.memo" :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur" />
+            <div :id="`${idx}-memo`" class="table-col normal"
+              @click="toggleEditable(`${idx}-memo`, contact.id, contact.memo)">
+              <EditableInputCell v-model="contact.memo" @keyup.enter.native="onBlur(contact.memo)"
+                :is-editable="isEditable(`${idx}-memo`)" @blur="onBlur(contact.memo)" />
             </div>
             <div class="table-col xs">
               <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
                 <MapIcon class="w-4 h-4 text-indigo-500" />
               </button>
             </div>
-            <div
-              :id="`${idx}-mainDetail`"
-              class="table-col lg"
-              @click="toggleEditable(`${idx}-mainDetail`, contact.id)"
-            >
-              <EditableInputCell
-                v-model="contact.mainDetail"
-                :is-editable="isEditable(`${idx}-mainDetail`)"
-                @blur="onBlur"
-              />
+            <div :id="`${idx}-mainDetail`" class="table-col lg"
+              @click="toggleEditable(`${idx}-mainDetail`, contact.id, contact.mainDetail)">
+              <EditableInputCell v-model="contact.mainDetail" @keyup.enter.native="onBlur(contact.mainDetail)"
+                :is-editable="isEditable(`${idx}-mainDetail`)" @blur="onBlur(contact.mainDetail)" />
             </div>
-            <div
-              :id="`${idx}-secondaryDetail`"
-              class="table-col lg"
-              @click="toggleEditable(`${idx}-secondaryDetail`, contact.id)"
-            >
-              <EditableInputCell
-                v-model="contact.secondaryDetail"
-                :is-editable="isEditable(`${idx}-secondaryDetail`)"
-                @blur="onBlur"
-              />
+            <div :id="`${idx}-secondaryDetail`" class="table-col lg"
+              @click="toggleEditable(`${idx}-secondaryDetail`, contact.id, contact.secondaryDetail)">
+              <EditableInputCell v-model="contact.secondaryDetail" @keyup.enter.native="onBlur(contact.secondaryDetail)"
+                :is-editable="isEditable(`${idx}-secondaryDetail`)" @blur="onBlur(contact.secondaryDetail)" />
             </div>
-            <div :id="`${idx}-state`" class="table-col xs" @click="toggleEditable(`${idx}-state`, contact.id)">
-              <EditableInputCell v-model="contact.state" :is-editable="isEditable(`${idx}-state`)" @blur="onBlur" />
+            <div :id="`${idx}-state`" class="table-col xs"
+              @click="toggleEditable(`${idx}-state`, contact.id, contact.state)">
+              <EditableInputCell v-model="contact.state" @keyup.enter.native="onBlur(contact.state)"
+                :is-editable="isEditable(`${idx}-state`)" @blur="onBlur(contact.state)" />
             </div>
-            <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id)">
-              <EditableInputCell v-model="contact.zip" :is-editable="isEditable(`${idx}-zip`)" @blur="onBlur" />
+            <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id, contact.zip)">
+              <EditableInputCell v-model="contact.zip" @keyup.enter.native="onBlur(contact.zip)"
+                :is-editable="isEditable(`${idx}-zip`)" @blur="onBlur(contact.zip)" />
             </div>
             <div :id="`${idx}-delete`" class="table-col xs">
               <DeleteButton small @click="onDeleteClick(contact)" />
@@ -115,6 +94,7 @@ export default {
     return {
       editableId: '',
       editableContactId: '',
+      oldValue: '',
       dragActive: false,
       dragOptions: {
         animation: 200,
@@ -139,7 +119,9 @@ export default {
       }
     },
     contactTypeOptions() {
-      return this.valueTypes.contact_type.filter((type) => type.show)
+      return this.valueTypes.contact_type.filter((type) => {
+        return type.show
+      })
     },
     headers() {
       return this.$api.getHeaders()
@@ -168,20 +150,53 @@ export default {
     },
   },
   methods: {
-    toggleEditable(id, contactId) {
-      this.handleUpdate()
+    toggleEditable(id, contactId, value) {
+      if (!value) {
+        const val = id.split("-")[1]
+        const contact = this.displayedContacts.find((contact) => contact.id === contactId)
+        this.oldValue = contact[val]
+      } else this.oldValue = value
       this.editableContactId = contactId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
+
     },
     isEditable(id) {
       return this.editableId === id
     },
+    // handleUpdate() {
+    //   if (!this.editableContactId) return
+    //   const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId)
+    //   this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+    // },
     handleUpdate() {
-      if (!this.editableContactId) return
-      const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId)
+      if (!this.editableContactId) return;
+      const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId);
+
+      // Get only enabled contacts
+      const enabledContacts = this.displayedContacts.filter(c => c.enabled);
+
+      // Check if the contactType already exists among enabled contacts (excluding the current one)
+      const duplicate = enabledContacts.some(
+        c => c.contactType === contact.contactType && c.id !== this.editableContactId
+      );
+
+      if (duplicate) {
+        this.$toast.error('This contact type already exists for another enabled contact');
+
+        // Reset the value to the old one
+        contact.contactType = this.oldValue;
+
+        this.editableId = "";
+        return;
+      }
+
+      // Proceed with the update if no duplicate is found
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+        .catch(() => this.$toast.error('Error updating contact'))
+      this.$api.updateFilingDelivary(this.headers, { clientId: this.clientId, oldContectDelivary: this.oldValue, newContectDelivary: contact.contactType })
+      this.editableId = ""
     },
     onDeleteClick(contactObj) {
       if (this.showArchived) {
@@ -241,9 +256,14 @@ export default {
         this.toggleEditable(prevCell, this.editableLogId)
       }
     },
-    onBlur() {
-      this.handleUpdate()
-      this.editableId = ''
+    onBlur(val) {
+      if (this.oldValue !== val) {
+        console.log("in")
+        this.handleUpdate()
+        this.goToNextColumn()
+        return
+      }
+      this.editableId = ""
     },
     startDrag() {
       this.dragActive = true

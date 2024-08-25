@@ -1,10 +1,6 @@
 <template>
-  <Table
-    v-if="isClientSelected"
-    @keydown.tab.prevent
-    @keyup.tab.exact="goToNextColumn"
-    @keyup.shift.tab.exact="goToPrevColumn"
-  >
+  <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
+    @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
         <div class="table-header w-6 flex flex-col">
@@ -70,104 +66,70 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow
-        v-for="(fbar, idx) in displayedFbars"
-        :key="fbar.id"
-        :idx="idx"
-        :selected="isSelected(fbar.id)"
-        :class="{ disabled: !fbar.include }"
-      >
+      <TableRow v-for="(fbar, idx) in displayedFbars" :key="fbar.id" :idx="idx" :selected="isSelected(fbar.id)"
+        :class="{ disabled: !fbar.include }">
         <div class="table-col w-6 bg-gray-200">
           <ClickCell @click="toggleSelected(fbar)">{{ idx + 1 }}</ClickCell>
         </div>
         <div :id="`${idx}-include`" class="table-col w-6 p-1" @click="toggleEditable(`${idx}-include`, fbar.id)">
-          <EditableCheckBoxCell
-            v-model="fbar.include"
-            :is-editable="isEditable(`${idx}-include`)"
-            @input="handleUpdate"
-          />
+          <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)"
+            @input="handleUpdate" />
         </div>
-        <div :id="`${idx}-years`" class="table-col-primary xs" @click="toggleEditable(`${idx}-years`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.years"
-            :is-editable="isEditable(`${idx}-years`)"
-            :options="yearNameOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-years`" class="table-col-primary xs"
+          @click="toggleEditable(`${idx}-years`, fbar.id, fbar.years)">
+          <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions"
+            @blur="onBlur(fbar.years)" />
         </div>
-        <div :id="`${idx}-category`" class="table-col xs" @click="toggleEditable(`${idx}-category`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.category"
-            :is-editable="isEditable(`${idx}-category`)"
-            :options="categoryOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-category`" class="table-col xs"
+          @click="toggleEditable(`${idx}-category`, fbar.id, fbar.category)">
+          <EditableSelectCell v-model="fbar.category" :is-editable="isEditable(`${idx}-category`)"
+            :options="categoryOptions" @blur="onBlur(fbar.category)" />
         </div>
-        <div :id="`${idx}-taxGroup`" class="table-col sm" @click="toggleEditable(`${idx}-taxGroup`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.taxGroup"
-            :is-editable="isEditable(`${idx}-taxGroup`)"
-            :options="taxGroupOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-taxGroup`" class="table-col sm"
+          @click="toggleEditable(`${idx}-taxGroup`, fbar.id, fbar.taxGroup)">
+          <EditableSelectCell v-model="fbar.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)"
+            :options="taxGroupOptions" @blur="onBlur(fbar.taxGroup)" />
         </div>
-        <div :id="`${idx}-taxType`" class="table-col sm" @click="toggleEditable(`${idx}-taxType`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.taxType"
-            :is-editable="isEditable(`${idx}-taxType`)"
-            :options="taxTypeOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-taxType`" class="table-col sm"
+          @click="toggleEditable(`${idx}-taxType`, fbar.id, fbar.taxType)">
+          <EditableSelectCell v-model="fbar.taxType" :is-editable="isEditable(`${idx}-taxType`)"
+            :options="taxTypeOptions" @blur="onBlur(fbar.taxType)" />
         </div>
-        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.job"
-            :is-editable="isEditable(`${idx}-job`)"
-            :options="jobOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id, fbar.job)">
+          <EditableSelectCell v-model="fbar.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions"
+            @blur="onBlur(fbar.job)" />
         </div>
-        <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id)">
-          <EditableInputCell v-model="fbar.amount" :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur" />
+        <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id, fbar.amount)">
+          <EditableInputCell v-model="fbar.amount" @keyup.enter.native="onBlur(fbar.amount)"
+            :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur(fbar.amount)" />
         </div>
-        <div :id="`${idx}-currency`" class="table-col xs" @click="toggleEditable(`${idx}-currency`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.currency"
-            :is-editable="isEditable(`${idx}-currency`)"
-            :options="currencyOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-currency`" class="table-col xs"
+          @click="toggleEditable(`${idx}-currency`, fbar.id, fbar.currency)">
+          <EditableSelectCell v-model="fbar.currency" :is-editable="isEditable(`${idx}-currency`)"
+            :options="currencyOptions" @blur="onBlur(fbar.currency)" />
         </div>
-        <div :id="`${idx}-frequency`" class="table-col xs" @click="toggleEditable(`${idx}-frequency`, fbar.id)">
-          <EditableInputCell v-model="fbar.frequency" :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur" />
+        <div :id="`${idx}-frequency`" class="table-col xs"
+          @click="toggleEditable(`${idx}-frequency`, fbar.id, fbar.frequency)">
+          <EditableInputCell v-model="fbar.frequency" @keyup.enter.native="onBlur(fbar.frequency)"
+            :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur(fbar.frequency)" />
         </div>
-        <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id)">
-          <EditableInputCell
-            v-model="fbar.amountUSD"
-            readonly
-            :is-editable="isEditable(`${idx}-$`)"
-            rounded
-            currency
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id, fbar.amountUSD)">
+          <EditableInputCell v-model="fbar.amountUSD" @keyup.enter.native="onBlur(fbar.amountUSD)" readonly
+            :is-editable="isEditable(`${idx}-$`)" rounded currency @blur="onBlur(fbar.amountUSD)" />
         </div>
-        <div :id="`${idx}-documents`" class="table-col xs" @click="toggleEditable(`${idx}-documents`, fbar.id)">
-          <EditableSelectCell
-            v-model="fbar.documents"
-            :is-editable="isEditable(`${idx}-documents`)"
-            :options="docOptions"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-documents`" class="table-col xs"
+          @click="toggleEditable(`${idx}-documents`, fbar.id, fbar.documents)">
+          <EditableSelectCell v-model="fbar.documents" :is-editable="isEditable(`${idx}-documents`)"
+            :options="docOptions" @blur="onBlur(fbar.documents)" />
         </div>
-        <div :id="`${idx}-description`" class="table-col xl" @click="toggleEditable(`${idx}-description`, fbar.id)">
-          <EditableInputCell
-            v-model="fbar.description"
-            :is-editable="isEditable(`${idx}-description`)"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-description`" class="table-col xl"
+          @click="toggleEditable(`${idx}-description`, fbar.id, fbar.description)">
+          <EditableInputCell v-model="fbar.description" @keyup.enter.native="onBlur(fbar.description)"
+            :is-editable="isEditable(`${idx}-description`)" @blur="onBlur(fbar.description)" />
         </div>
-        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id)">
-          <EditableInputCell v-model="fbar.depend" :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur" />
+        <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id, fbar.depend)">
+          <EditableInputCell v-model="fbar.depend" @keyup.enter.native="onBlur(fbar.depend)"
+            :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur(fbar.depend)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(fbar.id)" />
@@ -245,6 +207,7 @@ export default {
       descriptionFilterValue: '',
       includeAll: '',
       selectedItems: {},
+      oldValue: '',
     }
   },
   computed: {
@@ -412,8 +375,13 @@ export default {
     },
   },
   methods: {
-    toggleEditable(id, fbarId) {
-      this.handleUpdate()
+    toggleEditable(id, fbarId, value) {
+      console.log("value=>", value)
+      if (!value) {
+        const val = id.split("-")[1]
+        const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
+        this.oldValue = fbar[val]
+      } else this.oldValue = value
       this.editableFbarId = fbarId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -507,9 +475,14 @@ export default {
         this.toggleEditable(prevCell, this.editableFbarId)
       }
     },
-    onBlur() {
-      this.handleUpdate()
-      this.editableId = ''
+    onBlur(val) {
+      if (this.oldValue !== val) {
+        console.log("in")
+        this.handleUpdate()
+        this.goToNextColumn()
+        return
+      }
+      this.editableId = ""
     },
     filterFbars(fbar) {
       let returnValue = true

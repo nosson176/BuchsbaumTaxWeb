@@ -3,24 +3,12 @@
     <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <date-picker
-      v-if="isEditable"
-      ref="input"
-      v-model="computedValue"
-      :value-type="valueType"
-      tabindex="0"
-      :format="format"
-      :type="type"
-      :placeholder="placeholder"
-      :open.sync="showPicker"
-      @focus="onFocus"
-      @input="onInput"
-    >
+    <date-picker v-if="isEditable" ref="input" v-model="computedValue" :value-type="valueType" tabindex="0"
+      :format="format" :type="type" :placeholder="placeholder" :open.sync="showPicker" @focus="onFocus"
+      @input="onInput">
       <template #header="{ emit }">
-        <button
-          class="w-full bg-gray-200 flex items-center justify-center mx-btn mx-btn-text"
-          @click="emit(new Date())"
-        >
+        <button class="w-full bg-gray-200 flex items-center justify-center mx-btn mx-btn-text"
+          @click="emit(new Date())">
           Today
         </button>
       </template>
@@ -65,6 +53,8 @@ export default {
         return this.value
       },
       set(newVal) {
+        console.log("BLUR")
+        this.$emit('input', newVal)
         this.$emit(events.blur)
       },
     },
