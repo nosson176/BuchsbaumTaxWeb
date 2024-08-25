@@ -17,6 +17,8 @@ const state = () => {
     // pre-initialised here to fix "reactivity" issues on first loads.
     loading: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: true }), {}),
     loaded: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: false }), {}),
+    globalPlayTime: true,
+    secondsNeededToDisplayModal1:600
   }
 }
 

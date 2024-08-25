@@ -31,7 +31,7 @@
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
-        <div v-if="playTime" class="table-header sm flex">
+        <div v-if="playTime && globalPlayTime" class="table-header sm flex">
           <PauseIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="stopTime" />
           {{ currentTimeSpent }}
         </div>
@@ -144,7 +144,8 @@ export default {
       models.cmdPressed,
       models.secondsSpentOnClient,
       models.clientSearchOption,
-      models.clientSearchValue
+      models.clientSearchValue,
+      models.globalPlayTime
     ]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
@@ -234,6 +235,9 @@ export default {
       }
       return usersArray
     },
+    globalPlaytimeValue() {
+      return this.$store.state.globalPlayTime;
+    }
   },
   created() {
     this.resetClock("created")
@@ -248,6 +252,18 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.intervalId)
+  },
+  watch: {
+    globalPlaytimeValue(newValue) {
+      if (newValue === false) {
+        this.stopTime();
+      } if (newValue === true) {
+        this.runTime()
+      }
+    },
+    selectedClient() {
+      this.runTime()
+    }
   },
   methods: {
     runTime() {
@@ -418,7 +434,7 @@ export default {
       const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
       const mm = duration.minutes < 10 ? '0' + duration.minutes : duration.minutes
-      const ss = duration.minutes < 10 ? '0' + duration.seconds : duration.seconds
+      const ss = duration.seconds < 10 ? '0' + duration.seconds : duration.seconds
       this.currentTimeSpent = `${hh}:${mm}:${ss}`
       return this.formatToSeconds(duration)
     },

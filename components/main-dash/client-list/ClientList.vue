@@ -26,7 +26,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models, mutations, routes, secondsNeededToDisplayModal, tabs } from '~/shared/constants'
+import { events, models, mutations, routes, tabs } from '~/shared/constants'
 
 export default {
   name: 'ClientList',
@@ -44,7 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser]),
+    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1]),
     displayedClients() {
       return this.filteredClients
     },
@@ -121,9 +121,10 @@ export default {
       }
     },
     openChangeClientModal(client) {
+      console.log(this.$store.state.secondsNeededToDisplayModal1)
       if (
         this.selectedClient?.id &&
-        this.$store.getters[models.secondsSpentOnClient] > secondsNeededToDisplayModal &&
+        this.$store.getters[models.secondsSpentOnClient] > this.$store.state.secondsNeededToDisplayModal1 &&
         this.$store.getters[models.promptOnClientChange]
       ) {
         this.switchToClient = client

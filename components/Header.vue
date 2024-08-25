@@ -4,9 +4,17 @@
       <button type="button"
         class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         aria-expanded="true" @click="openSmsModal">
-        Send SMSda
-        <StopIcon />
+        Send SMS
       </button>
+      <div
+        class="inline-flex justify-center shadow-sm px-2 py-1  text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+        <Dropdown shown-value="Time" :value="selectedTime" :options="[2, 5, 10, 15, 20]"
+          @input="chooseSecondsNeededToDisplayModal1" />
+      </div>
+      <div class="flex h-7 w-7 ml-5 cursor-pointer" @click="togglePlayTime">
+        <PauseIcon v-if="playTime" />
+        <PlayIcon v-else class="text-green-500" />
+      </div>
       <div class="ml-auto">
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
       </div>
@@ -62,6 +70,9 @@
 import { mapState } from 'vuex'
 import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
 
+/* eslint-disable no-unused-vars */
+const times = [2, 5, 10, 15, 20]
+
 export default {
   name: 'Header',
   data() {
@@ -72,11 +83,12 @@ export default {
       responseId: null,
       threadId: null,
       intervalId: null,
-      ShowLogoutConfirmationModel: false
+      ShowLogoutConfirmationModel: false,
+      selectedTime: null,
     }
   },
   computed: {
-    ...mapState([models.clientsHistory, models.inbox, models.currentUser]),
+    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime]),
     mappedClientHistory() {
       if (this.clientsHistoryLoaded) {
         return Object.values(this.clientsHistory).map((item) => {
@@ -89,6 +101,10 @@ export default {
       } else {
         return []
       }
+    },
+    playTime() {
+      console.log(this.globalPlayTime)
+      return this.globalPlayTime
     },
     clientsHistoryLoaded() {
       return !Array.isArray(this.clientsHistory.length) || !this.clientsHistory.length.length
@@ -116,9 +132,6 @@ export default {
     mapsRoute() {
       return { name: routes.maps }
     },
-    // shekelatorRoute() {
-    //   return { name: routes.shekelator }
-    // },
     headers() {
       return this.$api.getHeaders()
     },
@@ -151,11 +164,26 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
+    togglePlayTime() {
+      const newStatus = !this.globalPlayTime
+      this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
+    },
     getSelectedClient(selectedClientName) {
       const selectedClient = Object.values(this.clientsHistory).find((client) => client.lastName === selectedClientName)
       const headers = this.$api.getHeaders()
       const id = selectedClient.id
       this.$api.getClientData(headers, id)
+    },
+    chooseSecondsNeededToDisplayModal1(selectTime) {
+      console.log(selectTime)
+      this.selectedTime = selectTime
+      this.setTimeToSecond(selectTime)
+    },
+    setTimeToSecond(time) {
+      const t = time * 60
+      console.log(t)
+      this.$store.commit('setModelResponse', { model: 'secondsNeededToDisplayModal1', data: t })
+
     },
     openSmsModal() {
       this.showSmsModal = true
@@ -227,7 +255,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 a.nuxt-link-exact-active svg {
   @apply text-indigo-500 w-8;
 }
@@ -235,4 +263,4 @@ a.nuxt-link-exact-active svg {
 a.nuxt-link-exact-active svg:hover {
   @apply text-indigo-500 scale-100;
 }
-</style>
+</style> -->

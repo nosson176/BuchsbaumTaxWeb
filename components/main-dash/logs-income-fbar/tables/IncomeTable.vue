@@ -107,8 +107,8 @@
             @blur="onBlur(income.job)" />
         </div>
         <div :id="`${idx}-amount`" tabindex="-1" class="table-col sm"
-          @click="toggleEditable(`${idx}-amount`, income.id, income.amount)">
-          <EditableInputCell v-model="income.amount" @keyup.enter.native="onBlur(fbar.amount)"
+          @click="toggleEditable(`${idx}-amount`, income.id, income.amount, `selectAll`)">
+          <EditableInputCell v-model="income.amount" :selectAll="true" @keyup.enter.native="onBlur(fbar.amount)"
             :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur(income.amount)" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs"
@@ -121,9 +121,10 @@
           <EditableInputCell v-model="income.frequency" @keyup.enter.native="onBlur(fbar.frequency)"
             :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur(income.frequency)" />
         </div>
-        <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, income.id, income.amountUSD)">
+        <div :id="`${idx}-amount`" class="table-col sm"
+          @click="toggleEditable(`${idx}-$`, income.id, income.amountUSD)">
           <EditableInputCell v-model="income.amountUSD" @keyup.enter.native="onBlur(fbar.amountUSD)" readonly
-            :is-editable="isEditable(`${idx}-$`)" currency rounded @blur="onBlur(income.amountUSD)" />
+            :is-editable="isEditable(`${idx}-amount`)" currency rounded @blur="onBlur(income.amountUSD)" />
         </div>
         <div :id="`${idx}-documents`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-documents`, income.id, income.documents)">
@@ -379,7 +380,7 @@ export default {
     },
   },
   methods: {
-    toggleEditable(id, incomeId, value) {
+    toggleEditable(id, incomeId, value, selectAll) {
       if (!value) {
         const val = id.split("-")[1]
         const income = this.displayedIncomes.find((income) => income.id === incomeId)
