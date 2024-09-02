@@ -67,10 +67,41 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     store: models.selectedClient,
   })
   .then((res) => {
+    console.log(res)
     getClientsHistory(headers)
 
   })
   .catch(() => $toast.error('Error loading client data'))
+  
+  const getClientsWithLogs = (headers, clientId) => {
+    // Construct URL based on whether clientId is provided
+    const url = '/clients/clientsAndlogs' + (clientId ? `?clientId=${clientId}` : '');
+
+    return $axios.get(url, {
+        headers,
+        loading: models.ClientAndLogs,
+        loaded: models.ClientAndLogs,
+        store: models.ClientAndLogs
+    })
+      .then((response) => {
+        console.log(response)
+        // Check if response.data is an object
+        if (typeof response === 'object' && response !== null) {
+          // Convert object to array
+          const clientsArray = Object.values(response);
+          console.log('Clients Array:', clientsArray);
+          return clientsArray;
+        } else {
+          throw new Error('Response data is not an object');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching clients with logs:', error);
+        throw error; // Re-throw error to handle it in the component
+      });
+    }
+  
+  
   
   const getValueTypes = (headers) =>
     $axios
@@ -465,6 +496,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getTimeWorks,
     getTimeWorksByMonthAndUserId,
     getAllTimeWorksByDate,
+    getClientsWithLogs,
     login,
     signout,
     sendSms,

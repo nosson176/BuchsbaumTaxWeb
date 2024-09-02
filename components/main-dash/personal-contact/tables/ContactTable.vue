@@ -21,9 +21,9 @@
       <draggable :value="displayedContacts" v-bind="dragOptions" @start="startDrag" @end="onDrop">
         <transition-group type="transition" :name="transitionName">
           <TableRow v-for="(contact, idx) in displayedContacts" :key="contact.id" :idx="idx"
-            :class="{ disabled: !contact.enabled }">
+            :selected="isSelected(contact.id)" :class="{ disabled: !contact.enabled }">
             <div class="table-col bg-gray-200 mr-1">
-              <ClickCell>{{ idx + 1 }}</ClickCell>
+              <ClickCell @click="toggleSelected(contact)">{{ idx + 1 }}</ClickCell>
             </div>
             <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
               <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)"
@@ -100,10 +100,11 @@ export default {
         animation: 200,
         ghostClass: 'ghost',
       },
+      selectedItems: {},
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedContacts() {
       const contacts = this.filteredContacts
       contacts?.map((contact) => {
@@ -148,6 +149,19 @@ export default {
     isDefaultOrder() {
       return this.displayedContacts?.every((contact) => !contact.sortOrder)
     },
+    isCmdPressed() {
+      console.log("isCmdPressed")
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
+    },
+    isCopyingContacts() {
+      console.log("isCopyingContacts")
+      console.log("this.selectedContactsIds", this.selectedContactIds)
+      return this.isCmdPressed && this.selectedContactIds.length > 0
+    },
+    selectedContactIds() {
+      console.log("this.selectedItems", this.selectedItems)
+      return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
+    },
   },
   methods: {
     toggleEditable(id, contactId, value) {
@@ -165,11 +179,17 @@ export default {
     isEditable(id) {
       return this.editableId === id
     },
-    // handleUpdate() {
-    //   if (!this.editableContactId) return
-    //   const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId)
-    //   this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
-    // },
+    toggleSelected(contact) {
+      // console.log("cliecked", contact)
+      // console.log("1", this.selectedItems[contact.id])
+      // console.log("2", !this.selectedItems[contact.id])
+      // console.log("3", this.selectedItems[contact.id] = !this.selectedItems[contact.id])
+      this.selectedItems[contact.id] = !this.selectedItems[contact.id]
+      this.selectedItems = Object.assign({}, this.selectedItems)
+    },
+    isSelected(contactId) {
+      return this.selectedItems[contactId]
+    },
     handleUpdate() {
       if (!this.editableContactId) return;
       const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId);
@@ -213,21 +233,44 @@ export default {
       }
     },
     onAddRowClick() {
+      console.log("addrowclick")
       if (!this.selectedClient) {
         return
       }
+      console.log(this.selectedClient.id)
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
         include: true,
         sortOrder: this.isDefaultOrder ? 0 : 1,
       }
-      const contact = Object.assign({}, defaultValues)
-      this.$api.createContact(this.headers, { contact }).then(async (data) => {
-        await this.$api.getClientData(this.headers, this.selectedClient.id)
-        this.toggleEditable(`0-${columns[0]}`, data.id)
-      })
+      console.log("this.isCopyingContacts", this.isCopyingContacts)
+      if (this.isCopyingContacts) {
+        console.log("copy!")
+        this.selectedContactIds.forEach(async (contactId, idx) => {
+          const contactIndex = this.displayedContacts.findIndex((contact) => contact.id === Number(contactId))
+          const contact = this.displayedContacts[contactIndex]
+          contact.contactType = ''
+          console.log(contact)
+          const newContact = Object.assign({}, contact)
+          console.log(newContact)
+          await this.$api.createContact(this.headers, { contact: newContact }).then(async (data) => {
+            if (this.selectedContactIds.length === idx + 1) {
+              await this.$api.getClientData(this.headers, this.selectedClient.id)
+              this.toggleEditable(`${contactIndex}-${columns[0]}`, data.id)
+            }
+          })
+        })
+      } else {
+        console.log("else")
+        const contact = Object.assign({}, defaultValues)
+        this.$api.createContact(this.headers, { contact }).then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.toggleEditable(`0-${columns[0]}`, data.id)
+        })
+      }
     },
+
     goToNextColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')

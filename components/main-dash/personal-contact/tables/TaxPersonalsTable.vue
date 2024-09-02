@@ -21,9 +21,9 @@
     </template>
     <template #body>
       <TableRow v-for="(personal, idx) in displayedPersonals" :key="personal.id" :idx="idx"
-        :class="{ disabled: !personal.include }">
+        :selected="isSelected(personal.id)" :class="{ disabled: !personal.include }">
         <div class="table-col bg-gray-200 mr-1">
-          <ClickCell>{{ idx + 1 }}</ClickCell>
+          <ClickCell @click="toggleSelected(personal)">{{ idx + 1 }}</ClickCell>
         </div>
         <div :id="`${idx}-include`" class="table-col xs" @click="toggleEditable(`${idx}-include`, personal.id)">
           <EditableCheckBoxCell v-model="personal.include" :is-editable="isEditable(`${idx}-include`)"
@@ -120,11 +120,12 @@ export default {
       editableId: '',
       newPersonalId: NaN,
       editablePersonalId: '',
-      oldValue: ''
+      oldValue: '',
+      selectedItems: {},
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.search]),
+    ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedPersonals() {
       const personals = this.filteredPersonals
       return searchArrOfObjs(personals, this.searchInput)
@@ -161,6 +162,19 @@ export default {
     searchInput() {
       return this.search?.[tableGroups.personalContact]
     },
+    isCmdPressed() {
+      console.log("isCmdPressed")
+      return this.cmdPressed && !Array.isArray(this.cmdPressed)
+    },
+    isCopyingPersonals() {
+      console.log("isCopyingPersonals")
+      console.log("this.selectedPersonalIds", this.selectedPersonalIds)
+      return this.isCmdPressed && this.selectedPersonalIds.length > 0
+    },
+    selectedPersonalIds() {
+      console.log("this.selectedItems", this.selectedItems)
+      return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
+    },
   },
   methods: {
     toggleEditable(id, personalId, value) {
@@ -176,6 +190,17 @@ export default {
     },
     isEditable(id) {
       return this.editableId === id
+    },
+    toggleSelected(personal) {
+      // console.log("cliecked", personal)
+      // console.log("1", this.selectedItems[personal.id])
+      // console.log("2", !this.selectedItems[personal.id])
+      // console.log("3", this.selectedItems[personal.id] = !this.selectedItems[personal.id])
+      this.selectedItems[personal.id] = !this.selectedItems[personal.id]
+      this.selectedItems = Object.assign({}, this.selectedItems)
+    },
+    isSelected(personalId) {
+      return this.selectedItems[personalId]
     },
     handleUpdate() {
       if (!this.editablePersonalId) return
@@ -225,11 +250,28 @@ export default {
         lastName: this.selectedClient.lastName.replace(/[0-9]/g, ''),
         include: true,
       }
-      const personal = Object.assign({}, defaultValues)
-      this.$api.createTaxPersonal(this.headers, { personal }).then(async (data) => {
-        await this.$api.getClientData(this.headers, this.selectedClient.id)
-        this.toggleEditable(`0-${columns[0]}`, data.id)
-      })
+      if (this.isCopyingPersonals) {
+        console.log("copy!", this.selectedPersonalIds)
+        this.selectedPersonalIds.forEach(async (personalId, idx) => {
+          const personalIndex = this.displayedPersonals.findIndex((personal) => personal.id === Number(personalId))
+          const personal = this.displayedPersonals[personalIndex]
+          console.log(personal)
+          const newPersonal = Object.assign({}, personal)
+          console.log(newPersonal)
+          await this.$api.createTaxPersonal(this.headers, { personal: newPersonal }).then(async (data) => {
+            if (this.selectedPersonalIds.length === idx + 1) {
+              await this.$api.getClientData(this.headers, this.selectedClient.id)
+              this.toggleEditable(`${personalIndex}-${columns[0]}`, data.id)
+            }
+          })
+        })
+      } else {
+        const personal = Object.assign({}, defaultValues)
+        this.$api.createTaxPersonal(this.headers, { personal }).then(async (data) => {
+          await this.$api.getClientData(this.headers, this.selectedClient.id)
+          this.toggleEditable(`0-${columns[0]}`, data.id)
+        })
+      }
     },
     goToNextColumn() {
       const currentCell = this.editableId

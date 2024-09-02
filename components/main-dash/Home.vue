@@ -73,7 +73,7 @@ export default {
           keydown: this.onCmdPress,
           keyup: this.onCmdUp,
         },
-        windows: {
+        shift: {
           keydown: this.onCmdPress,
           keyup: this.onCmdUp,
         },
@@ -120,9 +120,11 @@ export default {
       })
     },
     onCmdPress() {
+      console.log("press")
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
     },
     onCmdUp() {
+      console.log("up")
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
     },
     confirmDelete() {
