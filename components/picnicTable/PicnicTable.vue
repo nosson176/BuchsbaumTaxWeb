@@ -7,7 +7,7 @@
                 @click="toggleLogView">
                 {{ showAllLogs ? 'Show selected client' : 'Show all clients' }}
             </button>
-            <span class="text-xs">(Press Alt + H to toggle search mode)</span>
+            <span class="text-xs">(Press Alt + G to toggle search mode)</span>
         </div>
         <div class="border border-black overflow-auto">
             <table class="w-full border-collapse text-xs">
