@@ -61,7 +61,6 @@ export default {
       },
     },
     showEditMode() {
-      console.log(this.selectAll)
       return this.isEditable && !this.readonly
     },
   },

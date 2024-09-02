@@ -5,6 +5,8 @@
       <TableHeader>
         <div class="table-header flex items-start">
           <AddRowButton @click="onAddRowClick" />
+          <CopyIcon @click.native="copyLog" class="cursor-pointer h-5 w-4 ml-2" />
+          <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" class="cursor-pointer h-5 w-4 ml-2" />
         </div>
         <div class="xs table-header">
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
@@ -39,7 +41,9 @@
           <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="runTime" />
           -- : --
         </div>
-        <div class="table-header xs"></div>
+        <div class="table-header xs">
+          <PicnicTableIcon @click.native="picnicTablePopup" class="cursor-pointer h-5 w-4 ml-2" />
+        </div>
       </TableHeader>
     </template>
     <template #body>
@@ -145,7 +149,8 @@ export default {
       models.secondsSpentOnClient,
       models.clientSearchOption,
       models.clientSearchValue,
-      models.globalPlayTime
+      models.globalPlayTime,
+      models.copyLogs,
     ]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
@@ -237,6 +242,9 @@ export default {
     },
     globalPlaytimeValue() {
       return this.$store.state.globalPlayTime;
+    },
+    hasCopyLogs() {
+      return this.$store.state.copyLogs.length > 0;
     }
   },
   created() {
@@ -266,6 +274,62 @@ export default {
     }
   },
   methods: {
+    picnicTablePopup() {
+      const url = `http://localhost:3000/picnicTable?client=${encodeURIComponent(this.selectedClient.id)}`
+      console.log("url", url);
+      window.open(url);
+
+    },
+    copyLog() {
+      if (!this.selectedLogIds) return
+
+      this.selectedLogIds.forEach((logId, idx) => {
+        const isLogCopied = this.$store.state.copyLogs.some(log => {
+          return log.id === Number(logId)
+        });
+        if (isLogCopied) return;
+
+        const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
+        const log = this.displayedLogs[logIndex]
+
+        if (log) {
+          const copyLogs = Object.assign({}, log)
+          this.$store.commit('setCopyLogs', copyLogs);
+          return copyLogs
+        }
+      })
+      this.selectedLogIds = []
+    },
+    pasteLogs() {
+      // Guard clause if copyLogs is empty or undefined
+      if (!this.$store.state.copyLogs || this.$store.state.copyLogs.length === 0) return;
+
+      // Commit a mutation to update each log's clientId and logDate
+      this.$store.commit('updateCopyLogs', {
+        clientId: this.selectedClient.id,
+        logDate: new Date()
+      });
+
+
+      // Use Promise.all to ensure all logs are created before proceeding
+      const createLogPromises = this.$store.state.copyLogs.map(log => {
+        return this.$api.createLog(this.headers, { log });
+      });
+
+      Promise.all(createLogPromises)
+        .then(() => {
+          // After all logs are created, refresh client data
+          return this.$api.getClientData(this.headers, this.selectedClient.id);
+        })
+        .then(() => {
+          // Clear copyLogs after successful paste and refresh
+          this.$store.commit('clearCopyLogs');
+        })
+        .catch(error => {
+          // Handle any errors that occur during the process
+          console.error('Error during pasteLogs operation:', error);
+        });
+    },
     runTime() {
       clearInterval(this.intervalId)
       this.currentTimeOnLoad = new Date()
@@ -473,7 +537,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .alarm {
   @apply bg-indigo-100;
 }
@@ -490,4 +554,4 @@ export default {
     min-width: 3rem;
   }
 }
-</style>
+</style> -->

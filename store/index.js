@@ -18,7 +18,9 @@ const state = () => {
     loading: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: true }), {}),
     loaded: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: false }), {}),
     globalPlayTime: true,
-    secondsNeededToDisplayModal1:600
+    secondsNeededToDisplayModal1:600,
+    copyLogs:[],
+    clientAndLogs: [] 
   }
 }
 
@@ -27,13 +29,29 @@ const getters = {
   [models.secondsSpentOnClient]: (state) => state[models.secondsSpentOnClient],
   [models.selectedClient]: (state) => state[models.selectedClient],
   [models.promptOnClientChange]: (state) => state[models.promptOnClientChange],
+  clientAndLogs: state => state.clientAndLogs
 }
 
 const mutations = {
   // Set data from API responses. `model` is 'lists', 'campaigns' etc.
   setModelResponse(state, { model, data }) {
+    if (model === models.clientAndLogs) {
+      state.clientAndLogs = data;
+      return
+    }
     state[model] = data
   },
+  setCopyLogs(state, log) {
+    state.copyLogs.push(log); // Push the new log into the array
+  },
+  updateCopyLogs(state, { clientId, logDate }) {
+    state.copyLogs = state.copyLogs.map(log => {
+      return { ...log, clientId, logDate };
+    });
+  },
+    clearCopyLogs(state) {
+      state.copyLogs = [];
+    },
 
   // Set the loading status for a model globally. When a request starts,
   // status is set to true which is used by the UI to show loaders and block

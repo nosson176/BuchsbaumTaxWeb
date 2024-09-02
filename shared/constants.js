@@ -28,7 +28,8 @@ export const models = Object.freeze({
   selectedTaxYearId: 'selectedTaxYearId',
   fbars:'fbars',
   globalPlayTime: "globalPlayTime",
-  secondsNeededToDisplayModal1:"secondsNeededToDisplayModal1"
+  secondsNeededToDisplayModal1:"secondsNeededToDisplayModal1",
+  ClinetAndLogs:"ClinetAndLogs"
 })
 
 // Store Mutations

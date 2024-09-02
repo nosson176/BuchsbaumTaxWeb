@@ -1,11 +1,6 @@
 <template>
-  <div
-    :draggable="draggable"
-    class="flex items-center"
-    :class="bgColorClassObj"
-    @dragstart="emitDragstart($event)"
-    @click="emitClick"
-  >
+  <div :draggable="draggable" class="flex items-center" :class="bgColorClassObj" @dragstart="emitDragstart($event)"
+    @click="emitClick">
     <slot />
   </div>
 </template>
@@ -32,6 +27,7 @@ export default {
   computed: {
     bgColorClassObj() {
       if (this.selected) {
+        console.log("bgColorClassObj")
         return { 'bg-indigo-200': true }
       } else if (this.idx % 2 === 0) {
         return { 'bg-white': true }

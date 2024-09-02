@@ -121,7 +121,6 @@ export default {
       }
     },
     openChangeClientModal(client) {
-      console.log(this.$store.state.secondsNeededToDisplayModal1)
       if (
         this.selectedClient?.id &&
         this.$store.getters[models.secondsSpentOnClient] > this.$store.state.secondsNeededToDisplayModal1 &&
