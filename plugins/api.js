@@ -84,12 +84,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.ClientAndLogs
     })
       .then((response) => {
-        console.log(response)
         // Check if response.data is an object
         if (typeof response === 'object' && response !== null) {
           // Convert object to array
           const clientsArray = Object.values(response);
-          console.log('Clients Array:', clientsArray);
           return clientsArray;
         } else {
           throw new Error('Response data is not an object');

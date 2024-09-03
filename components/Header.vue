@@ -255,7 +255,7 @@ export default {
 }
 </script>
 
-<!-- <style scoped>
+<style scoped>
 a.nuxt-link-exact-active svg {
   @apply text-indigo-500 w-8;
 }
@@ -263,4 +263,4 @@ a.nuxt-link-exact-active svg {
 a.nuxt-link-exact-active svg:hover {
   @apply text-indigo-500 scale-100;
 }
-</style> -->
+</style>

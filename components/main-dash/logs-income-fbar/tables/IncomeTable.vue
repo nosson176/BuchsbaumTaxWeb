@@ -123,8 +123,8 @@
         </div>
         <div :id="`${idx}-amount`" class="table-col sm"
           @click="toggleEditable(`${idx}-$`, income.id, income.amountUSD)">
-          <EditableInputCell v-model="income.amountUSD" @keyup.enter.native="onBlur(fbar.amountUSD)" readonly
-            :is-editable="isEditable(`${idx}-amount`)" currency rounded @blur="onBlur(income.amountUSD)" />
+          <EditableInputCell v-model="income.amountUSD" :selectAll="true" @keyup.enter.native="onBlur(fbar.amountUSD)"
+            readonly :is-editable="isEditable(`${idx}-amount`)" currency rounded @blur="onBlur(income.amountUSD)" />
         </div>
         <div :id="`${idx}-documents`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-documents`, income.id, income.documents)">
