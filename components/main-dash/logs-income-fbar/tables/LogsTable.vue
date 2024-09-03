@@ -275,11 +275,10 @@ export default {
   },
   methods: {
     picnicTablePopup() {
-      let url = process.env.NODE_ENV === 'development' ?
+      const url = process.env.NODE_ENV === 'development' ?
         `http://localhost:3000/picnicTable?client=${encodeURIComponent(this.selectedClient.id)}`
         :
         `https://buch-tax.com/picnicTable?client=${encodeURIComponent(this.selectedClient.id)}`
-      console.log("url", url);
       window.open(url);
 
     },
@@ -540,7 +539,7 @@ export default {
 }
 </script>
 
-<!-- <style scoped>
+<style scoped>
 .alarm {
   @apply bg-indigo-100;
 }
@@ -557,4 +556,4 @@ export default {
     min-width: 3rem;
   }
 }
-</style> -->
+</style>

@@ -100,7 +100,7 @@
             @blur="onBlur(fbar.job)" />
         </div>
         <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id, fbar.amount)">
-          <EditableInputCell v-model="fbar.amount" @keyup.enter.native="onBlur(fbar.amount)"
+          <EditableInputCell v-model="fbar.amount" :selectAll="true" @keyup.enter.native="onBlur(fbar.amount)"
             :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur(fbar.amount)" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs"
@@ -114,8 +114,8 @@
             :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur(fbar.frequency)" />
         </div>
         <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id, fbar.amountUSD)">
-          <EditableInputCell v-model="fbar.amountUSD" @keyup.enter.native="onBlur(fbar.amountUSD)" readonly
-            :is-editable="isEditable(`${idx}-$`)" rounded currency @blur="onBlur(fbar.amountUSD)" />
+          <EditableInputCell v-model="fbar.amountUSD" :selectAll="true" @keyup.enter.native="onBlur(fbar.amountUSD)"
+            readonly :is-editable="isEditable(`${idx}-$`)" rounded currency @blur="onBlur(fbar.amountUSD)" />
         </div>
         <div :id="`${idx}-documents`" class="table-col xs"
           @click="toggleEditable(`${idx}-documents`, fbar.id, fbar.documents)">

@@ -22,10 +22,10 @@
                 <tbody>
                     <tr v-if="isSearchMode">
                         <td v-for="header in tableHeaders" :key="header" class="border px-2 py-0.5">
-                            <input type="text" v-model="searchTerms[header]" @input="handleSearch" class="w-full">
+                            <input type="text" v-model="filters[header]" @input="applyFilters" class="w-full">
                         </td>
                     </tr>
-                    <template v-if="!isSearchMode || hasSearchTerms">
+                    <template v-if="logsToDisplay.length > 0">
                         <tr v-for="log in logsToDisplay" :key="log.id">
                             <td class="border px-2 py-0.5">{{ log.lastName }}</td>
                             <td class="border px-2 py-0.5">{{ log.status }}</td>
@@ -40,27 +40,12 @@
                             <td class="border px-2 py-0.5">{{ log.alarmComplete }}</td>
                         </tr>
                     </template>
-                    <tr v-else-if="isSearchMode && !hasSearchTerms">
-                        <td :colspan="tableHeaders.length" class="border px-2 py-0.5 text-center">Enter search terms to
-                            display logs</td>
-                    </tr>
                     <tr v-else>
                         <td :colspan="tableHeaders.length" class="border px-2 py-0.5 text-center">No logs available</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <!-- <div class="mt-2 flex justify-between items-center">
-            <div>
-                <button @click="prevPage" :disabled="currentPage === 1"
-                    class="px-2 py-1 bg-gray-200 rounded mr-2">Previous</button>
-                <button @click="nextPage" :disabled="currentPage === totalPages"
-                    class="px-2 py-1 bg-gray-200 rounded">Next</button>
-            </div>
-            <div>
-                Page {{ currentPage }} of {{ totalPages }}
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -78,9 +63,7 @@ export default {
             sortColumn: null,
             sortDirection: 1,
             isSearchMode: false,
-            searchTerms: {},
-            // currentPage: 1,
-            // logsPerPage: 20
+            filters: {},
         };
     },
 
@@ -93,46 +76,63 @@ export default {
             return ['Last Name', 'Log Status', 'Log ID', 'Note', 'Date of Log', 'Priority', 'yaer_name', "alarem_date", "alarm_time", 'employee_alarm', 'alarm complete'];
         },
 
-        logsToDisplay() {
-            const allLogs = this.clientsWithLogs.flatMap(client => client.logs.map(log => ({
+        allLogs() {
+            return this.clientsWithLogs.flatMap(client => client.logs.map(log => ({
                 ...log,
                 lastName: client.client.lastName,
                 status: client.client.status
             })));
-            return this.sortLogs(allLogs);
         },
 
         filteredLogs() {
-            if (!this.isSearchMode || !this.hasSearchTerms) {
-                return this.logsToDisplay;
+            if (!this.isSearchMode) return this.allLogs;
+
+            let logs = this.allLogs;
+
+            // Apply filters
+            Object.entries(this.filters).forEach(([key, value]) => {
+                if (value) {
+                    logs = logs.filter(log => {
+                        const logValue = this.getLogValue(log, key);
+                        if (['Priority', 'yaer_name'].includes(key)) {
+                            return logValue.toString() === value.toString();
+                        }
+                        if (['Date of Log', 'alarem_date'].includes(key)) {
+                            return new Date(logValue).toDateString().includes(value);
+                        }
+                        if (key === 'alarm_time') {
+                            return logValue.includes(value);
+                        }
+                        if (key === 'alarm complete') {
+                            return logValue.toString().toLowerCase().includes(value.toLowerCase());
+                        }
+                        return logValue.toString().toLowerCase().includes(value.toLowerCase());
+                    });
+                }
+            });
+
+            return logs;
+        },
+
+        logsToDisplay() {
+            let logs = this.filteredLogs;
+
+            // Apply sorting
+            if (this.sortColumn) {
+                logs = _.orderBy(
+                    logs,
+                    this.getSortFunction(this.sortColumn),
+                    this.sortDirection === 1 ? 'asc' : 'desc'
+                );
             }
 
-            return this.logsToDisplay.filter(log => {
-                return Object.entries(this.searchTerms).every(([key, value]) => {
-                    if (!value) return true;
-                    const logValue = this.getLogValue(log, key);
-                    return logValue.toString().toLowerCase().includes(value.toLowerCase());
-                });
-            });
+            return logs;
         },
-
-        hasSearchTerms() {
-            return Object.values(this.searchTerms).some(term => term !== '');
-        },
-
-        // paginatedLogs() {
-        //     const startIndex = (this.currentPage - 1) * this.logsPerPage;
-        //     const endIndex = startIndex + this.logsPerPage;
-        //     return this.filteredLogs.slice(startIndex, endIndex);
-        // },
-
-        // totalPages() {
-        //     return Math.ceil(this.filteredLogs.length / this.logsPerPage);
-        // }
     },
 
     mounted() {
         this.fetchLogs();
+        this.initializeFilters();
         window.addEventListener('keydown', this.handleKeyDown);
     },
 
@@ -141,18 +141,10 @@ export default {
     },
 
     methods: {
-        sortLogs(logs) {
-            if (!this.sortColumn) {
-                return logs;
-            }
-
-            const sortedLogs = _.orderBy(
-                logs,
-                this.getSortFunction(this.sortColumn),
-                this.sortDirection === 1 ? 'asc' : 'desc'
-            );
-
-            return sortedLogs;
+        initializeFilters() {
+            this.tableHeaders.forEach(header => {
+                this.$set(this.filters, header, '');
+            });
         },
 
         getSortFunction(column) {
@@ -221,20 +213,6 @@ export default {
             return null;
         },
 
-        handleKeyDown(event) {
-            if (event.altKey && event.key === 'g') {
-                this.isSearchMode = !this.isSearchMode;
-                if (!this.isSearchMode) {
-                    this.searchTerms = {};
-                }
-                // this.currentPage = 1;
-            }
-        },
-
-        handleSearch() {
-            // this.currentPage = 1;
-        },
-
         getLogValue(log, key) {
             const columnMap = {
                 'Last Name': 'lastName',
@@ -249,21 +227,22 @@ export default {
                 'alarm_time': 'alarmTime',
                 'alarm complete': 'alarmComplete'
             };
-
             return log[columnMap[key]] || '';
         },
 
-        // prevPage() {
-        //     if (this.currentPage > 1) {
-        //         this.currentPage--;
-        //     }
-        // },
+        applyFilters() {
+            // This method is called on input events
+            // The filtering is handled reactively by the filteredLogs computed property
+        },
 
-        // nextPage() {
-        //     if (this.currentPage < this.totalPages) {
-        //         this.currentPage++;
-        //     }
-        // }
+        handleKeyDown(event) {
+            if (event.altKey && event.key === 'g') {
+                this.isSearchMode = !this.isSearchMode;
+                if (!this.isSearchMode) {
+                    this.initializeFilters();
+                }
+            }
+        },
     }
 };
 </script>
