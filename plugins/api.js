@@ -303,10 +303,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getInbox(headers))
 
   // UPDATE
-  const updateClient = (headers, { clientId, client }) =>
+  const updateClient = (headers, { clientId, client }) =>{
+    console.log(client)
     $axios
       .put(`/clients/${clientId}`, client, { headers })
       .catch(() => $toast.error('Error updating client'))
+    }
       // .finally(() => getClientData(headers, clientId))
 
   const updateClientFlag = (headers, { clientId, clientFlag }) =>

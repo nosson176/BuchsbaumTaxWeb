@@ -273,7 +273,7 @@ export default {
       </div>
       <div class="font-bold text-white flex justify-center text-2xl ml-20" @click="setEditable('status')">
         <EditableSelectCell :value="selectedClient.status" :options="statusOptions" :is-editable="isEditable('status')"
-          @input="updateStatus" @blur="onBlur" />
+          @input="updateStatusDate" @blur="onBlur('status')" />
       </div>
       <div class="text-gray-100 flex text-sm justify-center ml-20" @click="setEditable('periodical')">
         <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
@@ -292,7 +292,7 @@ export default {
       <div class="ml-6 font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
     </div>
     <Modal :showing="showEditNameDialogue">
-      <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate">
+      <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate('lastName')">
         <FormInput ref="lastNameInput" v-model="editedLastName" label="Lastname" />
       </SubmitCard>
     </Modal>
@@ -319,10 +319,11 @@ export default {
       showDelete: false,
       showFlagDropdown: false,
       editedLastName: '',
+      clientUpdate: {}
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser]),
+    ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser, models.clientClicked]),
     isClientSelected() {
       return this.selectedClient && Object.keys(this.selectedClient).length > 0
     },
@@ -390,6 +391,7 @@ export default {
     showEditNameDialogue: {
       handler(newVal) {
         if (newVal) {
+          console.log("showEditNameDialogue=> ", newVal,)
           this.editedLastName = this.selectedClient.lastName
           this.$nextTick(() => {
             this.$refs.lastNameInput.$refs.input.focus()
@@ -397,21 +399,52 @@ export default {
         }
       },
     },
+    selectedClient: {
+      handler(newClient, oldClient) {
+        console.log(newClient.id, oldClient.id)
+        if (newClient.id !== oldClient.id && oldClient.id !== undefined) {
+          this.updateClient1(oldClient)
+        }
+      },
+      deep: true,  // Watch for nested object changes as well
+    },
   },
+
+
   methods: {
     ...mapMutations({
       updateSelectedClient: mutations.setModelResponse
     }),
+    updateClient1(oldClient) {
+      console.log("beforeDestroy => ", this.selectedClient)
+      console.log("beforeDestroy oldClient => ", oldClient)
+      if (oldClient.needUpdate === true) {
+        console.log("beforeDestroyinside!!! ")
+        const updatedClient = {
+          id: oldClient.id,
+          status: oldClient.status,
+          owesStatus: oldClient.owesStatus,
+          periodical: oldClient.periodical,
+          lastName: oldClient.lastName,
+          archived: oldClient.archived,
+          displayName: oldClient.displayName,
+          displayPhone: oldClient.displayPhone,
+          statusChangeDate: oldClient.statusChangeDate
+        };
+        console.log("updatedClient=> ", updatedClient)
+        this.$api.updateClient(this.headers, { clientId: updatedClient.id, client: updatedClient })
+      }
+    },
     setEditable(editingId) {
       this.editingId = editingId
     },
     isEditable(editingId) {
       return this.editingId === editingId
     },
-    updateStatus(newStatus) {
+    updateStatusDate(newVal) {
       this.updateSelectedClient({
         model: models.selectedClient,
-        data: { ...this.selectedClient, status: newStatus }
+        data: { ...this.selectedClient, status: newVal, statusChangeDate: Date.now() }
       })
     },
     updatePeriodical(newPeriodical) {
@@ -420,14 +453,29 @@ export default {
         data: { ...this.selectedClient, periodical: newPeriodical }
       })
     },
-    onBlur() {
-      this.handleUpdate()
+
+    updateLastName(newLastName) {
+      this.updateSelectedClient({
+        model: models.selectedClient,
+        data: { ...this.selectedClient, lastName: newLastName }
+      })
+    },
+
+    needUpdate() {
+      console.log("needUpdate")
+      this.updateSelectedClient({
+        model: models.selectedClient,
+        data: { ...this.selectedClient, needUpdate: true }
+      })
+    },
+    onBlur(str) {
+      this.handleUpdate(str)
       this.editingId = ''
     },
-    async handleUpdate() {
-      const client = { ...this.selectedClient, lastName: this.editedLastName }
-      client.created = new Date(client.created)
-      await this.$api.updateClient(this.headers, { clientId: client.id, client })
+    handleUpdate(str) {
+      if (this.selectedClient.needUpdate !== true) this.needUpdate()
+      if (str === "lastName") this.updateLastName(this.editedLastName)
+      // await this.$api.updateClient(this.headers, { clientId: client.id, client })
       // await this.$api.getClientList(this.headers)
       this.closeEditNameDialogue()
     },

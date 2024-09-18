@@ -67,16 +67,11 @@ const mutations = {
   },
 
   pushFilingUpdate(state,filing) {
-    console.log("push => ",state.filingsUpdate)
-    console.log("pushfiling => ",filing)
     state.filingsUpdate.push(filing)
   } ,
   updateFilingUpdate(state,filing) {
-    console.log("updateFilingUpdate => ",state.filingsUpdate)
-
     const index = state.filingsUpdate.findIndex(f => f.id === filing.filing.id);
 if (index !== -1) {
-  console.log("inside");
   state.filingsUpdate.splice(index, 1, filing.filing);
   return state.filingsUpdate; // Or, if you want to return the updated array, you can return `state.filingsUpdate`
 }

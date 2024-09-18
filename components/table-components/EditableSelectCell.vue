@@ -315,7 +315,7 @@ export default {
   name: 'EditableSelectCell',
   props: {
     value: {
-      type: [String, Number],
+      type: [String, Number, Array],
       default: '',
     },
     isEditable: {
@@ -343,11 +343,10 @@ export default {
   computed: {
     computedValue: {
       get() {
-        if (this.value === null || this.value === '') return false
-        return this.value.split('\u000B');
+        if (this.value === null || this.value === '') return [];
+        return Array.isArray(this.value) ? this.value : [this.value];
       },
       set(newVal) {
-        console.log(newVal)
         this.$emit(events.input, newVal);
       },
     },
@@ -361,7 +360,7 @@ export default {
     },
     shownValue() {
       if (this.value === null || this.value === '') return this.placeholder;
-      return this.value.split('\u000B')[0] || this.placeholder;
+      return this.value || this.placeholder;
     },
     filteredOptions() {
       return this.options.filter((option) =>
@@ -389,6 +388,9 @@ export default {
       this.onBlur();
     },
     isSelected(option) {
+      if (!Array.isArray(this.computedValue)) {
+        return this.computedValue === option.value;
+      }
       return this.computedValue.includes(option.value);
     },
     onBlur() {
