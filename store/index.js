@@ -20,7 +20,8 @@ const state = () => {
     globalPlayTime: true,
     secondsNeededToDisplayModal1:600,
     copyLogs:[],
-    clientAndLogs: [] 
+    clientAndLogs: [] ,
+    filingsUpdate:[]
   }
 }
 
@@ -31,6 +32,7 @@ const getters = {
   [models.promptOnClientChange]: (state) => state[models.promptOnClientChange],
   clientAndLogs: state => state.clientAndLogs
 }
+
 
 const mutations = {
   // Set data from API responses. `model` is 'lists', 'campaigns' etc.
@@ -44,14 +46,47 @@ const mutations = {
   setCopyLogs(state, log) {
     state.copyLogs.push(log); // Push the new log into the array
   },
-  updateCopyLogs(state, { clientId, logDate }) {
+  updateCopyLogs(state, { clientId, logDate,id }) {
     state.copyLogs = state.copyLogs.map(log => {
-      return { ...log, clientId, logDate };
+      return { ...log, clientId, logDate,id };
     });
   },
     clearCopyLogs(state) {
       state.copyLogs = [];
     },
+
+  pushNewLog(state,log) {
+    state[models.selectedClient].logs.unshift(log.log)
+  } ,
+  
+  updateLog(state, { log }) {
+    const index = state[models.selectedClient].logs.findIndex(l => l.id === log.id);
+    if (index !== -1) {
+      state[models.selectedClient].logs.splice(index, 1, log);
+    }
+  },
+
+  pushFilingUpdate(state,filing) {
+    console.log("push => ",state.filingsUpdate)
+    console.log("pushfiling => ",filing)
+    state.filingsUpdate.push(filing)
+  } ,
+  updateFilingUpdate(state,filing) {
+    console.log("updateFilingUpdate => ",state.filingsUpdate)
+
+    const index = state.filingsUpdate.findIndex(f => f.id === filing.filing.id);
+if (index !== -1) {
+  console.log("inside");
+  state.filingsUpdate.splice(index, 1, filing.filing);
+  return state.filingsUpdate; // Or, if you want to return the updated array, you can return `state.filingsUpdate`
+}
+    state.filingsUpdate.push(filing)
+  } ,
+  clearFilingUpdate(state) {
+    state.FilingUpdate = [];
+  },
+   
+    
 
   // Set the loading status for a model globally. When a request starts,
   // status is set to true which is used by the UI to show loaders and block
@@ -63,8 +98,20 @@ const mutations = {
   setLoaded(state, { model, status }) {
     state.loaded[model] = status
   },
+
+  
 }
 
-const actions = {}
+const actions = {
+  updateLogAction({ commit, state }, { log }) {
+    commit('updateLog', { log });
+    // If you want to update the server as well, you can do it here
+    // return this.$api.updateLog(this.headers, { clientId: state[models.selectedClient].id, logId: log.id }, log);
+  },
+  
+  updateFilingAction({ commit, state }, { filing }) {
+    commit('updateFilingUpdate', { filing });
+  }
+}
 
 export { namespaced, state, getters, mutations, actions }

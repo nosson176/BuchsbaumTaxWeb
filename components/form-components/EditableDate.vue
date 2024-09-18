@@ -21,12 +21,13 @@
 
 <script>
 import { events } from '~/shared/constants'
-import { formatDateForClient } from '~/shared/domain-utilities'
+// import { formatDateForClient } from '~/shared/domain-utilities'
+import { formatUnixTimestamp } from '~/shared/utility';
 export default {
   name: 'EditableDate',
   props: {
     value: {
-      type: String,
+      type: [String, Number],
       default: null,
     },
     isEditable: {
@@ -34,7 +35,7 @@ export default {
       required: true,
     },
     type: {
-      type: String,
+      type: [String, Number],
       default: 'date',
     },
     placeholder: {
@@ -50,11 +51,12 @@ export default {
   computed: {
     computedValue: {
       get() {
+        if (this.value === "null") return false
         return this.value
       },
       set(newVal) {
-        console.log("BLUR")
-        this.$emit('input', newVal)
+        const date = new Date(newVal).getTime()
+        this.$emit('input', date)
         this.$emit(events.blur)
       },
     },
@@ -68,7 +70,12 @@ export default {
       return this.type === 'date'
     },
     displayedValue() {
-      return this.isTypeDate && this.computedValue ? formatDateForClient(this.computedValue) : this.computedValue
+      // console.log("displayedValue => ", this.computedValue)
+      // if (this.computedValue === 'null') {
+      //   console.log("inin")
+      //   return this.placeholder
+      // }
+      return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
     },
   },
   updated() {

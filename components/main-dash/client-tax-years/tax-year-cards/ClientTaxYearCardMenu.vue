@@ -24,12 +24,13 @@ export default {
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const items = Object.assign(
-          Object.values(this.selectedClient.taxYearData)
+          Object.values(this.selectedClient.taxYears)
             .filter((taxYear) => taxYear.show && this.showArchived === taxYear.archived)
             .sort((a, b) => {
               return a.year - b.year
             })
         )
+        console.log(JSON.parse(JSON.stringify(items)))
         return items.reverse()
       } else {
         return null

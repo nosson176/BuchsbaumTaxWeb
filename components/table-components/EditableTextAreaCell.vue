@@ -149,7 +149,6 @@ export default {
         return this.isEditable ? this.value.replace(/<\/?[^>]+>/gi, '') : this.value;
       },
       set(newVal) {
-        console.log("new val =>", newVal)
         this.$emit(events.input, newVal)
       },
     },

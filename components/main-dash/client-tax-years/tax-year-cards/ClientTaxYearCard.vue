@@ -196,7 +196,6 @@ export default {
       this.$nextTick(this.updateFbarColumnHeight);
     },
     onDropExtension(evt) {
-      console.log("run")
       // Create a deep copy of the fbars array to ensure reactivity
       const updatedExtensions = this.extensions.map(extension => ({ ...extension }));
 

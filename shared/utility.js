@@ -78,7 +78,9 @@ const formatToHHmm = (dateStrings) => {
 }
 
   const formatDate = (dateString) => {
+    console.log(dateString)
     const date = parseISO(dateString);
+    console.log(date)
     return format(date, 'dd/MM/yyyy');
   }
 
@@ -117,6 +119,37 @@ const promptConfirm = () => {
   return result
 }
 
+const generateRandomId = (min = 160700, max = 999999) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const formatUnixTimestamp = (timestamp) => {
+  // Check if the timestamp is a string and convert it to a number
+  if (typeof timestamp === 'string') {
+    timestamp = Number(timestamp);
+  }
+
+  // Ensure timestamp is a valid number
+  if (isNaN(timestamp) || timestamp <= 0) {
+    console.error('Timestamp is not a valid number:',typeof timestamp, timestamp);
+    return ;
+  }
+
+  // Create Date object
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) {
+    console.error('Date is invalid for timestamp:',typeof timestamp, timestamp);
+    return ;
+  }
+
+  // Format and return date
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
+
 
 
 
@@ -132,5 +165,7 @@ export {
   setAsValidNumber,
   boldSearchWord,
   convertToISOString,
-  promptConfirm
+  promptConfirm,
+  generateRandomId,
+  formatUnixTimestamp
 }

@@ -3,8 +3,7 @@
     <div class="bg-white px-4 pt-5 pb-4 overflow-auto h-96 sm:p-6 sm:pb-4 flex flex-col justify-between">
       <div class="sm:flex sm:items-start">
         <div
-          class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10"
-        >
+          class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
           <PenIcon class="text-indigo-600 h-6 w-6" />
         </div>
         <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -13,56 +12,39 @@
             <AddRowButton @click="addSmartViewLine" />
           </div>
           <div v-if="hasLines" class="mt-4 shadow">
-            <SmartviewLine
-              v-for="(line, idx) in smartviewLines"
-              :key="line.id"
-              :line="line"
-              :idx="idx"
-              @input="updateSmartviewLine"
-              @delete="removeSmartviewLine"
-            />
+            <SmartviewLine v-for="(line, idx) in smartviewLines" :key="line.id" :line="line" :idx="idx"
+              @input="updateSmartviewLine" @delete="removeSmartviewLine" />
           </div>
         </div>
       </div>
       <div class="flex items-center justify-end mt-2 mb-1 text-sm">
         Send To Account:
         <HeaderSelectOption v-model="sendToUserId" short class="ml-2" :options="usersArray" />
-        <button
-          type="button"
-          :disabled="isSendDisabled"
+        <button type="button" :disabled="isSendDisabled"
           :class="isSendDisabled ? 'bg-green-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'"
           class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-          @click="updateUserId"
-        >
+          @click="updateUserId">
           Send
         </button>
       </div>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-      <button
-        :disabled="!smartviewIsValid"
-        type="button"
+      <button :disabled="!smartviewIsValid" type="button"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-        :class="!smartviewIsValid ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'"
-        @click="handleUpdateCreate"
-      >
+        :class="!smartviewIsValid ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'" @click="handleUpdateCreate">
         <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
         <span v-else-if="isNew" class="capitalize">Create</span>
         <span v-else class="capitalize">Save</span>
       </button>
-      <button
-        type="button"
+      <button type="button"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="emitHide"
-      >
+        @click="emitHide">
         Cancel
       </button>
       <div class="flex-grow" />
-      <button
-        type="button"
+      <button type="button"
         class="w-full inline-flex justify-center justify-self-start rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="confirmDelete"
-      >
+        @click="confirmDelete">
         <LoadingIndicator v-if="deleting" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
         <span v-else class="capitalize">Delete</span>
       </button>
@@ -79,7 +61,7 @@ const lineConstructor = {
   fieldName: '',
   operator: '',
   searchValue: '',
-  showDelete: false,
+  showDelete: false
 }
 
 export default {
@@ -94,11 +76,13 @@ export default {
     return {
       isLoading: false,
       sendToUserId: '',
+      sendToUserName: '',
     }
   },
   computed: {
     ...mapState([models.modals, models.selectedClient, models.users, models.selectedSmartview]),
     smartview() {
+      console.log(JSON.parse(JSON.stringify(this.modals.smartview?.data)))
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
     headers() {
@@ -146,6 +130,7 @@ export default {
       return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
     },
     smartviewLines() {
+      console.log(this.smartview.smartviewLines)
       return [...this.smartview.smartviewLines].sort((a, b) => a.groupNum - b.groupNum)
     },
   },
@@ -164,13 +149,18 @@ export default {
       this.$emit(events.hide)
     },
     updateSmartviewLine(line) {
+      console.log("line", line)
+      console.log("this.smartview", this.smartview)
+      console.log("this.smartview.smartviewLines", this.smartview.smartviewLines)
       const updatedLineIndex = this.smartview.smartviewLines.findIndex((l) => l.id === line.id)
+      console.log("updatedLineIndex", updatedLineIndex)
       this.smartview.smartviewLines[updatedLineIndex] = line
       this.updateSmartview()
     },
     addSmartViewLine() {
-      this.smartview.smartviewLines.push(lineConstructor)
-      this.updateSmartview()
+      const newLine = { ...lineConstructor, id: Math.floor(Math.random() * 1000000) }; // clone and assign a new id
+      this.smartview.smartviewLines.push(newLine);
+      this.updateSmartview();
     },
     removeSmartviewLine(idx) {
       this.smartview.smartviewLines.splice(idx, 1)
@@ -182,6 +172,7 @@ export default {
       }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
+      console.log("create", smartview)
       this.$api.createSmartview(this.headers, { smartview }).then(() => {
         this.isLoading = false
         this.emitHide()
@@ -193,6 +184,7 @@ export default {
       }
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
+      console.log(smartview)
       this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then((res) => {
         // Change the selectedsmartview to the updated value
         if (this.hasSelectedSmartview) {
@@ -222,9 +214,31 @@ export default {
       })
     },
     updateUserId() {
-      this.$set(this.smartview, 'userId', this.sendToUserId)
-      this.update()
+      const selectedUser = this.usersArray.find(user => user.value === this.sendToUserId);
+      console.log(selectedUser);
+
+      if (selectedUser) {
+        // Create a copy of smartview with updated userId and userName
+        const updatedSmartview = {
+          ...this.smartview, // clone all properties from the original smartview
+          userId: this.sendToUserId, // update userId
+          userName: selectedUser.name // update userName
+        };
+
+        // Proceed with sending the updated smartview
+        this.sendToAnotherUser(updatedSmartview);
+      }
     },
+    sendToAnotherUser(updatedSmartview) {
+      console.log(updatedSmartview);
+      const smartviewToSend = { ...updatedSmartview, smartviewLines: updatedSmartview.smartviewLines };
+      console.log("create", smartviewToSend);
+
+      // Use the API call with the cloned and updated smartview
+      this.$api.createSmartview(this.headers, { smartview: smartviewToSend }, this.sendToUserId).then(res => {
+        console.log(res);
+      });
+    }
   },
 }
 </script>

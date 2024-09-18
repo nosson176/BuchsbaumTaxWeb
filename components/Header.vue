@@ -103,7 +103,6 @@ export default {
       }
     },
     playTime() {
-      console.log(this.globalPlayTime)
       return this.globalPlayTime
     },
     clientsHistoryLoaded() {
@@ -175,7 +174,6 @@ export default {
       this.$api.getClientData(headers, id)
     },
     chooseSecondsNeededToDisplayModal1(selectTime) {
-      console.log(selectTime)
       this.selectedTime = selectTime
       this.setTimeToSecond(selectTime)
     },
@@ -212,7 +210,6 @@ export default {
       this.$api.signout()
     },
     async loadInbox() {
-      console.log("getInbox")
       await this.$api.getInbox(this.headers)
     },
     logout() {

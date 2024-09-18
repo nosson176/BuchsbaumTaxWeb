@@ -33,7 +33,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.cmdPressed, models.selectedTaxYearId]),
     selectedTaxYear() {
-      return this.selectedClient.taxYearData.find((taxYear) => taxYear.id === this.selectedTaxYearId)
+      return this.selectedClient.taxYears.find((taxYear) => taxYear.id === this.selectedTaxYearId)
     },
     isCmdPressed() {
       return this.cmdPressed && !Array.isArray(this.cmdPressed)

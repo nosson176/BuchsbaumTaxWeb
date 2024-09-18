@@ -155,10 +155,11 @@ export default {
       editable: '',
       oldValue: '',
       formModel: null,
+      localChanges: [],
     }
   },
   computed: {
-    ...mapState([models.valueTypes, models.selectedClient]),
+    ...mapState([models.valueTypes, models.selectedClient, models.filingsUpdate]),
     headers() {
       return this.$api.getHeaders()
     },
@@ -180,23 +181,25 @@ export default {
     },
     status: {
       get() {
-        return this.formModel.status
+        return this.formModel.status.value
       },
       set(newVal) {
-        this.formModel.status = newVal
+        this.formModel.status.value = newVal
+        this.formModel.status.date = Date.now()
       },
     },
     statusDetail: {
       get() {
-        return this.formModel.statusDetail
+        return this.formModel.statusDetail.value
       },
       set(newVal) {
-        this.formModel.statusDetail = newVal
+        this.formModel.statusDetail.value = newVal
+        this.formModel.statusDetail.date = Date.now()
       },
     },
     statusDate: {
       get() {
-        return this.formModel.statusDate
+        return String(this.formModel.statusDate)
       },
       set(newVal) {
         this.formModel.statusDate = newVal
@@ -396,7 +399,6 @@ export default {
       })
     },
     selectedClientContactTypes() {
-      console.log("selectedClientContactTypes")
       const contactTypes = {}
       this.selectedClient.contacts.forEach((contact) => {
         contactTypes[contact.contactType] = true
@@ -416,58 +418,129 @@ export default {
   },
   watch: {
     filing: {
-      handler() {
-        this.formModel = JSON.parse(JSON.stringify(this.filing))
+      handler(newFiling) {
+        this.formModel = JSON.parse(JSON.stringify(newFiling))
       },
       deep: true,
     },
+    localChanges: {
+      handler(newValue) {
+        // console.log('localChanges updated:', newValue);
+      },
+      deep: true
+    }
   },
   created() {
-    this.formModel = JSON.parse(JSON.stringify(this.filing))
+    this.formModel = JSON.parse(JSON.stringify(this.filing));
+    // Initialize localChanges if needed
+    if (!this.localChanges.length) {
+      this.localChanges = [this.formModel];
+    }
   },
+
   updated() {
+
     // if its state or not for the tabbing
     if (this.filingType === 'state') {
       items[0] = 'state'
     }
   },
+  beforeDestroy() {
+    this.sendUpdatesToServer()
+  },
   methods: {
     setEditable(editable) {
-      this.editable = editable
-      this.oldValue = this.formModel[editable]
+      this.editable = editable;
+      // Store the old value for comparison
+      if (editable === "status" || editable === "statusDetail") {
+        this.oldValue = this.formModel[editable].value;
+      } else {
+        this.oldValue = typeof this.formModel[editable] === 'object'
+          ? JSON.stringify(this.formModel[editable])
+          : this.formModel[editable];
+      }
     },
     isEditable(value) {
       return this.editable === value
     },
-    onBlur(e) {
-      if (this.editable === 'statusDate') {
-        this.handleUpdate()
-        return
-      }
-      if (this.oldValue === this.formModel[e]) {
+    // onBlur(e) {
+    //   console.log("blur")
+    //   if (this.editable === 'statusDate') {
+    //     this.handleUpdate()
+    //     return
+    //   }
+    //   if (this.oldValue === this.formModel[e]) {
+    //     console.log("inside=> ", JSON.parse(JSON.stringify(this.oldValue)))
+    //     this.editable = ''
+    //     return
+    //   }
+    //   this.handleUpdate()
+    // },
+    onBlur(field) {
+      if (JSON.stringify(this.oldValue) === JSON.stringify(this.formModel[field])) {
         this.editable = ''
         return
       }
-      this.handleUpdate()
+      this.handleLocalUpdate()
     },
     onMemoBlur() {
-      this.onBlur()
-      this.handleUpdate()
+      this.onBlur('memo')
     },
-    handleUpdate() {
-      this.$api.updateFiling(
-        this.headers,
-        { clientId: this.selectedClient.id, filingId: this.filing?.id },
-        this.formModel
-      )
-      this.goToNextItem()
+    // onMemoBlur() {
+    //   this.onBlur()
+    //   this.handleUpdate()
+    // },
+    handleLocalUpdate() {
+      console.log(this.filingsUpdate)
+      try {
+        const updatedModel = JSON.parse(JSON.stringify(this.formModel));
+        const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
+
+        if (existingIndex > -1) {
+          this.$store.dispatch('updateFilingAction', { filing: updatedModel });
+        } else {
+          this.$store.commit('pushFilingUpdate', updatedModel);
+        }
+
+        // console.log('Updated localChanges:', JSON.parse(JSON.stringify(this.localChanges)));
+        this.goToNextItem();
+      } catch (error) {
+        console.error('Error in handleLocalUpdate:', error);
+      }
+    },
+    logLocalChanges() {
+      console.log('Current localChanges:', JSON.parse(JSON.stringify(this.localChanges)));
+    },
+    // handleUpdate() {
+    //   console.log(JSON.parse(JSON.stringify(this.formModel)))
+    //   this.$api.updateFiling(
+    //     this.headers,
+    //     { clientId: this.selectedClient.id, filingId: this.filing?.id },
+    //     this.formModel
+    //   )
+    //   this.goToNextItem()
+    // },
+    sendUpdatesToServer() {
+      console.log(this.filingsUpdate)
+      if (this.filingsUpdate.length > 0) {
+        this.$api.updateFilings(
+          this.headers,
+          this.filingsUpdate
+        )
+        console.log("clear!!!")
+        this.$store.commit('clearFilingUpdate');
+      }
     },
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
     },
+    // setSecondDeliveryContact(value) {
+    //   this.secondDeliveryContact = value
+    //   this.handleUpdate()
+    // },
     setSecondDeliveryContact(value) {
       this.secondDeliveryContact = value
-      this.handleUpdate()
+      this.handleLocalUpdate()
     },
     goToNextItem() {
       const currentCell = this.editable

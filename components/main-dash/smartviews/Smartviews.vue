@@ -2,14 +2,9 @@
   <div class="flex-grow overflow-auto">
     <draggable :value="displayedSmartviews" v-bind="dragOptions" @start="startDrag" @end="onDrop">
       <transition-group type="transition" :name="transitionName">
-        <div
-          v-for="smartview in displayedSmartviews"
-          :ref="smartview.id"
-          :key="smartview.id"
+        <div v-for="smartview in displayedSmartviews" :ref="smartview.id" :key="smartview.id"
           class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center group hover:text-white hover:bg-gray-400"
-          :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
-          @click="selectSmartview(smartview)"
-        >
+          :class="smartview.id === selectedSmartviewId ? 'selected' : ''" @click="selectSmartview(smartview)">
           <div class="flex items-center space-x-2">
             <PenIcon v-if="!hideEditButtons" class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
             <span class="font-medium text-gray-900 select-none group-hover:text-white">{{ smartview.name }}</span>

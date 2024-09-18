@@ -29,7 +29,8 @@ export const models = Object.freeze({
   fbars:'fbars',
   globalPlayTime: "globalPlayTime",
   secondsNeededToDisplayModal1:"secondsNeededToDisplayModal1",
-  ClinetAndLogs:"ClinetAndLogs"
+  ClinetAndLogs:"ClinetAndLogs",
+  filingsUpdate:"filingsUpdate"
 })
 
 // Store Mutations

@@ -1,13 +1,7 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <ClientTaxYearsListItem
-      v-for="(taxYear, idx) in displayedTaxYearData"
-      :key="taxYear.id"
-      :idx="idx"
-      :tax-year="taxYear"
-      @delete="onDeleteClick($event, taxYear)"
-      @change="toggleItemShown($event, taxYear)"
-    />
+    <ClientTaxYearsListItem v-for="(taxYear, idx) in displayedTaxYearData" :key="taxYear.id" :idx="idx"
+      :tax-year="taxYear" @delete="onDeleteClick($event, taxYear)" @change="toggleItemShown($event, taxYear)" />
   </div>
 </template>
 
@@ -28,7 +22,7 @@ export default {
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const displayedTaxYearData = Object.assign(
-          Object.values(this.selectedClient.taxYearData).filter((taxYear) => this.showArchived === taxYear.archived)
+          Object.values(this.selectedClient.taxYears).filter((taxYear) => this.showArchived === taxYear.archived)
         )
         return displayedTaxYearData
       } else {

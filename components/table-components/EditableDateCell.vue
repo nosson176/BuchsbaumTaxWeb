@@ -17,13 +17,14 @@
 
 <script>
 import { events } from '~/shared/constants'
-import { formatDateForClient } from '~/shared/domain-utilities'
+// import { formatDateForClient } from '~/shared/domain-utilities'
+import { formatUnixTimestamp } from '~/shared/utility';
 
 export default {
   name: 'EditableDateCell',
   props: {
     value: {
-      type: String,
+      type: [String, Number],
       default: null,
     },
     isEditable: {
@@ -60,7 +61,7 @@ export default {
       return this.type === 'date'
     },
     displayedValue() {
-      return this.isTypeDate && this.computedValue ? formatDateForClient(this.computedValue) : this.computedValue
+      return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
     },
   },
   updated() {

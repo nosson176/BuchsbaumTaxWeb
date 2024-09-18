@@ -14,21 +14,21 @@
     </div>
     <div class="fbar-i">
       <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
-        <EditableSelectCell v-model="formModel.status" :options="statusOptions" class="whitespace-nowrap"
+        <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
           :is-editable="false" placeholder="Status" />
       </div>
       <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40 ">
-        <EditableSelectCell v-model="formModel.status" :options="statusOptions" class="whitespace-nowrap select-cell"
-          :is-editable="true" placeholder="Status" @blur="onBlur" />
+        <EditableSelectCell v-model="formModel.status.value" :options="statusOptions"
+          class="whitespace-nowrap select-cell" :is-editable="true" placeholder="Status" @blur="onBlur" />
       </div>
     </div>
     <div class="fbar-i">
       <div v-if="!isEditable('statusDetail')" @click.stop="setEditable('statusDetail')">
-        <EditableSelectCell v-model="formModel.statusDetail" :options="statusDetailOptions" class="whitespace-nowrap"
-          :is-editable="false" placeholder="Detail" />
+        <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
+          class="whitespace-nowrap" :is-editable="false" placeholder="Detail" />
       </div>
       <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-        <EditableSelectCell v-model="formModel.statusDetail" class="whitespace-nowrap select-cell"
+        <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap select-cell"
           :options="statusDetailOptions" :is-editable="true" placeholder="Detail" @blur="onBlur" />
       </div>
     </div>
@@ -82,6 +82,7 @@ export default {
     },
   },
   created() {
+    // console.log(JSON.parse(JSON.stringify(this.fbar)))
     this.formModel = JSON.parse(JSON.stringify(this.fbar))
   },
   methods: {

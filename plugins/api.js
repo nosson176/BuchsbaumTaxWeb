@@ -67,7 +67,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     store: models.selectedClient,
   })
   .then((res) => {
-    console.log(res)
+    console.log(JSON.parse(JSON.stringify(res)))
     getClientsHistory(headers)
 
   })
@@ -231,11 +231,22 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const createClient = (headers, { client }) =>
     $axios.post('/clients', client, { headers }).catch(() => $toast.error('Error creating client'))
 
-  const createSmartview = (headers, { smartview }) =>
-    $axios
-      .post('/smartviews', smartview, { headers })
-      .catch(() => $toast.error('Error creating smartview'))
-      .finally(() => getSmartviews(headers))
+  const createSmartview = async (headers, { smartview },sendToUserId) => {
+    try {
+      const url = sendToUserId ? `/smartviews?clientId=${sendToUserId}` : `/smartviews`
+      console.log("Creating Smartview:", smartview);
+      const response = await $axios.post(url, smartview, { headers });
+      // You might want to log or use the response data here
+      console.log("Smartview created successfully:", response.data);
+      return response.data; // return the created smartview or relevant data
+    } catch (error) {
+      console.error("Error creating smartview:", error);
+      $toast.error('Error creating smartview');
+    } finally {
+      // This ensures that you fetch the updated list of smartviews regardless of success or failure
+      await getSmartviews(headers);
+    }
+  };
 
   const createUser = (headers, { user }) =>
     $axios
@@ -296,7 +307,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/clients/${clientId}`, client, { headers })
       .catch(() => $toast.error('Error updating client'))
-      .finally(() => getClientData(headers, clientId))
+      // .finally(() => getClientData(headers, clientId))
 
   const updateClientFlag = (headers, { clientId, clientFlag }) =>
     $axios
@@ -309,6 +320,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .put(`/logs/${logId}`, log, { headers })
       .catch(() => $toast.error('Error updating log'))
       .finally(() => getClientData(headers, clientId))
+  
+      const updateLogs = (headers, logs) => {
+        $axios
+          .put('/logs/', logs, { headers }) // Correctly pass headers as an object
+          .catch(() => $toast.error('Error updating log'));
+    };
 
   const updateTaxPersonal = (headers, { clientId, personalId }, personal) =>
     $axios
@@ -359,7 +376,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/filings/${filingId}`, filing, { headers })
       .catch(() => $toast.error('Error updating filing'))
-      .finally(() => getClientData(headers, clientId))
+      // .finally(() => getClientData(headers, clientId))
+
+      const updateFilings = (headers, filing) =>{
+console.log(filing)
+        $axios
+        .put(`/filings/updateFilings`, {updates: filing}, { headers })
+        .catch(() => $toast.error('Error updating filing'))
+      }
   
       const updateFilingDelivary = (headers, { clientId, oldContectDelivary, newContectDelivary }) =>
         $axios
@@ -506,9 +530,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateFbar,
     updateFee,
     updateFiling,
+    updateFilings,
     updateFilingDelivary,
     updateIncome,
     updateLog,
+    updateLogs,
     updateSmartview,
     updateTaxPersonal,
     updateTaxYear,

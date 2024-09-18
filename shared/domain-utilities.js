@@ -8,7 +8,9 @@ const isPasswordValid = (str) => {
   return str.length > 6
 }
 
-const formatDateForClient = (date) => format(parseISO(date), dateformat.client)
+const formatDateForClient = (date) => {
+  console.log(date)
+  return format(parseISO(date), dateformat.client)}
 
 const userConstructor = () => {
   return {
