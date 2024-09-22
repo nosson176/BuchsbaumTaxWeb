@@ -1,7 +1,24 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <div class="bg-white sticky top-0 shadow">
-      <AddRowButton @click="onAddRowClick" />
+    <div class="bg-white sticky top-0 shadow flex items-center p-2">
+      <div class="flex items-center">
+        <AddRowButton @click="onAddRowClick" />
+        <ExportIcon class="ml-1" @export-click="exportToExcel" />
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <select name="sortBy" v-model="sortBy" class="form-select px-2 py-0 rounded">
+          <option value="A-Z">A-Z</option>
+          <option value="status">Status</option>
+          <option value="status detail">Status Detail</option>
+          <option value="status overall">Status Overall</option>
+          <option value="alarm">Alarm</option>
+        </select>
+        <select v-if="sortBy !== 'A-Z'" name="upDown" v-model="upDown" class="form-select px-2 py-0 rounded">
+          <option value="new">New</option>
+          <option value="old">Old</option>
+        </select>
+      </div>
     </div>
     <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id}  ${isSelected(client)}`"
       class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
@@ -26,6 +43,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import * as XLSX from "xlsx";
 import { events, models, mutations, routes, tabs } from '~/shared/constants'
 
 export default {
@@ -38,6 +56,8 @@ export default {
   },
   data() {
     return {
+      sortBy: 'A-Z',
+      upDown: 'new',
       selectedClientId: NaN,
       showChangeClientModal: false,
       switchToClient: '',
@@ -46,7 +66,31 @@ export default {
   computed: {
     ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1]),
     displayedClients() {
-      return this.filteredClients
+      // console.log("run => ", JSON.parse(JSON.stringify(this.sortedClients)))
+      return this.sortedClients
+      // return this.filteredClients
+    },
+    sortedClients() {
+      const clients = Object.values(this.filteredClients)
+
+      switch (this.sortBy) {
+        case 'A-Z':
+          return this.sortByLastName(clients)
+        case 'status':
+          return this.sortByLatestDate(clients, 'filings', 'status')
+        case 'status detail':
+          return this.sortByLatestDate(clients, 'filings', 'statusDetail')
+        case 'status overall':
+          return this.sortByStatusOverall(clients)
+        case 'alarm':
+          // Implement alarm sorting logic here
+          return clients
+        default:
+          return clients
+      }
+    },
+    showUpDown() {
+      return this.sortBy !== 'A-Z'
     },
     filteredClients() {
       return Object.fromEntries(
@@ -76,6 +120,68 @@ export default {
     this.selectedClientId = this.selectedClient.id
   },
   methods: {
+    sortByLastName(clients) {
+      return clients.sort((a, b) => {
+        const lastNameA = a.lastName || ''
+        const lastNameB = b.lastName || ''
+        return lastNameA.localeCompare(lastNameB)
+      })
+    },
+    sortByLatestDate(clients, arrayField, dateField) {
+      return clients.sort((a, b) => {
+        const dateA = this.getLatestDate(a, arrayField, dateField)
+        const dateB = this.getLatestDate(b, arrayField, dateField)
+
+        if (this.upDown === 'new') {
+          return dateB - dateA
+        } else {
+          return dateA - dateB
+        }
+      })
+    },
+    sortByStatusOverall(clients) {
+      return clients.sort((a, b) => {
+        const dateA = a.statusChangeDate || 0
+        const dateB = b.statusChangeDate || 0
+
+        if (this.upDown === 'new') {
+          return dateB - dateA
+        } else {
+          return dateA - dateB
+        }
+      })
+    },
+    getLatestDate(client, arrayField, dateField) {
+      const dates = (client[arrayField] || []).map(item => {
+        if (dateField === 'status' || dateField === 'statusDetail') {
+          return new Date(item[dateField]?.date || 0).getTime()
+        }
+        return new Date(item[dateField] || 0).getTime()
+      })
+      return dates.length ? Math.max(...dates) : 0
+    },
+
+    async exportToExcel() {
+      const clients = this.displayedClients
+      const clientsArray = Array.isArray(clients) ? clients : Object.values(clients);
+      const res = await this.$api.getClientsToExport(this.headers, clientsArray)
+      const dataArray = Array.isArray(res) ? res : Object.values(res);
+      const worksheet = XLSX.utils.json_to_sheet(dataArray);
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Customers");
+
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+
+      const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+      const url = window.URL.createObjectURL(data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "customers.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
     async selectClient({ id }) {
       this.selectedClientId = id
       const headers = this.headers
@@ -178,5 +284,41 @@ export default {
 
 .client.selected span {
   @apply text-white;
+}
+
+.bg-white.sticky.top-0 {
+  z-index: 20;
+
+  /* Ensure it stays above other elements but doesn't cover too much */
+}
+
+.flex.items-center.justify-between {
+  padding: 8px;
+
+  /* Add padding to avoid elements being too close */
+}
+
+.form-select {
+  border: 1px solid #ccc;
+  background-color: white;
+  padding-right: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  width: auto;
+  min-width: 10px;
+  appearance: none;
+}
+
+select {
+  appearance: none;
+  padding-right: 20px;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0H140V140H0z"/><path d="M35 50l35 35 35-35H35z" fill="currentColor"/></svg>') no-repeat right 10px center;
+  background-size: 10px;
+}
+
+.flex.items-center.space-x-2 select {
+  margin-left: 8px;
+
+  /* Adds some space between the dropdowns */
 }
 </style>

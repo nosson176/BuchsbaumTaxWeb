@@ -391,7 +391,6 @@ export default {
     showEditNameDialogue: {
       handler(newVal) {
         if (newVal) {
-          console.log("showEditNameDialogue=> ", newVal,)
           this.editedLastName = this.selectedClient.lastName
           this.$nextTick(() => {
             this.$refs.lastNameInput.$refs.input.focus()
@@ -401,7 +400,6 @@ export default {
     },
     selectedClient: {
       handler(newClient, oldClient) {
-        console.log(newClient.id, oldClient.id)
         if (newClient.id !== oldClient.id && oldClient.id !== undefined) {
           this.updateClient1(oldClient)
         }
@@ -416,10 +414,7 @@ export default {
       updateSelectedClient: mutations.setModelResponse
     }),
     updateClient1(oldClient) {
-      console.log("beforeDestroy => ", this.selectedClient)
-      console.log("beforeDestroy oldClient => ", oldClient)
       if (oldClient.needUpdate === true) {
-        console.log("beforeDestroyinside!!! ")
         const updatedClient = {
           id: oldClient.id,
           status: oldClient.status,
@@ -431,7 +426,6 @@ export default {
           displayPhone: oldClient.displayPhone,
           statusChangeDate: oldClient.statusChangeDate
         };
-        console.log("updatedClient=> ", updatedClient)
         this.$api.updateClient(this.headers, { clientId: updatedClient.id, client: updatedClient })
       }
     },
@@ -462,7 +456,6 @@ export default {
     },
 
     needUpdate() {
-      console.log("needUpdate")
       this.updateSelectedClient({
         model: models.selectedClient,
         data: { ...this.selectedClient, needUpdate: true }

@@ -127,6 +127,7 @@
 <script>
 import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
+import moment from 'moment-timezone';
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 import { boldSearchWord, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
@@ -175,7 +176,6 @@ export default {
     ]),
     displayedLogs() {
       const logs = this.shownLogs.filter((log) => this.filterLogs(log))
-      // console.log(logs)
       const mappedLogs = logs.map((log) => {
         if (log.alarmUserId && !log.alarmUserName) {
           log.alarmUserName = this.usersArray[log.alarmUserId].username
@@ -299,35 +299,6 @@ export default {
   async beforeDestroy() {
     clearInterval(this.intervalId);
     await this.saveUpdatAndNewLogs();
-
-    // if (this.updatAndNewLogs.length > 0) {
-    //   try {
-    //     const arr = this.updatAndNewLogs.map(log => {
-    //       console.log(log);
-    //       console.log('Type of historyLogJson:', typeof log.historyLogJson);  // הדפס את סוג הערך
-    //       console.log('Value of historyLogJson:', log.historyLogJson);  // הדפס את התוכן
-
-    //       if (log.new) delete log.new;
-
-    //       // אם historyLogJson הוא לא מחרוזת, המרה למחרוזת JSON
-    //       if (log.historyLogJson && log.historyLogJson.length > 0 && typeof log.historyLogJson !== 'string') {
-    //         try {
-    //           log.historyLogJson = JSON.stringify(log.historyLogJson);
-    //         } catch (e) {
-    //           console.error('Failed to stringify JSON for log:', log, e);
-    //         }
-    //       }
-
-    //       return log;
-    //     });
-
-    //     console.log("arr => ", arr);
-
-    //     await this.$api.updateLogs(this.headers, arr);
-    // } catch (error) {
-    //   console.error('Error updating logs:', error);
-    // }
-    // }
   },
   watch: {
     globalPlaytimeValue(newValue) {
@@ -379,7 +350,6 @@ export default {
 
     },
     copyLog() {
-      console.log("copyLog")
       if (!this.selectedLogIds) return;
 
       this.selectedLogIds.forEach((logId, idx) => {
@@ -481,7 +451,6 @@ export default {
 
     updateUpdatAndNewLogs(updatedLog, val, field) {
       const index = this.updatAndNewLogs.findIndex(log => log.id === updatedLog.id);
-      console.log(this.currentUser)
       if (index !== -1) {
         const historyEntry = {
           userName: this.currentUser.username,
@@ -515,20 +484,23 @@ export default {
       }
     },
 
-    // there is a issue with the status and status_detail when one of the keys is null it remove this key from the answer so lets say in the db i have {date:159951159,value:null} it send to the client {date:159951159} except {date:159951159,value:null}
-
-
     async saveUpdatAndNewLogs() {
       if (this.updatAndNewLogs.length === 0) return
       try {
         const logsToSave = this.updatAndNewLogs.map(log => ({
           ...log,
+          logDate: this.formatUnixTimestamp(log.logDate),
           historyLogJson: JSON.stringify(log.historyLogJson)
         }));
         await this.$api.updateLogs(this.headers, logsToSave);
       } catch (error) {
         console.error('Error saving logs:', error);
       }
+    },
+    formatUnixTimestamp(unixTimeMillis) {
+      return moment(unixTimeMillis)
+        .tz('Asia/Jerusalem')
+        .format('YYYY-MM-DD'); // No timezone offset
     },
     onDeleteClick(logId) {
       if (this.showArchived) {
@@ -587,7 +559,6 @@ export default {
         })
       } else {
         const log = Object.assign({}, defaultValues)
-        console.log(log)
         this.updatAndNewLogs.push(log)
         this.$store.commit('pushNewLog', {
           state: this.selectedClient,

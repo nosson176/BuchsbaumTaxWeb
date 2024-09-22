@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col bg-blue-200 px-0.5 py-1">
+    <div></div>
     <ViewArchivedHeader :view-active="showActive" @change="emitChange" />
     <div class="flex items-center justify-between space-x-1">
       <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />

@@ -45,6 +45,7 @@ export default {
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews() {
+      // console.log(JSON.parse(JSON.stringify(this.smartviews)))
       if (this.smartviews) {
         return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
           .filter((smartview) => this.showArchived === smartview.archived)
@@ -70,13 +71,14 @@ export default {
     },
   },
   methods: {
-    selectSmartview(smartview) {
-      this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
-      if (this.selectedSmartviewId === smartview.id) {
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
-      } else {
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
-      }
+    async selectSmartview(smartview) {
+      await this.$api.getFilterClients(this.headers, { smartview })
+      // this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
+      // if (this.selectedSmartviewId === smartview.id) {
+      //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+      // } else {
+      //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
+      // }
     },
     showEdit(smartview) {
       this.$store.commit(mutations.setModelResponse, {

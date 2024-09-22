@@ -124,31 +124,42 @@ const generateRandomId = (min = 160700, max = 999999) => {
 }
 
 const formatUnixTimestamp = (timestamp) => {
+  // Check if the timestamp is already in the 'YYYY-MM-DD' format
+  const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (typeof timestamp === 'string' && dateFormatRegex.test(timestamp)) {
+    // Return the timestamp as is, since it's already in the correct format
+    const [year, month, day] = timestamp.split('-');
+    return `${day}/${month}/${year}`;
+  }
+
   // Check if the timestamp is a string and convert it to a number
   if (typeof timestamp === 'string') {
+    // console.log('Converting string timestamp to number:', timestamp);
     timestamp = Number(timestamp);
   }
 
-  // Ensure timestamp is a valid number
+  // Ensure the timestamp is a valid number
   if (isNaN(timestamp) || timestamp <= 0) {
-    console.error('Timestamp is not a valid number:',typeof timestamp, timestamp);
-    return ;
+    console.error('Timestamp is not a valid number:', typeof timestamp, timestamp);
+    return;
   }
 
-  // Create Date object
+  // Create Date object from the timestamp
   const date = new Date(timestamp);
   if (isNaN(date.getTime())) {
-    console.error('Date is invalid for timestamp:',typeof timestamp, timestamp);
-    return ;
+    console.error('Date is invalid for timestamp:', typeof timestamp, timestamp);
+    return;
   }
 
-  // Format and return date
+  // Format the date as DD/MM/YYYY
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
 
   return `${day}/${month}/${year}`;
 };
+
 
 
 

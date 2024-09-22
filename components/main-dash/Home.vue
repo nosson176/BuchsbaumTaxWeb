@@ -80,6 +80,7 @@ export default {
       }
     },
     smartview() {
+      // console.log("smertview => ", JSON.parse(JSON.stringify(this.modals.smartview?.data)))
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
     headers() {

@@ -198,6 +198,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
           })
           .catch(() => $toast.error('Error loading messages'))
       }
+
+      const getClientsToExport = (headers,clientsArray) =>{
+        console.log(clientsArray)
+        return $axios
+          .post(`/clients/exportClients`, clientsArray, {headers})
+          .catch(() => $toast.error('Error fetch Clients to export'))
+      
+      }
       
 
   // CREATE
@@ -237,8 +245,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       console.log("Creating Smartview:", smartview);
       const response = await $axios.post(url, smartview, { headers });
       // You might want to log or use the response data here
-      console.log("Smartview created successfully:", response.data);
-      return response.data; // return the created smartview or relevant data
+      console.log("Smartview created successfully:", response);
+      return response; // return the created smartview or relevant data
     } catch (error) {
       console.error("Error creating smartview:", error);
       $toast.error('Error creating smartview');
@@ -246,6 +254,23 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       // This ensures that you fetch the updated list of smartviews regardless of success or failure
       await getSmartviews(headers);
     }
+  };
+  
+  const getFilterClients = async (headers, { smartview }) => {
+    try {
+      console.log("Creating Smartview:", smartview);
+      const response = await $axios.post('/smartviews/getFilterClients', smartview,
+         { 
+        headers,loading: models.clients,
+        loaded: models.clients,
+        store: models.clients,
+       });
+     
+      return Object.values(response); // return the created smartview or relevant data
+    } catch (error) {
+      console.error("Error creating smartview:", error);
+      $toast.error('Error creating smartview');
+    } 
   };
 
   const createUser = (headers, { user }) =>
@@ -512,6 +537,7 @@ console.log(filing)
     getClientsHistory,
     getHeaders,
     getSmartviews,
+    getFilterClients,
     getValueTaxGroups,
     getValueTypes,
     getCurrentUser,
@@ -521,6 +547,7 @@ console.log(filing)
     getTimeWorksByMonthAndUserId,
     getAllTimeWorksByDate,
     getClientsWithLogs,
+    getClientsToExport,
     login,
     signout,
     sendSms,
