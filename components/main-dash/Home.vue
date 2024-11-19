@@ -1,5 +1,5 @@
 <template>
-  <div v-hotkey="keymap" class="flex flex-col max-h-screen bg-gray-100">
+  <div v-hotkey="keymap" class="flex flex-col bg-gray-100" style="max-height: 130vh;">
     <div class="main-grid">
       <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-3 bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
@@ -121,11 +121,9 @@ export default {
       })
     },
     onCmdPress() {
-      console.log("press")
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
     },
     onCmdUp() {
-      console.log("up")
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
     },
     confirmDelete() {

@@ -41,26 +41,32 @@ export default {
   },
   methods: {
     toggleItemShown(setValue, taxYear) {
+      console.log("toggleItemShown")
       const updatedTaxYear = Object.assign({}, taxYear, { show: !taxYear.show })
+      this.$store.commit('updateTaxYearState', { taxYearId: updatedTaxYear.id, updatedData: updatedTaxYear });
       this.$api
         .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId: updatedTaxYear.id }, updatedTaxYear)
-        .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
     },
     onDeleteClick(taxYearId, taxYear) {
       if (this.showArchived) {
-        const taxYear = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId)
-        taxYear.archived = false
-        taxYear.show = true
+        console.log("showArchived");
+        const taxYearToUpdate = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId);
+        if (taxYearToUpdate) {
+          // Prepare the updated data
+          const updatedData = { archived: false, show: true };
+          this.$store.commit('updateTaxYearState', { taxYearId, updatedData });
+        }
         this.$api
           .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
-          .then(() => this.$api.getClientData(this.headers, this.selectedClient.id))
       } else {
+        console.log("UNNNshowArchived");
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
           data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years, label: taxYear.year } } },
-        })
+        });
       }
     },
+
     isSelected({ id }) {
       return this.selectedTaxYearId === id
     },

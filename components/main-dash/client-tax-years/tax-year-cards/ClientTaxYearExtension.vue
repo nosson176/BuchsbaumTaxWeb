@@ -52,7 +52,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.valueTypes, models.selectedClient]),
+    ...mapState([models.valueTypes, models.selectedClient, models.filingsUpdate]),
     headers() {
       return this.$api.getHeaders()
     },
@@ -77,11 +77,24 @@ export default {
       this.setEditable('')
     },
     handleUpdate() {
-      this.$api.updateFiling(
-        this.headers,
-        { clientId: this.selectedClient.id, filingId: this.extension.id },
-        this.formModel
-      )
+      // console.log(this.filingsUpdate)
+      try {
+        const updatedModel = JSON.parse(JSON.stringify(this.formModel));
+        // console.log(updatedModel)
+        const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
+
+        if (existingIndex > -1) {
+          this.$store.dispatch('updateFilingAction', { filing: updatedModel });
+        } else {
+          this.$store.commit('pushFilingUpdate', updatedModel);
+        }
+
+        // console.log('Updated localChanges:', JSON.parse(JSON.stringify(this.localChanges)));
+        this.goToNextItem();
+      } catch (error) {
+        console.error('Error in handleLocalUpdate:', error);
+      }
+      console.log(this.formModel)
     },
     emitDelete() {
       this.$emit(events.delete, this.extension.id)

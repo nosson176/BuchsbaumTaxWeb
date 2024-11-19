@@ -89,7 +89,6 @@ export default {
     },
     onDrop(evt) {
       const item = JSON.parse(JSON.stringify(this.filings))[evt.oldIndex]
-      console.log(item)
       item.sortOrder = evt.newIndex + 1
       this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: item.id }, item)
       this.dragActive = false

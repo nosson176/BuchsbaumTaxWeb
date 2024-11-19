@@ -3,22 +3,16 @@
     <div class="bg-white sticky top-0 shadow">
       <AddRowButton @click="onAddRowClick" />
     </div>
-    <FeesItem
-      v-for="(fee, idx) in displayedFees"
-      :key="idx"
-      :idx="idx"
-      :fee="fee"
-      :is-new="newFeeId === fee.id"
-      @input="handleUpdateFee"
-      @delete="onDeleteClick"
-    />
+    <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" :is-new="newFeeId === fee.id"
+      @input="handleUpdateFee" @delete="onDeleteClick" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import moment from 'moment-timezone';
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { searchArrOfObjs } from '~/shared/utility'
+import { generateRandomId, searchArrOfObjs } from '~/shared/utility'
 export default {
   name: 'FeesTable',
   props: {
@@ -30,6 +24,8 @@ export default {
   data() {
     return {
       newFeeId: NaN,
+      updateFees: [],
+      oldValue: ''
     }
   },
   computed: {
@@ -56,7 +52,8 @@ export default {
     },
     fees() {
       if (this.selectedClient?.fees) {
-        return JSON.parse(JSON.stringify(this.selectedClient.fees))
+        // return JSON.parse(JSON.stringify(this.selectedClient.fees))
+        return this.selectedClient?.fees || null;
       } else {
         return null
       }
@@ -65,9 +62,32 @@ export default {
       return this.search?.[tableGroups.feesChecklists]
     },
   },
+  beforeDestroy() {
+    if (this.updateFees.length > 0) this.sendFeesToServer()
+  },
   methods: {
     handleUpdateFee(editedFee) {
-      this.$api.updateFee(this.headers, { clientId: this.selectedClient.id, feeId: editedFee.id }, editedFee)
+      console.log(editedFee)
+      const feeCopy = JSON.parse(JSON.stringify(editedFee));
+      const index = this.updateFees.findIndex(fee => fee.id === editedFee.id)
+      if (index !== -1) {
+        this.updateFees[index] = feeCopy
+      } else {
+        this.updateFees.push(feeCopy)
+      }
+      this.$store.dispatch('updateFeeAction', { fee: editedFee });
+    },
+    sendFeesToServer() {
+      console.log(this.updateFees)
+      this.updateFees.forEach(async fee => {
+        fee.dateFee = await this.formatUnixTimestamp(fee.dateFee)
+      })
+      this.$api.updateFees(this.headers, this.updateFees)
+    },
+    formatUnixTimestamp(unixTimeMillis) {
+      return moment(unixTimeMillis)
+        .tz('Asia/Jerusalem')
+        .format('YYYY-MM-DD'); // No timezone offset
     },
     onAddRowClick() {
       if (!this.selectedClient) {
@@ -76,12 +96,15 @@ export default {
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
+        archived: false,
+        id: generateRandomId(),
       }
       const fee = Object.assign({}, defaultValues)
-      this.$api.createFee(this.headers, { clientId, fee }).then(async (data) => {
-        await this.$api.getClientData(this.headers, this.selectedClient.id)
-        this.newFeeId = data.id
-      })
+      this.updateFees.push(fee)
+      this.$store.commit('pushNewFee', {
+        state: this.selectedClient,
+        fee
+      });
     },
     onDeleteClick(feeId) {
       if (this.showArchived) {

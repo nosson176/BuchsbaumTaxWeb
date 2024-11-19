@@ -404,7 +404,6 @@ export default {
       this.oldValue = this.formModel[field]
     },
     isEditable(field) {
-
       return this.editable === field
     },
     onBlur(e) {
@@ -416,7 +415,7 @@ export default {
         this.editable = ''
         return
       }
-
+      console.log("run")
       this.handleUpdate()
     },
     handleUpdate() {

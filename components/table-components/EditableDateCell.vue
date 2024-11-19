@@ -61,6 +61,7 @@ export default {
       return this.type === 'date'
     },
     displayedValue() {
+      // console.log(this.computedValue)
       return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
     },
   },

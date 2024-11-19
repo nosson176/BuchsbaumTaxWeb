@@ -156,6 +156,8 @@ export default {
       oldValue: '',
       formModel: null,
       localChanges: [],
+      times: 0,
+      tiems2: 0
     }
   },
   computed: {
@@ -181,22 +183,44 @@ export default {
     },
     status: {
       get() {
-        return this.formModel.status.value
+        return this.formModel.status?.value;
       },
       set(newVal) {
-        this.formModel.status.value = newVal
-        this.formModel.status.date = Date.now()
+        // Check if the status object is empty or undefined
+        if (!this.formModel.status || Object.keys(this.formModel.status).length === 0) {
+          // Initialize the status object with the given value and current timestamp if empty
+          this.formModel.status = {
+            value: newVal,
+            date: Date.now(),
+          };
+        } else {
+          // Otherwise, just update the existing properties
+          this.formModel.status.value = newVal;
+          this.formModel.status.date = Date.now();
+        }
       },
     },
+
     statusDetail: {
       get() {
-        return this.formModel.statusDetail.value
+        return this.formModel.statusDetail?.value;
       },
       set(newVal) {
-        this.formModel.statusDetail.value = newVal
-        this.formModel.statusDetail.date = Date.now()
+        // Check if the statusDetail object is empty or undefined
+        if (!this.formModel.statusDetail || Object.keys(this.formModel.statusDetail).length === 0) {
+          // Initialize the statusDetail object with the given value and current timestamp if empty
+          this.formModel.statusDetail = {
+            value: newVal,
+            date: Date.now(),
+          };
+        } else {
+          // Otherwise, just update the existing properties
+          this.formModel.statusDetail.value = newVal;
+          this.formModel.statusDetail.date = Date.now();
+        }
       },
     },
+
     statusDate: {
       get() {
         return String(this.formModel.statusDate)
@@ -430,6 +454,7 @@ export default {
       deep: true
     }
   },
+
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.filing));
     // Initialize localChanges if needed
@@ -439,18 +464,20 @@ export default {
   },
 
   updated() {
-
     // if its state or not for the tabbing
     if (this.filingType === 'state') {
       items[0] = 'state'
     }
   },
-  beforeDestroy() {
-    this.sendUpdatesToServer()
-  },
+
+  // beforeDestroy() {
+  //   console.log("beforeDestroy filing")
+  //   this.sendUpdatesToServer()
+  // },
   methods: {
     setEditable(editable) {
       this.editable = editable;
+      // console.log(editable)
       // Store the old value for comparison
       if (editable === "status" || editable === "statusDetail") {
         this.oldValue = this.formModel[editable].value;
@@ -463,25 +490,39 @@ export default {
     isEditable(value) {
       return this.editable === value
     },
-    // onBlur(e) {
-    //   console.log("blur")
-    //   if (this.editable === 'statusDate') {
-    //     this.handleUpdate()
-    //     return
-    //   }
-    //   if (this.oldValue === this.formModel[e]) {
-    //     console.log("inside=> ", JSON.parse(JSON.stringify(this.oldValue)))
-    //     this.editable = ''
-    //     return
-    //   }
-    //   this.handleUpdate()
-    // },
+
     onBlur(field) {
-      if (JSON.stringify(this.oldValue) === JSON.stringify(this.formModel[field])) {
-        this.editable = ''
-        return
+      console.log("blur => ", field);
+      if (field === 'statusDate') {
+        this.times = this.times === 0 ? 1 : 0;
+        if (this.times === 1) {
+          return;
+        }
       }
-      this.handleLocalUpdate()
+      if (field === 'dateFiled') {
+        this.times2 = this.times2 === 0 ? 1 : 0;
+        if (this.times2 === 1) {
+          return;
+        }
+      }
+
+      const oldValueStr = JSON.stringify(this.oldValue);
+      const newValueStr = field === 'status' || field === 'statusDetail'
+        ? JSON.stringify(this.formModel[field]?.value)
+        : JSON.stringify(this.formModel[field]);
+
+      // console.log("Old Value => ", oldValueStr);
+      // console.log("New Value => ", newValueStr);
+      // console.log("Values match => ", oldValueStr === newValueStr);
+
+      // Check if the values are equal and update editability if they are
+      if (oldValueStr === newValueStr) {
+        this.editable = '';
+        return;
+      }
+
+      // Continue to handle local update if values differ
+      this.handleLocalUpdate();
     },
     onMemoBlur() {
       this.onBlur('memo')
@@ -491,7 +532,7 @@ export default {
     //   this.handleUpdate()
     // },
     handleLocalUpdate() {
-      console.log(this.filingsUpdate)
+      // console.log('handleLocalUpdate called');
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -501,36 +542,12 @@ export default {
         } else {
           this.$store.commit('pushFilingUpdate', updatedModel);
         }
-
-        // console.log('Updated localChanges:', JSON.parse(JSON.stringify(this.localChanges)));
         this.goToNextItem();
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);
       }
     },
-    logLocalChanges() {
-      console.log('Current localChanges:', JSON.parse(JSON.stringify(this.localChanges)));
-    },
-    // handleUpdate() {
-    //   console.log(JSON.parse(JSON.stringify(this.formModel)))
-    //   this.$api.updateFiling(
-    //     this.headers,
-    //     { clientId: this.selectedClient.id, filingId: this.filing?.id },
-    //     this.formModel
-    //   )
-    //   this.goToNextItem()
-    // },
-    sendUpdatesToServer() {
-      console.log(this.filingsUpdate)
-      if (this.filingsUpdate.length > 0) {
-        this.$api.updateFilings(
-          this.headers,
-          this.filingsUpdate
-        )
-        console.log("clear!!!")
-        this.$store.commit('clearFilingUpdate');
-      }
-    },
+
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
     },
@@ -542,19 +559,35 @@ export default {
       this.secondDeliveryContact = value
       this.handleLocalUpdate()
     },
+    // goToNextItem() {
+    //   const currentCell = this.editable
+    //   console.log(currentCell)
+    //   const itemIndex = items.findIndex((col) => {
+    //     console.log(col)
+    //     return col === currentCell
+    //   })
+    //   console.log(itemIndex)
+    //   if (itemIndex < items.length - 1) {
+    //     const nextCell = items[itemIndex + 1]
+    //     console.log(nextCell)
+    //     this.setEditable(nextCell)
+    //   } else {
+    //     this.editable = ''
+
+    //   }
+    // },
     goToNextItem() {
       const currentCell = this.editable
-      const itemIndex = items.findIndex((col) => {
-        return col === currentCell
-      })
+      const itemIndex = items.findIndex((col) => col === currentCell)
+
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
         this.setEditable(nextCell)
       } else {
         this.editable = ''
-
       }
     },
+
     goToPrevItem() {
       const currentCell = this.editable
       const itemIndex = items.findIndex((col) => col === currentCell)

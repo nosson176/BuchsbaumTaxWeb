@@ -22,7 +22,7 @@
 <script>
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { models, mutations, tabs, TRANSITION_NAME, routes } from '~/shared/constants'
+import { models, mutations, TRANSITION_NAME, routes } from '~/shared/constants'
 
 export default {
   name: 'Smartviews',
@@ -89,15 +89,13 @@ export default {
     archiveSmartview(smartview) {
       if (this.showArchived) {
         smartview.archived = false
-        this.$api
-          .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
-          .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
       } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews, label: smartview.name } } },
-        })
+        smartview.archived = true
       }
+      this.$store.dispatch('updateSmartviewAction', { smartview });
+      this.$api
+        .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
+        .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
     },
     startDrag() {
       this.dragActive = true

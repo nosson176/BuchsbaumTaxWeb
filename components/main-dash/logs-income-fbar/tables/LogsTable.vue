@@ -2,9 +2,9 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
     @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
-      <TableHeader class="border-amber-500">
+      <TableHeader class="border-amber-500 w-max">
         <div class="table-header flex items-start ">
-          <AddRowButton @click="onAddRowClick" />
+          <AddRowButton @click="onAddRowClick" class="mt-0" />
           <CopyIcon @click.native="copyLog" class="cursor-pointer h-5 w-4 ml-2" />
           <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" class="cursor-pointer h-5 w-4 ml-2" />
         </div>
@@ -18,9 +18,10 @@
           </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
-        <div class="table-header xxl">Note</div>
+        <div class="table-header xl">Note</div>
         <div class="table-header sm">Date</div>
         <div class="table-header sm">Alarm</div>
+        <div class="table-header sm">Time</div>
         <div class="table-header xs">
           <button type="button"
             class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -70,8 +71,8 @@
             </template>
           </Tooltip>
         </div>
-        <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
-          <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note)"
+        <div :id="`${idx}-note`" class="table-col xl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
+          <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note, 'note')"
             :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
@@ -80,8 +81,19 @@
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
-          <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)"
+          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)"
             @blur="onBlur(log.alarmDate, 'alarmDate')" />
+        </div>
+        <!-- <div :id="`${idx}-alarmTime`" class="table-col sm" @click="openAlertTimePicker(idx, log.id)">
+          <date-picker v-model="log.alarmTime" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            placeholder="Select date and time" :open="isAlertTimeOpen(idx)"
+            @close="closeAlertTime(idx, log.alarmTime, 'alarmTime')" />
+        </div> -->
+        <div :id="`${idx}-alarmTime`" class="table-col sm"
+          @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
+          <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
+            @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon v-if="log.alarmDate" class="h-5 w-5 cursor-pointer"
@@ -128,10 +140,11 @@
 import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
 import moment from 'moment-timezone';
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
+import dayjs from 'dayjs';
+import { models, mutations, tableGroups } from '~/shared/constants'
 import { boldSearchWord, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'secondsSpent', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -157,7 +170,8 @@ export default {
       playTime: true,
       intervalId: '',
       oldValue: '',
-      updatAndNewLogs: []
+      updatAndNewLogs: [],
+      openAlertTimeIndex: null,
     }
   },
   computed: {
@@ -328,6 +342,7 @@ export default {
         return [];
       }
     },
+
     formatDate(date) {
       const d = new Date(date);
 
@@ -363,7 +378,7 @@ export default {
 
         if (log) {
           // צור עותק של הלוג ושנה את historyLogJson למערך ריק
-          const copyLog = { ...log, historyLogJson: [], id: generateRandomId(), createdBy: this.currentUser.username };
+          const copyLog = { ...log, alarmComplete: false, alarmUserId: null, alarmDate: null, alarmTime: null, alarmUserName: null, historyLogJson: [], id: generateRandomId(), new: true, createdBy: this.currentUser.username };
 
           // שמור את הלוג המועתק בחנות
           this.$store.commit('setCopyLogs', copyLog);
@@ -421,30 +436,57 @@ export default {
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
-        this.oldValue = log[val]
-        this.isEditable(`${0}-priority`)
+        // console.log(logId)
+        // console.log(log)
+        // console.log(val)
+        if (log) {
+          this.oldValue = log[val]
+          this.isEditable(`${0}-priority`)
+        }
       } else this.oldValue = value
       if (this.editableId !== id) {
         this.editableId = id;
         this.editableLogId = logId;
       }
+      // if (id.endsWith('-alermTime')) {
+      //   this.openAlertTimeIndex = parseInt(id.split('-')[0]);
+      // }
     },
     isEditable(id) {
       return this.editableId === id
     },
     handleUpdate(val, field) {
+      // console.log("handleUpdate =>", val, field)
       if (!this.editableLogId) return;
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
       if (logIndex === -1) return;
 
       const updatedLog = { ...this.displayedLogs[logIndex] };
 
-      // Update alarmUserId if necessary
-      const user = Object.values(this.users).find(user => user.username === updatedLog.alarmUserName);
-      if (user) {
-        updatedLog.alarmUserId = user.id;
+      if (field === 'alarmTime') {
+        const currentTime = dayjs(); // Current date and time using dayjs
+        const endOfDay = dayjs().endOf('day'); // End of the current day using dayjs
+
+        // Convert `updatedLog.alarmTime` to a valid dayjs object
+        const alarmTime = dayjs(updatedLog.alarmTime, 'DD-MM-YYYY HH:mm');
+        // Check if alarmTime is a valid date and within the range
+        if (alarmTime.isValid() && alarmTime.isAfter(currentTime) && alarmTime.isBefore(endOfDay)) {
+          this.$store.commit('pushDayLog', {
+            state: this.selectedClient,
+            log: updatedLog
+          });
+        } else {
+          console.log("alarmTime is not within the range or invalid, log not pushed.");
+        }
       }
 
+      // Update alarmUserId if necessary
+      if (field === 'alarmUserName') {
+        const user = Object.values(this.users).find(user => user.username === val);
+        if (user) {
+          updatedLog.alarmUserId = user.id;
+        }
+      }
       this.$store.dispatch('updateLogAction', { log: updatedLog });
       this.updateUpdatAndNewLogs(updatedLog, val, field);
     },
@@ -460,6 +502,12 @@ export default {
         };
 
         // Use Vue.set to ensure reactivity
+        if (field === 'alarmDate') {
+          this.$set(this.updatAndNewLogs[index], 'alarmCreateChange', Date.now());
+        }
+        if (field === 'alarmUserName') {
+          this.$set(this.updatAndNewLogs[index], 'alarmUserId', updatedLog.alarmUserId);
+        }
         this.$set(this.updatAndNewLogs[index], field, val);
 
         if (!this.updatAndNewLogs[index].new) {
@@ -490,6 +538,7 @@ export default {
         const logsToSave = this.updatAndNewLogs.map(log => ({
           ...log,
           logDate: this.formatUnixTimestamp(log.logDate),
+          alarmDate: this.formatUnixTimestamp(log.alarmDate),
           historyLogJson: JSON.stringify(log.historyLogJson)
         }));
         await this.$api.updateLogs(this.headers, logsToSave);
@@ -498,21 +547,21 @@ export default {
       }
     },
     formatUnixTimestamp(unixTimeMillis) {
+      if (unixTimeMillis === null) return
       return moment(unixTimeMillis)
         .tz('Asia/Jerusalem')
         .format('YYYY-MM-DD'); // No timezone offset
     },
+
     onDeleteClick(logId) {
+      const log = this.displayedLogs.find((log) => log.id === logId)
       if (this.showArchived) {
-        const log = this.displayedLogs.find((log) => log.id === logId)
         log.archived = false
-        this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
       } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: logId, type: tabs.logs, label: 'log note' } } },
-        })
+        log.archived = true
       }
+      this.$store.dispatch('updateLogAction', { log });
+      this.updateUpdatAndNewLogs(log, log.archived, 'archived');
     },
     onAddRowClick(addSecondsSpent = false) {
       if (!this.selectedClient) {
@@ -532,7 +581,11 @@ export default {
         note: "",
         historyLogJson: [],
         new: true,
-        createdBy: this.currentUser.username
+        createdBy: this.currentUser.username,
+        alarmCreateChange: null,
+        alarmUserId: null,
+        alarmTime: null,
+        alarmDate: null
       }
       if (addSecondsSpent) {
         defaultValues.secondsSpent = this.secondsSpentOnClient
@@ -542,10 +595,21 @@ export default {
         this.selectedLogIds.forEach((logId, idx) => {
           const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
           const log = this.displayedLogs[logIndex]
-          // const newLog = Object.assign({}, log)
-          const newLog = { ...log, historyLogJson: [], createdBy: this.currentUser.username };
-          newLog.id = generateRandomId()
-          newLog.logDate = new Date()
+
+          const newLog = {
+            ...log,
+            id: generateRandomId(),
+            logDate: new Date(),
+            new: true,
+            historyLogJson: [],
+            createdBy: this.currentUser.username,
+            alarmComplete: false,
+            alarmUserId: null,
+            alarmDate: null,
+            alarmTime: null,
+            alarmUserName: null
+          };
+
           this.updatAndNewLogs.push(newLog)
           this.$store.commit('pushNewLog', {
             state: this.selectedClient,
@@ -554,8 +618,6 @@ export default {
 
           const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
           this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLog.id)
-          //   }
-          // })
         })
       } else {
         const log = Object.assign({}, defaultValues)
@@ -572,6 +634,19 @@ export default {
     },
     onBlur(val, field) {
       if (this.oldValue !== val && this.oldValue !== undefined) {
+        this.handleUpdate(val, field)
+        this.goToNextColumn()
+        return
+      }
+      // || field === 'alarmTime'
+      if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
+        // if(field === 'alarmTime'){
+        //   this.$store.commit('pushDayLog', {
+        //   state: this.selectedClient,
+        //   log: newLog
+        // });
+        // }
+        // console.log(val, field)
         this.handleUpdate(val, field)
         this.goToNextColumn()
         return

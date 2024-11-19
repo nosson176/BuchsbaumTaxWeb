@@ -3,8 +3,7 @@
     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
       <div class="sm:flex sm:items-start">
         <div
-          class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-        >
+          class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
           <AlertIcon class="text-red-600" />
         </div>
         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -21,19 +20,15 @@
       </div>
     </div>
     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-      <button
-        type="button"
+      <button type="button"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="handleDelete"
-      >
+        @click="handleDelete">
         <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
         <span v-else class="capitalize">{{ updateToValue }}</span>
       </button>
-      <button
-        type="button"
+      <button type="button"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="emitHide"
-      >
+        @click="emitHide">
         Cancel
       </button>
     </div>
@@ -120,7 +115,7 @@ export default {
       return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
     },
     taxYears() {
-      return JSON.parse(JSON.stringify(this.selectedClient.taxYearData))
+      return JSON.parse(JSON.stringify(this.selectedClient.taxYears))
     },
     fees() {
       return JSON.parse(JSON.stringify(this.selectedClient.fees))
@@ -135,6 +130,7 @@ export default {
       return JSON.parse(JSON.stringify(this.smartviews))
     },
     updatedLog() {
+      console.log("update log")
       const log = this.logs.find((log) => log.id === this.id)
       log.archived = !log.archived
       return log
@@ -162,6 +158,7 @@ export default {
     updatedTaxYear() {
       const taxYear = this.taxYears.find((taxYear) => taxYear.id === this.id)
       taxYear.archived = !taxYear.archived
+      console.log(taxYear)
       return taxYear
     },
     updatedFee() {
@@ -188,6 +185,7 @@ export default {
       let item = null
       if (this.isTypeLog) {
         item = this.updatedLog
+        console.log("this.isTypeLog", item)
       } else if (this.isTypeIncome) {
         item = this.updatedIncome
       } else if (this.isTypeFbar) {
@@ -201,8 +199,10 @@ export default {
       } else if (this.isTypeFee) {
         item = this.updatedFee
       } else if (this.isTypeClient) {
+        console.log("updatedClient")
         item = this.updatedClient
       } else if (this.isTypeSmartview) {
+        console.log("updatedSmartview")
         item = this.updatedSmartview
       } else if (this.isTypeChecklist) {
         item = this.updatedChecklist
@@ -214,6 +214,7 @@ export default {
     handleDelete() {
       this.isLoading = true
       if (this.isTypeLog) {
+        console.log("detev log")
         this.updateLog()
       } else if (this.isTypeIncome) {
         this.updateIncome()
@@ -264,8 +265,16 @@ export default {
         .finally(() => this.updateClientSideData())
     },
     updateTaxYear() {
+      console.log("updateTaxYear", this.updatedItem)
+
       this.$api
-        .updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem)
+        .updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem).then(res => {
+          console.log(res)
+          if (res.archived === true) {
+            console.log("in")
+            this.$store.commit('updateTaxYearState', { taxYearId: this.id, updatedData: this.updatedItem });
+          }
+        })
         .finally(() => this.updateClientSideData())
     },
     updateFee() {
@@ -274,6 +283,7 @@ export default {
         .then(() => this.updateClientSideData())
     },
     updateClient() {
+      console.log("updateClient")
       this.$api
         .updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
         .then(() => this.$api.getClientList(this.headers))

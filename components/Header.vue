@@ -179,7 +179,6 @@ export default {
     },
     setTimeToSecond(time) {
       const t = time * 60
-      console.log(t)
       this.$store.commit('setModelResponse', { model: 'secondsNeededToDisplayModal1', data: t })
 
     },
@@ -202,7 +201,6 @@ export default {
       this.showMessageModal = false
     },
     openLogoutModal() {
-      console.log("run")
       this.ShowLogoutConfirmationModel = true
     },
     closeLogoutConfirmationModel() {
@@ -213,18 +211,10 @@ export default {
       await this.$api.getInbox(this.headers)
     },
     logout() {
-      // const headers = await this.$api.getHeaders()
-      // const now = new Date()
-      // const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      // const startRange = new Date(now.getFullYear(), now.getMonth()).getTime()
-      // const result = promptConfirm()
-      // if (result === 'yes') await this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
-
       this.$api.signout()
     },
 
     clockOutWorkTime() {
-      console.log("clockOutWorkTime");
       // Logic to handle clock out work time
       const headers = this.$api.getHeaders()
       const now = new Date()

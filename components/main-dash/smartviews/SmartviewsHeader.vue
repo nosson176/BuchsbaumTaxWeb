@@ -52,9 +52,7 @@ export default {
     },
     copySmartView() {
       const smartview = this.selectedSmView
-      console.log(JSON.parse(JSON.stringify(smartview)))
       this.$api.createSmartview(this.headers, { smartview }).then((res) => {
-        console.log(JSON.parse(JSON.stringify(res)))
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
           data: { smartview: { showing: true, data: res } },

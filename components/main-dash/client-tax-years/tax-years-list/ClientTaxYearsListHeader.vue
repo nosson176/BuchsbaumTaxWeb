@@ -67,6 +67,7 @@ export default {
       this.$emit(events.change)
     },
     onAddRowClick() {
+      console.log("here")
       if (!this.selectedClient) {
         return
       }
@@ -80,13 +81,18 @@ export default {
         }
       } else {
         taxYear = { clientId }
+        console.log(taxYear)
       }
       this.$api.createTaxYear(headers, { taxYear }).then((data) => {
-        this.$api.getClientData(headers, clientId).then(() => {
-          this.$store.commit(mutations.setModelResponse, {
-            model: models.selectedTaxYearId,
-            data: data.id,
-          })
+        console.log(data)
+        data.filings[0].clientId = taxYear.clientId
+        this.$store.commit('updateTaxYearState', { taxYearId: data.id, updatedData: data });
+        // this.$store.commit('pushNewFiling', data.filings[0]);
+        // this.$api.getClientData(headers, clientId).then(() => {
+        this.$store.commit(mutations.setModelResponse, {
+          model: models.selectedTaxYearId,
+          data: data.id,
+          // })
         })
       })
     },

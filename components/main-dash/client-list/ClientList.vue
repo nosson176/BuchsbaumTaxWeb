@@ -9,8 +9,9 @@
       <div class="flex items-center space-x-2">
         <select name="sortBy" v-model="sortBy" class="form-select px-2 py-0 rounded">
           <option value="A-Z">A-Z</option>
-          <option value="status">Status</option>
-          <option value="status detail">Status Detail</option>
+          <option value="federal status">Federal Status</option>
+          <option value="federal status detail">Federal Status Detail</option>
+          <option value="fbar status detail">Fbar Status Detail</option>
           <option value="status overall">Status Overall</option>
           <option value="alarm">Alarm</option>
         </select>
@@ -24,11 +25,15 @@
       class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
       :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
       <div class="w-5">
-        <FlagIcon class="w-4 h-4" :color="flagColor(client)" />
+        <FlagIcon class="w-4 h-4" :color=client.gFlag />
       </div>
       <div class="w-full">
         <span class="font-medium text-gray-900 group-hover:text-white"> {{ client.lastName }}</span>
         {{ client.displayName }}
+      </div>
+      <div class="w-5">
+        <!-- <FlagIcon class="w-3 h-3" :color="flagColor(client)" /> -->
+        <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
       </div>
       <div class="w-5" @click.stop>
         <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
@@ -45,6 +50,7 @@
 import { mapState } from 'vuex'
 import * as XLSX from "xlsx";
 import { events, models, mutations, routes, tabs } from '~/shared/constants'
+import { generateRandomId } from '~/shared/utility';
 
 export default {
   name: 'ClientList',
@@ -73,18 +79,20 @@ export default {
     sortedClients() {
       const clients = Object.values(this.filteredClients)
 
+      // console.log(this.sortBy, clients)
       switch (this.sortBy) {
         case 'A-Z':
           return this.sortByLastName(clients)
-        case 'status':
-          return this.sortByLatestDate(clients, 'filings', 'status')
-        case 'status detail':
-          return this.sortByLatestDate(clients, 'filings', 'statusDetail')
+        case 'federal status':
+          return this.sortByLatestDate(clients, 'filings', 'status', 'federal')
+        case 'federal status detail':
+          return this.sortByLatestDate(clients, 'filings', 'statusDetail', 'federal')
+        case 'fbar status detail':
+          return this.sortByLatestDate(clients, 'filings', 'statusDetail', 'fbar')
         case 'status overall':
           return this.sortByStatusOverall(clients)
         case 'alarm':
-          // Implement alarm sorting logic here
-          return clients
+          return this.sortByAlarm(clients)
         default:
           return clients
       }
@@ -127,10 +135,35 @@ export default {
         return lastNameA.localeCompare(lastNameB)
       })
     },
-    sortByLatestDate(clients, arrayField, dateField) {
+    // sortByLatestDate(clients, arrayField, dateField) {
+    //   return clients.sort((a, b) => {
+    //     const dateA = this.getLatestDate(a, arrayField, dateField)
+    //     const dateB = this.getLatestDate(b, arrayField, dateField)
+
+    //     if (this.upDown === 'new') {
+    //       return dateB - dateA
+    //     } else {
+    //       return dateA - dateB
+    //     }
+    //   })
+    // },
+
+    sortByLatestDate(clients, arrayField, dateField, filingType) {
+      // console.log(clients)
       return clients.sort((a, b) => {
-        const dateA = this.getLatestDate(a, arrayField, dateField)
-        const dateB = this.getLatestDate(b, arrayField, dateField)
+        const dateA = this.getLatestDate(a, arrayField, dateField, filingType)
+        const dateB = this.getLatestDate(b, arrayField, dateField, filingType)
+
+        // If a client has no filings of the selected type, place them at the end
+        if (dateA === 0 && dateB === 0) {
+          return 0;
+        }
+        if (dateA === 0) {
+          return 1;
+        }
+        if (dateB === 0) {
+          return -1;
+        }
 
         if (this.upDown === 'new') {
           return dateB - dateA
@@ -151,14 +184,56 @@ export default {
         }
       })
     },
-    getLatestDate(client, arrayField, dateField) {
-      const dates = (client[arrayField] || []).map(item => {
-        if (dateField === 'status' || dateField === 'statusDetail') {
-          return new Date(item[dateField]?.date || 0).getTime()
+    // getLatestDate(client, arrayField, dateField) {
+    //   const dates = (client[arrayField] || []).map(item => {
+    //     if (dateField === 'status' || dateField === 'statusDetail') {
+    //       return new Date(item[dateField]?.date || 0).getTime()
+    //     }
+    //     return new Date(item[dateField] || 0).getTime()
+    //   })
+    //   return dates.length ? Math.max(...dates) : 0
+    // },
+
+    sortByAlarm(clients) {
+      return clients.sort((a, b) => {
+        const dateA = this.getLatestAlarmDate(a)
+        const dateB = this.getLatestAlarmDate(b)
+
+        if (dateA === null && dateB === null) return 0
+        if (dateA === null) return this.upDown === 'new' ? 1 : -1
+        if (dateB === null) return this.upDown === 'new' ? -1 : 1
+
+        if (this.upDown === 'new') {
+          return dateB - dateA
+        } else {
+          return dateA - dateB
         }
-        return new Date(item[dateField] || 0).getTime()
       })
-      return dates.length ? Math.max(...dates) : 0
+    },
+
+    getLatestDate(client, arrayField, dateField, filingType) {
+      const dates = (client[arrayField] || [])
+      dates.filter(item => item.type === filingType)
+        .map(item => {
+          if (dateField === 'status' || dateField === 'statusDetail') {
+            return new Date(item[dateField]?.date || 0).getTime()
+          }
+          return new Date(item[dateField] || 0).getTime()
+        });
+      return dates.length ? Math.max(...dates) : 0;
+    },
+    getLatestAlarmDate(client) {
+      const alarmDates = (client.logs || [])
+        .map(log => {
+          if (log.alarmCreateChange) {
+            const date = new Date(log.alarmCreateChange)
+            return isNaN(date.getTime()) ? null : date.getTime()
+          }
+          return null
+        })
+        .filter(date => date !== null)
+
+      return alarmDates.length ? Math.max(...alarmDates) : null
     },
 
     async exportToExcel() {
@@ -246,6 +321,15 @@ export default {
       }
       return 4
     },
+
+    // flagColorGlobal(client) {
+    //   for (const flag of client.flags) {
+    //     if (flag.userId === this.currentUser.id) {
+    //       return flag.flag
+    //     }
+    //   }
+    //   return 4
+    // },
     closeChangeClientModal() {
       this.showChangeClientModal = false
     },
@@ -253,12 +337,40 @@ export default {
       const defaultValues = {
         clientId: this.selectedClient.id,
         logDate: new Date(),
-        secondsSpent: this.$store.getters[models.secondsSpentOnClient],
+        id: generateRandomId(),
+        archived: false,
+        years: '',
+        alarmComplete: false,
+        alert: false,
+        alerted: false,
+        priority: 0,
+        timeSpent: "",
+        note: "",
+        historyLogJson: [],
+        new: true,
+        createdBy: this.currentUser.username,
+        alarmCreateChange: null,
+        alarmUserId: null,
+        alarmTime: null,
+        alarmDate: null,
+        secondsSpent: this.$store.getters[models.secondsSpentOnClient]
       }
+      // const defaultValues = {
+      //   clientId: this.selectedClient.id,
+      //   logDate: new Date(),
+      //   secondsSpent: this.$store.getters[models.secondsSpentOnClient],
+      // }
       const log = Object.assign({}, defaultValues)
-      this.$api.createLog(this.headers, { log }).then(async (data) => {
-        await this.$api.getClientData(this.headers, this.selectedClient.id)
+      this.$api.createLog(this.headers, { log }).then(() => {
+        this.$store.commit('pushNewLog', {
+          state: this.selectedClient,
+          log
+        });
+
       })
+      // .then(async (data) => {
+      //   await this.$api.getClientData(this.headers, this.selectedClient.id)
+      // })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$emit(events.resetClock)
     },
@@ -287,7 +399,7 @@ export default {
 }
 
 .bg-white.sticky.top-0 {
-  z-index: 20;
+  z-index: 19;
 
   /* Ensure it stays above other elements but doesn't cover too much */
 }

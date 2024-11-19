@@ -32,7 +32,7 @@
             <div :id="`${idx}-contactType`" class="table-col-primary normal"
               @click="toggleEditable(`${idx}-contactType`, contact.id, contact.contactType)">
               <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)"
-                :options="contactTypeOptions" @blur="onBlur(contact.contactType)" />
+                :options="contactTypeOptions" @blur="onBlur(contact.contactType, 'type')" />
             </div>
             <div :id="`${idx}-memo`" class="table-col normal"
               @click="toggleEditable(`${idx}-memo`, contact.id, contact.memo)">
@@ -76,8 +76,8 @@
 <script>
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { models, mutations, routes, tableGroups, tabs, TRANSITION_NAME } from '~/shared/constants'
-import { searchArrOfObjs } from '~/shared/utility'
+import { models, mutations, routes, tableGroups, TRANSITION_NAME } from '~/shared/constants'
+import { generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['disabled', 'contactType', 'memo', 'mainDetail', 'secondaryDetail', 'state', 'zip', 'delete']
 
@@ -101,6 +101,7 @@ export default {
         ghostClass: 'ghost',
       },
       selectedItems: {},
+      updateData: []
     }
   },
   computed: {
@@ -150,18 +151,20 @@ export default {
       return this.displayedContacts?.every((contact) => !contact.sortOrder)
     },
     isCmdPressed() {
-      console.log("isCmdPressed")
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
     isCopyingContacts() {
-      console.log("isCopyingContacts")
-      console.log("this.selectedContactsIds", this.selectedContactIds)
       return this.isCmdPressed && this.selectedContactIds.length > 0
     },
     selectedContactIds() {
-      console.log("this.selectedItems", this.selectedItems)
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
+  },
+
+  beforeDestroy() {
+    if (this.updateData.length > 0) {
+      this.sendUpdateContect()
+    }
   },
   methods: {
     toggleEditable(id, contactId, value) {
@@ -180,20 +183,16 @@ export default {
       return this.editableId === id
     },
     toggleSelected(contact) {
-      // console.log("cliecked", contact)
-      // console.log("1", this.selectedItems[contact.id])
-      // console.log("2", !this.selectedItems[contact.id])
-      // console.log("3", this.selectedItems[contact.id] = !this.selectedItems[contact.id])
       this.selectedItems[contact.id] = !this.selectedItems[contact.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },
     isSelected(contactId) {
       return this.selectedItems[contactId]
     },
-    handleUpdate() {
+    async handleUpdate(field) {
       if (!this.editableContactId) return;
+      let oldVal
       const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId);
-
       // Get only enabled contacts
       const enabledContacts = this.displayedContacts.filter(c => c.enabled);
 
@@ -209,65 +208,101 @@ export default {
         contact.contactType = this.oldValue;
 
         this.editableId = "";
-        return;
+        // return;
+      }
+      const index = this.updateData.findIndex(con => con.id === contact.id)
+      if (index !== -1) {
+        this.updateData[index] = contact
+      } else {
+        this.updateData.push(contact)
       }
 
-      // Proceed with the update if no duplicate is found
-      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: this.editableContactId }, contact)
+      if (field === 'type' && this.oldValue) {
+        oldVal = this.oldValue
+        const res = await this.$api.updateFilingDelivary(this.headers, {
+          clientId: this.clientId,
+          oldContectDelivary: this.oldValue,
+          newContectDelivary: contact.contactType
+        });
+
+        if (res.status === 'success') {
+          this.$store.commit('UPDATE_FILINGS_CONTACT', {
+            oldValue: oldVal,
+            newValue: contact.contactType
+          });
+        }
+      }
+      // this.editableId = ""
+    },
+
+    sendUpdateContect() {
+      this.$api.updateContacts(this.headers, this.updateData)
         .catch(() => this.$toast.error('Error updating contact'))
-      this.$api.updateFilingDelivary(this.headers, { clientId: this.clientId, oldContectDelivary: this.oldValue, newContectDelivary: contact.contactType })
-      this.editableId = ""
     },
     onDeleteClick(contactObj) {
+      const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
       if (this.showArchived) {
-        const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
         contact.archived = false
-        this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: contactObj.id }, contact)
       } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: {
-            delete: { showing: true, data: { id: contactObj.id, type: tabs.contact, label: contactObj.contactType } },
-          },
-        })
+        contact.archived = true
       }
+      const index = this.updateData.findIndex(c => c.id === contact.id)
+      if (index !== -1) {
+        this.updateData[index] = contact
+      } else {
+        this.updateData.push(contact)
+      }
+
+      this.$store.dispatch('updateContactAction', { contact });
     },
+    // onDeleteClick(contactObj) {
+    //   if (this.showArchived) {
+    //     const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
+    //     contact.archived = false
+    //     this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: contactObj.id }, contact)
+    //   } else {
+    //     this.$store.commit(mutations.setModelResponse, {
+    //       model: models.modals,
+    //       data: {
+    //         delete: { showing: true, data: { id: contactObj.id, type: tabs.contact, label: contactObj.contactType } },
+    //       },
+    //     })
+    //   }
+    // },
     onAddRowClick() {
-      console.log("addrowclick")
       if (!this.selectedClient) {
         return
       }
-      console.log(this.selectedClient.id)
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
         include: true,
         sortOrder: this.isDefaultOrder ? 0 : 1,
+        archived: false,
+        id: generateRandomId(),
       }
-      console.log("this.isCopyingContacts", this.isCopyingContacts)
       if (this.isCopyingContacts) {
-        console.log("copy!")
-        this.selectedContactIds.forEach(async (contactId, idx) => {
+        this.selectedContactIds.forEach((contactId, idx) => {
           const contactIndex = this.displayedContacts.findIndex((contact) => contact.id === Number(contactId))
           const contact = this.displayedContacts[contactIndex]
           contact.contactType = ''
-          console.log(contact)
           const newContact = Object.assign({}, contact)
-          console.log(newContact)
-          await this.$api.createContact(this.headers, { contact: newContact }).then(async (data) => {
-            if (this.selectedContactIds.length === idx + 1) {
-              await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`${contactIndex}-${columns[0]}`, data.id)
-            }
-          })
+          newContact.id = generateRandomId()
+          this.updateData.push(newContact)
+          this.$store.commit('pushNewContact', {
+            state: this.selectedClient,
+            contact: newContact
+          });
+          this.toggleEditable(`${contactIndex}-${columns[0]}`, newContact.id)
         })
       } else {
-        console.log("else")
         const contact = Object.assign({}, defaultValues)
-        this.$api.createContact(this.headers, { contact }).then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.toggleEditable(`0-${columns[0]}`, data.id)
-        })
+        this.updateData.push(contact)
+        this.$store.commit('pushNewContact', {
+          state: this.selectedClient,
+          contact
+        });
+        this.toggleEditable(`0-${columns[0]}`, contact.id)
       }
     },
 
@@ -299,10 +334,9 @@ export default {
         this.toggleEditable(prevCell, this.editableLogId)
       }
     },
-    onBlur(val) {
+    onBlur(val, field) {
       if (this.oldValue !== val) {
-        console.log("in")
-        this.handleUpdate()
+        this.handleUpdate(field)
         this.goToNextColumn()
         return
       }

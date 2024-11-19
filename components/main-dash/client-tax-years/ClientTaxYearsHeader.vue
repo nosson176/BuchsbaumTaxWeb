@@ -259,13 +259,18 @@ export default {
 
 <template>
   <div class="header">
-    <div v-if="isClientSelected" class="w-full flex">
+    <div v-if="isClientSelected" class="w-full flex items-center">
       <div>
-        <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
-        <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
+        <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
+        <FlagDropdown v-if="showGlobalFlagDropdown" @input="this.updateGlobalFlag"
+          @blur="toggleShowGlobalFlagDropdown" />
       </div>
       <div class="font-bold text-2xl cursor-pointer ml-4" @click="openEditNameDialogue">
         {{ selectedClient.lastName }}
+      </div>
+      <div>
+        <FlagIcon class="h-5 w-5 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
+        <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
       </div>
       <div class="ml-12">
         <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
@@ -305,7 +310,7 @@ export default {
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { categories, models, mutations } from '~/shared/constants'
-import { formatDateForClient } from '~/shared/domain-utilities'
+// import { formatDateForClient } from '~/shared/domain-utilities'
 import { formatAsILCurrency, formatAsUSCurrency, formatUnixTimestamp } from '~/shared/utility'
 
 export default {
@@ -318,8 +323,9 @@ export default {
       isLoading: false,
       showDelete: false,
       showFlagDropdown: false,
+      showGlobalFlagDropdown: false,
       editedLastName: '',
-      clientUpdate: {}
+      globalFlag: null,
     }
   },
   computed: {
@@ -329,6 +335,11 @@ export default {
     },
     flagColor() {
       return this.selectedClient?.flag || 4
+    },
+
+    flagColorGlobal() {
+      console.log(this.selectedClient)
+      return this.selectedClient?.gflag || 4
     },
     primaryPersonal() {
       return this.selectedClient?.taxPersonals?.filter((personal) => personal.category === categories.primary)[0]
@@ -342,7 +353,8 @@ export default {
         return formatUnixTimestamp(firstLog.logDate)
       }
       if (this.selectedClient.created) {
-        return formatDateForClient(this.selectedClient.created)
+        return formatUnixTimestamp(this.selectedClient.created)
+        // return formatDateForClient(this.selectedClient.created)
       }
       return ''
     },
@@ -400,7 +412,9 @@ export default {
     },
     selectedClient: {
       handler(newClient, oldClient) {
+        console.log("watch")
         if (newClient.id !== oldClient.id && oldClient.id !== undefined) {
+          console.log("watch inside")
           this.updateClient1(oldClient)
         }
       },
@@ -414,6 +428,7 @@ export default {
       updateSelectedClient: mutations.setModelResponse
     }),
     updateClient1(oldClient) {
+      console.log(oldClient)
       if (oldClient.needUpdate === true) {
         const updatedClient = {
           id: oldClient.id,
@@ -424,8 +439,10 @@ export default {
           archived: oldClient.archived,
           displayName: oldClient.displayName,
           displayPhone: oldClient.displayPhone,
-          statusChangeDate: oldClient.statusChangeDate
+          statusChangeDate: oldClient.statusChangeDate,
+          gFlag: oldClient.gflag
         };
+        console.log(updatedClient)
         this.$api.updateClient(this.headers, { clientId: updatedClient.id, client: updatedClient })
       }
     },
@@ -455,6 +472,22 @@ export default {
       })
     },
 
+    updateGlobalFlag(globalFlag) {
+      console.log(this.selectedClient, globalFlag)
+      this.updateSelectedClient({
+        model: models.selectedClient,
+        data: { ...this.selectedClient, gflag: globalFlag, needUpdate: true }
+      })
+      this.showGlobalFlagDropdown = false
+      const clientFlag = {
+        clientId: this.selectedClient.id,
+        userId: this.currentUser.id,
+        flag: globalFlag
+      }
+      this.$store.dispatch('updateGlobalFlagAction', { gFlag: clientFlag });
+      // this.$store.commit('updateGlobalFlagClient', clientFlag);
+    },
+
     needUpdate() {
       this.updateSelectedClient({
         model: models.selectedClient,
@@ -467,6 +500,7 @@ export default {
     },
     handleUpdate(str) {
       if (this.selectedClient.needUpdate !== true) this.needUpdate()
+      if (str === "lastName") this.updateLastName(this.editedLastName)
       if (str === "lastName") this.updateLastName(this.editedLastName)
       // await this.$api.updateClient(this.headers, { clientId: client.id, client })
       // await this.$api.getClientList(this.headers)
@@ -481,6 +515,10 @@ export default {
     toggleShowFlagDropdown() {
       this.showFlagDropdown = !this.showFlagDropdown
     },
+
+    toggleShowGlobalFlagDropdown() {
+      this.showGlobalFlagDropdown = !this.showGlobalFlagDropdown
+    },
     confirmDelete() {
       if (this.isLoading) {
         return
@@ -490,16 +528,22 @@ export default {
     closeDeleteModal() {
       this.showDelete = false
     },
-    async handleFlag(flag) {
+    handleFlag(flag) {
+      console.log("flagg")
       const clientFlag = {
         clientId: this.selectedClient.id,
         userId: this.currentUser.id,
         flag,
       }
-      await this.$api.updateClientFlag(this.headers, { clientId: this.selectedClient.id, clientFlag })
+      this.updateSelectedClient({
+        model: models.selectedClient,
+        data: { ...this.selectedClient, flag }
+      })
+      this.$api.updateClientFlag(this.headers, { clientId: this.selectedClient.id, clientFlag })
+      this.$store.commit('updateUserFlagClient', clientFlag);
       this.showFlagDropdown = false
-      await this.$api.getClientList(this.headers)
     },
+
     async handleDelete() {
       if (this.isLoading) {
         return
