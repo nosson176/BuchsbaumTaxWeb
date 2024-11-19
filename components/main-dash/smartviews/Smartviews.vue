@@ -2,14 +2,9 @@
   <div class="flex-grow overflow-auto">
     <draggable :value="displayedSmartviews" v-bind="dragOptions" @start="startDrag" @end="onDrop">
       <transition-group type="transition" :name="transitionName">
-        <div
-          v-for="smartview in displayedSmartviews"
-          :ref="smartview.id"
-          :key="smartview.id"
+        <div v-for="smartview in displayedSmartviews" :ref="smartview.id" :key="smartview.id"
           class="text-gray-500 bg-gray-50 px-1 py-1 text-xs smartview cursor-pointer flex justify-between items-center group hover:text-white hover:bg-gray-400"
-          :class="smartview.id === selectedSmartviewId ? 'selected' : ''"
-          @click="selectSmartview(smartview)"
-        >
+          :class="smartview.id === selectedSmartviewId ? 'selected' : ''" @click="selectSmartview(smartview)">
           <div class="flex items-center space-x-2">
             <PenIcon v-if="!hideEditButtons" class="h-3 w-3" @click.native.stop="showEdit(smartview)" />
             <span class="font-medium text-gray-900 select-none group-hover:text-white">{{ smartview.name }}</span>
@@ -27,7 +22,7 @@
 <script>
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
-import { models, mutations, tabs, TRANSITION_NAME, routes } from '~/shared/constants'
+import { models, mutations, TRANSITION_NAME, routes } from '~/shared/constants'
 
 export default {
   name: 'Smartviews',
@@ -50,6 +45,7 @@ export default {
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview]),
     displayedSmartviews() {
+      // console.log(JSON.parse(JSON.stringify(this.smartviews)))
       if (this.smartviews) {
         return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
           .filter((smartview) => this.showArchived === smartview.archived)
@@ -75,13 +71,14 @@ export default {
     },
   },
   methods: {
-    selectSmartview(smartview) {
-      this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
-      if (this.selectedSmartviewId === smartview.id) {
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
-      } else {
-        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
-      }
+    async selectSmartview(smartview) {
+      await this.$api.getFilterClients(this.headers, { smartview })
+      // this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
+      // if (this.selectedSmartviewId === smartview.id) {
+      //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+      // } else {
+      //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
+      // }
     },
     showEdit(smartview) {
       this.$store.commit(mutations.setModelResponse, {
@@ -92,15 +89,13 @@ export default {
     archiveSmartview(smartview) {
       if (this.showArchived) {
         smartview.archived = false
-        this.$api
-          .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
-          .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
       } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: smartview.id, type: tabs.smartviews, label: smartview.name } } },
-        })
+        smartview.archived = true
       }
+      this.$store.dispatch('updateSmartviewAction', { smartview });
+      this.$api
+        .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
+        .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
     },
     startDrag() {
       this.dragActive = true

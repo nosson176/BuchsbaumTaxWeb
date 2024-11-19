@@ -2,6 +2,7 @@
   <div class="min-h-screen flex flex-col">
     <Header />
     <Home />
+    <LogHandler />
   </div>
 </template>
 
@@ -20,13 +21,33 @@ export default {
       return this.$api.getHeaders()
     },
   },
-  mounted() {
-    this.$api.getValueTypes(this.headers)
-    this.$api.getAllUsers(this.headers)
-    this.$api.getValueTaxGroups(this.headers)
-    this.$api.getClientsHistory(this.headers)
-    this.$api.getSmartviews(this.headers)
-    this.$api.getCurrentUser(this.headers)
+  // mounted() {
+  //   this.$api.getValueTypes(this.headers)
+  //   this.$api.getAllUsers(this.headers)
+  //   this.$api.getValueTaxGroups(this.headers)
+  //   this.$api.getClientsHistory(this.headers)
+  //   this.$api.getSmartviews(this.headers)
+  //   this.$api.getCurrentUser(this.headers)
+  // },
+  async mounted() {
+    this.isLoading = true // Set loading state
+
+    try {
+      await Promise.all([
+        this.$api.getValueTypes(this.headers),
+        this.$api.getAllUsers(this.headers),
+        this.$api.getValueTaxGroups(this.headers),
+        this.$api.getClientsHistory(this.headers),
+        this.$api.getSmartviews(this.headers),
+        this.$api.getCurrentUser(this.headers),
+        this.$api.getTodayLogs(this.headers),
+      ])
+    } catch (error) {
+      console.error("Error fetching data:", error)
+      // Handle the error appropriately (e.g., show a notification)
+    } finally {
+      this.isLoading = false // Reset loading state
+    }
   },
 }
 </script>

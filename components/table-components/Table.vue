@@ -1,10 +1,7 @@
 <template>
-  <div
-    class="flex flex-col flex-grow overflow-hidden bg-white"
-    @keydown.tab.prevent="emitKeyDown"
-    @keyup.tab.prevent="emitKeyUp"
-  >
-    <div class="overflow-auto">
+  <div class="flex flex-col flex-grow overflow-hidden bg-white" @keydown.tab.prevent="emitKeyDown"
+    @keyup.tab.prevent="emitKeyUp">
+    <div class="overflow-auto h-full">
       <slot name="header" />
       <slot name="body" />
     </div>

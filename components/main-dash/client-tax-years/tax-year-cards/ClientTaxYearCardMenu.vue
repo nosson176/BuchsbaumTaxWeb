@@ -20,16 +20,17 @@ export default {
     },
   },
   computed: {
-    ...mapState([models.selectedClient, models.selectedTaxYearId]),
+    ...mapState([models.selectedClient, models.selectedTaxYearId, models.filingsUpdate]),
     displayedTaxYearData() {
       if (this.isClientSelected) {
         const items = Object.assign(
-          Object.values(this.selectedClient.taxYearData)
+          Object.values(this.selectedClient.taxYears)
             .filter((taxYear) => taxYear.show && this.showArchived === taxYear.archived)
             .sort((a, b) => {
               return a.year - b.year
             })
         )
+        console.log(JSON.parse(JSON.stringify(items)))
         return items.reverse()
       } else {
         return null
@@ -39,7 +40,32 @@ export default {
       return this.selectedClient.length || Object.entries(this.selectedClient).length
     },
   },
+  watch: {
+    selectedClient: {
+      handler(newClient, oldClient) {
+        if (newClient.id !== oldClient.id && oldClient.id !== undefined) {
+          if (this.filingsUpdate.length > 0) {
+            this.sendUpdatesToServer()
+          }
+        }
+      },
+      deep: true,  // Watch for nested object changes as well
+    },
+  },
+
+  methods: {
+    sendUpdatesToServer() {
+      const headers = this.$api.getHeaders()
+      this.$api.updateFilings(
+        headers,
+        this.filingsUpdate
+      )
+      this.$store.commit('clearFilingUpdate');
+    },
+  }
 }
+
+
 </script>
 
 <style scoped></style>

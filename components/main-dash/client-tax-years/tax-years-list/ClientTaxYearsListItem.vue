@@ -1,10 +1,7 @@
 <template>
   <div>
-    <div
-      class="flex h-20 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
-      :class="classObj"
-      @click="toggleSelectTaxYear"
-    >
+    <div class="flex h-20 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
+      :class="classObj" @click="toggleSelectTaxYear">
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col">
           <div class="flex">
@@ -82,7 +79,7 @@ export default {
       return this.taxYear.year
     },
     status() {
-      return this.federalFilingInfo?.status
+      return this.federalFilingInfo?.status?.value
     },
     owes() {
       return this.federalFilingInfo?.owes ? this.currencySymbol + formatAsNumber(this.federalFilingInfo.owes) : ''
@@ -91,7 +88,7 @@ export default {
       return this.federalFilingInfo?.taxForm
     },
     statusDetail() {
-      return this.federalFilingInfo?.statusDetail
+      return this.federalFilingInfo?.statusDetail?.value
     },
     paid() {
       return this.federalFilingInfo?.paid ? this.currencySymbol + formatAsNumber(this.federalFilingInfo.paid) : ''

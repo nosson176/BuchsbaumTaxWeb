@@ -1,17 +1,39 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <div class="bg-white sticky top-0 shadow">
-      <AddRowButton @click="onAddRowClick" />
+    <div class="bg-white sticky top-0 shadow flex items-center p-2">
+      <div class="flex items-center">
+        <AddRowButton @click="onAddRowClick" />
+        <ExportIcon class="ml-1" @export-click="exportToExcel" />
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <select name="sortBy" v-model="sortBy" class="form-select px-2 py-0 rounded">
+          <option value="A-Z">A-Z</option>
+          <option value="federal status">Federal Status</option>
+          <option value="federal status detail">Federal Status Detail</option>
+          <option value="fbar status detail">Fbar Status Detail</option>
+          <option value="status overall">Status Overall</option>
+          <option value="alarm">Alarm</option>
+        </select>
+        <select v-if="sortBy !== 'A-Z'" name="upDown" v-model="upDown" class="form-select px-2 py-0 rounded">
+          <option value="new">New</option>
+          <option value="old">Old</option>
+        </select>
+      </div>
     </div>
     <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id}  ${isSelected(client)}`"
       class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
       :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
       <div class="w-5">
-        <FlagIcon class="w-4 h-4" :color="flagColor(client)" />
+        <FlagIcon class="w-4 h-4" :color=client.gFlag />
       </div>
       <div class="w-full">
         <span class="font-medium text-gray-900 group-hover:text-white"> {{ client.lastName }}</span>
         {{ client.displayName }}
+      </div>
+      <div class="w-5">
+        <!-- <FlagIcon class="w-3 h-3" :color="flagColor(client)" /> -->
+        <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
       </div>
       <div class="w-5" @click.stop>
         <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
@@ -26,7 +48,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import * as XLSX from "xlsx";
 import { events, models, mutations, routes, tabs } from '~/shared/constants'
+import { generateRandomId } from '~/shared/utility';
 
 export default {
   name: 'ClientList',
@@ -38,6 +62,8 @@ export default {
   },
   data() {
     return {
+      sortBy: 'A-Z',
+      upDown: 'new',
       selectedClientId: NaN,
       showChangeClientModal: false,
       switchToClient: '',
@@ -46,7 +72,33 @@ export default {
   computed: {
     ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1]),
     displayedClients() {
-      return this.filteredClients
+      // console.log("run => ", JSON.parse(JSON.stringify(this.sortedClients)))
+      return this.sortedClients
+      // return this.filteredClients
+    },
+    sortedClients() {
+      const clients = Object.values(this.filteredClients)
+
+      // console.log(this.sortBy, clients)
+      switch (this.sortBy) {
+        case 'A-Z':
+          return this.sortByLastName(clients)
+        case 'federal status':
+          return this.sortByLatestDate(clients, 'filings', 'status', 'federal')
+        case 'federal status detail':
+          return this.sortByLatestDate(clients, 'filings', 'statusDetail', 'federal')
+        case 'fbar status detail':
+          return this.sortByLatestDate(clients, 'filings', 'statusDetail', 'fbar')
+        case 'status overall':
+          return this.sortByStatusOverall(clients)
+        case 'alarm':
+          return this.sortByAlarm(clients)
+        default:
+          return clients
+      }
+    },
+    showUpDown() {
+      return this.sortBy !== 'A-Z'
     },
     filteredClients() {
       return Object.fromEntries(
@@ -76,6 +128,135 @@ export default {
     this.selectedClientId = this.selectedClient.id
   },
   methods: {
+    sortByLastName(clients) {
+      return clients.sort((a, b) => {
+        const lastNameA = a.lastName || ''
+        const lastNameB = b.lastName || ''
+        return lastNameA.localeCompare(lastNameB)
+      })
+    },
+    // sortByLatestDate(clients, arrayField, dateField) {
+    //   return clients.sort((a, b) => {
+    //     const dateA = this.getLatestDate(a, arrayField, dateField)
+    //     const dateB = this.getLatestDate(b, arrayField, dateField)
+
+    //     if (this.upDown === 'new') {
+    //       return dateB - dateA
+    //     } else {
+    //       return dateA - dateB
+    //     }
+    //   })
+    // },
+
+    sortByLatestDate(clients, arrayField, dateField, filingType) {
+      // console.log(clients)
+      return clients.sort((a, b) => {
+        const dateA = this.getLatestDate(a, arrayField, dateField, filingType)
+        const dateB = this.getLatestDate(b, arrayField, dateField, filingType)
+
+        // If a client has no filings of the selected type, place them at the end
+        if (dateA === 0 && dateB === 0) {
+          return 0;
+        }
+        if (dateA === 0) {
+          return 1;
+        }
+        if (dateB === 0) {
+          return -1;
+        }
+
+        if (this.upDown === 'new') {
+          return dateB - dateA
+        } else {
+          return dateA - dateB
+        }
+      })
+    },
+    sortByStatusOverall(clients) {
+      return clients.sort((a, b) => {
+        const dateA = a.statusChangeDate || 0
+        const dateB = b.statusChangeDate || 0
+
+        if (this.upDown === 'new') {
+          return dateB - dateA
+        } else {
+          return dateA - dateB
+        }
+      })
+    },
+    // getLatestDate(client, arrayField, dateField) {
+    //   const dates = (client[arrayField] || []).map(item => {
+    //     if (dateField === 'status' || dateField === 'statusDetail') {
+    //       return new Date(item[dateField]?.date || 0).getTime()
+    //     }
+    //     return new Date(item[dateField] || 0).getTime()
+    //   })
+    //   return dates.length ? Math.max(...dates) : 0
+    // },
+
+    sortByAlarm(clients) {
+      return clients.sort((a, b) => {
+        const dateA = this.getLatestAlarmDate(a)
+        const dateB = this.getLatestAlarmDate(b)
+
+        if (dateA === null && dateB === null) return 0
+        if (dateA === null) return this.upDown === 'new' ? 1 : -1
+        if (dateB === null) return this.upDown === 'new' ? -1 : 1
+
+        if (this.upDown === 'new') {
+          return dateB - dateA
+        } else {
+          return dateA - dateB
+        }
+      })
+    },
+
+    getLatestDate(client, arrayField, dateField, filingType) {
+      const dates = (client[arrayField] || [])
+      dates.filter(item => item.type === filingType)
+        .map(item => {
+          if (dateField === 'status' || dateField === 'statusDetail') {
+            return new Date(item[dateField]?.date || 0).getTime()
+          }
+          return new Date(item[dateField] || 0).getTime()
+        });
+      return dates.length ? Math.max(...dates) : 0;
+    },
+    getLatestAlarmDate(client) {
+      const alarmDates = (client.logs || [])
+        .map(log => {
+          if (log.alarmCreateChange) {
+            const date = new Date(log.alarmCreateChange)
+            return isNaN(date.getTime()) ? null : date.getTime()
+          }
+          return null
+        })
+        .filter(date => date !== null)
+
+      return alarmDates.length ? Math.max(...alarmDates) : null
+    },
+
+    async exportToExcel() {
+      const clients = this.displayedClients
+      const clientsArray = Array.isArray(clients) ? clients : Object.values(clients);
+      const res = await this.$api.getClientsToExport(this.headers, clientsArray)
+      const dataArray = Array.isArray(res) ? res : Object.values(res);
+      const worksheet = XLSX.utils.json_to_sheet(dataArray);
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Customers");
+
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+
+      const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+      const url = window.URL.createObjectURL(data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "customers.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
     async selectClient({ id }) {
       this.selectedClientId = id
       const headers = this.headers
@@ -140,6 +321,15 @@ export default {
       }
       return 4
     },
+
+    // flagColorGlobal(client) {
+    //   for (const flag of client.flags) {
+    //     if (flag.userId === this.currentUser.id) {
+    //       return flag.flag
+    //     }
+    //   }
+    //   return 4
+    // },
     closeChangeClientModal() {
       this.showChangeClientModal = false
     },
@@ -147,12 +337,40 @@ export default {
       const defaultValues = {
         clientId: this.selectedClient.id,
         logDate: new Date(),
-        secondsSpent: this.$store.getters[models.secondsSpentOnClient],
+        id: generateRandomId(),
+        archived: false,
+        years: '',
+        alarmComplete: false,
+        alert: false,
+        alerted: false,
+        priority: 0,
+        timeSpent: "",
+        note: "",
+        historyLogJson: [],
+        new: true,
+        createdBy: this.currentUser.username,
+        alarmCreateChange: null,
+        alarmUserId: null,
+        alarmTime: null,
+        alarmDate: null,
+        secondsSpent: this.$store.getters[models.secondsSpentOnClient]
       }
+      // const defaultValues = {
+      //   clientId: this.selectedClient.id,
+      //   logDate: new Date(),
+      //   secondsSpent: this.$store.getters[models.secondsSpentOnClient],
+      // }
       const log = Object.assign({}, defaultValues)
-      this.$api.createLog(this.headers, { log }).then(async (data) => {
-        await this.$api.getClientData(this.headers, this.selectedClient.id)
+      this.$api.createLog(this.headers, { log }).then(() => {
+        this.$store.commit('pushNewLog', {
+          state: this.selectedClient,
+          log
+        });
+
       })
+      // .then(async (data) => {
+      //   await this.$api.getClientData(this.headers, this.selectedClient.id)
+      // })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$emit(events.resetClock)
     },
@@ -178,5 +396,41 @@ export default {
 
 .client.selected span {
   @apply text-white;
+}
+
+.bg-white.sticky.top-0 {
+  z-index: 19;
+
+  /* Ensure it stays above other elements but doesn't cover too much */
+}
+
+.flex.items-center.justify-between {
+  padding: 8px;
+
+  /* Add padding to avoid elements being too close */
+}
+
+.form-select {
+  border: 1px solid #ccc;
+  background-color: white;
+  padding-right: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  width: auto;
+  min-width: 10px;
+  appearance: none;
+}
+
+select {
+  appearance: none;
+  padding-right: 20px;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0H140V140H0z"/><path d="M35 50l35 35 35-35H35z" fill="currentColor"/></svg>') no-repeat right 10px center;
+  background-size: 10px;
+}
+
+.flex.items-center.space-x-2 select {
+  margin-left: 8px;
+
+  /* Adds some space between the dropdowns */
 }
 </style>

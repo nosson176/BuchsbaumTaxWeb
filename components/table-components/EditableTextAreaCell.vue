@@ -146,10 +146,10 @@ export default {
   computed: {
     computedValue: {
       get() {
-        return this.isEditable ? this.value.replace(/<\/?[^>]+>/gi, '') : this.value;
+        // return this.isEditable ? this.value.replace(/<\/?[^>]+>/gi, '') : this.value;
+        return this.isEditable ? (this.value || '').replace(/<\/?[^>]+>/gi, '') : (this.value || '');
       },
       set(newVal) {
-        console.log("new val =>", newVal)
         this.$emit(events.input, newVal)
       },
     },
@@ -170,9 +170,13 @@ export default {
   watch: {
     async isEditable(val) {
       if (val) {
-        await this.$nextTick(() => {
-          this.$refs.input.focus()
-        })
+        await this.$nextTick(); // Wait for the DOM to be fully updated
+        if (this.$refs.input) {
+          this.$refs.input.focus();
+          this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px; overflow-y:hidden;');
+        } else {
+          console.log('Input ref not available');
+        }
       }
     },
   },

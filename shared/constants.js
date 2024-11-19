@@ -5,6 +5,7 @@ export const models = Object.freeze({
   clientsHistory: 'clientsHistory',
   loading: 'loading',
   loaded: 'loaded',
+  dayLogs: 'dayLogs',
   modals: 'modals',
   search: 'search',
   worktimes: 'worktimes',
@@ -26,10 +27,11 @@ export const models = Object.freeze({
   selectedContactId: 'selectedContactId',
   currentUser: 'currentUser',
   selectedTaxYearId: 'selectedTaxYearId',
-  fbars:'fbars',
-  globalPlayTime: "globalPlayTime",
-  secondsNeededToDisplayModal1:"secondsNeededToDisplayModal1",
-  ClinetAndLogs:"ClinetAndLogs"
+  fbars: 'fbars',
+  globalPlayTime: 'globalPlayTime',
+  secondsNeededToDisplayModal1: 'secondsNeededToDisplayModal1',
+  ClinetAndLogs: 'ClinetAndLogs',
+  filingsUpdate: 'filingsUpdate',
 })
 
 // Store Mutations

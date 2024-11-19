@@ -2,13 +2,13 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
     @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
-      <TableHeader>
-        <div class="table-header flex items-start">
-          <AddRowButton @click="onAddRowClick" />
+      <TableHeader class="border-amber-500 w-max">
+        <div class="table-header flex items-start ">
+          <AddRowButton @click="onAddRowClick" class="mt-0" />
           <CopyIcon @click.native="copyLog" class="cursor-pointer h-5 w-4 ml-2" />
           <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" class="cursor-pointer h-5 w-4 ml-2" />
         </div>
-        <div class="xs table-header">
+        <div class="xs table-header ">
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
         <div class="table-header flex flex-col year">
@@ -18,9 +18,10 @@
           </div>
           <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
-        <div class="table-header xxl">Note</div>
+        <div class="table-header xl">Note</div>
         <div class="table-header sm">Date</div>
         <div class="table-header sm">Alarm</div>
+        <div class="table-header sm">Time</div>
         <div class="table-header xs">
           <button type="button"
             class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -55,12 +56,12 @@
         <div :id="`${idx}-priority`" class="table-col xs"
           @click="toggleEditable(`${idx}-priority`, log.id, log.priority)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)"
-            @blur="onBlur(log.priority)" @tab="goToNextColumn" />
+            @blur="onBlur(log.priority, 'priority')" @tab="goToNextColumn" />
         </div>
         <div :id="`${idx}-years`" class="table-col year" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
-              @blur="onBlur(log.years)" />
+              @blur="onBlur(log.years, 'years')" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
@@ -70,18 +71,29 @@
             </template>
           </Tooltip>
         </div>
-        <div :id="`${idx}-note`" class="table-col xxl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
-          <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note)"
-            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note)" />
+        <div :id="`${idx}-note`" class="table-col xl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
+          <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note, 'note')"
+            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
-            @blur="onBlur(log.logDate)" />
+            @blur="onBlur(log.logDate, 'logDate')" />
         </div>
         <div :id="`${idx}-alarmDate`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
-          <EditableDateCell v-model="log.alarmDate" type="date" :is-editable="isEditable(`${idx}-alarmDate`)"
-            @blur="onBlur(log.alarmDate)" />
+          <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)"
+            @blur="onBlur(log.alarmDate, 'alarmDate')" />
+        </div>
+        <!-- <div :id="`${idx}-alarmTime`" class="table-col sm" @click="openAlertTimePicker(idx, log.id)">
+          <date-picker v-model="log.alarmTime" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            placeholder="Select date and time" :open="isAlertTimeOpen(idx)"
+            @close="closeAlertTime(idx, log.alarmTime, 'alarmTime')" />
+        </div> -->
+        <div :id="`${idx}-alarmTime`" class="table-col sm"
+          @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
+          <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
+            @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon v-if="log.alarmDate" class="h-5 w-5 cursor-pointer"
@@ -90,7 +102,7 @@
         <div :id="`${idx}-alarmUserName`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions" @blur="onBlur(log.alarmUserName)" />
+            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
         </div>
         <div :id="`${idx}-secondsSpent`" class="table-col sm"
           @click="toggleEditable(`${idx}-secondsSpent`, log.id, log.timeSpent)">
@@ -98,7 +110,26 @@
             @blur="updateSecondsSpent(log)" @keypress.native.enter="updateSecondsSpent(log)" />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(log.id)" />
+          <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
+            <DeleteButton small @click="onDeleteClick(log.id)" />
+            <template #popper>
+              <div class="tooltip-content p-2 max-w-md">
+                <ul v-if="log.historyLogJson && log.historyLogJson.length > 0 || log.createdBy" class="list-disc pl-4">
+                  <span class="font-semibold mb-2 block"><strong>Created by</strong> {{ log.createdBy }} => {{
+                    formatDate(log.logDate)
+                  }}</span>
+                  <div class="div"></div>
+                  <li v-for="(change, changeIdx) in log.historyLogJson" :key="changeIdx" class="mb-1">
+                    <span class="font-semibold">
+                      ({{ formatDate(change.date) }}) {{ change.userName }} => {{ change.field }} =>
+                    </span>
+                    {{ truncateText(change.val) }}
+                  </li>
+                </ul>
+                <p v-else class="text-gray-500">No changes recorded</p>
+              </div>
+            </template>
+          </Tooltip>
         </div>
       </TableRow>
     </template>
@@ -108,10 +139,12 @@
 <script>
 import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { boldSearchWord, searchArrOfObjs } from '~/shared/utility'
+import moment from 'moment-timezone';
+import dayjs from 'dayjs';
+import { models, mutations, tableGroups } from '~/shared/constants'
+import { boldSearchWord, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmUserName', 'secondsSpent', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -137,11 +170,14 @@ export default {
       playTime: true,
       intervalId: '',
       oldValue: '',
+      updatAndNewLogs: [],
+      openAlertTimeIndex: null,
     }
   },
   computed: {
     ...mapState([
       models.selectedClient,
+      models.currentUser,
       models.valueTypes,
       models.users,
       models.search,
@@ -158,6 +194,7 @@ export default {
         if (log.alarmUserId && !log.alarmUserName) {
           log.alarmUserName = this.usersArray[log.alarmUserId].username
         }
+
         log.timeSpent = this.getTimeSpentOnClient(log)
         return log
       })
@@ -174,9 +211,24 @@ export default {
     },
     shownLogs() {
       if (this.logs) {
-        return this.logs.filter((log) => this.showArchived === log.archived)
+        // מסנן את הלוגים לפי הערך של showArchived
+        const filteredLogs = this.logs.filter(log => this.showArchived === log.archived);
+
+        // ממיר את ה-historyLogJson מ-JSON string לאובייקט JSON
+        const updatedLogs = filteredLogs.map(log => {
+          if (log.historyLogJson && typeof log.historyLogJson === 'string') {
+            try {
+              log.historyLogJson = this.parseHistoryLogJson(log.historyLogJson)
+            } catch (e) {
+              console.error('Failed to parse JSON for log:', log, e);
+            }
+          }
+          return log;
+        });
+
+        return updatedLogs;
       } else {
-        return null
+        return null;
       }
     },
     yearOptions() {
@@ -258,8 +310,9 @@ export default {
       }, 1000)
     }
   },
-  beforeDestroy() {
-    clearInterval(this.intervalId)
+  async beforeDestroy() {
+    clearInterval(this.intervalId);
+    await this.saveUpdatAndNewLogs();
   },
   watch: {
     globalPlaytimeValue(newValue) {
@@ -274,6 +327,35 @@ export default {
     }
   },
   methods: {
+    truncateText(text, length = 50) {
+      if (!text) return '';
+      return text.length > length ? text.substring(0, length) + '...' : text;
+    },
+    parseHistoryLogJson(historyLogJson) {
+      if (!historyLogJson) return [];
+      try {
+        return typeof historyLogJson === 'string'
+          ? JSON.parse(historyLogJson)
+          : historyLogJson;
+      } catch (error) {
+        console.error('Error parsing historyLogJson:', error);
+        return [];
+      }
+    },
+
+    formatDate(date) {
+      const d = new Date(date);
+
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const year = d.getFullYear();
+
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+
+      return `${day}/${month}/${year} ${hours}:${minutes}`;
+    },
+
     picnicTablePopup() {
       const url = process.env.NODE_ENV === 'development' ?
         `http://localhost:3000/picnicTable?client=${encodeURIComponent(this.selectedClient.id)}`
@@ -283,24 +365,29 @@ export default {
 
     },
     copyLog() {
-      if (!this.selectedLogIds) return
+      if (!this.selectedLogIds) return;
 
       this.selectedLogIds.forEach((logId, idx) => {
-        const isLogCopied = this.$store.state.copyLogs.some(log => {
-          return log.id === Number(logId)
-        });
+        // בדוק אם הלוג כבר הועתק
+        const isLogCopied = this.$store.state.copyLogs.some(log => log.id === Number(logId));
         if (isLogCopied) return;
 
-        const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
-        const log = this.displayedLogs[logIndex]
+        // מצא את הלוג המבוקש מתוך displayedLogs
+        const logIndex = this.displayedLogs.findIndex(log => log.id === Number(logId));
+        const log = this.displayedLogs[logIndex];
 
         if (log) {
-          const copyLogs = Object.assign({}, log)
-          this.$store.commit('setCopyLogs', copyLogs);
-          return copyLogs
+          // צור עותק של הלוג ושנה את historyLogJson למערך ריק
+          const copyLog = { ...log, alarmComplete: false, alarmUserId: null, alarmDate: null, alarmTime: null, alarmUserName: null, historyLogJson: [], id: generateRandomId(), new: true, createdBy: this.currentUser.username };
+
+          // שמור את הלוג המועתק בחנות
+          this.$store.commit('setCopyLogs', copyLog);
+
+          return copyLog;
         }
-      })
-      this.selectedLogIds = []
+      });
+
+      this.selectedLogIds = [];
     },
     pasteLogs() {
       // Guard clause if copyLogs is empty or undefined
@@ -312,25 +399,22 @@ export default {
         logDate: new Date()
       });
 
+      // Loop through the copyLogs and push to updatAndNewLogs locally in the component
+      this.$store.state.copyLogs.forEach(copy => {
+        const newLog = { ...copy, id: generateRandomId(), createdBy: this.currentUser.username }; // Create a new log with a new ID
 
-      // Use Promise.all to ensure all logs are created before proceeding
-      const createLogPromises = this.$store.state.copyLogs.map(log => {
-        return this.$api.createLog(this.headers, { log });
+        // Push the log into the local data (updatAndNewLogs)
+        this.updatAndNewLogs.push(newLog);
+
+        // Commit the new log to Vuex with the updated client and log information
+        this.$store.commit('pushNewLog', {
+          state: this.selectedClient,
+          log: newLog
+        });
       });
 
-      Promise.all(createLogPromises)
-        .then(() => {
-          // After all logs are created, refresh client data
-          return this.$api.getClientData(this.headers, this.selectedClient.id);
-        })
-        .then(() => {
-          // Clear copyLogs after successful paste and refresh
-          this.$store.commit('clearCopyLogs');
-        })
-        .catch(error => {
-          // Handle any errors that occur during the process
-          console.error('Error during pasteLogs operation:', error);
-        });
+      // Clear the copyLogs after pasting
+      this.$store.commit('clearCopyLogs');
     },
     runTime() {
       clearInterval(this.intervalId)
@@ -352,37 +436,132 @@ export default {
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
-        this.oldValue = log[val]
+        // console.log(logId)
+        // console.log(log)
+        // console.log(val)
+        if (log) {
+          this.oldValue = log[val]
+          this.isEditable(`${0}-priority`)
+        }
       } else this.oldValue = value
       if (this.editableId !== id) {
         this.editableId = id;
         this.editableLogId = logId;
       }
+      // if (id.endsWith('-alermTime')) {
+      //   this.openAlertTimeIndex = parseInt(id.split('-')[0]);
+      // }
     },
     isEditable(id) {
       return this.editableId === id
     },
-    handleUpdate() {
-      if (!this.editableLogId) return
-      const log = this.displayedLogs.find((log) => log.id === this.editableLogId)
-      for (const key in this.users) {
-        if (this.users[key].username === log?.alarmUserName) {
-          log.alarmUserId = this.users[key].id
+    handleUpdate(val, field) {
+      // console.log("handleUpdate =>", val, field)
+      if (!this.editableLogId) return;
+      const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
+      if (logIndex === -1) return;
+
+      const updatedLog = { ...this.displayedLogs[logIndex] };
+
+      if (field === 'alarmTime') {
+        const currentTime = dayjs(); // Current date and time using dayjs
+        const endOfDay = dayjs().endOf('day'); // End of the current day using dayjs
+
+        // Convert `updatedLog.alarmTime` to a valid dayjs object
+        const alarmTime = dayjs(updatedLog.alarmTime, 'DD-MM-YYYY HH:mm');
+        // Check if alarmTime is a valid date and within the range
+        if (alarmTime.isValid() && alarmTime.isAfter(currentTime) && alarmTime.isBefore(endOfDay)) {
+          this.$store.commit('pushDayLog', {
+            state: this.selectedClient,
+            log: updatedLog
+          });
+        } else {
+          console.log("alarmTime is not within the range or invalid, log not pushed.");
         }
       }
-      return this.$api.updateLog(this.headers, { clientId: this.clientId, logId: this.editableLogId }, log)
-    },
-    onDeleteClick(logId) {
-      if (this.showArchived) {
-        const log = this.displayedLogs.find((log) => log.id === logId)
-        log.archived = false
-        this.$api.updateLog(this.headers, { clientId: this.clientId, logId }, log)
-      } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: logId, type: tabs.logs, label: 'log note' } } },
-        })
+
+      // Update alarmUserId if necessary
+      if (field === 'alarmUserName') {
+        const user = Object.values(this.users).find(user => user.username === val);
+        if (user) {
+          updatedLog.alarmUserId = user.id;
+        }
       }
+      this.$store.dispatch('updateLogAction', { log: updatedLog });
+      this.updateUpdatAndNewLogs(updatedLog, val, field);
+    },
+
+    updateUpdatAndNewLogs(updatedLog, val, field) {
+      const index = this.updatAndNewLogs.findIndex(log => log.id === updatedLog.id);
+      if (index !== -1) {
+        const historyEntry = {
+          userName: this.currentUser.username,
+          date: Date.now(),
+          field,
+          val
+        };
+
+        // Use Vue.set to ensure reactivity
+        if (field === 'alarmDate') {
+          this.$set(this.updatAndNewLogs[index], 'alarmCreateChange', Date.now());
+        }
+        if (field === 'alarmUserName') {
+          this.$set(this.updatAndNewLogs[index], 'alarmUserId', updatedLog.alarmUserId);
+        }
+        this.$set(this.updatAndNewLogs[index], field, val);
+
+        if (!this.updatAndNewLogs[index].new) {
+          if (!Array.isArray(this.updatAndNewLogs[index].historyLogJson)) {
+            this.$set(this.updatAndNewLogs[index], 'historyLogJson', []);
+          }
+          this.updatAndNewLogs[index].historyLogJson.push(historyEntry);
+        }
+      } else {
+        const historyEntry = {
+          userName: this.currentUser.userName,
+          date: Date.now(),
+          field,
+          val
+        };
+
+        // Add new log if it doesn't exist
+        this.updatAndNewLogs.push({
+          ...updatedLog,
+          historyLogJson: [historyEntry]
+        });
+      }
+    },
+
+    async saveUpdatAndNewLogs() {
+      if (this.updatAndNewLogs.length === 0) return
+      try {
+        const logsToSave = this.updatAndNewLogs.map(log => ({
+          ...log,
+          logDate: this.formatUnixTimestamp(log.logDate),
+          alarmDate: this.formatUnixTimestamp(log.alarmDate),
+          historyLogJson: JSON.stringify(log.historyLogJson)
+        }));
+        await this.$api.updateLogs(this.headers, logsToSave);
+      } catch (error) {
+        console.error('Error saving logs:', error);
+      }
+    },
+    formatUnixTimestamp(unixTimeMillis) {
+      if (unixTimeMillis === null) return
+      return moment(unixTimeMillis)
+        .tz('Asia/Jerusalem')
+        .format('YYYY-MM-DD'); // No timezone offset
+    },
+
+    onDeleteClick(logId) {
+      const log = this.displayedLogs.find((log) => log.id === logId)
+      if (this.showArchived) {
+        log.archived = false
+      } else {
+        log.archived = true
+      }
+      this.$store.dispatch('updateLogAction', { log });
+      this.updateUpdatAndNewLogs(log, log.archived, 'archived');
     },
     onAddRowClick(addSecondsSpent = false) {
       if (!this.selectedClient) {
@@ -391,36 +570,84 @@ export default {
       const defaultValues = {
         clientId: this.selectedClient.id,
         logDate: new Date(),
+        id: generateRandomId(),
+        archived: false,
+        years: '',
+        alarmComplete: false,
+        alert: false,
+        alerted: false,
+        priority: 0,
+        timeSpent: "",
+        note: "",
+        historyLogJson: [],
+        new: true,
+        createdBy: this.currentUser.username,
+        alarmCreateChange: null,
+        alarmUserId: null,
+        alarmTime: null,
+        alarmDate: null
       }
       if (addSecondsSpent) {
         defaultValues.secondsSpent = this.secondsSpentOnClient
         this.resetClock()
       }
       if (this.isCopyingLogs) {
-        this.selectedLogIds.forEach(async (logId, idx) => {
+        this.selectedLogIds.forEach((logId, idx) => {
           const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
           const log = this.displayedLogs[logIndex]
-          const newLog = Object.assign({}, log)
-          await this.$api.createLog(this.headers, { log: newLog }).then(async (data) => {
-            if (this.selectedLogIds.length === idx + 1) {
-              await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`${logIndex}-${columns[1]}`, data.id)
-            }
-          })
+
+          const newLog = {
+            ...log,
+            id: generateRandomId(),
+            logDate: new Date(),
+            new: true,
+            historyLogJson: [],
+            createdBy: this.currentUser.username,
+            alarmComplete: false,
+            alarmUserId: null,
+            alarmDate: null,
+            alarmTime: null,
+            alarmUserName: null
+          };
+
+          this.updatAndNewLogs.push(newLog)
+          this.$store.commit('pushNewLog', {
+            state: this.selectedClient,
+            log: newLog
+          });
+
+          const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
+          this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLog.id)
         })
       } else {
         const log = Object.assign({}, defaultValues)
-        this.$api.createLog(this.headers, { log }).then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.toggleEditable(`0-${columns[1]}`, data.id)
-        })
+        this.updatAndNewLogs.push(log)
+        this.$store.commit('pushNewLog', {
+          state: this.selectedClient,
+          log
+        });
+        this.toggleEditable(`0-${columns[1]}`, log.id)
+        // })
       }
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
-    onBlur(val) {
+    onBlur(val, field) {
       if (this.oldValue !== val && this.oldValue !== undefined) {
-        this.handleUpdate()
+        this.handleUpdate(val, field)
+        this.goToNextColumn()
+        return
+      }
+      // || field === 'alarmTime'
+      if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
+        // if(field === 'alarmTime'){
+        //   this.$store.commit('pushDayLog', {
+        //   state: this.selectedClient,
+        //   log: newLog
+        // });
+        // }
+        // console.log(val, field)
+        this.handleUpdate(val, field)
         this.goToNextColumn()
         return
       }
@@ -547,6 +774,10 @@ export default {
 .year {
   min-width: 4rem;
   max-width: 5rem;
+}
+
+.tooltip-content {
+  text-align: left;
 }
 
 @media screen and (min-width: 1919px) {

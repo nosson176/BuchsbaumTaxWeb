@@ -14,29 +14,29 @@
     </div>
     <div class="fbar-i">
       <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
-        <EditableSelectCell v-model="formModel.status" :options="statusOptions" class="whitespace-nowrap"
+        <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
           :is-editable="false" placeholder="Status" />
       </div>
       <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40 ">
-        <EditableSelectCell v-model="formModel.status" :options="statusOptions" class="whitespace-nowrap select-cell"
-          :is-editable="true" placeholder="Status" @blur="onBlur" />
+        <EditableSelectCell v-model="formModel.status.value" :options="statusOptions"
+          class="whitespace-nowrap select-cell" :is-editable="true" placeholder="Status" @blur="onBlur" />
       </div>
     </div>
     <div class="fbar-i">
       <div v-if="!isEditable('statusDetail')" @click.stop="setEditable('statusDetail')">
-        <EditableSelectCell v-model="formModel.statusDetail" :options="statusDetailOptions" class="whitespace-nowrap"
-          :is-editable="false" placeholder="Detail" />
+        <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
+          class="whitespace-nowrap" :is-editable="false" placeholder="Detail" />
       </div>
       <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-        <EditableSelectCell v-model="formModel.statusDetail" class="whitespace-nowrap select-cell"
-          :options="statusDetailOptions" :is-editable="true" placeholder="Detail" @blur="onBlur" />
+        <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap select-cell"
+          :options="statusDetailOptions" :is-editable="true" placeholder="Detail" @blur="onBlur('statusDetail')" />
       </div>
     </div>
-    <div class="mt-85">
-      <div class="fbar-i" @click.stop="setEditable('statusDate')">
-        <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
-          :is-editable="isEditable('statusDate')" @blur="onBlur" />
-      </div>
+    <!-- <div class="mt-85"> -->
+    <div class="fbar-i" @click.stop="setEditable('statusDate')">
+      <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
+        :is-editable="isEditable('statusDate')" @blur="onBlur" />
+      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -66,7 +66,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.valueTypes, models.selectedClient]),
+    ...mapState([models.valueTypes, models.selectedClient, models.filingsUpdate]),
     headers() {
       return this.$api.getHeaders()
     },
@@ -74,7 +74,8 @@ export default {
       return this.valueTypes.fbar_status.filter((status) => status.show)
     },
     statusDetailOptions() {
-      const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status)?.id
+      const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status.value)?.id
+      // const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status)?.id
       return this.valueTypes.fbar_status_detail.filter((status) => status.parentId === parentId && status.show)
     },
     fileTypeOptions() {
@@ -91,12 +92,28 @@ export default {
     isEditable(value) {
       return this.editable === value
     },
-    onBlur() {
-      this.handleUpdate()
+    onBlur(field) {
+      this.handleUpdate(field)
       this.setEditable('')
     },
-    handleUpdate() {
-      this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
+    // handleUpdate() {
+    //   this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
+    // },
+    handleUpdate(field) {
+      try {
+        const updatedModel = JSON.parse(JSON.stringify(this.formModel));
+        const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
+        if (field === 'statusDetail') updatedModel.statusDetail.date = Date.now()
+
+        if (existingIndex > -1) {
+          this.$store.dispatch('updateFilingAction', { filing: updatedModel });
+        } else {
+          this.$store.commit('pushFilingUpdate', updatedModel);
+        }
+        this.goToNextItem();
+      } catch (error) {
+        console.error('Error in handleLocalUpdate:', error);
+      }
     },
     emitDelete() {
       this.$emit(events.delete, this.fbar.id)
@@ -126,9 +143,11 @@ export default {
   @apply text-xs flex flex-col items-center p-2;
 
   justify-content: space-between;
-  min-height: 250px;
+  min-height: 280px;
   width: 100%;
+  margin-bottom: 10px;
 }
+
 
 .fbar-i {
   position: relative;

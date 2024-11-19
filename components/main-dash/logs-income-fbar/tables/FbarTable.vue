@@ -158,8 +158,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { formatAsNumber, searchArrOfObjs } from '~/shared/utility'
+import { models, tableGroups } from '~/shared/constants'
+import { formatAsNumber, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'include',
@@ -208,6 +208,7 @@ export default {
       includeAll: '',
       selectedItems: {},
       oldValue: '',
+      updateFbars: []
     }
   },
   computed: {
@@ -374,9 +375,11 @@ export default {
       return this.isCmdPressed && this.selectedFbarIds.length > 0
     },
   },
+  beforeDestroy() {
+    if (this.updateFbars.length > 0) this.sendFbarsToServer()
+  },
   methods: {
     toggleEditable(id, fbarId, value) {
-      console.log("value=>", value)
       if (!value) {
         const val = id.split("-")[1]
         const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
@@ -393,7 +396,17 @@ export default {
     handleUpdate() {
       if (!this.editableFbarId) return
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
-      this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+
+      const index = this.updateFbars.findIndex(f => f.id === fbar.id)
+      if (index !== -1) {
+        this.updateFbars[index] = fbar
+      } else {
+        this.updateFbars.push(fbar)
+      }
+      // this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+    },
+    sendFbarsToServer() {
+      this.$api.updateFbars(this.headers, this.updateFbars)
     },
     handleUpdateIncludeAll() {
       this.displayedFbars.forEach((fbar) => {
@@ -408,16 +421,20 @@ export default {
       }
     },
     onDeleteClick(fbarId) {
+      const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
       if (this.showArchived) {
-        const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
         fbar.archived = false
-        this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId }, fbar)
       } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: fbarId, type: tabs.fbar, label: 'fbar breakdown record' } } },
-        })
+        fbar.archived = true
       }
+      const index = this.updateFbars.findIndex(f => f.id === fbar.id)
+      if (index !== -1) {
+        this.updateFbars[index] = fbar
+      } else {
+        this.updateFbars.push(fbar)
+      }
+
+      this.$store.dispatch('updateFbarAction', { fbar });
     },
     onAddRowClick() {
       if (!this.selectedClient) {
@@ -426,25 +443,33 @@ export default {
       const defaultValues = {
         clientId: this.selectedClient.id,
         include: true,
+        archived: false,
+        id: generateRandomId()
       }
       if (this.isCopyingFbars) {
-        this.selectedFbarIds.forEach(async (fbarId, idx) => {
+        this.selectedFbarIds.forEach((fbarId, idx) => {
           const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
           const fbar = this.displayedFbars[fbarIndex]
           const newFbar = Object.assign({}, fbar)
-          await this.$api.createFbar(this.headers, { fbar: newFbar }).then(async (data) => {
-            if (this.selectedFbarIds.length === idx + 1) {
-              await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`${fbarIndex}-${columns[0]}`, data.id)
-            }
-          })
+          newFbar.id = generateRandomId()
+          this.updateFbars.push(newFbar)
+          this.$store.commit('pushNewFbar', {
+            state: this.selectedClient,
+            fbar: newFbar
+          });
+          this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
+          //     }
+          //   })
         })
-      } else {
+      }
+      else {
         const fbar = Object.assign({}, defaultValues)
-        this.$api.createFbar(this.headers, { fbar }).then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.toggleEditable(`0-${columns[0]}`, data.id)
-        })
+        this.updateFbars.push(fbar)
+        this.$store.commit('pushNewFbar', {
+          state: this.selectedClient,
+          fbar
+        });
+        this.toggleEditable(`0-${columns[0]}`, fbar.id)
       }
     },
     goToNextColumn() {
@@ -477,7 +502,6 @@ export default {
     },
     onBlur(val) {
       if (this.oldValue !== val) {
-        console.log("in")
         this.handleUpdate()
         this.goToNextColumn()
         return

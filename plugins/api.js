@@ -59,65 +59,76 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const getClientData = (headers, id) =>
-  $axios
-  .get(`/clients/${id}/data`, {
-    headers,
-    loading: models.selectedClient,
-    loaded: models.selectedClient,
-    store: models.selectedClient,
-  })
-  .then((res) => {
-    console.log(res)
-    getClientsHistory(headers)
+    $axios
+      .get(`/clients/${id}/data`, {
+        headers,
+        loading: models.selectedClient,
+        loaded: models.selectedClient,
+        store: models.selectedClient,
+      })
+      .then((res) => {
+        console.log(JSON.parse(JSON.stringify(res)))
+        getClientsHistory(headers)
+      })
+      .catch(() => $toast.error('Error loading client data'))
 
-  })
-  .catch(() => $toast.error('Error loading client data'))
-  
   const getClientsWithLogs = (headers, clientId) => {
     // Construct URL based on whether clientId is provided
-    const url = '/clients/clientsAndlogs' + (clientId ? `?clientId=${clientId}` : '');
+    const url = '/clients/clientsAndlogs' + (clientId ? `?clientId=${clientId}` : '')
 
-    return $axios.get(url, {
+    return $axios
+      .get(url, {
         headers,
         loading: models.ClientAndLogs,
         loaded: models.ClientAndLogs,
-        store: models.ClientAndLogs
-    })
+        store: models.ClientAndLogs,
+      })
       .then((response) => {
         // Check if response.data is an object
         if (typeof response === 'object' && response !== null) {
           // Convert object to array
-          const clientsArray = Object.values(response);
-          return clientsArray;
+          const clientsArray = Object.values(response)
+          return clientsArray
         } else {
-          throw new Error('Response data is not an object');
+          throw new Error('Response data is not an object')
         }
       })
       .catch((error) => {
-        console.error('Error fetching clients with logs:', error);
-        throw error; // Re-throw error to handle it in the component
-      });
-    }
-  
-  
-  
+        console.error('Error fetching clients with logs:', error)
+        throw error // Re-throw error to handle it in the component
+      })
+  }
+
+  const getTodayLogs = (headers) =>
+    $axios
+      .get('logs/today', {
+        headers,
+        loading: models.dayLogs,
+        loaded: models.dayLogs,
+        store: models.dayLogs,
+      })
+      .then((res) => {
+        // console.log(Object.values(res))
+      })
+      .catch(() => $toast.error('Error loading value types'))
+
   const getValueTypes = (headers) =>
     $axios
-  .get('values', {
-    headers,
-    loading: models.valueTypes,
-    loaded: models.valueTypes,
-    store: models.valueTypes,
-  })
-  .catch(() => $toast.error('Error loading value types'))
-  
+      .get('values', {
+        headers,
+        loading: models.valueTypes,
+        loaded: models.valueTypes,
+        store: models.valueTypes,
+      })
+      .catch(() => $toast.error('Error loading value types'))
+
   const getValueTaxGroups = (headers) =>
     $axios
-  .get('values/tax-groups', {
-    headers,
-    loading: models.valueTaxGroups,
-    loaded: models.valueTaxGroups,
-    store: models.valueTaxGroups,
+      .get('values/tax-groups', {
+        headers,
+        loading: models.valueTaxGroups,
+        loaded: models.valueTaxGroups,
+        store: models.valueTaxGroups,
       })
       .catch(() => $toast.error('Error loading value tax groups'))
 
@@ -155,8 +166,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.inbox,
       })
       .catch(() => $toast.error('Error loading messages'))
-      
-      const getTimeWorks = (headers) =>
+
+  const getTimeWorks = (headers) =>
     $axios
       .get(`/worktimes`, {
         headers,
@@ -165,8 +176,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.worktimes,
       })
       .catch(() => $toast.error('Error loading messages'))
-      
-      const getAllTimeWorksByDate = (headers,startRange, endRange) =>
+
+  const getAllTimeWorksByDate = (headers, startRange, endRange) =>
     $axios
       .get(`/worktimes/date-range`, {
         headers,
@@ -177,7 +188,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error loading messages'))
 
-  const getTimeWorksByUserId = (headers,userId) =>
+  const getTimeWorksByUserId = (headers, userId) =>
     $axios
       .get(`/worktimes/user/${userId}`, {
         headers,
@@ -186,19 +197,24 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.worktimes,
       })
       .catch(() => $toast.error('Error loading messages'))
-  
-      const getTimeWorksByMonthAndUserId = (headers, userId, startDate, endDate) => {
-        return $axios
-          .get(`/worktimes/user/${userId}/date-range`, {
-            headers,
-            params: { startDate, endDate },
-            loading: models.worktimes,
-            loaded: models.worktimes,
-            store: models.worktimes,
-          })
-          .catch(() => $toast.error('Error loading messages'))
-      }
-      
+
+  const getTimeWorksByMonthAndUserId = (headers, userId, startDate, endDate) => {
+    return $axios
+      .get(`/worktimes/user/${userId}/date-range`, {
+        headers,
+        params: { startDate, endDate },
+        loading: models.worktimes,
+        loaded: models.worktimes,
+        store: models.worktimes,
+      })
+      .catch(() => $toast.error('Error loading messages'))
+  }
+
+  const getClientsToExport = (headers, clientsArray) => {
+    return $axios
+      .post(`/clients/exportClients`, clientsArray, { headers })
+      .catch(() => $toast.error('Error fetch Clients to export'))
+  }
 
   // CREATE
   const createLog = (headers, { log }) =>
@@ -231,11 +247,38 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const createClient = (headers, { client }) =>
     $axios.post('/clients', client, { headers }).catch(() => $toast.error('Error creating client'))
 
-  const createSmartview = (headers, { smartview }) =>
-    $axios
-      .post('/smartviews', smartview, { headers })
-      .catch(() => $toast.error('Error creating smartview'))
-      .finally(() => getSmartviews(headers))
+  const createSmartview = async (headers, { smartview }, sendToUserId) => {
+    try {
+      const url = sendToUserId ? `/smartviews?clientId=${sendToUserId}` : `/smartviews`
+      // console.log('Creating Smartview:', smartview)
+      const response = await $axios.post(url, smartview, { headers })
+      // You might want to log or use the response data here
+      // console.log('Smartview created successfully:', response)
+      return response // return the created smartview or relevant data
+    } catch (error) {
+      console.error('Error creating smartview:', error)
+      $toast.error('Error creating smartview')
+    } finally {
+      // This ensures that you fetch the updated list of smartviews regardless of success or failure
+      await getSmartviews(headers)
+    }
+  }
+
+  const getFilterClients = async (headers, { smartview }) => {
+    try {
+      const response = await $axios.post('/smartviews/getFilterClients', smartview, {
+        headers,
+        loading: models.clients,
+        loaded: models.clients,
+        store: models.clients,
+      })
+
+      return Object.values(response) // return the created smartview or relevant data
+    } catch (error) {
+      console.error('Error creating smartview:', error)
+      $toast.error('Error creating smartview')
+    }
+  }
 
   const createUser = (headers, { user }) =>
     $axios
@@ -243,41 +286,41 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error creating user'))
       .finally(() => getAllUsers(headers))
 
-      const createWorkTime = (headers, userId, username, date) => {
-        const workTimeData = {
-          userId,
-          username,
-          date
-        };
-      
-        $axios
-          .post('/worktimes', workTimeData, { headers })
-          .then(() => {
-            $toast.success('Work time created successfully');
-          })
-          .catch(error => {
-            // Handle error
-            console.error('Error creating work time:', error);
-            $toast.error('Error creating work time');
-          });
-      };
-      const clockOutWorkTime = (headers, userId, date) => {
-        const workTimeData = {
-          userId,
-          date
-        };
-        $axios
-            .post(`/worktimes/clockout`,workTimeData,{headers})
-            .then(() => {
-                // Handle success
-                $toast.success('Clock out successful');
-            })
-            .catch(error => {
-                // Handle error
-                console.error('Error clocking out:', error);
-                $toast.error('Error clocking out');
-            });
-    };
+  const createWorkTime = (headers, userId, username, date) => {
+    const workTimeData = {
+      userId,
+      username,
+      date,
+    }
+
+    $axios
+      .post('/worktimes', workTimeData, { headers })
+      .then(() => {
+        $toast.success('Work time created successfully')
+      })
+      .catch((error) => {
+        // Handle error
+        console.error('Error creating work time:', error)
+        $toast.error('Error creating work time')
+      })
+  }
+  const clockOutWorkTime = (headers, userId, date) => {
+    const workTimeData = {
+      userId,
+      date,
+    }
+    $axios
+      .post(`/worktimes/clockout`, workTimeData, { headers })
+      .then(() => {
+        // Handle success
+        $toast.success('Clock out successful')
+      })
+      .catch((error) => {
+        // Handle error
+        console.error('Error clocking out:', error)
+        $toast.error('Error clocking out')
+      })
+  }
 
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
@@ -292,23 +335,27 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getInbox(headers))
 
   // UPDATE
-  const updateClient = (headers, { clientId, client }) =>
-    $axios
-      .put(`/clients/${clientId}`, client, { headers })
-      .catch(() => $toast.error('Error updating client'))
-      .finally(() => getClientData(headers, clientId))
+  const updateClient = (headers, { clientId, client }) => {
+    $axios.put(`/clients/${clientId}`, client, { headers }).catch(() => $toast.error('Error updating client'))
+  }
+  // .finally(() => getClientData(headers, clientId))
 
   const updateClientFlag = (headers, { clientId, clientFlag }) =>
     $axios
       .put('/users/current/client-flags', clientFlag, { headers })
       .catch(() => $toast.error('Error updating client flag'))
-      .finally(() => getClientData(headers, clientId))
+  // .finally(() => getClientData(headers, clientId))
 
-  const updateLog = (headers, { clientId, logId }, log) =>
+  const updateLog = (headers, { clientId, logId }, log) => {
+    return $axios.put(`/logs/${logId}`, log, { headers }).catch(() => $toast.error('Error updating log'))
+  }
+  // .finally(() => getClientData(headers, clientId))
+
+  const updateLogs = (headers, logs) => {
     $axios
-      .put(`/logs/${logId}`, log, { headers })
+      .put('/logs/', logs, { headers }) // Correctly pass headers as an object
       .catch(() => $toast.error('Error updating log'))
-      .finally(() => getClientData(headers, clientId))
+  }
 
   const updateTaxPersonal = (headers, { clientId, personalId }, personal) =>
     $axios
@@ -316,22 +363,33 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating tax personal'))
       .finally(() => getClientData(headers, clientId))
 
-      const updateContact = async (headers, { clientId, contactId = '' }, contact) => {
-        try {
-          await $axios.put(`/contacts/${contactId}`, contact, { headers });
-        } catch (error) {
-          console.error('Error updating contact:', error);
-          $toast.error('Error updating contact');
-        } finally {
-          try {
-            const data = await getClientData(headers, clientId);
-            console.log(data);
-          } catch (error) {
-            console.error('Error fetching client data:', error);
-            $toast.error('Error fetching client data');
-          }
-        }
-      };
+  const updateTaxPersonals = (headers, personal) =>
+    $axios.put(`/personals`, personal, { headers }).catch(() => $toast.error('Error updating tax personal'))
+
+  const updateContact = async (headers, { clientId, contactId = '' }, contact) => {
+    try {
+      await $axios.put(`/contacts/${contactId}`, contact, { headers })
+    } catch (error) {
+      console.error('Error updating contact:', error)
+      $toast.error('Error updating contact')
+    } finally {
+      try {
+        // const data = await getClientData(headers, clientId)
+      } catch (error) {
+        console.error('Error fetching client data:', error)
+        $toast.error('Error fetching client data')
+      }
+    }
+  }
+
+  const updateContacts = async (headers, contacts) => {
+    try {
+      await $axios.put(`/contacts`, contacts, { headers }).then((res) => console.log(res))
+    } catch (error) {
+      console.error('Error updating contact:', error)
+      $toast.error('Error updating contact')
+    }
+  }
 
   const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
     const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
@@ -341,12 +399,22 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getClientData(headers, clientId))
   }
 
+  const updateIncomes = (headers, incomes) => {
+    return $axios
+      .put(`/incomes`, incomes, { headers })
+      .then((res) => {})
+      .catch(() => $toast.error('Error updating income'))
+  }
+
   const updateFbar = (headers, { clientId, fbarId = '' }, fbar) => {
     const endpoint = fbarId ? `/fbars/${fbarId}` : '/fbars'
     return $axios
       .put(endpoint, fbar, { headers })
       .catch(() => $toast.error('Error updating fbar'))
       .finally(() => getClientData(headers, clientId))
+  }
+  const updateFbars = (headers, fbars) => {
+    return $axios.put(`/fbars`, fbars, { headers }).catch(() => $toast.error('Error updating fbar'))
   }
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
@@ -355,33 +423,45 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating fee'))
       .finally(() => getClientData(headers, clientId))
 
+  const updateFees = (headers, fee) =>
+    $axios.put(`/fees`, fee, { headers }).catch(() => $toast.error('Error updating fee'))
+
   const updateFiling = (headers, { clientId, filingId }, filing) =>
+    $axios.put(`/filings/${filingId}`, filing, { headers }).catch(() => $toast.error('Error updating filing'))
+  // .finally(() => getClientData(headers, clientId))
+
+  const updateFilings = (headers, filing) => {
     $axios
-      .put(`/filings/${filingId}`, filing, { headers })
+      .put(`/filings/updateFilings`, { updates: filing }, { headers })
       .catch(() => $toast.error('Error updating filing'))
-      .finally(() => getClientData(headers, clientId))
-  
-      const updateFilingDelivary = (headers, { clientId, oldContectDelivary, newContectDelivary }) =>
-        $axios
-          .put('/filings/updateFiling', {
-            clientId,
-            oldContectDelivary,
-            newContectDelivary
-          }, { headers })
-          .catch(() => $toast.error('Error updating filing'))
-          .finally(() => getClientData(headers, clientId));
+  }
+
+  const updateFilingDelivary = (headers, { clientId, oldContectDelivary, newContectDelivary }) =>
+    $axios
+      .put(
+        '/filings/updateFiling',
+        {
+          clientId,
+          oldContectDelivary,
+          newContectDelivary,
+        },
+        { headers }
+      )
+      .catch(() => $toast.error('Error updating filing'))
+  // .finally(() => getClientData(headers, clientId));
 
   const updateTaxYear = (headers, { clientId, taxYearId }, taxYear) =>
-    $axios
-      .put(`/tax-years/${taxYearId}`, taxYear, { headers })
-      .catch(() => $toast.error('Error updating tax year'))
-      .finally(() => getClientData(headers, clientId))
+    $axios.put(`/tax-years/${taxYearId}`, taxYear, { headers }).catch(() => $toast.error('Error updating tax year'))
+  // .finally(() => getClientData(headers, clientId))
 
   const updateChecklist = (headers, { clientId, checklistId }, checklist) =>
     $axios
       .put(`/checklists/${checklistId}`, checklist, { headers })
       .catch(() => $toast.error('Error updating checklist'))
       .finally(() => getClientData(headers, clientId))
+
+  const updateChecklists = (headers, checklist) =>
+    $axios.put(`/checklists`, checklist, { headers }).catch(() => $toast.error('Error updating checklist'))
 
   const updateSmartview = (headers, { smartviewId }, smartview) =>
     $axios
@@ -411,16 +491,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .put(`/users/current/messages/${messageId}`, value, { headers })
       .catch(() => $toast.error('Error updating message'))
       .finally(() => getInbox(headers))
-  
-      const updateWorkTimeByWorkTimeId = (headers, workTime, currentUser) => {
-        // Add userType to the workTime object or include it in a separate payload object
-        const payload = { ...workTime, userType: currentUser.userType };
 
-        return $axios
-          .put(`/worktimes/${workTime.id}`, payload, { headers })
-          .then($toast.success('Work time update successful'))
-          .catch(() => $toast.error('Error updating workTime'));
-      };
+  const updateWorkTimeByWorkTimeId = (headers, workTime, currentUser) => {
+    // Add userType to the workTime object or include it in a separate payload object
+    const payload = { ...workTime, userType: currentUser.userType }
+
+    return $axios
+      .put(`/worktimes/${workTime.id}`, payload, { headers })
+      .then($toast.success('Work time update successful'))
+      .catch(() => $toast.error('Error updating workTime'))
+  }
 
   // DELETE
   const deleteValueType = (headers, { valueId }) =>
@@ -486,6 +566,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getClientsHistory,
     getHeaders,
     getSmartviews,
+    getFilterClients,
     getValueTaxGroups,
     getValueTypes,
     getCurrentUser,
@@ -495,22 +576,32 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getTimeWorksByMonthAndUserId,
     getAllTimeWorksByDate,
     getClientsWithLogs,
+    getTodayLogs,
+    getClientsToExport,
     login,
     signout,
     sendSms,
     sendMessage,
     updateChecklist,
+    updateChecklists,
     updateClient,
     updateClientFlag,
     updateContact,
+    updateContacts,
     updateFbar,
+    updateFbars,
     updateFee,
+    updateFees,
     updateFiling,
+    updateFilings,
     updateFilingDelivary,
     updateIncome,
+    updateIncomes,
     updateLog,
+    updateLogs,
     updateSmartview,
     updateTaxPersonal,
+    updateTaxPersonals,
     updateTaxYear,
     updateValueType,
     updateUser,

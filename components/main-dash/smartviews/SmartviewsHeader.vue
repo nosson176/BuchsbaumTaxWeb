@@ -31,10 +31,10 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
-    selectedSmView(){
+    selectedSmView() {
       return this.selectedSmartview
     },
-    isSmartViewSelected(){
+    isSmartViewSelected() {
       return this.selectedSmView.length !== 0
     }
   },
@@ -50,7 +50,7 @@ export default {
         data: { smartview: { showing: true, data: smartview } },
       })
     },
-    copySmartView(){
+    copySmartView() {
       const smartview = this.selectedSmView
       this.$api.createSmartview(this.headers, { smartview }).then((res) => {
         this.$store.commit(mutations.setModelResponse, {

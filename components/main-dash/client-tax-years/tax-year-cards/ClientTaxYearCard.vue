@@ -14,8 +14,8 @@
         <div class="flex flex-col border border-b-0  w-8 z-10"
           :class="extensions.length > 1 ? 'space-y-48' : 'space-y-48'" :style="extensionColumnHeight">
           <div class="mx-auto">
-            <HeaderSelectOption ref="filingTypeMenu" v-model="selectedFileType" class="mt-2" title="Add filing" add-icon
-              :options="filingOptions" @input="addFilingType" />
+            <HeaderSelectOption ref="filingTypeMenu" v-model="selectedFileType" class="relative mt-2" title="Add filing"
+              add-icon :options="filingOptions" @input="addFilingType" />
           </div>
           <div class="flex flex-col  w-8 z-10" ref="extensionColumn" :style="{ height: extensionColumnHeight }">
             <draggable v-model="extensions" v-bind="dragOptions" class="extension-draggable" @start="startDrag"
@@ -63,6 +63,7 @@
 import draggable from 'vuedraggable'
 import { mapState } from 'vuex'
 import { filingTypes, models, routes, TRANSITION_NAME } from '~/shared/constants'
+import { generateRandomId } from '~/shared/utility'
 
 export default {
   name: 'ClientTaxYearCard',
@@ -95,7 +96,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.selectedTaxYearId]),
+    ...mapState([models.selectedClient, models.selectedTaxYearId, models.filingsUpdate]),
     year: {
       get() {
         return this.yearData.year
@@ -196,7 +197,6 @@ export default {
       this.$nextTick(this.updateFbarColumnHeight);
     },
     onDropExtension(evt) {
-      console.log("run")
       // Create a deep copy of the fbars array to ensure reactivity
       const updatedExtensions = this.extensions.map(extension => ({ ...extension }));
 
@@ -234,6 +234,7 @@ export default {
       this.$api.getClientData(headers, this.selectedClient.id)
     },
     toggleEditable(field, id) {
+      console.log(field)
       this.editableYearId = id
       if (!(this.editableId === field)) {
         this.editableId = field
@@ -247,33 +248,60 @@ export default {
       this.editableId = ''
     },
     handleUpdate() {
+      console.log("update")
       const headers = this.$api.getHeaders()
       const yearData = Object.assign({}, this.yearData, this.yearCopy)
       const taxYearId = yearData.id
+      console.log("update", yearData)
       const clientId = this.selectedClient.id
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
+      this.$store.commit('updateTaxYearState', { taxYearId, updatedData: yearData });
     },
+
     addFilingType(filingType) {
       if (!filingType) {
         return
       }
-      const headers = this.$api.getHeaders()
       let sortOrder = this.yearData.filings.length + 1
       if (filingType === filingTypes.federal) {
         const firstOccurenceOfStateFiling = this.yearData.filings.find(
           (filing) => filing.filingType === filingTypes.state
         )
-        sortOrder = firstOccurenceOfStateFiling.sortOrder
+        if (firstOccurenceOfStateFiling !== undefined) {
+          sortOrder = firstOccurenceOfStateFiling.sortOrder
+
+        }
       }
       const defaultValues = {
         filingType,
         taxYearId: this.yearData.id,
         sortOrder,
+        status: { date: null, value: null },
+        statusDetail: { date: null, value: null },
+        clientId: this.selectedClient.id,
+        completed: false,
+        currency: null,
+        dateFiled: null,
+        deliveryContact: null,
+        fileType: null,
+        id: generateRandomId(),
+        includeFee: false,
+        includeInRefund: false,
+        memo: null,
+        owes: 0,
+        owesFee: 0,
+        paid: 0,
+        paidFee: 0,
+        rebate: 0,
+        refund: 0,
+        secondDeliveryContact: null,
+        state: null,
+        statusDate: null,
+        taxForm: null,
       }
       const filing = Object.assign({}, defaultValues)
-      this.$api.createFiling(headers, { filing }).then(() => {
-        this.updateOnClient()
-      })
+
+      this.$store.commit('pushNewFiling', filing);
     },
     updateIrsHistory() {
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
@@ -334,6 +362,9 @@ export default {
   width: 100%;
   margin-top: 10px;
   border: 1px solid inherit;
+  justify-content: space-between;
+  gap: 10px;
+
 }
 
 .fbar-item {

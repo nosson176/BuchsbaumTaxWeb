@@ -12,27 +12,20 @@
     </template>
     <template #body>
       <TableRow v-for="(checklist, idx) in displayedChecklists" :key="checklist.id" :idx="idx">
-        <div :id="`${idx}-finished`" class="table-col xs" @click="toggleEditable(`${idx}-finished`, checklist.id)">
-          <EditableCheckBoxCell
-            v-model="checklist.finished"
-            :is-editable="isEditable(`${idx}-finished`)"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-finished`" class="table-col xs"
+          @click="toggleEditable(`${idx}-finished`, checklist.id, checklist.finished)">
+          <EditableCheckBoxCell v-model="checklist.finished" :is-editable="isEditable(`${idx}-finished`)"
+            @blur="onBlur(checklist.finished)" />
         </div>
-        <div :id="`${idx}-translate`" class="table-col xs" @click="toggleEditable(`${idx}-translate`, checklist.id)">
-          <EditableCheckBoxCell
-            v-model="checklist.translate"
-            :is-editable="isEditable(`${idx}-translate`)"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-translate`" class="table-col xs"
+          @click="toggleEditable(`${idx}-translate`, checklist.id, checklist.translate)">
+          <EditableCheckBoxCell v-model="checklist.translate" :is-editable="isEditable(`${idx}-translate`)"
+            @blur="onBlur(checklist.translate)" />
         </div>
-        <div :id="`${idx}-memo`" class="table-col lg" @click="toggleEditable(`${idx}-memo`, checklist.id)">
-          <EditableSelectCell
-            v-model="checklist.memo"
-            :options="memoOptions"
-            :is-editable="isEditable(`${idx}-memo`)"
-            @blur="onBlur"
-          />
+        <div :id="`${idx}-memo`" class="table-col lg"
+          @click="toggleEditable(`${idx}-memo`, checklist.id, checklist.memo)">
+          <EditableSelectCell v-model="checklist.memo" :options="memoOptions" :is-editable="isEditable(`${idx}-memo`)"
+            @blur="onBlur(checklist.memo)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(checklist.id)" />
@@ -44,7 +37,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { searchArrOfObjs } from '~/shared/utility'
+import { generateRandomId, searchArrOfObjs } from '~/shared/utility'
 import { models, mutations, tableGroups, tabs } from '~/shared/constants'
 
 const columns = ['finished', 'translate', 'memo', 'delete']
@@ -62,6 +55,8 @@ export default {
       editableId: '',
       newChecklistId: NaN,
       editableChecklistId: '',
+      oldValue: '',
+      updateChecklists: []
     }
   },
   computed: {
@@ -100,9 +95,17 @@ export default {
       return this.$api.getHeaders()
     },
   },
+  beforeDestroy() {
+    if (this.updateChecklists.length > 0) this.sendChecklistsToServer()
+  },
   methods: {
-    toggleEditable(id, checklistId) {
-      this.handleUpdate()
+    toggleEditable(id, checklistId, value) {
+      // this.handleUpdate()
+      if (!value) {
+        const val = id.split("-")[1]
+        const check = this.displayedChecklists.find((check) => check.id === checklistId)
+        this.oldValue = check[val]
+      } else this.oldValue = value
       this.editableChecklistId = checklistId
       if (!(this.editableId === id)) {
         this.editableId = id
@@ -114,15 +117,25 @@ export default {
     handleUpdate() {
       if (!this.editableChecklistId) return
       const checklist = this.displayedChecklists.find((checklist) => checklist.id === this.editableChecklistId)
-      this.$api.updateChecklist(
-        this.headers,
-        { clientId: this.selectedClient.id, checklistId: this.editableChecklistId },
-        checklist
-      )
+
+      const index = this.updateChecklists.findIndex(check => check.id === checklist.id)
+      if (index !== -1) {
+        this.updateChecklists[index] = checklist
+      } else {
+        this.updateChecklists.push(checklist)
+      }
     },
-    onBlur() {
-      this.handleUpdate()
+    onBlur(val) {
+      if (this.oldValue !== val) {
+        this.handleUpdate()
+        this.goToNextColumn()
+        return
+      }
       this.editableId = ''
+    },
+    sendChecklistsToServer() {
+      this.$api.updateChecklists(this.headers, this.updateChecklists)
+        .catch(() => this.$toast.error('Error updating contact'))
     },
     onAddRowClick() {
       if (!this.selectedClient) {
@@ -130,12 +143,19 @@ export default {
       }
       const checklist = {
         clientId: this.selectedClient.id,
+        archived: false,
+        id: generateRandomId(),
       }
-      this.$api.createChecklist(this.headers, { checklist }).then(async (data) => {
-        await this.$api.getClientData(this.headers, this.selectedClient.id)
-        this.newChecklistId = data.id
-        this.toggleEditable(`0-${columns[0]}`, data.id)
-      })
+      // this.$api.createChecklist(this.headers, { checklist }).then(async (data) => {
+      //   await this.$api.getClientData(this.headers, this.selectedClient.id)
+      //   this.newChecklistId = data.id
+      const newChecklist = Object.assign({}, checklist)
+      this.updateChecklists.push(newChecklist)
+      this.$store.commit('pushNewChecklist', {
+        state: this.selectedClient,
+        newChecklist
+      });
+      this.toggleEditable(`0-${columns[0]}`, newChecklist.id)
     },
     goToNextColumn() {
       const currentCell = this.editableId

@@ -90,8 +90,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { categories, models, mutations, tableGroups, tabs } from '~/shared/constants'
-import { searchArrOfObjs } from '~/shared/utility'
+import { categories, models, tableGroups } from '~/shared/constants'
+import { generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
 const columns = [
   'include',
@@ -122,6 +122,7 @@ export default {
       editablePersonalId: '',
       oldValue: '',
       selectedItems: {},
+      updateTaxPersonal: []
     }
   },
   computed: {
@@ -163,18 +164,17 @@ export default {
       return this.search?.[tableGroups.personalContact]
     },
     isCmdPressed() {
-      console.log("isCmdPressed")
       return this.cmdPressed && !Array.isArray(this.cmdPressed)
     },
     isCopyingPersonals() {
-      console.log("isCopyingPersonals")
-      console.log("this.selectedPersonalIds", this.selectedPersonalIds)
       return this.isCmdPressed && this.selectedPersonalIds.length > 0
     },
     selectedPersonalIds() {
-      console.log("this.selectedItems", this.selectedItems)
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
+  },
+  beforeDestroy() {
+    if (this.updateTaxPersonal.length > 0) this.sendUpdateTaxPersonal()
   },
   methods: {
     toggleEditable(id, personalId, value) {
@@ -192,10 +192,6 @@ export default {
       return this.editableId === id
     },
     toggleSelected(personal) {
-      // console.log("cliecked", personal)
-      // console.log("1", this.selectedItems[personal.id])
-      // console.log("2", !this.selectedItems[personal.id])
-      // console.log("3", this.selectedItems[personal.id] = !this.selectedItems[personal.id])
       this.selectedItems[personal.id] = !this.selectedItems[personal.id]
       this.selectedItems = Object.assign({}, this.selectedItems)
     },
@@ -208,32 +204,32 @@ export default {
       if (/^([0-9]{9})$/.test(personal.ssn)) {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
-      this.$api.updateTaxPersonal(
-        this.headers,
-        { clientId: this.clientId, personalId: this.editablePersonalId },
-        personal
-      )
+      const index = this.updateTaxPersonal.findIndex(per => per.id === personal.id)
+      if (index !== -1) {
+        this.updateTaxPersonal[index] = personal
+      } else {
+        this.updateTaxPersonal.push(personal)
+      }
+    },
+    sendUpdateTaxPersonal() {
+      this.$api.updateTaxPersonals(this.headers, this.updateTaxPersonal)
+        .catch(() => this.$toast.error('Error updating contact'))
     },
     onDeleteClick(personalObj) {
+      const personal = this.displayedPersonals.find((personal) => personal.id === personalObj.id)
       if (this.showArchived) {
-        const personal = this.displayedPersonals.find((personal) => personal.id === personalObj.id)
         personal.archived = false
-        this.$api.updateTaxPersonal(this.headers, { clientId: this.clientId, personalId: personalObj.id }, personal)
       } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: {
-            delete: {
-              showing: true,
-              data: {
-                id: personalObj.id,
-                type: tabs.tax_personals,
-                label: `${personalObj.category} ${personalObj.firstName}`,
-              },
-            },
-          },
-        })
+        personal.archived = true
       }
+      const index = this.updateTaxPersonal.findIndex(c => c.id === personal.id)
+      if (index !== -1) {
+        this.updateTaxPersonal[index] = personal
+      } else {
+        this.updateTaxPersonal.push(personal)
+      }
+
+      this.$store.dispatch('updateTaxPersonalAction', { personal });
     },
     updateClient(personalId, personal) {
       const taxPersonalIndex = this.taxPersonals.findIndex((taxPersonal) => taxPersonal.id === personalId)
@@ -249,28 +245,30 @@ export default {
         clientId,
         lastName: this.selectedClient.lastName.replace(/[0-9]/g, ''),
         include: true,
+        archived: false,
+        id: generateRandomId(),
       }
       if (this.isCopyingPersonals) {
-        console.log("copy!", this.selectedPersonalIds)
-        this.selectedPersonalIds.forEach(async (personalId, idx) => {
+        this.selectedPersonalIds.forEach((personalId, idx) => {
           const personalIndex = this.displayedPersonals.findIndex((personal) => personal.id === Number(personalId))
           const personal = this.displayedPersonals[personalIndex]
-          console.log(personal)
           const newPersonal = Object.assign({}, personal)
-          console.log(newPersonal)
-          await this.$api.createTaxPersonal(this.headers, { personal: newPersonal }).then(async (data) => {
-            if (this.selectedPersonalIds.length === idx + 1) {
-              await this.$api.getClientData(this.headers, this.selectedClient.id)
-              this.toggleEditable(`${personalIndex}-${columns[0]}`, data.id)
-            }
-          })
+          newPersonal.id = generateRandomId()
+          this.updateTaxPersonal.push(newPersonal)
+          this.$store.commit('pushNewTaxPersonal', {
+            state: this.selectedClient,
+            taxPersonal: newPersonal
+          });
+          this.toggleEditable(`${personalIndex}-${columns[0]}`, newPersonal.id)
         })
       } else {
         const personal = Object.assign({}, defaultValues)
-        this.$api.createTaxPersonal(this.headers, { personal }).then(async (data) => {
-          await this.$api.getClientData(this.headers, this.selectedClient.id)
-          this.toggleEditable(`0-${columns[0]}`, data.id)
-        })
+        this.updateTaxPersonal.push(personal)
+        this.$store.commit('pushNewTaxPersonal', {
+          state: this.selectedClient,
+          personal
+        });
+        this.toggleEditable(`0-${columns[0]}`, personal.id)
       }
     },
     goToNextColumn() {
@@ -303,7 +301,6 @@ export default {
     },
     onBlur(val) {
       if (this.oldValue !== val) {
-        console.log("in")
         this.handleUpdate()
         this.goToNextColumn()
         return
