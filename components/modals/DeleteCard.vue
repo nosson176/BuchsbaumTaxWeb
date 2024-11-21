@@ -38,6 +38,7 @@
 <script>
 import { mapState } from 'vuex'
 import { events, models, mutations, tabs } from '~/shared/constants'
+import { formatUnixTimestampFee } from '~/shared/utility';
 
 export default {
   name: 'DeleteCard',
@@ -164,6 +165,7 @@ export default {
     updatedFee() {
       const fee = this.fees.find((fee) => fee.id === this.id)
       fee.archived = !fee.archived
+      fee.dateFee = formatUnixTimestampFee(fee.dateFee)
       return fee
     },
     updatedChecklist() {
@@ -227,6 +229,7 @@ export default {
       } else if (this.isTypeTaxYear) {
         this.updateTaxYear()
       } else if (this.isTypeFee) {
+        console.log("fefef")
         this.updateFee()
       } else if (this.isTypeClient) {
         this.updateClient()
@@ -234,6 +237,9 @@ export default {
         this.updateSmartview()
       } else if (this.isTypeChecklist) {
         this.updateChecklist()
+      }
+      if (this.modalData.onConfirm) {
+        this.modalData.onConfirm();
       }
     },
     emitHide() {
@@ -278,9 +284,13 @@ export default {
         .finally(() => this.updateClientSideData())
     },
     updateFee() {
+      console.log(11111)
       this.$api
         .updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
-        .then(() => this.updateClientSideData())
+        .then(() => {
+          // this.$store.dispatch('updateFeeAction', { fee: this.updatedItem });
+          this.updateClientSideData()
+        })
     },
     updateClient() {
       console.log("updateClient")

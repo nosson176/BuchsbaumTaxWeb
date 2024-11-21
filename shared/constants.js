@@ -32,6 +32,7 @@ export const models = Object.freeze({
   secondsNeededToDisplayModal1: 'secondsNeededToDisplayModal1',
   ClinetAndLogs: 'ClinetAndLogs',
   filingsUpdate: 'filingsUpdate',
+  spinner: 'spinner',
 })
 
 // Store Mutations

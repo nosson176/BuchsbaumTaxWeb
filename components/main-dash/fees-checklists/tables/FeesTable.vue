@@ -71,8 +71,10 @@ export default {
       const feeCopy = JSON.parse(JSON.stringify(editedFee));
       const index = this.updateFees.findIndex(fee => fee.id === editedFee.id)
       if (index !== -1) {
+        console.log("find", feeCopy)
         this.updateFees[index] = feeCopy
       } else {
+        console.log("notFind", feeCopy)
         this.updateFees.push(feeCopy)
       }
       this.$store.dispatch('updateFeeAction', { fee: editedFee });
@@ -91,6 +93,7 @@ export default {
     },
     onAddRowClick() {
       if (!this.selectedClient) {
+        console.log("run")
         return
       }
       const clientId = this.selectedClient.id
@@ -106,18 +109,53 @@ export default {
         fee
       });
     },
-    onDeleteClick(feeId) {
+    onModalClose(confirmed) {
+      if (confirmed && this.delete.onConfirm) {
+        this.delete.onConfirm();
+      }
+      this.delete.showing = false;
+    },
+    async onDeleteClick(feeId) {
+      const fee = this.displayedFees.find((fee) => fee.id === feeId);
+      console.log(fee)
+      // Create a new object with updated properties
+      const updatedFee = {
+        ...fee,
+        archived: !fee.archived,
+        dateFee: await this.formatUnixTimestamp(fee.dateFee)
+      };
       if (this.showArchived) {
-        const fee = this.displayedFees.find((fee) => fee.id === feeId)
-        fee.archived = false
-        this.$api.updateFee(this.headers, { clientId: this.selectedClient.id, feeId }, fee)
+
+        // Commit mutation with the new fee object
+        this.$store.commit('updateFee', { fee: updatedFee });
+        this.handleUpdateFee(updatedFee)
+
+        // Call API update with the modified fee
+        this.$api.updateFee(this.headers, {
+          clientId: this.selectedClient.id,
+          feeId
+        }, updatedFee);
       } else {
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
-          data: { delete: { showing: true, data: { id: feeId, type: tabs.fees, label: 'misc/fee item' } } },
-        })
+          data: {
+            delete: {
+              showing: true,
+              data: {
+                id: feeId,
+                type: tabs.fees,
+                label: 'misc/fee item',
+                // Add a callback to be triggered on confirmation
+                onConfirm: () => {
+                  console.log("confirm")
+                  this.handleUpdateFee(updatedFee);
+                }
+              }
+            }
+          },
+        });
       }
-    },
+    }
   },
 }
 </script>

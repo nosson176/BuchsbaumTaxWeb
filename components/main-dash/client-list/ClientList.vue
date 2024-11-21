@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow overflow-auto">
-    <div class="bg-white sticky top-0 shadow flex items-center p-2">
+    <div class="bg-white sticky top-0 shadow flex items-center p-2 overflow-y-auto">
       <div class="flex items-center">
         <AddRowButton @click="onAddRowClick" />
         <ExportIcon class="ml-1" @export-click="exportToExcel" />
@@ -21,24 +21,35 @@
         </select>
       </div>
     </div>
-    <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id}  ${isSelected(client)}`"
-      class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
-      :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
-      <div class="w-5">
-        <FlagIcon class="w-4 h-4" :color=client.gFlag />
+
+    <template v-if="spinner">
+      <div class="spinner-overlay">
+        <div class="spinner"></div>
       </div>
-      <div class="w-full">
-        <span class="font-medium text-gray-900 group-hover:text-white"> {{ client.lastName }}</span>
-        {{ client.displayName }}
+    </template>
+
+
+
+    <!-- Client list when loading is false -->
+    <template v-else>
+      <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id} ${isSelected(client)}`"
+        class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
+        :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
+        <div class="w-5">
+          <FlagIcon class="w-4 h-4" :color="client.gFlag" />
+        </div>
+        <div class="w-full">
+          <span class="font-medium text-gray-900 group-hover:text-white">{{ client.lastName }}</span>
+          {{ client.displayName }}
+        </div>
+        <div class="w-5">
+          <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
+        </div>
+        <div class="w-5" @click.stop>
+          <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
+        </div>
       </div>
-      <div class="w-5">
-        <!-- <FlagIcon class="w-3 h-3" :color="flagColor(client)" /> -->
-        <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
-      </div>
-      <div class="w-5" @click.stop>
-        <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
-      </div>
-    </div>
+    </template>
     <Modal :showing="showChangeClientModal" @hide="closeChangeClientModal">
       <ChangeClient :switch-to-client-name="switchToClient.lastName" @switchClients="selectClient(switchToClient)"
         @addLog="addLog" @hide="closeChangeClientModal" />
@@ -70,11 +81,13 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1]),
+    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1, models.spinner]),
     displayedClients() {
-      // console.log("run => ", JSON.parse(JSON.stringify(this.sortedClients)))
-      return this.sortedClients
-      // return this.filteredClients
+      // Explicitly use loading in the computed property to create a dependency
+      if (this.spinner) {
+        return [];
+      }
+      return this.sortedClients;
     },
     sortedClients() {
       const clients = Object.values(this.filteredClients)
@@ -120,6 +133,11 @@ export default {
     },
   },
   watch: {
+    loading(newValue) {
+      // This will help trigger updates when loading changes
+      // You can add any additional logic here if needed
+      console.log('Loading state changed:', newValue);
+    },
     selectedClient() {
       this.scrollClientIntoView()
     },
@@ -258,6 +276,7 @@ export default {
       document.body.removeChild(link);
     },
     async selectClient({ id }) {
+      console.log("client")
       this.selectedClientId = id
       const headers = this.headers
       await this.$api.getClientData(headers, id)
@@ -432,5 +451,41 @@ select {
   margin-left: 8px;
 
   /* Adds some space between the dropdowns */
+}
+
+.spinner-overlay {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  z-index: 100;
+  height: 100%;
+}
+
+/* Spinner design */
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1.5s linear infinite;
+}
+
+/* Spinner rotation animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

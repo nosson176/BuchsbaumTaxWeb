@@ -418,10 +418,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
-    $axios
-      .put(`/fees/${feeId}`, fee, { headers })
-      .catch(() => $toast.error('Error updating fee'))
-      .finally(() => getClientData(headers, clientId))
+    $axios.put(`/fees/${feeId}`, fee, { headers }).catch(() => $toast.error('Error updating fee'))
+  // .finally(() => getClientData(headers, clientId))
 
   const updateFees = (headers, fee) =>
     $axios.put(`/fees`, fee, { headers }).catch(() => $toast.error('Error updating fee'))
