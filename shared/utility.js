@@ -149,6 +149,10 @@ const formatUnixTimestampWithMoment = (unixTimeMillis) => {
   return moment(unixTimeMillis).tz('Asia/Jerusalem').format('YYYY-MM-DD') // No timezone offset
 }
 
+const formatUnixTimestampFee = (unixTimeMillis) => {
+  return moment(unixTimeMillis).tz('Asia/Jerusalem').format('YYYY-MM-DD') // No timezone offset
+}
+
 const formatUnixTimestamp = (timestamp) => {
   // console.log(timestamp)
   // Check if the timestamp is already in the 'YYYY-MM-DD' format
@@ -226,5 +230,6 @@ export {
   promptConfirm,
   generateRandomId,
   formatUnixTimestamp,
+  formatUnixTimestampFee,
   formatUnixTimestampWithMoment,
 }

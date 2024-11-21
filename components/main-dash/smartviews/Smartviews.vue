@@ -43,7 +43,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.smartviews, models.selectedSmartview]),
+    ...mapState([models.smartviews, models.selectedSmartview, models.spinner]),
     displayedSmartviews() {
       // console.log(JSON.parse(JSON.stringify(this.smartviews)))
       if (this.smartviews) {
@@ -72,7 +72,13 @@ export default {
   },
   methods: {
     async selectSmartview(smartview) {
-      await this.$api.getFilterClients(this.headers, { smartview })
+      console.log("select")
+      this.$store.commit("showSpinner", true)
+      await this.$api.getFilterClients(this.headers, { smartview }).then(() => {
+        this.$store.commit("showSpinner", false)
+
+
+      })
       // this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
       // if (this.selectedSmartviewId === smartview.id) {
       //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })

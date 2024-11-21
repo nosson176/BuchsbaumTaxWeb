@@ -22,6 +22,7 @@ const state = () => {
     copyLogs: [],
     clientAndLogs: [],
     filingsUpdate: [],
+    spinner: false,
   }
 }
 
@@ -60,6 +61,11 @@ const mutations = {
         ...updatedData, // Spread operator to include the updated data fields
       })
     }
+  },
+
+  showSpinner(state, mode) {
+    console.log(state.spinner)
+    state.spinner = mode
   },
 
   setCopyLogs(state, log) {
@@ -129,6 +135,7 @@ const mutations = {
   },
 
   pushNewFee(state, fee) {
+    console.log('run22')
     state[models.selectedClient].fees.unshift(fee.fee)
   },
 

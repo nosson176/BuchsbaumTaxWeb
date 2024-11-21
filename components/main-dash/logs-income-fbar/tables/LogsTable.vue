@@ -438,7 +438,7 @@ export default {
         const log = this.displayedLogs.find((log) => log.id === logId)
         // console.log(logId)
         // console.log(log)
-        // console.log(val)
+        console.log(val)
         if (log) {
           this.oldValue = log[val]
           this.isEditable(`${0}-priority`)
@@ -617,7 +617,7 @@ export default {
           });
 
           const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
-          this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLog.id)
+          this.toggleEditable(`${copyLogIndex}-${columns[0]}`, newLog.id)
         })
       } else {
         const log = Object.assign({}, defaultValues)
