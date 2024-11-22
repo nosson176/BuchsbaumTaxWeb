@@ -99,9 +99,9 @@ const formatToHHmm = (dateStrings) => {
 }
 
 const formatDate = (dateString) => {
-  console.log(dateString)
+  // console.log(dateString)
   const date = parseISO(dateString)
-  console.log(date)
+  // console.log(date)
   return format(date, 'dd/MM/yyyy')
 }
 
