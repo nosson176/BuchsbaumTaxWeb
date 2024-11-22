@@ -27,6 +27,7 @@ const state = () => {
 }
 
 const getters = {
+  isAuthenticated: (state) => Object.keys(state[models.token]).length > 0,
   [models.appWidth]: (state) => state[models.appWidth],
   [models.secondsSpentOnClient]: (state) => state[models.secondsSpentOnClient],
   [models.selectedClient]: (state) => state[models.selectedClient],

@@ -169,7 +169,7 @@ export default {
   },
   methods: {
     onInputClick() {
-      this.toggleShowOptions()
+      // this.toggleShowOptions()
       this.$refs.filter?.focus()
     },
     toggleShowOptions() {
@@ -182,6 +182,7 @@ export default {
       this.showOptions = false
     },
     onBlur() {
+
       this.showOptions = false
     },
     isSelected(option) {
