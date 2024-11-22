@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10">
+    <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
     <div class="mt-1 relative">
