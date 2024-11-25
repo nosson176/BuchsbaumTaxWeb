@@ -100,15 +100,28 @@ export default {
   },
   methods: {
     handleSubmit() {
-      this.isLoading = true
-      this.$api.login(this.loginPayload).then(async (data) => {
-        await this.setSessionKey(data)
-        this.loginData = data
-        this.showWorkTimeModal = true
-      }).catch(() => {
-        this.loginError = true
-        this.isLoading = false
-      })
+      this.isLoading = true;
+      this.$api.login(this.loginPayload)
+        .then((response) => {
+          console.log(response)
+          if (typeof (response) === "number") {
+            throw new TypeError('Unauthorized');
+          }
+          return response;
+        })
+        .then(async (data) => {
+          console.log(data);
+          await this.setSessionKey(data);
+          this.loginData = data;
+          this.showWorkTimeModal = true;
+        })
+        .catch((error) => {
+          console.error('Login error:', error.response || error);
+          this.loginError = true;
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     setSessionKey({ token }) {
       if (this.formModel.rememberMe) {
