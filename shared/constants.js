@@ -33,6 +33,7 @@ export const models = Object.freeze({
   ClinetAndLogs: 'ClinetAndLogs',
   filingsUpdate: 'filingsUpdate',
   spinner: 'spinner',
+  dotStatus: 'dotStatus',
 })
 
 // Store Mutations
@@ -218,6 +219,7 @@ export const smartviewOptions = Object.freeze([
   { name: 'CLIENT::date_of_first_log', value: 'CLIENT::date_of_first_log' },
   { name: 'CLIENT::last_name', value: 'CLIENT::last_name' },
   { name: 'CLIENT::status', value: 'CLIENT::status' },
+  { name: 'CLIENT::active', value: 'CLIENT::active' },
   { name: 'CLIENT::id', value: 'CLIENT::id' },
   { name: 'CLIENT::owes_status', value: 'CLIENT::owes_status' },
   { name: 'CLIENT::periodical', value: 'CLIENT::periodical' },

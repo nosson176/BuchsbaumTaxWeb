@@ -40,18 +40,36 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const getClientList = (headers) => {
     const searchParam = store.state.clientSearchValue
     const searchOption = store.state.clientSearchOption
+    const active = store.state.dotStatus
     let endpoint = 'clients/'
+    const queryParams = []
+
+    // Add search parameters
     if (searchParam.length > 0 && searchOption.length > 0) {
-      endpoint = endpoint.concat(`?q=${searchParam}&field=${searchOption}`)
+      queryParams.push(`q=${searchParam}`, `field=${searchOption}`)
     } else if (searchParam.length > 0) {
-      endpoint = endpoint.concat(`?q=${searchParam}`)
+      queryParams.push(`q=${searchParam}`)
     }
+
+    // Add active status if `dotStatus` is false
+    if (active === false) {
+      queryParams.push(`active=${active}`)
+    }
+
+    // Append query parameters to the endpoint
+    if (queryParams.length > 0) {
+      endpoint += `?${queryParams.join('&')}`
+    }
+
     return $axios
       .get(endpoint, {
         headers,
         loading: models.clients,
         loaded: models.clients,
         store: models.clients,
+      })
+      .then((res) => {
+        console.log(JSON.parse(JSON.stringify(res)))
       })
       .catch((e) => {
         $toast.error('Error loading clients')

@@ -1,6 +1,8 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
+      <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus">
+      </div>
       <button type="button"
         class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         aria-expanded="true" @click="openSmsModal">
@@ -70,13 +72,11 @@
 import { mapState } from 'vuex'
 import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
 
-/* eslint-disable no-unused-vars */
-const times = [2, 5, 10, 15, 20]
-
 export default {
   name: 'Header',
   data() {
     return {
+      // status: true,
       showSmsModal: false,
       showInboxModal: false,
       showMessageModal: false,
@@ -88,7 +88,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime]),
+    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime, models.dotStatus]),
     mappedClientHistory() {
       if (this.clientsHistoryLoaded) {
         return Object.values(this.clientsHistory).map((item) => {
@@ -102,6 +102,9 @@ export default {
         return []
       }
     },
+    statusCheck() {
+      return this.dotStatus
+    },
     playTime() {
       return this.globalPlayTime
     },
@@ -109,24 +112,16 @@ export default {
       return !Array.isArray(this.clientsHistory.length) || !this.clientsHistory.length.length
     },
     homeRoute() {
-      return {
-        name: routes.root,
-      }
+      return { name: routes.root }
     },
     valuesRoute() {
-      return {
-        name: routes.values,
-      }
+      return { name: routes.values }
     },
     usersRoute() {
-      return {
-        name: routes.users,
-      }
+      return { name: routes.users }
     },
     workTimeRoute() {
-      return {
-        name: routes.clock
-      }
+      return { name: routes.clock }
     },
     mapsRoute() {
       return { name: routes.maps }
@@ -154,86 +149,97 @@ export default {
   created() {
     this.loadInbox()
   },
-  // mounted() {
-  //   this.intervalId = setInterval(() => {
-  //     this.loadInbox()
-  //   }, 60000)
-  // },
   beforeDestroy() {
     clearInterval(this.intervalId)
   },
   methods: {
+    toggleStatus() {
+      // this.status = !this.status
+      this.$store.commit('changeDotStatus')
+      this.$api.getClientList(this.headers)
+
+    },
     togglePlayTime() {
       const newStatus = !this.globalPlayTime
+      console.log('Toggling play time:', newStatus)
       this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
     },
     getSelectedClient(selectedClientName) {
+      console.log('Selected client name:', selectedClientName)
       const selectedClient = Object.values(this.clientsHistory).find((client) => client.lastName === selectedClientName)
+      console.log('Selected client:', selectedClient)
       const headers = this.$api.getHeaders()
       const id = selectedClient.id
       this.$api.getClientData(headers, id)
     },
     chooseSecondsNeededToDisplayModal1(selectTime) {
+      console.log('Selected time (seconds):', selectTime)
       this.selectedTime = selectTime
       this.setTimeToSecond(selectTime)
     },
     setTimeToSecond(time) {
       const t = time * 60
+      console.log('Time in seconds:', t)
       this.$store.commit('setModelResponse', { model: 'secondsNeededToDisplayModal1', data: t })
-
     },
     openSmsModal() {
+      console.log('Opening SMS modal')
       this.showSmsModal = true
     },
     closeSmsModal() {
+      console.log('Closing SMS modal')
       this.showSmsModal = false
     },
     openInboxModal() {
+      console.log('Opening inbox modal')
       this.showInboxModal = true
     },
     closeInboxModal() {
+      console.log('Closing inbox modal')
       this.showInboxModal = false
     },
     openMessageModal() {
+      console.log('Opening message modal')
       this.showMessageModal = true
     },
     closeMessageModal() {
+      console.log('Closing message modal')
       this.showMessageModal = false
     },
     openLogoutModal() {
+      console.log('Opening logout modal')
       this.ShowLogoutConfirmationModel = true
     },
     closeLogoutConfirmationModel() {
+      console.log('Closing logout confirmation modal')
       this.ShowLogoutConfirmationModel = false
       this.$api.signout()
     },
     async loadInbox() {
+      console.log('Loading inbox messages')
       await this.$api.getInbox(this.headers)
     },
-    logout() {
-      this.$api.signout()
-    },
-
     clockOutWorkTime() {
-      // Logic to handle clock out work time
+      console.log('Clocking out work time')
       const headers = this.$api.getHeaders()
       const now = new Date()
-      const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
       this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
         .catch((error) => {
-          console.error("Error logging out:", error);
-        });
-      this.$api.signout(); // Log out the user
-
+          console.error('Error logging out:', error)
+        })
+      this.$api.signout()
     },
-
     irsPopup() {
+      console.log('Opening IRS popup')
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
     },
     shekelatorPopup() {
+      console.log('Opening Shekelator popup')
       window.open('https://docs.google.com/spreadsheets/d/1YZcySBg-aRoG7xlUcZ3kU-9avK8PLMH-HLz352irqts/edit?gid=0#gid=0', 'popup', 'width=770,height=770')
     },
     createNewMessage(responseId, threadId) {
+      console.log('createNewMessage')
       this.responseId = responseId
       this.threadId = threadId
       this.openMessageModal()
@@ -249,5 +255,24 @@ a.nuxt-link-exact-active svg {
 
 a.nuxt-link-exact-active svg:hover {
   @apply text-indigo-500 scale-100;
+}
+
+.status-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.status-dot.on {
+  background-color: #2ecc71;
+  box-shadow: 0 0 10px #2ecc71;
+}
+
+.status-dot.off {
+  background-color: #e74c3c;
+  box-shadow: 0 0 10px #e74c3c;
 }
 </style>
