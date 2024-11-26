@@ -23,6 +23,7 @@ const state = () => {
     clientAndLogs: [],
     filingsUpdate: [],
     spinner: false,
+    dotStatus: true,
   }
 }
 
@@ -46,6 +47,11 @@ const mutations = {
     state[model] = data
   },
 
+  changeDotStatus(state) {
+    console.log('change')
+    state.dotStatus = !state.dotStatus
+  },
+
   updateTaxYearState(state, { taxYearId, updatedData }) {
     console.log(taxYearId)
     console.log(updatedData)
@@ -65,7 +71,6 @@ const mutations = {
   },
 
   showSpinner(state, mode) {
-    console.log(state.spinner)
     state.spinner = mode
   },
 

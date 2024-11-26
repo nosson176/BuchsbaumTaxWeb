@@ -56,18 +56,22 @@ const initialState = () => ({
 export default {
   name: 'Home',
   data() {
+    console.log('data() called')
     return initialState()
   },
 
   computed: {
     ...mapState([models.modals, models.clientClicked]),
     showDeleteModal() {
+      console.log('computed showDeleteModal called')
       return this.modals.delete?.showing
     },
     showSmartviewEditModal() {
+      console.log('computed showSmartviewEditModal called')
       return this.modals.smartview?.showing
     },
     keymap() {
+      console.log('computed keymap called')
       return {
         command: {
           keydown: this.onCmdPress,
@@ -80,64 +84,79 @@ export default {
       }
     },
     smartview() {
-      // console.log("smertview => ", JSON.parse(JSON.stringify(this.modals.smartview?.data)))
+      console.log('computed smartview called')
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
     headers() {
+      console.log('computed headers called')
       return this.$api.getHeaders()
     },
   },
   watch: {
     clientClicked() {
+      console.log('watcher clientClicked triggered')
       Object.assign(this.$data, initialState())
     },
   },
   methods: {
     toggleShowArchivedClients() {
+      console.log('method toggleShowArchivedClients called')
       this.showArchivedClients = !this.showArchivedClients
     },
     toggleShowArchivedSmartviews() {
+      console.log('method toggleShowArchivedSmartviews called')
       this.showArchivedSmartviews = !this.showArchivedSmartviews
     },
     switchPersonalsTab(tab) {
+      console.log('method switchPersonalsTab called with tab:', tab)
       this.currentPersonalsTab = tab
     },
     switchLogsIncomeFbarTab(tab) {
+      console.log('method switchLogsIncomeFbarTab called with tab:', tab)
       this.currentLogsIncomeFbarTab = tab
     },
     switchFeesChecklistsTab(tab) {
+      console.log('method switchFeesChecklistsTab called with tab:', tab)
       this.currentFeesChecklistsTab = tab
     },
     closeDeleteModal() {
+      console.log('method closeDeleteModal called')
       this.$store.commit(mutations.setModelResponse, {
         model: models.modals,
         data: { delete: { showing: false, data: {} } },
       })
     },
     closeSmartviewEditModal() {
+      console.log('method closeSmartviewEditModal called')
       this.$store.commit(mutations.setModelResponse, {
         model: models.modals,
         data: { smartview: { showing: false, data: {} } },
       })
     },
     onCmdPress() {
+      console.log('method onCmdPress called')
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: true })
     },
     onCmdUp() {
+      console.log('method onCmdUp called')
       this.$store.commit(mutations.setModelResponse, { model: models.cmdPressed, data: false })
     },
     confirmDelete() {
+      console.log('method confirmDelete called')
       this.showDeleteConfirmation = true
     },
     closeSmartviewDeleteModal() {
+      console.log('method closeSmartviewDeleteModal called')
       this.showDeleteConfirmation = false
     },
     handleDeleteSmartview() {
+      console.log('method handleDeleteSmartview called')
       if (this.isLoading) {
         return
       }
       this.isLoading = true
       this.$api.deleteSmartview(this.headers, { smartviewId: this.smartview.id }).then(() => {
+        console.log('Smartview deleted successfully')
         this.isLoading = false
         this.closeSmartviewDeleteModal()
         this.closeSmartviewEditModal()
@@ -145,6 +164,7 @@ export default {
       })
     },
     resetClock() {
+      console.log('method resetClock called')
       if (this.$refs.logsBodyRef) {
         this.$refs.logsBodyRef.resetClock()
       }
@@ -152,6 +172,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 .main-grid {
