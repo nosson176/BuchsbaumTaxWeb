@@ -173,6 +173,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         loaded: models.smartviews,
         store: models.smartviews,
       })
+      .then((res) => {
+        console.log(res)
+      })
       .catch(() => $toast.error('Error loading smartviews'))
 
   const getInbox = (headers) =>
@@ -278,7 +281,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       $toast.error('Error creating smartview')
     } finally {
       // This ensures that you fetch the updated list of smartviews regardless of success or failure
-      await getSmartviews(headers)
+      // await getSmartviews(headers)
     }
   }
 
@@ -299,10 +302,34 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const createUser = (headers, { user }) =>
-    $axios
-      .post('/users', user, { headers })
-      .catch(() => $toast.error('Error creating user'))
-      .finally(() => getAllUsers(headers))
+    $axios.post('/users', user, { headers }).catch(() => $toast.error('Error creating user'))
+
+  const forgotPassword = async (email) => {
+    try {
+      const response = await $axios.post('/sessions/forgot-password', { email })
+      console.log(response)
+      return response
+    } catch (error) {
+      console.log(error)
+      console.error('Forgot password error:', error.response)
+      throw error
+    }
+  }
+
+  const resetPassword = async (token, password) => {
+    try {
+      const response = await $axios.post('/sessions/reset-password', {
+        token,
+        password,
+      })
+      console.log(response)
+      return response
+    } catch (error) {
+      console.log(error)
+      console.error('Forgot password error:', error.response)
+      throw error
+    }
+  }
 
   const createWorkTime = (headers, userId, username, date) => {
     const workTimeData = {
@@ -356,18 +383,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const updateClient = (headers, { clientId, client }) => {
     $axios.put(`/clients/${clientId}`, client, { headers }).catch(() => $toast.error('Error updating client'))
   }
-  // .finally(() => getClientData(headers, clientId))
 
   const updateClientFlag = (headers, { clientId, clientFlag }) =>
     $axios
       .put('/users/current/client-flags', clientFlag, { headers })
       .catch(() => $toast.error('Error updating client flag'))
-  // .finally(() => getClientData(headers, clientId))
 
   const updateLog = (headers, { clientId, logId }, log) => {
     return $axios.put(`/logs/${logId}`, log, { headers }).catch(() => $toast.error('Error updating log'))
   }
-  // .finally(() => getClientData(headers, clientId))
 
   const updateLogs = (headers, logs) => {
     $axios
@@ -379,7 +403,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/personals/${personalId}`, personal, { headers })
       .catch(() => $toast.error('Error updating tax personal'))
-      .finally(() => getClientData(headers, clientId))
 
   const updateTaxPersonals = (headers, personal) =>
     $axios.put(`/personals`, personal, { headers }).catch(() => $toast.error('Error updating tax personal'))
@@ -390,13 +413,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     } catch (error) {
       console.error('Error updating contact:', error)
       $toast.error('Error updating contact')
-    } finally {
-      try {
-        // const data = await getClientData(headers, clientId)
-      } catch (error) {
-        console.error('Error fetching client data:', error)
-        $toast.error('Error fetching client data')
-      }
     }
   }
 
@@ -411,10 +427,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const updateIncome = (headers, { clientId, incomeId = '' }, income) => {
     const endpoint = incomeId ? `/incomes/${incomeId}` : '/incomes'
-    return $axios
-      .put(endpoint, income, { headers })
-      .catch(() => $toast.error('Error updating income'))
-      .finally(() => getClientData(headers, clientId))
+    return $axios.put(endpoint, income, { headers }).catch(() => $toast.error('Error updating income'))
   }
 
   const updateIncomes = (headers, incomes) => {
@@ -426,10 +439,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const updateFbar = (headers, { clientId, fbarId = '' }, fbar) => {
     const endpoint = fbarId ? `/fbars/${fbarId}` : '/fbars'
-    return $axios
-      .put(endpoint, fbar, { headers })
-      .catch(() => $toast.error('Error updating fbar'))
-      .finally(() => getClientData(headers, clientId))
+    return $axios.put(endpoint, fbar, { headers }).catch(() => $toast.error('Error updating fbar'))
   }
   const updateFbars = (headers, fbars) => {
     return $axios.put(`/fbars`, fbars, { headers }).catch(() => $toast.error('Error updating fbar'))
@@ -437,14 +447,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const updateFee = (headers, { clientId, feeId }, fee) =>
     $axios.put(`/fees/${feeId}`, fee, { headers }).catch(() => $toast.error('Error updating fee'))
-  // .finally(() => getClientData(headers, clientId))
 
   const updateFees = (headers, fee) =>
     $axios.put(`/fees`, fee, { headers }).catch(() => $toast.error('Error updating fee'))
 
   const updateFiling = (headers, { clientId, filingId }, filing) =>
     $axios.put(`/filings/${filingId}`, filing, { headers }).catch(() => $toast.error('Error updating filing'))
-  // .finally(() => getClientData(headers, clientId))
 
   const updateFilings = (headers, filing) => {
     $axios
@@ -464,26 +472,37 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         { headers }
       )
       .catch(() => $toast.error('Error updating filing'))
-  // .finally(() => getClientData(headers, clientId));
 
   const updateTaxYear = (headers, { clientId, taxYearId }, taxYear) =>
     $axios.put(`/tax-years/${taxYearId}`, taxYear, { headers }).catch(() => $toast.error('Error updating tax year'))
-  // .finally(() => getClientData(headers, clientId))
 
   const updateChecklist = (headers, { clientId, checklistId }, checklist) =>
     $axios
       .put(`/checklists/${checklistId}`, checklist, { headers })
       .catch(() => $toast.error('Error updating checklist'))
-      .finally(() => getClientData(headers, clientId))
 
   const updateChecklists = (headers, checklist) =>
     $axios.put(`/checklists`, checklist, { headers }).catch(() => $toast.error('Error updating checklist'))
 
-  const updateSmartview = (headers, { smartviewId }, smartview) =>
-    $axios
-      .put(`/smartviews/${smartviewId}`, smartview, { headers })
-      .catch(() => $toast.error('Error updating smartview'))
-      .finally(() => getSmartviews(headers))
+  const updateSmartview = (headers, { smartviewId }, smartview, returnData = false) => {
+    const url = returnData ? `/smartviews/${smartviewId}?returnData=true` : `/smartviews/${smartviewId}`
+
+    return $axios
+      .put(url, smartview, { headers })
+      .then((res) => {
+        console.log(res.right)
+        return returnData ? res.right : true
+      })
+      .catch((error) => {
+        $toast.error('Error updating smartview')
+        throw error
+      })
+  }
+
+  const updateSmartviewsBatch = (headers, smartview) => {
+    console.log('API CALL => ', smartview)
+    $axios.put(`/smartviews/batchUpdate`, smartview, { headers }).catch(() => $toast.error('Error updating smartview'))
+  }
 
   const updateValueType = (headers, { valueId }, value) =>
     $axios
@@ -495,7 +514,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/users/${userId}`, user, { headers })
       .catch((e) => $toast.error('Error updating user: ' + e.response.data.message))
-      .finally(() => getAllUsers(headers))
+  // .finally(() => getAllUsers(headers))
 
   const updatePassword = (headers, { userId }, newPassword) =>
     $axios
@@ -538,16 +557,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getSmartviews(headers))
 
   const deleteFiling = (headers, { filingId, clientId }) =>
-    $axios
-      .delete(`/filings/${filingId}`, { headers })
-      .catch(() => $toast.error('Error deleting filing'))
-      .finally(() => getClientData(headers, clientId))
+    $axios.delete(`/filings/${filingId}`, { headers }).catch(() => $toast.error('Error deleting filing'))
 
   const deleteUser = (headers, { userId }) =>
     $axios
       .delete(`/users/${userId}`, { headers })
+      .then((res) => {
+        return res
+      })
       .catch(() => $toast.error('Error deleting user'))
-      .finally(() => getAllUsers(headers))
 
   const deleteMessage = (headers, { messageId }) =>
     $axios
@@ -616,6 +634,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateLog,
     updateLogs,
     updateSmartview,
+    updateSmartviewsBatch,
     updateTaxPersonal,
     updateTaxPersonals,
     updateTaxYear,
@@ -625,6 +644,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateMessage,
     updateWorkTimeByWorkTimeId,
     deleteMessage,
+    forgotPassword,
+    resetPassword,
   }
 
   // Inject to context as $api

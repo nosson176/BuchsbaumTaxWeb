@@ -375,10 +375,21 @@ export default {
       return this.isCmdPressed && this.selectedFbarIds.length > 0
     },
   },
+  mounted() {
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
   beforeDestroy() {
     if (this.updateFbars.length > 0) this.sendFbarsToServer()
   },
   methods: {
+    handleBeforeUnload(event) {
+      if (this.updateFbars.length > 0) {
+        this.sendFbarsToServer();
+        // Optionally, to show a confirmation dialog
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
     toggleEditable(id, fbarId, value) {
       if (!value) {
         const val = id.split("-")[1]

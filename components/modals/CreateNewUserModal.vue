@@ -20,12 +20,8 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
         <div @click="setEditable('type')">
-          <HeaderSelectOption
-            v-model="formModel.userType"
-            :options="userTypes"
-            large
-            :is-editable="isEditable('type')"
-          />
+          <HeaderSelectOption v-model="formModel.userType" :options="userTypes" large
+            :is-editable="isEditable('type')" />
         </div>
         <FormInput v-model="formModel.secondsInDay" placeholder="Seconds in Day" />
       </div>
@@ -95,6 +91,8 @@ export default {
   methods: {
     submitCreateUser() {
       this.$api.createUser(this.headers, { user: this.formModel }).then((user) => {
+        console.log(user)
+        this.$store.commit('pushNewUser', user)
         this.emitHide(user.id)
       })
     },

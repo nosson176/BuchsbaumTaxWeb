@@ -380,10 +380,22 @@ export default {
       return this.isCmdPressed && this.selectedIncomeIds.length > 0
     },
   },
+  mounted() {
+
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
   beforeDestroy() {
     if (this.updateIncomes.length > 0) this.sendIncomesToServer()
   },
   methods: {
+    handleBeforeUnload(event) {
+      if (this.updateIncomes.length > 0) {
+        this.sendIncomesToServer();
+        // Optionally, to show a confirmation dialog
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
     toggleEditable(id, incomeId, value, selectAll) {
       if (!value) {
         const val = id.split("-")[1]
@@ -440,23 +452,7 @@ export default {
       }
 
       this.$store.dispatch('updateIncomeAction', { income });
-      // this.$store.dispatch('updateLogAction', { log });
-      // this.updateUpdatAndNewLogs(log, log.archived, 'archived');
     },
-    // onDeleteClick(incomeId) {
-    //   if (this.showArchived) {
-    //   const income = this.displayedIncomes.find((income) => income.id === incomeId)
-    //     income.archived = false
-    //     this.$api.updateIncome(this.headers, { clientId: this.clientId, incomeId }, income)
-    //   } else {
-    //     this.$store.commit(mutations.setModelResponse, {
-    //       model: models.modals,
-    //       data: {
-    //         delete: { showing: true, data: { id: incomeId, type: tabs.income, label: 'income breakdown record' } },
-    //       },
-    //     })
-    //   }
-    // },
     onAddRowClick() {
       if (!this.selectedClient) {
         return
@@ -478,9 +474,6 @@ export default {
             state: this.selectedClient,
             income: newIncome
           });
-          // await this.$api.createIncome(this.headers, { income: newIncome }).then(async (data) => {
-          //   if (this.selectedIncomeIds.length === idx + 1) {
-          //     await this.$api.getClientData(this.headers, this.selectedClient.id)
           this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
           //   }
           // })
@@ -492,8 +485,6 @@ export default {
           state: this.selectedClient,
           income
         });
-        // this.$api.createIncome(this.headers, { income }).then(async (data) => {
-        //   await this.$api.getClientData(this.headers, this.selectedClient.id)
         this.toggleEditable(`0-${columns[0]}`, income.id)
         // })
       }

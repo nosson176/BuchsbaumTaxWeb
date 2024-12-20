@@ -52,6 +52,7 @@ export const routes = Object.freeze({
   values: 'values',
   maps: 'maps',
   shekelator: 'shekelator',
+  resetPassword: 'resetPassword',
 })
 
 // Meta Tags

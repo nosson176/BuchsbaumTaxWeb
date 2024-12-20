@@ -310,6 +310,11 @@ export default {
       }, 1000)
     }
   },
+  mounted() {
+    console.log('mounted')
+
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
   async beforeDestroy() {
     clearInterval(this.intervalId);
     await this.saveUpdatAndNewLogs();
@@ -327,6 +332,13 @@ export default {
     }
   },
   methods: {
+    handleBeforeUnload(event) {
+      clearInterval(this.intervalId);
+      this.saveUpdatAndNewLogs();
+      // Optionally, to show a confirmation dialog
+      event.preventDefault();
+      event.returnValue = '';
+    },
     truncateText(text, length = 50) {
       if (!text) return '';
       return text.length > length ? text.substring(0, length) + '...' : text;

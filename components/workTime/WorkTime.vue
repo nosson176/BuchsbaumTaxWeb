@@ -18,7 +18,7 @@
           <select v-model="selectedUser"
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
             <option value="" selected>{{ this.currentUser.username }}</option>
-            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.username }}</option>
+            <option v-for="user in usersList" :key="user.id" :value="user.id">{{ user.username }}</option>
           </select>
         </div>
         <div class="flex items-center pt-6">
@@ -100,7 +100,8 @@ export default {
     return {
       workTimesData: [],
       selectedUser: "",
-      users: [],
+      // users: [],
+      usersList: [],
       isAdmin: false,
       fetching: false,
       fetchAll: false,
@@ -113,7 +114,7 @@ export default {
     };
   },
   computed: {
-    ...mapState([models.currentUser]),
+    ...mapState([models.currentUser, models.users]),
     headers() {
       return this.$api.getHeaders()
     },
@@ -142,8 +143,11 @@ export default {
       immediate: true
     }
   },
-  mounted() {
-    this.$api.getCurrentUser(this.headers)
+  async mounted() {
+    if (!this.currentUser || !Object.keys(this.currentUser).length) {
+      await this.$api.getCurrentUser(this.headers)
+    }
+    // this.$api.getCurrentUser(this.headers)
     this.isAdmin = this.isCurrentUserAdmin; // Update admin flag
   },
   methods: {
@@ -173,21 +177,37 @@ export default {
     },
 
     filteredUsers(users) {
-      // Convert users object to array and filter out the current user
       const usersArray = Object.values(users);
-      if (this.isCurrentUserAdmin) usersArray.push({ username: "All users", id: 0 })
-      return usersArray.filter(user => user.id !== this.currentUser?.id);
+
+      // Add "All users" option if the current user is an admin
+      if (this.isCurrentUserAdmin) {
+        usersArray.push({ username: "All users", id: 0 });
+      }
+
+      // Filter out the current user
+      const filteredArray = usersArray.filter(user => user.id !== this.currentUser?.id);
+
+      // Sort alphabetically by username but always keep "All users" at the top
+      return filteredArray.sort((a, b) => {
+        if (a.username === "All users") return -1; // "All users" comes first
+        if (b.username === "All users") return 1;
+        return a.username.localeCompare(b.username); // Sort the rest alphabetically
+      });
     },
 
     async fetchUsers() {
-      if (this.isCurrentUserAdmin) {
-        try {
-          const headers = this.headers;
-          const users = await this.$api.getAllUsers(headers);
-          this.users = this.filteredUsers(users);
-        } catch (error) {
-          console.error('Error fetching users:', error);
+      try {
+        // Fetch users only if not already fetched
+        if (!this.Users || Object.keys(this.Users).length === 0) {
+          // const headers = this.$api.getHeaders();
+          const users = await this.$api.getAllUsers(this.headers);
+          this.usersList = this.filteredUsers(users);
+        } else {
+          this.usersList = this.filteredUsers(this.Users);
         }
+        console.log(this.usersList)
+      } catch (error) {
+        console.error('Error fetching users:', error);
       }
     },
 

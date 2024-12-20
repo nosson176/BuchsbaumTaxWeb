@@ -28,35 +28,46 @@ export default {
       error: null,       // Track errors
     }
   },
-  async fetch() {
-    await this.$api.getClientList(this.headers)
+  fetch() {
+    if (!this.clients || Object.keys(this.clients).length === 0) this.$api.getClientList(this.headers)
   },
   computed: {
-    ...mapState([models.clientSearchValue]),
+    ...mapState([models.clientSearchValue, models.smartviews, models.clients, models.currentUser]),
     headers() {
       return this.$api.getHeaders()
     },
   },
   async mounted() {
-    this.isLoading = true // Set loading state
+    this.isLoading = true; // Set loading state
 
     try {
-      await Promise.all([
+      // Initialize an array of API requests
+      const apiRequests = [
         this.$api.getValueTypes(this.headers),
         this.$api.getAllUsers(this.headers),
         this.$api.getValueTaxGroups(this.headers),
         this.$api.getClientsHistory(this.headers),
-        this.$api.getSmartviews(this.headers),
-        this.$api.getCurrentUser(this.headers),
         this.$api.getTodayLogs(this.headers),
-      ])
+      ];
+
+      // Conditionally add getSmartviews if smartviews is empty
+      if (!this.smartviews || Object.keys(this.smartviews).length === 0) {
+        apiRequests.push(this.$api.getSmartviews(this.headers));
+      }
+      if (!this.currentUser || Object.keys(this.currentUser).length === 0) {
+        apiRequests.push(this.$api.getCurrentUser(this.headers));
+      }
+
+      // Execute all API requests
+      await Promise.all(apiRequests);
     } catch (error) {
-      console.error("Error fetching data:", error)
-      this.error = error.message || 'An unknown error occurred.'
+      console.error("Error fetching data:", error);
+      this.error = error.message || 'An unknown error occurred.';
     } finally {
-      this.isLoading = false // Reset loading state
+      this.isLoading = false; // Reset loading state
     }
-  },
+  }
+
 }
 </script>
 

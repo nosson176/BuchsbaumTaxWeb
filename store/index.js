@@ -33,6 +33,7 @@ const getters = {
   [models.secondsSpentOnClient]: (state) => state[models.secondsSpentOnClient],
   [models.selectedClient]: (state) => state[models.selectedClient],
   [models.promptOnClientChange]: (state) => state[models.promptOnClientChange],
+  [models.users]: (state) => state[models.users],
   [models.dayLogs]: (state) => state[models.dayLogs],
   clientAndLogs: (state) => state.clientAndLogs,
 }
@@ -50,6 +51,40 @@ const mutations = {
   changeDotStatus(state) {
     console.log('change')
     state.dotStatus = !state.dotStatus
+  },
+
+  deleteUser(state, userId) {
+    const usersArray = Object.values(state[models.users]) // המרה למערך
+    const index = usersArray.findIndex((user) => user.id === userId)
+
+    if (index !== -1) {
+      console.log('User found, removing from state...')
+      usersArray.splice(index, 1)
+      state[models.users] = usersArray // עדכון ה-state לאחר הסרה
+    }
+  },
+
+  pushNewUser(state, user) {
+    console.log(user)
+    const userId = user.id // מזהה ייחודי למשתמש
+    Vue.set(state[models.users], userId, user) // שימוש ב-Vue.set להוספת שדה חדש בצורה ריאקטיבית
+  },
+
+  updateUser(state, updatedUser) {
+    console.log(updatedUser)
+    const userId = updatedUser.id
+
+    // Convert the users object to an array and find the user by id
+    const usersArray = Object.values(state[models.users])
+    const userIndex = usersArray.findIndex((user) => user.id === userId)
+
+    if (userIndex !== -1) {
+      // Find the corresponding key for the user in the original users object
+      const userKey = Object.keys(state[models.users])[userIndex]
+
+      // Use Vue.set to ensure reactivity when updating the user in the object
+      Vue.set(state[models.users], userKey, updatedUser)
+    }
   },
 
   updateTaxYearState(state, { taxYearId, updatedData }) {
@@ -149,14 +184,40 @@ const mutations = {
     state[models.selectedClient].checklists.unshift(newChecklist.newChecklist)
   },
 
-  updateUserFlagClient(state, clientFlag) {
-    const clientsArray = Object.values(state[models.clients])
-    const index = clientsArray.findIndex((client) => client.id === clientFlag.clientId)
-    if (index !== -1) {
-      Vue.set(state[models.clients][index], 'flag', clientFlag.flag)
-    }
+  pushNewClient(state, newClient) {
+    console.log(state[models.clients])
+    console.log(newClient)
+    const clientId = newClient.id // מזהה ייחודי למשתמש
+    Vue.set(state[models.clients], clientId, newClient)
   },
 
+  pushNewSmartview(state, newSmartview) {
+    console.log(state[models.smartviews])
+    console.log(newSmartview)
+    const smartviewId = newSmartview.id // מזהה ייחודי למשתמש
+    Vue.set(state[models.smartviews], smartviewId, newSmartview)
+  },
+
+  updateUserFlagClient(state, clientFlag) {
+    console.log(clientFlag)
+    console.log(state[models.clients])
+
+    // Find the key of the client with the given ID
+    const clientKey = Object.keys(state[models.clients]).find(
+      (key) => state[models.clients][key].id === clientFlag.clientId
+    )
+
+    console.log('Client Key:', clientKey)
+
+    if (clientKey !== undefined) {
+      console.log('Inside:', state[models.clients][clientKey])
+
+      // Update the 'flag' property of the original client object
+      Vue.set(state[models.clients][clientKey], 'flag', clientFlag.flag)
+    } else {
+      console.error('Client not found with the given ID.')
+    }
+  },
   updateGlobalFlagClient(state, clientFlag) {
     const clientsArray = Object.values(state[models.clients])
     const index = clientsArray.findIndex((client) => client.id === clientFlag.gFlag.clientId)
@@ -185,6 +246,7 @@ const mutations = {
   },
 
   updateSmartview(state, { smartview }) {
+    console.log(smartview)
     const smartviewsArray = Object.values(state[models.smartviews]) // Convert object to array
 
     const index = smartviewsArray.findIndex((l) => l.id === smartview.id)
@@ -192,6 +254,31 @@ const mutations = {
       smartviewsArray.splice(index, 1, smartview)
       state[models.smartviews] = smartviewsArray
     }
+  },
+
+  updateSmartviewsBatch(state, { smartviews }) {
+    console.log('Batch update: ', smartviews)
+    const smartviewsArray = Object.values(state[models.smartviews]) // Convert object to array
+
+    smartviews.forEach((smartview) => {
+      const index = smartviewsArray.findIndex((l) => l.id === smartview.id)
+      if (index !== -1) {
+        const existingSmartview = smartviewsArray[index]
+
+        // Update only the fields that are being changed
+        const updatedSmartview = {
+          ...existingSmartview, // Preserve existing fields
+          sortNumber: smartview.sortNumber, // Update sortNumber
+          // Update other fields as necessary
+        }
+
+        smartviewsArray.splice(index, 1, updatedSmartview)
+      } else {
+        smartviewsArray.push(smartview) // If the smartview doesn't exist, add it
+      }
+    })
+
+    state[models.smartviews] = smartviewsArray
   },
 
   updateFbar(state, { fbar }) {

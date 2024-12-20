@@ -173,10 +173,22 @@ export default {
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
   },
+  mounted() {
+
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
   beforeDestroy() {
     if (this.updateTaxPersonal.length > 0) this.sendUpdateTaxPersonal()
   },
   methods: {
+    handleBeforeUnload(event) {
+      if (this.updateTaxPersonal.length > 0) {
+        this.sendUpdateTaxPersonal();
+        // Optionally, to show a confirmation dialog
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
     toggleEditable(id, personalId, value) {
       if (!value) {
         const val = id.split("-")[1]
