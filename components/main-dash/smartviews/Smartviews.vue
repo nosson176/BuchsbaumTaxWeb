@@ -11,7 +11,7 @@
           </div>
           <div class="flex space-x-1">
             <span class="select-none">{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
-            <DeleteButton v-if="!hideEditButtons" @click="archiveSmartview(smartview)" />
+            <DeleteButton v-if="!hideEditButtons" @click.native.stop="archiveSmartview(smartview)" />
           </div>
         </div>
       </transition-group>
@@ -35,6 +35,7 @@ export default {
   },
   data() {
     return {
+      modifiedSmartviews: [], // Keep track of updated items
       dragActive: false,
       dragOptions: {
         animation: 200,
@@ -45,8 +46,9 @@ export default {
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview, models.spinner]),
     displayedSmartviews() {
-      // console.log(JSON.parse(JSON.stringify(this.smartviews)))
+      console.log("displayedSmartviews")
       if (this.smartviews) {
+        console.log(Object.values(JSON.parse(JSON.stringify(this.smartviews))))
         return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
           .filter((smartview) => this.showArchived === smartview.archived)
           .sort((a, b) => a.sortNumber - b.sortNumber)
@@ -70,6 +72,17 @@ export default {
       return this.$route.name === routes.maps
     },
   },
+  mounted() {
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeDestroy() {
+    console.log('beforeDestroy')
+
+    if (this.modifiedSmartviews.length > 0) {
+      this.sendBatchUpdate();
+    }
+  },
+
   methods: {
     async selectSmartview(smartview) {
       console.log("select")
@@ -103,15 +116,73 @@ export default {
         .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
         .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
     },
-    startDrag() {
+    startDrag(evt) {
+      console.log(evt)
       this.dragActive = true
     },
     onDrop(evt) {
-      const item = this.displayedSmartviews[evt.oldIndex]
-      item.sortNumber = evt.newIndex + 1
-      this.$api.updateSmartview(this.headers, { smartviewId: item.id }, item)
-      this.dragActive = false
+      const { oldIndex, newIndex } = evt;
+      const movedSmartview = this.displayedSmartviews.splice(oldIndex, 1)[0];  // Remove the item from the old position
+      this.displayedSmartviews.splice(newIndex, 0, movedSmartview);  // Insert it into the new position
+      console.log(this.displayedSmartviews);
+
+      // Update sort numbers and modifiedSmartviews with only affected smartviews
+      const affectedSmartviews = [];
+
+      // Only add smartviews between the old and new indices (inclusive)
+      const startIndex = Math.min(oldIndex, newIndex);
+      const endIndex = Math.max(oldIndex, newIndex);
+
+      for (let index = startIndex; index <= endIndex; index++) {
+        const smartview = this.displayedSmartviews[index];
+        const updatedSortNumber = index + 1;
+
+        if (smartview.sortNumber !== updatedSortNumber) {
+          smartview.sortNumber = updatedSortNumber;
+          affectedSmartviews.push({ id: smartview.id, sortNumber: smartview.sortNumber });
+        }
+      }
+
+      // Update modifiedSmartviews only with affected smartviews
+      affectedSmartviews.forEach((updatedSmartview) => {
+        const existingIndex = this.modifiedSmartviews.findIndex((item) => item.id === updatedSmartview.id);
+        if (existingIndex === -1) {
+          this.modifiedSmartviews.push(updatedSmartview);  // Add new entry for modified smartview
+        } else {
+          this.modifiedSmartviews[existingIndex].sortNumber = updatedSmartview.sortNumber;  // Update existing entry
+        }
+      });
+
+      this.dragActive = false;
     },
+
+    async sendBatchUpdate() {
+      try {
+        console.log("sendBatchUpdate => ", this.modifiedSmartviews);
+        await this.$api.updateSmartviewsBatch(this.headers, this.modifiedSmartviews);
+
+        // Commit the batch update to Vuex
+        this.$store.commit('updateSmartviewsBatch', { smartviews: this.modifiedSmartviews });
+
+        console.log('Batch update sent successfully');
+      } catch (error) {
+        console.error('Error sending batch update:', error);
+      } finally {
+        // Clear modifiedSmartviews to avoid re-sending on future destroys
+        this.modifiedSmartviews = [];
+      }
+    },
+
+
+    handleBeforeUnload(event) {
+      if (this.modifiedSmartviews.length > 0) {
+        this.sendBatchUpdate();
+        // Optionally, to show a confirmation dialog
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
+
   },
 }
 </script>

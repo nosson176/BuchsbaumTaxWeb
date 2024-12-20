@@ -54,6 +54,9 @@
       <ChangeClient :switch-to-client-name="switchToClient.lastName" @switchClients="selectClient(switchToClient)"
         @addLog="addLog" @hide="closeChangeClientModal" />
     </Modal>
+    <Modal :showing="createClientModel" @hide="closeCreateClientModal">
+      <CreateNewClientModel @hide="closeCreateClientModal" />
+    </Modal>
   </div>
 </template>
 
@@ -78,6 +81,7 @@ export default {
       selectedClientId: NaN,
       showChangeClientModal: false,
       switchToClient: '',
+      createClientModel: false
     }
   },
   computed: {
@@ -286,16 +290,10 @@ export default {
       })
     },
     onAddRowClick() {
-      const defaultValues = {
-        lastName: 'New Client',
-      }
-      const client = Object.assign({}, defaultValues)
-      this.$api.createClient(this.headers, { client }).then((data) => {
-        this.$api.getClientData(this.headers, data.id).then(async () => {
-          await this.$api.getClientList(this.headers)
-          this.scrollClientIntoView()
-        })
-      })
+      this.createClientModel = true
+    },
+    closeCreateClientModal() {
+      this.createClientModel = false
     },
     scrollClientIntoView() {
       if (this.selectedClient) {
@@ -387,9 +385,6 @@ export default {
         });
 
       })
-      // .then(async (data) => {
-      //   await this.$api.getClientData(this.headers, this.selectedClient.id)
-      // })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$emit(events.resetClock)
     },

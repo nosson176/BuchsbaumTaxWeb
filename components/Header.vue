@@ -3,11 +3,11 @@
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
       <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus">
       </div>
-      <button type="button"
+      <!-- <button type="button"
         class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         aria-expanded="true" @click="openSmsModal">
         Send SMS
-      </button>
+      </button> -->
       <div
         class="inline-flex justify-center shadow-sm px-2 py-1  text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
         <Dropdown shown-value="Time" :value="selectedTime" :options="[2, 5, 10, 15, 20]"
@@ -154,7 +154,6 @@ export default {
   },
   methods: {
     toggleStatus() {
-      // this.status = !this.status
       this.$store.commit('changeDotStatus')
       this.$api.getClientList(this.headers)
 
@@ -165,21 +164,17 @@ export default {
       this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
     },
     getSelectedClient(selectedClientName) {
-      console.log('Selected client name:', selectedClientName)
       const selectedClient = Object.values(this.clientsHistory).find((client) => client.lastName === selectedClientName)
-      console.log('Selected client:', selectedClient)
-      const headers = this.$api.getHeaders()
+      const headers = this.headers
       const id = selectedClient.id
       this.$api.getClientData(headers, id)
     },
     chooseSecondsNeededToDisplayModal1(selectTime) {
-      console.log('Selected time (seconds):', selectTime)
       this.selectedTime = selectTime
       this.setTimeToSecond(selectTime)
     },
     setTimeToSecond(time) {
       const t = time * 60
-      console.log('Time in seconds:', t)
       this.$store.commit('setModelResponse', { model: 'secondsNeededToDisplayModal1', data: t })
     },
     openSmsModal() {

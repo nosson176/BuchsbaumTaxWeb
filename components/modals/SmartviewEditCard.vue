@@ -82,7 +82,8 @@ export default {
   computed: {
     ...mapState([models.modals, models.selectedClient, models.users, models.selectedSmartview]),
     smartview() {
-      console.log(JSON.parse(JSON.stringify(this.modals.smartview?.data)))
+      // console.log(JSON.parse(JSON.stringify(this.modals.smartview)))
+      // console.log(JSON.parse(JSON.stringify(this.modals.smartview?.data)))
       return JSON.parse(JSON.stringify(this.modals.smartview?.data))
     },
     headers() {
@@ -130,14 +131,11 @@ export default {
       return !Array.isArray(this.selectedSmView) || this.selectedSmView.length
     },
     smartviewLines() {
-      console.log(this.smartview.smartviewLines)
+      // console.log(this.smartview.smartviewLines)
       return [...this.smartview.smartviewLines].sort((a, b) => a.groupNum - b.groupNum)
     },
   },
-  created() {
-    const headers = this.$api.getHeaders()
-    this.$api.getAllUsers(headers)
-  },
+
   mounted() {
     if (this.isNew) {
       this.$refs.name.$refs.input.focus()
@@ -149,11 +147,11 @@ export default {
       this.$emit(events.hide)
     },
     updateSmartviewLine(line) {
-      console.log("line", line)
-      console.log("this.smartview", this.smartview)
-      console.log("this.smartview.smartviewLines", this.smartview.smartviewLines)
+      // console.log("line", line)
+      // console.log("this.smartview", this.smartview)
+      // console.log("this.smartview.smartviewLines", this.smartview.smartviewLines)
       const updatedLineIndex = this.smartview.smartviewLines.findIndex((l) => l.id === line.id)
-      console.log("updatedLineIndex", updatedLineIndex)
+      // console.log("updatedLineIndex", updatedLineIndex)
       this.smartview.smartviewLines[updatedLineIndex] = line
       this.updateSmartview()
     },
@@ -173,7 +171,9 @@ export default {
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       console.log("create", smartview)
-      this.$api.createSmartview(this.headers, { smartview }).then(() => {
+      this.$api.createSmartview(this.headers, { smartview }).then((data) => {
+        console.log(data)
+        this.$store.commit('pushNewSmartview', data)
         this.isLoading = false
         this.emitHide()
       })
@@ -185,11 +185,13 @@ export default {
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       console.log(smartview)
-      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview).then((res) => {
+      this.$api.updateSmartview(this.headers, { smartviewId: this.smartview.id }, smartview, true).then((smartview) => {
+        console.log(smartview)
         // Change the selectedsmartview to the updated value
         if (this.hasSelectedSmartview) {
-          this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: res })
+          this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
         }
+        this.$store.dispatch('updateSmartviewAction', { smartview });
         this.isLoading = false
         this.emitHide()
       })
@@ -208,6 +210,7 @@ export default {
       this.$emit(events.delete)
     },
     updateSmartview() {
+      console.log(this.smartview)
       this.$store.commit(mutations.setModelResponse, {
         model: models.modals,
         data: { smartview: { showing: true, data: this.smartview } },

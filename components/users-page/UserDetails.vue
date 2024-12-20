@@ -5,11 +5,9 @@
         <div id="user-information-title" class="text-lg leading-6 font-medium text-gray-900 bg-gray-50">
           {{ userObj.username }}
         </div>
-        <button
-          type="button"
+        <button type="button"
           class="bg-white text-indigo-600 border border-indigo-600 rounded-md text-sm px-3 py-2 hover:bg-indigo-600 hover:text-white"
-          @click="emitClick"
-        >
+          @click="emitClick">
           Change Password
         </button>
       </div>
@@ -89,11 +87,8 @@
         <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
           <div class="sm:col-span-1"></div>
           <div class="sm:col-span-1">
-            <button
-              :disabled="loading"
-              type="submit"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <button :disabled="loading" type="submit"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:cursor-not-allowed disabled:opacity-50">
               <LoadingIndicator v-if="loading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
               <span v-else>Submit</span>
             </button>
@@ -179,7 +174,9 @@ export default {
   methods: {
     async updateUser() {
       this.loading = true
-      await this.$api.updateUser(this.headers, { userId: this.user.id }, this.userObj)
+      await this.$api.updateUser(this.headers, { userId: this.user.id }, this.userObj).then(res => {
+        this.$store.commit('updateUser', res)
+      })
       this.loading = false
     },
     emitChange() {

@@ -20,7 +20,8 @@
             <label for="remember-me" class="ml-2 block text-sm text-gray-900"> Remember me </label>
           </div>
           <div class="text-sm">
-            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500"> Forgot your password? </a>
+            <a href="#" @click="displayForgetPasswordModel" class="font-medium text-indigo-600 hover:text-indigo-500">
+              Forgot your password? </a>
           </div>
         </div>
         <div v-if="loginError" class="text-red-500 text-xs">Incorrect username or password, please try again</div>
@@ -44,6 +45,9 @@
       </form>
       <Modal :showing="showWorkTimeModal" @hide="closeWorkTimeModal">
         <WorkTimeModel :userData="loginData" @confirm="createWorkTime" @hide="closeWorkTimeModal" />
+      </Modal>
+      <Modal :showing="showForgetPasswordModel" @hide="closeForgetPasswordModel">
+        <forgetPasswordModel @hide="closeForgetPasswordModel" />
       </Modal>
     </div>
   </div>
@@ -73,6 +77,7 @@ export default {
       isLoading: false,
       loginData: null,
       showWorkTimeModal: false,
+      showForgetPasswordModel: false,
     }
   },
   computed: {
@@ -144,6 +149,13 @@ export default {
       this.showWorkTimeModal = false
       this.routeToMainDash()
     },
+    displayForgetPasswordModel() {
+      this.showForgetPasswordModel = true
+
+    },
+    closeForgetPasswordModel() {
+      this.showForgetPasswordModel = false
+    }
   },
 }
 </script>

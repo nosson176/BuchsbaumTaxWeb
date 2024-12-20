@@ -4,8 +4,6 @@
     <span id="view-active" class="ml-1">
       <span class="text-xs tracking-tighter font-medium text-gray-700">{{ viewActive ? 'Active' : 'Archived' }} </span>
     </span>
-    <!-- <ExportIcon v-if="showExport" class="ml-6" @export-click="exportToExcel" /> -->
-
   </div>
 </template>
 
@@ -23,11 +21,6 @@ export default {
   },
   data() {
     return {
-      filteredCustomers: [
-        { id: 1, name: "John Doe", email: "john@example.com" },
-        { id: 2, name: "Jane Smith", email: "jane@example.com" },
-        // שאר הלקוחות
-      ],
     };
   },
   computed: {

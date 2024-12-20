@@ -62,10 +62,22 @@ export default {
       return this.search?.[tableGroups.feesChecklists]
     },
   },
+  mounted() {
+
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
   beforeDestroy() {
     if (this.updateFees.length > 0) this.sendFeesToServer()
   },
   methods: {
+    handleBeforeUnload(event) {
+      if (this.updateFees.length > 0) {
+        this.sendFeesToServer();
+        // Optionally, to show a confirmation dialog
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
     handleUpdateFee(editedFee) {
       console.log(editedFee)
       const feeCopy = JSON.parse(JSON.stringify(editedFee));

@@ -160,6 +160,10 @@ export default {
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
   },
+  mounted() {
+
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
 
   beforeDestroy() {
     if (this.updateData.length > 0) {
@@ -167,6 +171,14 @@ export default {
     }
   },
   methods: {
+    handleBeforeUnload(event) {
+      if (this.updateData.length > 0) {
+        this.sendUpdateContect();
+        // Optionally, to show a confirmation dialog
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
     toggleEditable(id, contactId, value) {
       if (!value) {
         const val = id.split("-")[1]
@@ -255,20 +267,6 @@ export default {
 
       this.$store.dispatch('updateContactAction', { contact });
     },
-    // onDeleteClick(contactObj) {
-    //   if (this.showArchived) {
-    //     const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
-    //     contact.archived = false
-    //     this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: contactObj.id }, contact)
-    //   } else {
-    //     this.$store.commit(mutations.setModelResponse, {
-    //       model: models.modals,
-    //       data: {
-    //         delete: { showing: true, data: { id: contactObj.id, type: tabs.contact, label: contactObj.contactType } },
-    //       },
-    //     })
-    //   }
-    // },
     onAddRowClick() {
       if (!this.selectedClient) {
         return

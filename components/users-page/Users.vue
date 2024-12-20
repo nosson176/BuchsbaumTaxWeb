@@ -1,12 +1,7 @@
 <template>
   <div v-if="isCurrentUserAdmin" class="w-full h-full grid gap-2 grid-cols-2 px-64">
-    <UsersTable
-      :key="usersCopy.length"
-      :users="usersCopy"
-      :user-id="selectedUserId"
-      @click="setSelectedUserId"
-      @change="addUserRow"
-    />
+    <UsersTable :key="usersCopy.length" :users="usersCopy" :user-id="selectedUserId" @click="setSelectedUserId"
+      @change="addUserRow" />
     <UserDetails v-if="user" :key="user.id" :user="user" @click="openChangePasswordModal" />
     <Modal :showing="showCreateUserModal" @hide="closeCreateUserModal">
       <CreateNewUserModal @hide="closeCreateUserModal" />
@@ -38,9 +33,9 @@ export default {
     user() {
       return Object.values(this.users).find((user) => user.id === this.selectedUserId)
     },
-    headers() {
-      return this.$api.getHeaders()
-    },
+    // headers() {
+    //   return this.$api.getHeaders()
+    // },
     isCurrentUserAdmin() {
       return this.currentUser.userType === USER_TYPE_ADMIN
     },

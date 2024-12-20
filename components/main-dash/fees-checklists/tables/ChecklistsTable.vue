@@ -146,9 +146,6 @@ export default {
         archived: false,
         id: generateRandomId(),
       }
-      // this.$api.createChecklist(this.headers, { checklist }).then(async (data) => {
-      //   await this.$api.getClientData(this.headers, this.selectedClient.id)
-      //   this.newChecklistId = data.id
       const newChecklist = Object.assign({}, checklist)
       this.updateChecklists.push(newChecklist)
       this.$store.commit('pushNewChecklist', {

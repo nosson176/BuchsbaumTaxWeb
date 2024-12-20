@@ -2,29 +2,28 @@
   <Table class="rounded-md shadow">
     <template #header>
       <TableHeader class="py-6">
-        <div class="table-header"><AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" /> USERS</div>
+        <div class="table-header">
+          <AddRowButton v-if="isCurrentUserAdmin" @click="onAddRowClick" /> USERS
+        </div>
       </TableHeader>
     </template>
     <template #body>
-      <TableRow
-        v-for="(user, index) in users"
-        :key="user.id"
-        class="px-2 py-2"
-        :idx="index"
-        :class="isUserSelected(user.id) ? 'selected' : 'row'"
-      >
-        <div class="table-col w-4"></div>
-        <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
-          {{ user.username }}
-          <span class="font-light">&nbsp;({{ user.userType }})</span>
-        </div>
-        <div class="table-col">
-          <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
-        </div>
-        <Modal :showing="showDelete" @hide="closeDeleteModal">
-          <DeleteType :label="user.username" @hide="closeDeleteModal" @delete="deleteUser" />
-        </Modal>
-      </TableRow>
+      <div class="table-body-container">
+        <TableRow v-for="(user, index) in users" :key="user.id" class="px-2 py-2" :idx="index"
+          :class="isUserSelected(user.id) ? 'selected' : 'row'">
+          <div class="table-col w-4"></div>
+          <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
+            {{ user.username }}
+            <span class="font-light">&nbsp;({{ user.userType }})</span>
+          </div>
+          <div class="table-col">
+            <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
+          </div>
+          <Modal :showing="showDelete" @hide="closeDeleteModal">
+            <DeleteType :label="user.username" @hide="closeDeleteModal" @delete="deleteUser" />
+          </Modal>
+        </TableRow>
+      </div>
     </template>
   </Table>
 </template>
@@ -73,8 +72,10 @@ export default {
       this.deleteUserId = user.id
       this.showDelete = true
     },
-    deleteUser() {
-      this.$api.deleteUser(this.headers, { userId: this.deleteUserId })
+    async deleteUser() {
+      const res = await this.$api.deleteUser(this.headers, { userId: this.deleteUserId })
+      if (res.success === 'Success') this.$store.commit('deleteUser', this.deleteUserId)
+
       this.closeDeleteModal()
     },
     closeDeleteModal() {
@@ -101,5 +102,15 @@ export default {
 
 .row:hover .table-col {
   @apply text-gray-100;
+}
+
+.table-body-container {
+  max-height: 800px;
+  overflow-y: auto;
+  display: block;
+}
+
+.table-body-container .table-row {
+  display: flex;
 }
 </style>
