@@ -84,6 +84,11 @@
           <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)"
             @blur="onBlur(log.alarmDate, 'alarmDate')" />
         </div>
+        <!-- <div :id="`${idx}-alarmTime`" class="table-col sm" @click="openAlertTimePicker(idx, log.id)">
+          <date-picker v-model="log.alarmTime" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            placeholder="Select date and time" :open="isAlertTimeOpen(idx)"
+            @close="closeAlertTime(idx, log.alarmTime, 'alarmTime')" />
+        </div> -->
         <div :id="`${idx}-alarmTime`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
