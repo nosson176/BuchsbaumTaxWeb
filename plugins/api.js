@@ -41,6 +41,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     const searchParam = store.state.clientSearchValue
     const searchOption = store.state.clientSearchOption
     const active = store.state.dotStatus
+    console.log(active)
     let endpoint = 'clients/'
     const queryParams = []
 
@@ -52,9 +53,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     }
 
     // Add active status if `dotStatus` is false
-    if (active === false) {
-      queryParams.push(`active=${active}`)
-    }
+    queryParams.push(`active=${active}`)
 
     // Append query parameters to the endpoint
     if (queryParams.length > 0) {
