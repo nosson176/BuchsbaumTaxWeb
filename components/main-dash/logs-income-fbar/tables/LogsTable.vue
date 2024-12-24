@@ -307,8 +307,6 @@ export default {
     }
   },
   mounted() {
-    console.log('mounted')
-
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
   async beforeDestroy() {
