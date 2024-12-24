@@ -330,6 +330,32 @@ const mutations = {
     })
   },
 
+  updateTotals(state, { dollars, shekels }) {
+    state.totalOwedDollars = dollars
+    state.totalOwedShekels = shekels
+  },
+
+  updateFiling(state, { filingId, taxYearId, data }) {
+    const taxYear = state.selectedClient.taxYears.find((ty) => ty.id === taxYearId)
+    if (taxYear) {
+      const filing = taxYear.filings.find((f) => f.id === filingId)
+      if (filing) {
+        Object.assign(filing, data)
+      }
+    }
+  },
+
+  updateFilingCurrency(state, { filingId, oldCurrency, newCurrency, amount }) {
+    // Update currency totals when currency changes
+    if (newCurrency === 'NIS') {
+      state.totalOwedDollars -= amount.owes - amount.paid + amount.owesFee - amount.paidFee
+      state.totalOwedShekels += amount.owes - amount.paid + amount.owesFee - amount.paidFee
+    } else if (newCurrency === 'USD') {
+      state.totalOwedShekels -= amount.owes - amount.paid + amount.owesFee - amount.paidFee
+      state.totalOwedDollars += amount.owes - amount.paid + amount.owesFee - amount.paidFee
+    }
+  },
+
   // Set the loading status for a model globally. When a request starts,
   // status is set to true which is used by the UI to show loaders and block
   // forms. When a response is received, the status is set to false. This is

@@ -36,12 +36,14 @@
           </div>
           <div class="flex flex-col">
             <div class="flex items-center" @click="setEditable('owes')">
-              <HeaderSelectOption v-if="owes" v-model="currency" :options="currencyOptions" currency @input="onBlur" />
+              <HeaderSelectOption v-if="owes" v-model="currency" :options="currencyOptions" currency
+                @input="onBlur('currency')" />
               <EditableInput v-model="owes" placeholder="Owes" currency :is-editable="isEditable('owes')"
                 @blur="onBlur('owes')" @click="onBlur('owes')" @keyup.enter.native="onBlur('owes')" />
             </div>
             <div class="flex items-center" @click="setEditable('paid')">
-              <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency @input="onBlur" />
+              <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency
+                @input="onBlur('currency')" />
               <EditableInput v-model="paid" placeholder="Paid" currency :is-editable="isEditable('paid')"
                 @blur="onBlur('paid')" @click="onBlur('paid')" @keyup.enter.native="onBlur('paid')" />
             </div>
@@ -53,13 +55,13 @@
               @click="onBlur('includeFee')" />
           </div>
           <div class="flex flex-col">
-            <div @click="setEditable('paidFee')">
-              <EditableInput v-model="paidFee" placeholder="Insur" currency :is-editable="isEditable('paidFee')"
-                @blur="onBlur('paidFee')" @keyup.enter.native="onBlur('paidFee')" />
-            </div>
             <div @click="setEditable('owesFee')">
               <EditableInput v-model="owesFee" placeholder="FC" currency :is-editable="isEditable('owesFee')"
                 @blur="onBlur('owesFee')" @keyup.enter.native="onBlur('owesFee')" />
+            </div>
+            <div @click="setEditable('paidFee')">
+              <EditableInput v-model="paidFee" placeholder="Insur" currency :is-editable="isEditable('paidFee')"
+                @blur="onBlur('paidFee')" @keyup.enter.native="onBlur('paidFee')" />
             </div>
           </div>
         </div>
@@ -154,6 +156,7 @@ export default {
     return {
       editable: '',
       oldValue: '',
+      oldCurrencyType: null,
       formModel: null,
       localChanges: [],
       times: 0,
@@ -361,10 +364,12 @@ export default {
       },
     },
     currency: {
+
       get() {
         return this.formModel.currency
       },
       set(newVal) {
+        this.oldCurrencyType = this.formModel.currency
         this.formModel.currency = newVal
       },
     },
@@ -452,7 +457,7 @@ export default {
         // console.log('localChanges updated:', newValue);
       },
       deep: true
-    }
+    },
   },
 
   created() {
@@ -470,11 +475,26 @@ export default {
     }
   },
 
+  mounted() {
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+
   // beforeDestroy() {
   //   console.log("beforeDestroy filing")
   //   this.sendUpdatesToServer()
   // },
   methods: {
+    handleBeforeUnload(event) {
+      if (this.filingsUpdate.length > 0) {
+        this.$api.updateFilings(
+          this.headers,
+          this.filingsUpdate
+        )
+        this.$store.commit('clearFilingUpdate');
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    },
     setEditable(editable) {
       this.editable = editable;
       // console.log(editable)
@@ -506,6 +526,7 @@ export default {
         }
       }
 
+
       const oldValueStr = JSON.stringify(this.oldValue);
       const newValueStr = field === 'status' || field === 'statusDetail'
         ? JSON.stringify(this.formModel[field]?.value)
@@ -521,16 +542,55 @@ export default {
         return;
       }
 
+      if (['owes', 'paid', 'owesFee', 'paidFee', 'includeInRefund', 'includeFee', 'currency'].includes(field)) {
+        const filing = {
+          currency: this.currency || 'USD',
+          owes: this.owes || 0,
+          paid: this.paid || 0,
+          owesFee: this.owesFee || 0,
+          paidFee: this.paidFee || 0,
+          includeInRefund: this.includeInRefund,
+          includeFee: this.includeFee
+        };
+
+        this.$store.commit('updateFiling', {
+          filingId: this.filing.id,
+          taxYearId: this.filing.taxYearId,
+          data: filing
+        });
+      }
+
+      console.log(field, this.oldCurrencyType, this.currency, this.oldValue)
+      if (this.currency === this.oldCurrencyType) return
+      if (field === 'currency') {
+        // Handle currency change
+        const oldCurrency = this.oldValue;
+        const newCurrency = this.currency;
+        console.log(oldCurrency, newCurrency)
+
+        if (oldCurrency !== newCurrency) {
+          console.log("inside")
+          this.$store.commit('updateFilingCurrency', {
+            filingId: this.filing.id,
+            oldCurrency,
+            newCurrency,
+            amount: {
+              owes: this.owes || 0,
+              paid: this.paid || 0,
+              owesFee: this.owesFee || 0,
+              paidFee: this.paidFee || 0
+            }
+          });
+        }
+      }
+
       // Continue to handle local update if values differ
       this.handleLocalUpdate();
     },
     onMemoBlur() {
       this.onBlur('memo')
     },
-    // onMemoBlur() {
-    //   this.onBlur()
-    //   this.handleUpdate()
-    // },
+
     handleLocalUpdate() {
       // console.log('handleLocalUpdate called');
       try {
@@ -551,31 +611,12 @@ export default {
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
     },
-    // setSecondDeliveryContact(value) {
-    //   this.secondDeliveryContact = value
-    //   this.handleUpdate()
-    // },
+
     setSecondDeliveryContact(value) {
       this.secondDeliveryContact = value
       this.handleLocalUpdate()
     },
-    // goToNextItem() {
-    //   const currentCell = this.editable
-    //   console.log(currentCell)
-    //   const itemIndex = items.findIndex((col) => {
-    //     console.log(col)
-    //     return col === currentCell
-    //   })
-    //   console.log(itemIndex)
-    //   if (itemIndex < items.length - 1) {
-    //     const nextCell = items[itemIndex + 1]
-    //     console.log(nextCell)
-    //     this.setEditable(nextCell)
-    //   } else {
-    //     this.editable = ''
 
-    //   }
-    // },
     goToNextItem() {
       const currentCell = this.editable
       const itemIndex = items.findIndex((col) => col === currentCell)

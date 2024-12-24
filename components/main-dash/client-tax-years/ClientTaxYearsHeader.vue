@@ -111,16 +111,62 @@ export default {
     headers() {
       return this.$api.getHeaders()
     },
+    // totalOwedDollars() {
+    //   const owes = this.selectedClient.owesDollars + this.selectedClient.feesOwesDollars
+    //   const paid = this.selectedClient.paidDollars + this.selectedClient.feesPaidDollars
+    //   return owes - paid
+    // },
+    // totalOwedShekels() {
+    //   const owes = this.selectedClient.owesShekels + this.selectedClient.feesOwesShekels
+    //   const paid = this.selectedClient.paidShekels + this.selectedClient.feesPaidShekels
+    //   return owes - paid
+    // },
     totalOwedDollars() {
-      const owes = this.selectedClient.owesDollars + this.selectedClient.feesOwesDollars
-      const paid = this.selectedClient.paidDollars + this.selectedClient.feesPaidDollars
-      return owes - paid
+      let total = 0;
+      if (this.selectedClient && this.selectedClient.taxYears) {
+        this.selectedClient.taxYears.forEach(taxYear => {
+          if (taxYear.filings) {
+            taxYear.filings.forEach(filing => {
+              if (filing.currency === 'USD' || !filing.currency) { // Default to USD if no currency
+                if (filing.includeInRefund) {
+                  total += (filing.owes || 0);
+                  total -= (filing.paid || 0);
+                }
+                if (filing.includeFee) {
+                  total += (filing.owesFee || 0);
+                  total -= (filing.paidFee || 0);
+                }
+              }
+            });
+          }
+        });
+      }
+      return total;
     },
+
     totalOwedShekels() {
-      const owes = this.selectedClient.owesShekels + this.selectedClient.feesOwesShekels
-      const paid = this.selectedClient.paidShekels + this.selectedClient.feesPaidShekels
-      return owes - paid
+      let total = 0;
+      if (this.selectedClient && this.selectedClient.taxYears) {
+        this.selectedClient.taxYears.forEach(taxYear => {
+          if (taxYear.filings) {
+            taxYear.filings.forEach(filing => {
+              if (filing.currency === 'NIS') {
+                if (filing.includeInRefund) {
+                  total += (filing.owes || 0);
+                  total -= (filing.paid || 0);
+                }
+                if (filing.includeFee) {
+                  total += (filing.owesFee || 0);
+                  total -= (filing.paidFee || 0);
+                }
+              }
+            });
+          }
+        });
+      }
+      return total;
     },
+
     dollarsClassObj() {
       return {
         'text-green-400': this.totalOwedDollars <= 0,
@@ -161,6 +207,18 @@ export default {
       },
       deep: true,  // Watch for nested object changes as well
     },
+    watchFilingChanges: {
+      handler(newFiling) {
+        if (!newFiling) return;
+
+        // Calculate new totals and update store
+        this.$store.commit('updateTotals', {
+          dollars: this.totalOwedDollars,
+          shekels: this.totalOwedShekels
+        });
+      },
+      deep: true
+    }
   },
 
 
@@ -249,9 +307,6 @@ export default {
     handleUpdate(str) {
       if (this.selectedClient.needUpdate !== true) this.needUpdate()
       if (str === "lastName") this.updateLastName(this.editedLastName)
-      // if (str === "lastName") this.updateLastName(this.editedLastName)
-      // await this.$api.updateClient(this.headers, { clientId: client.id, client })
-      // await this.$api.getClientList(this.headers)
       this.closeEditNameDialogue()
     },
     openEditNameDialogue() {

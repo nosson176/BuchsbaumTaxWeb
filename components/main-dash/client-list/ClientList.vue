@@ -157,21 +157,8 @@ export default {
         return lastNameA.localeCompare(lastNameB)
       })
     },
-    // sortByLatestDate(clients, arrayField, dateField) {
-    //   return clients.sort((a, b) => {
-    //     const dateA = this.getLatestDate(a, arrayField, dateField)
-    //     const dateB = this.getLatestDate(b, arrayField, dateField)
-
-    //     if (this.upDown === 'new') {
-    //       return dateB - dateA
-    //     } else {
-    //       return dateA - dateB
-    //     }
-    //   })
-    // },
 
     sortByLatestDate(clients, arrayField, dateField, filingType) {
-      // console.log(clients)
       return clients.sort((a, b) => {
         const dateA = this.getLatestDate(a, arrayField, dateField, filingType)
         const dateB = this.getLatestDate(b, arrayField, dateField, filingType)
@@ -206,15 +193,6 @@ export default {
         }
       })
     },
-    // getLatestDate(client, arrayField, dateField) {
-    //   const dates = (client[arrayField] || []).map(item => {
-    //     if (dateField === 'status' || dateField === 'statusDetail') {
-    //       return new Date(item[dateField]?.date || 0).getTime()
-    //     }
-    //     return new Date(item[dateField] || 0).getTime()
-    //   })
-    //   return dates.length ? Math.max(...dates) : 0
-    // },
 
     sortByAlarm(clients) {
       return clients.sort((a, b) => {
@@ -339,14 +317,6 @@ export default {
       return 4
     },
 
-    // flagColorGlobal(client) {
-    //   for (const flag of client.flags) {
-    //     if (flag.userId === this.currentUser.id) {
-    //       return flag.flag
-    //     }
-    //   }
-    //   return 4
-    // },
     closeChangeClientModal() {
       this.showChangeClientModal = false
     },
@@ -372,11 +342,6 @@ export default {
         alarmDate: null,
         secondsSpent: this.$store.getters[models.secondsSpentOnClient]
       }
-      // const defaultValues = {
-      //   clientId: this.selectedClient.id,
-      //   logDate: new Date(),
-      //   secondsSpent: this.$store.getters[models.secondsSpentOnClient],
-      // }
       const log = Object.assign({}, defaultValues)
       this.$api.createLog(this.headers, { log }).then(() => {
         this.$store.commit('pushNewLog', {
