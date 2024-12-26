@@ -352,7 +352,10 @@ export default {
         return
       }
       this.isLoading = true
-      await this.$api.deleteClient(this.headers, { clientId: this.selectedClient.id })
+      await this.$api.deleteClient(this.headers, { clientId: this.selectedClient.id }).then(res => {
+        console.log(res)
+        if (res.success === "Success") this.$store.commit('deleteClient', this.selectedClient.id);
+      })
       this.showDelete = false
       this.isLoading = false
       this.updateSelectedClient({

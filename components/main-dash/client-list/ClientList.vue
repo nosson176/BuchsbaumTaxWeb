@@ -85,7 +85,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clients, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1, models.spinner]),
+    ...mapState([models.clients, models.loading, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1, models.spinner]),
     displayedClients() {
       // Explicitly use loading in the computed property to create a dependency
       if (this.spinner) {
@@ -258,14 +258,14 @@ export default {
       document.body.removeChild(link);
     },
     async selectClient({ id }) {
-      console.log("client")
-      this.selectedClientId = id
-      const headers = this.headers
-      await this.$api.getClientData(headers, id)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
       })
+      console.log("client")
+      this.selectedClientId = id
+      const headers = this.headers
+      await this.$api.getClientData(headers, id)
     },
     onAddRowClick() {
       this.createClientModel = true
@@ -284,12 +284,14 @@ export default {
     },
     archiveClient(client) {
       if (this.showArchived) {
+        console.log("archived")
         const clientCopy = Object.assign({}, client)
         clientCopy.archived = false
         this.$api
           .updateClient(this.headers, { clientId: client.id, client: clientCopy })
           .then(() => this.$api.getClientList(this.headers))
       } else {
+        console.log("active")
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
           data: { delete: { showing: true, data: { id: client.id, type: tabs.clients, label: client.lastName } } },

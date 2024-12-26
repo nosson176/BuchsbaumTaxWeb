@@ -150,10 +150,11 @@ export default {
       this.showDeleteConfirmation = false
     },
     handleDeleteSmartview() {
-      // console.log('method handleDeleteSmartview called')
+      console.log('method handleDeleteSmartview called')
       if (this.isLoading) {
         return
       }
+      console.log("here")
       this.isLoading = true
       this.$api.deleteSmartview(this.headers, { smartviewId: this.smartview.id }).then(() => {
         // console.log('Smartview deleted successfully')

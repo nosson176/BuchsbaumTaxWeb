@@ -99,6 +99,40 @@ export default {
       //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
       // }
     },
+    // async selectSmartview(smartview) {
+    //   console.log("=== Start selectSmartview ===")
+    //   this.$store.commit("showSpinner", true)
+    //   console.log("After setting spinner to true")
+
+    //   // נעטוף את כל הלוגיקה ב-Promise
+    //   await new Promise(resolve => {
+    //     this.$store.commit(mutations.setModelResponse, {
+    //       model: models.clientSearchValue,
+    //       data: []
+    //     })
+
+    //     if (this.selectedSmartviewId === smartview.id) {
+    //       console.log("Same smartview selected")
+    //       this.$store.commit(mutations.setModelResponse, {
+    //         model: models.selectedSmartview,
+    //         data: []
+    //       })
+    //     } else {
+    //       console.log("New smartview selected")
+    //       this.$store.commit(mutations.setModelResponse, {
+    //         model: models.selectedSmartview,
+    //         data: smartview
+    //       })
+    //     }
+
+    //     // נחכה קצת לפני שנכבה את הספינר
+    //     setTimeout(resolve, 100);
+    //   });
+
+    //   // נכבה את הספינר אחרי שהכל הסתיים
+    //   this.$store.commit("showSpinner", false)
+    //   console.log("=== End selectSmartview ===")
+    // },
     showEdit(smartview) {
       this.$store.commit(mutations.setModelResponse, {
         model: models.modals,
