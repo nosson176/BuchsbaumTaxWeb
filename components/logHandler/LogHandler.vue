@@ -60,8 +60,9 @@ export default {
             deep: true,
             immediate: true,
             handler(newDayLogs) {
-                // console.log(newDayLogs)
+                console.log(newDayLogs)
                 this.filterAndSortLogs(Object.values(newDayLogs));
+
             }
         }
     },
@@ -88,12 +89,17 @@ export default {
 
         startLogCheckingInterval() {
             this.intervalId = setInterval(() => {
-                // console.log("interval")
+                console.log("interval")
                 // console.log(this.dayLogs)
                 // console.log(this.filteredLogs)
                 const currentTime = dayjs().format('DD-MM-YYYY HH:mm')
                 // Find logs matching the current time
-                const newMatches = this.filteredLogs.filter(log => log.alarmTime === currentTime)
+                console.log(this.filteredLogs)
+                const newMatches = this.filteredLogs.filter(log => {
+                    console.log(log.alarmTime)
+                    console.log(currentTime)
+                    return log.alarmTime === currentTime
+                })
 
                 if (newMatches.length > 0) {
                     // Add new matches to the existing matchingLogs and remove from filteredLogs
