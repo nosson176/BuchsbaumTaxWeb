@@ -106,7 +106,9 @@ const mutations = {
   },
 
   showSpinner(state, mode) {
+    console.log('spinner before:', state.spinner, 'changing to:', mode)
     state.spinner = mode
+    console.log('spinner after:', state.spinner)
   },
 
   setCopyLogs(state, log) {
@@ -353,6 +355,31 @@ const mutations = {
     } else if (newCurrency === 'USD') {
       state.totalOwedShekels -= amount.owes - amount.paid + amount.owesFee - amount.paidFee
       state.totalOwedDollars += amount.owes - amount.paid + amount.owesFee - amount.paidFee
+    }
+  },
+
+  archiveClient(state, clientId) {
+    const clientsArray = Object.values(state.clients)
+    console.log('archiveClient=> ', clientsArray)
+    console.log('archiveClient=> ', clientId)
+    console.log('archiveClient=> ', state.clients)
+    const index = clientsArray.findIndex((client) => client.id === clientId)
+    if (index !== -1) {
+      clientsArray[index].archived = true
+      state.clients = clientsArray
+    }
+  },
+
+  deleteClient(state, clientId) {
+    const clientsArray = Object.values(state.clients)
+    console.log('archiveClient=> ', clientsArray)
+    console.log('archiveClient=> ', clientId)
+    console.log('archiveClient=> ', state.clients)
+    const index = clientsArray.findIndex((client) => client.id === clientId)
+    console.log(index)
+    if (index !== -1) {
+      clientsArray.splice(index, 1)
+      state.clients = clientsArray
     }
   },
 

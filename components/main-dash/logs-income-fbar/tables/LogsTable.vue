@@ -185,8 +185,11 @@ export default {
       models.copyLogs,
     ]),
     displayedLogs() {
-      const logs = this.shownLogs.filter((log) => this.filterLogs(log))
-      const mappedLogs = logs.map((log) => {
+      console.log("displaylogs")
+      const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
+      console.log(logs)
+      if (!logs || logs.length === 0) return []
+      const mappedLogs = logs?.map((log) => {
         if (log.alarmUserId && !log.alarmUserName) {
           log.alarmUserName = this.usersArray[log.alarmUserId].username
         }
@@ -208,7 +211,7 @@ export default {
     shownLogs() {
       if (this.logs) {
         // מסנן את הלוגים לפי הערך של showArchived
-        const filteredLogs = this.logs.filter(log => this.showArchived === log.archived);
+        const filteredLogs = this.logs?.filter(log => this.showArchived === log.archived);
 
         // ממיר את ה-historyLogJson מ-JSON string לאובייקט JSON
         const updatedLogs = filteredLogs.map(log => {

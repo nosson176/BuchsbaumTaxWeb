@@ -50,7 +50,7 @@ export default {
         this.$api.getTodayLogs(this.headers),
       ];
 
-      // // Conditionally add getSmartviews if smartviews is empty
+      // Conditionally add getSmartviews if smartviews is empty
       // if (!this.smartviews || Object.keys(this.smartviews).length === 0) {
       //   apiRequests.push(this.$api.getSmartviews(this.headers));
       // }

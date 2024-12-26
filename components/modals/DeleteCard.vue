@@ -214,6 +214,7 @@ export default {
   },
   methods: {
     handleDelete() {
+      console.log("delete")
       this.isLoading = true
       if (this.isTypeLog) {
         console.log("detev log")
@@ -296,10 +297,13 @@ export default {
       console.log("updateClient")
       this.$api
         .updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
-        .then(() => this.$api.getClientList(this.headers))
+        .then((res) => {
+          this.$store.commit('archiveClient', res.id)
+        })
         .then(() => this.updateClientSideData())
     },
     updateSmartview() {
+      console.log("updateSmartview")
       this.$api
         .updateSmartview(this.headers, { smartviewId: this.updatedItem.id }, this.updatedItem)
         .then(() => {

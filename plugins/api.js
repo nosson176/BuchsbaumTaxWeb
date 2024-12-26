@@ -41,7 +41,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     const searchParam = store.state.clientSearchValue
     const searchOption = store.state.clientSearchOption
     const active = store.state.dotStatus
-    console.log(active)
     let endpoint = 'clients/'
     const queryParams = []
 
@@ -278,9 +277,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     } catch (error) {
       console.error('Error creating smartview:', error)
       $toast.error('Error creating smartview')
-    } finally {
-      // This ensures that you fetch the updated list of smartviews regardless of success or failure
-      // await getSmartviews(headers)
     }
   }
 
@@ -380,7 +376,13 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) => {
-    $axios.put(`/clients/${clientId}`, client, { headers }).catch(() => $toast.error('Error updating client'))
+    return $axios
+      .put(`/clients/${clientId}`, client, { headers })
+      .then((res) => {
+        $toast.success('Client updated successfully')
+        return res
+      })
+      .catch(() => $toast.error('Error updating client'))
   }
 
   const updateClientFlag = (headers, { clientId, clientFlag }) =>
@@ -544,16 +546,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .finally(() => getValueTypes(headers))
 
   const deleteClient = (headers, { clientId }) =>
-    $axios
-      .delete(`/clients/${clientId}`, { headers })
-      .catch(() => $toast.error('Error deleting client'))
-      .finally(() => getClientList(headers))
+    $axios.delete(`/clients/${clientId}`, { headers }).catch(() => $toast.error('Error deleting client'))
+  // .finally(() => getClientList(headers))
 
   const deleteSmartview = (headers, { smartviewId }) =>
-    $axios
-      .delete(`/smartviews/${smartviewId}`, { headers })
-      .catch(() => $toast.error('Error deleting smartview'))
-      .finally(() => getSmartviews(headers))
+    $axios.delete(`/smartviews/${smartviewId}`, { headers }).catch(() => $toast.error('Error deleting smartview'))
+  // .finally(() => getSmartviews(headers))
 
   const deleteFiling = (headers, { filingId, clientId }) =>
     $axios.delete(`/filings/${filingId}`, { headers }).catch(() => $toast.error('Error deleting filing'))
