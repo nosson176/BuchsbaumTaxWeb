@@ -137,6 +137,7 @@ import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
 import moment from 'moment-timezone';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
 import { boldSearchWord, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
@@ -185,9 +186,7 @@ export default {
       models.copyLogs,
     ]),
     displayedLogs() {
-      console.log("displaylogs")
       const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
-      console.log(logs)
       if (!logs || logs.length === 0) return []
       const mappedLogs = logs?.map((log) => {
         if (log.alarmUserId && !log.alarmUserName) {
@@ -445,9 +444,6 @@ export default {
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
-        // console.log(logId)
-        // console.log(log)
-        console.log(val)
         if (log) {
           this.oldValue = log[val]
           this.isEditable(`${0}-priority`)
@@ -465,7 +461,6 @@ export default {
       return this.editableId === id
     },
     handleUpdate(val, field) {
-      // console.log("handleUpdate =>", val, field)
       if (!this.editableLogId) return;
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
       if (logIndex === -1) return;
@@ -473,19 +468,28 @@ export default {
       const updatedLog = { ...this.displayedLogs[logIndex] };
 
       if (field === 'alarmTime') {
-        const currentTime = dayjs(); // Current date and time using dayjs
-        const endOfDay = dayjs().endOf('day'); // End of the current day using dayjs
+        dayjs.extend(customParseFormat);
+        const currentTime = dayjs();
+        const endOfDay = dayjs().endOf('day');
 
-        // Convert `updatedLog.alarmTime` to a valid dayjs object
-        const alarmTime = dayjs(updatedLog.alarmTime, 'DD-MM-YYYY HH:mm');
-        // Check if alarmTime is a valid date and within the range
-        if (alarmTime.isValid() && alarmTime.isAfter(currentTime) && alarmTime.isBefore(endOfDay)) {
-          this.$store.commit('pushDayLog', {
-            state: this.selectedClient,
-            log: updatedLog
-          });
+        // Parse the date string with strict mode and correct format
+        const alarmTime = dayjs(val, 'DD-MM-YYYY HH:mm', true);
+        if (alarmTime.isValid()) {
+          // Check if time is within valid range
+          if (alarmTime.isAfter(currentTime) && alarmTime.isBefore(endOfDay)) {
+            updatedLog.alarmTime = val;
+            this.$store.commit('pushDayLog', {
+              state: this.selectedClient,
+              log: updatedLog
+            });
+          } else {
+            // Optional: Provide user feedback about invalid time range
+            console.warn("Alarm time must be between current time and end of day");
+            return;
+          }
         } else {
-          console.log("alarmTime is not within the range or invalid, log not pushed.");
+          console.warn("Invalid date format. Use DD-MM-YYYY HH:mm");
+          return;
         }
       }
 
@@ -496,6 +500,7 @@ export default {
           updatedLog.alarmUserId = user.id;
         }
       }
+
       this.$store.dispatch('updateLogAction', { log: updatedLog });
       this.updateUpdatAndNewLogs(updatedLog, val, field);
     },
