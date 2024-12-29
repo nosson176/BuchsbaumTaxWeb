@@ -67,7 +67,6 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     sharedCategories() {
-      console.log(this.valueTypes[TABLE_TYPE])
       if (this.valueTypes[TABLE_TYPE] === undefined) return
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE])) || []
     },
@@ -162,7 +161,7 @@ export default {
       const list = [...this.sharedCategories];
       if (list.length === 0) return
       // Sort the list alphabetically by the `value` field
-      list.sort((a, b) => a.value.localeCompare(b.value));
+      list.sort((a, b) => a.value?.localeCompare(b.value));
 
       // Reset the sortOrder for each item
       list.forEach((item, index) => {
