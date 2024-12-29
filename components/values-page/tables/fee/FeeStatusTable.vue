@@ -23,7 +23,7 @@
               <ClickCell s>{{ idx + 1 }}</ClickCell>
             </div>
             <div class="table-col">
-              <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" />
+              <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" @click="toggleEditable(type.id)" />
             </div>
             <div class="table-col w-full flex justify-between items-center" @click="toggleEditable(type.id)">
               <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur" />

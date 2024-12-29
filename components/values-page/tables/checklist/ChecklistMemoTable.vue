@@ -22,7 +22,7 @@
               <ClickCell>{{ idx + 1 }}</ClickCell>
             </div>
             <div class="table-col">
-              <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" />
+              <EditableCheckBoxCell v-model="memo.show" @input="debounceUpdate" @click="toggleEditable(type.id)" />
             </div>
             <div class="table-col w-full" @click="toggleEditable(memo.id)">
               <EditableInput v-model="memo.value" :is-editable="isEditable(memo.id)" @enter="onBlur" @blur="onBlur" />
@@ -68,7 +68,6 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     checklistMemo() {
-      console.log("memo")
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
     },
     headers() {
