@@ -68,6 +68,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     sharedYearNames() {
+      if (this.valueTypes[TABLE_TYPE] === undefined) return
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
     },
     headers() {
@@ -158,7 +159,7 @@ export default {
     resetOrder() {
       // Create a copy of the array
       const list = [...this.sharedYearNames];
-
+      if (list.length === 0) return
       // Sort the list alphabetically by the `value` field
       list.sort((a, b) => a.value.localeCompare(b.value));
 
