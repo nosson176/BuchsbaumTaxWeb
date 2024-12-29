@@ -169,7 +169,7 @@ export default {
     resetOrder() {
       // Create a copy of the array
       const list = [...this.taxYearStatusDetails];
-
+      if (list.length === 0) return
       // Sort the list alphabetically by the `value` field
       list.sort((a, b) => a.value.localeCompare(b.value));
 
