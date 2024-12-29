@@ -9,8 +9,8 @@ const isPasswordValid = (str) => {
 }
 
 const formatDateForClient = (date) => {
-  console.log(date)
-  return format(parseISO(date), dateformat.client)}
+  return format(parseISO(date), dateformat.client)
+}
 
 const userConstructor = () => {
   return {

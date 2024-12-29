@@ -29,7 +29,7 @@
                 @blur="onBlur" />
             </div>
             <div class="table-col xs">
-              <DeleteButton @click="deleteValue(type.id)" />
+              <DeleteButton @click="deleteValue(type)" />
             </div>
           </TableRow>
         </transition-group>
@@ -93,8 +93,9 @@ export default {
     onBlur() {
       this.editableId = null
     },
-    deleteValue(valueId) {
-      this.deleteId = valueId
+    deleteValue(value) {
+      this.deleteId = value.id
+      this.deleteItemSelect = value
       this.showDelete = true
     },
     onAddRowClick() {
@@ -103,19 +104,24 @@ export default {
         value: '',
         sortOrder: this.valueTypes[TABLE_TYPE].length + 1,
       })
-      this.$api.createValueType(this.headers, { value })
+      this.$api.createValueType(this.headers, { value }).then(res => {
+        this.$store.commit("pushNewValueType", { value: res, tab: TABLE_TYPE })
+      })
     },
     handleUpdate() {
       const value = this.taxYearTaxForms.find((type) => type.id === this.editableId)
       if (value) {
-        this.$api.updateValueType(this.headers, { valueId: value.id }, value)
+        this.$api.updateValueType(this.headers, { valueId: value.id }, value).then(res => {
+          this.$store.commit("updateValueType", { value: res, tab: TABLE_TYPE })
+        })
           .catch(error => console.error('Update failed:', error))
       } else {
         console.error('No value found for ID:', this.editableId)
       }
     },
     deleteItem() {
-      this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then(() => {
+      this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then((res) => {
+        if (res.success === "Success") this.$store.commit("deleteValueType", { valueId: this.deleteItemSelect.id, tab: TABLE_TYPE })
         this.showDelete = false
         this.deleteId = ''
       })
@@ -128,15 +134,56 @@ export default {
       this.dragActive = true
     },
     onDrop(evt) {
-      const item = this.taxYearTaxForms[evt.oldIndex]
-      item.sortOrder = evt.newIndex + 1
-      this.$api.updateValueType(this.headers, { valueId: item.id }, item)
-      this.dragActive = false
+      // יצירת עותק של האובייקט array והמרתו למערך
+      const list = Object.values({ ...this.taxYearTaxForms });
+
+      // פריט שנגרר
+      const item = list[evt.oldIndex];
+      item.sortOrder = evt.newIndex + 1;
+
+      // עדכון המיקום של הפריט שנגרר
+      list.splice(evt.oldIndex, 1); // הסרה מהמיקום הישן
+      list.splice(evt.newIndex, 0, item); // הוספה במיקום החדש
+
+      // עדכון sortOrder לכל הפריטים ברשימה לפי המיקום החדש
+      list.forEach((el, idx) => {
+        el.sortOrder = idx + 1;
+      });
+
+      // קריאה ל-API לעדכון
+      this.$store.commit("updateSortOrder", { value: list, tab: TABLE_TYPE });
+      this.$api
+        .updateValueType(this.headers, { valueId: item.id }, item)
+        .catch(err => {
+          console.error("Error updating value type:", err);
+        });
+
+      this.dragActive = false; // סיום מצב גרירה
     },
     resetOrder() {
-      const item = this.taxYearTaxForms[0]
-      item.sortOrder = 0
+      // Create a copy of the array
+      const list = [...this.taxYearTaxForms];
+
+      // Sort the list alphabetically by the `value` field
+      list.sort((a, b) => a.value.localeCompare(b.value));
+
+      // Reset the sortOrder for each item
+      list.forEach((item, index) => {
+        item.sortOrder = index + 1;
+      });
+
+      // Send the first item to the server with sortOrder = 0 to trigger the server reset logic
+      const item = this.taxYearTaxForms[0];
+      item.sortOrder = 0;
+
       this.$api.updateValueType(this.headers, { valueId: item.id }, item)
+        .then(() => {
+          // Commit the updated list to the Vuex store
+          this.$store.commit("updateSortOrder", { value: list, tab: TABLE_TYPE });
+        })
+        .catch((error) => {
+          console.error("Failed to reset order:", error);
+        });
     },
   },
 }

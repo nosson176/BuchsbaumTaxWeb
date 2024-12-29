@@ -317,7 +317,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         token,
         password,
       })
-      console.log(response)
       return response
     } catch (error) {
       console.log(error)
@@ -363,7 +362,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const createValueType = (headers, { value }) =>
-    $axios.post('/values', value, { headers }).then(() => getValueTypes(headers))
+    $axios.post('/values', value, { headers }).then((res) => {
+      console.log(res)
+      return res
+      // getValueTypes(headers)
+    })
 
   const sendSms = (headers, { sms }) =>
     $axios.post('/sms/send', sms, { headers }).catch(() => $toast.error('Error sending SMS'))
@@ -371,8 +374,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const sendMessage = (headers, { messageObj }) =>
     $axios
       .post('/users/current/messages', messageObj, { headers })
+      .then((res) => {
+        console.log(res)
+        return res
+      })
       .catch(() => $toast.error('Error sending message'))
-      .finally(() => getInbox(headers))
+  // .finally(() => getInbox(headers))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) => {
@@ -508,8 +515,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const updateValueType = (headers, { valueId }, value) =>
     $axios
       .put(`/values/${valueId}`, value, { headers })
+      .then((res) => {
+        console.log(res)
+        return res
+      })
       .catch(() => $toast.error('Error updating value type'))
-      .finally(() => getValueTypes(headers))
+  // .finally(() => getValueTypes(headers))
 
   const updateUser = (headers, { userId }, user) =>
     $axios
@@ -526,7 +537,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/users/current/messages/${messageId}`, value, { headers })
       .catch(() => $toast.error('Error updating message'))
-      .finally(() => getInbox(headers))
+  // .finally(() => getInbox(headers))
 
   const updateWorkTimeByWorkTimeId = (headers, workTime, currentUser) => {
     // Add userType to the workTime object or include it in a separate payload object
@@ -542,16 +553,18 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const deleteValueType = (headers, { valueId }) =>
     $axios
       .delete(`/values/${valueId}`, { headers })
+      .then((res) => {
+        console.log(res)
+        return res
+      })
       .catch(() => $toast.error('Error deleting value'))
-      .finally(() => getValueTypes(headers))
+  // .finally(() => getValueTypes(headers))
 
   const deleteClient = (headers, { clientId }) =>
     $axios.delete(`/clients/${clientId}`, { headers }).catch(() => $toast.error('Error deleting client'))
-  // .finally(() => getClientList(headers))
 
   const deleteSmartview = (headers, { smartviewId }) =>
     $axios.delete(`/smartviews/${smartviewId}`, { headers }).catch(() => $toast.error('Error deleting smartview'))
-  // .finally(() => getSmartviews(headers))
 
   const deleteFiling = (headers, { filingId, clientId }) =>
     $axios.delete(`/filings/${filingId}`, { headers }).catch(() => $toast.error('Error deleting filing'))
@@ -567,8 +580,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const deleteMessage = (headers, { messageId }) =>
     $axios
       .delete(`/users/current/messages/${messageId}`, { headers })
+      .then((res) => {
+        return res
+      })
       .catch(() => $toast.error('Error deleting message'))
-      .finally(() => getInbox(headers))
+  // .finally(() => getInbox(headers))
 
   const api = {
     createChecklist,

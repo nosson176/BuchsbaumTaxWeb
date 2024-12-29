@@ -1,9 +1,7 @@
 <template>
   <div
     class="inline-flex items-center cursor-pointer border-transparent border-b-2 hover:border-gray-300 hover:text-gray-700"
-    :class="classObj"
-    @click="emitClick"
-  >
+    :class="classObj" @click="emitClick">
     <div v-if="count >= 0" class="text-white rounded-full bg-indigo-600 py-0.5 px-1.5 text-xs">
       {{ count }}
     </div>
@@ -35,6 +33,7 @@ export default {
   },
   methods: {
     emitClick() {
+      console.log("delete")
       this.$emit(events.click)
     },
   },

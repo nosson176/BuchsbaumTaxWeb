@@ -23,9 +23,9 @@ export default {
     data() {
         return {
             filteredLogs: [], // Holds the filtered and sorted logs
-            intervalId: null, // Interval ID for checking every minute
             matchingLogs: [], // Stores logs matching the current time
-            showTooltip: false // Controls visibility of the tooltip
+            showTooltip: false, // Controls visibility of the tooltip
+            intervalId: null, // Interval ID for checking every minute
         }
     },
 
@@ -45,28 +45,16 @@ export default {
         },
     },
 
-    // watch: {
-    //     logsArray: {
-    //         immediate: true,
-    //         handler(newLogs) {
-    //             console.log(newLogs)
-    //             this.filterAndSortLogs(newLogs)
-    //         }
-    //     }
-    // },
-
     watch: {
         [models.dayLogs]: {
             deep: true,
             immediate: true,
             handler(newDayLogs) {
-                console.log(newDayLogs)
                 this.filterAndSortLogs(Object.values(newDayLogs));
 
             }
         }
     },
-
 
     methods: {
         filterAndSortLogs(logs) {
@@ -89,15 +77,9 @@ export default {
 
         startLogCheckingInterval() {
             this.intervalId = setInterval(() => {
-                console.log("interval")
-                // console.log(this.dayLogs)
-                // console.log(this.filteredLogs)
                 const currentTime = dayjs().format('DD-MM-YYYY HH:mm')
                 // Find logs matching the current time
-                console.log(this.filteredLogs)
                 const newMatches = this.filteredLogs.filter(log => {
-                    console.log(log.alarmTime)
-                    console.log(currentTime)
                     return log.alarmTime === currentTime
                 })
 
@@ -120,11 +102,10 @@ export default {
 
                     this.showTooltip = true
                 }
-            }, 10000) // Check every 10 seconds
+            }, 29000)
         },
 
         async handleConfirm(log) {
-            console.log(`Confirmed log for Client ID: ${log.clientId}`)
             this.selectedClientId = log.clientId
             const headers = this.headers
             await this.$api.getClientData(headers, log.clientId)
@@ -136,7 +117,6 @@ export default {
         },
 
         handleClose(log) {
-            console.log(`Closed log for Client ID: ${log.clientId}`)
             this.removeLog(log)
         },
 

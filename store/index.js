@@ -383,6 +383,106 @@ const mutations = {
     }
   },
 
+  markMsgAsRead(state, message) {
+    console.log(message)
+    const inbox = Object.values(state.inbox)
+    const index = inbox.findIndex((msg) => msg.id === message.id)
+    console.log(index)
+    if (index !== -1) {
+      inbox[index].status = 'read'
+      state.inbox = inbox
+    }
+  },
+
+  pushNewMsg(state, { msg, parentId }) {
+    // Get inbox as an array
+    const inbox = Object.values(state.inbox)
+
+    if (parentId) {
+      // Find the parent message by ID
+      const index = inbox.findIndex((message) => message.id === parentId)
+      if (index !== -1) {
+        // Push the new message into the parent's responses
+        inbox[index].responses.push(msg)
+
+        // Update state to trigger reactivity
+        state.inbox = inbox
+        return
+      }
+    }
+    inbox.push(msg)
+
+    // Update state.inbox for new message
+    state.inbox = { ...state.inbox, [msg.id]: msg }
+  },
+
+  deleteMsg(state, { msgId }) {
+    const inbox = Object.values(state.inbox)
+
+    if (msgId) {
+      // Find the message in the inbox
+      const messageIndex = inbox.findIndex((message) => message.id === msgId)
+      if (messageIndex !== -1) {
+        // Remove the message itself
+        inbox.splice(messageIndex, 1)
+        state.inbox = inbox
+        return
+      }
+
+      // Check for the message ID inside the responses array of each message
+      inbox.forEach((message) => {
+        if (Array.isArray(message.responses)) {
+          const responseIndex = message.responses.findIndex((response) => response.id === msgId)
+          if (responseIndex !== -1) {
+            message.responses.splice(responseIndex, 1)
+          }
+        }
+      })
+
+      // Update the state with the modified inbox
+      state.inbox = inbox
+    }
+  },
+
+  pushNewValueType(state, { value, tab }) {
+    if (value && tab) {
+      console.log(state.valueTypes[tab])
+      state.valueTypes[tab].push(value)
+    }
+  },
+
+  updateValueType(state, { value, tab }) {
+    if (value && tab) {
+      // Find the index of the item to be updated
+      const index = state.valueTypes[tab].findIndex((type) => type.id === value.id)
+
+      if (index !== -1) {
+        // Properly update the item using Vue.set to ensure reactivity
+        state.valueTypes[tab][index] = { ...state.valueTypes[tab][index], ...value }
+      } else {
+        console.error(`No matching entry found for id ${value.id}`)
+      }
+    }
+  },
+  updateSortOrder(state, { value, tab }) {
+    state.valueTypes[tab] = value
+  },
+
+  deleteValueType(state, { valueId, tab }) {
+    if (valueId && tab) {
+      // Find the index of the object with the matching id
+      const index = state.valueTypes[tab].findIndex((type) => {
+        return type.id === valueId
+      })
+      if (index !== -1) {
+        // delete the existing object at the found index
+        state.valueTypes[tab].splice(index, 1)
+      } else {
+        console.error(`No matching entry with id ${valueId} found in ${tab}`)
+      }
+    }
+  },
+
   // Set the loading status for a model globally. When a request starts,
   // status is set to true which is used by the UI to show loaders and block
   // forms. When a response is received, the status is set to false. This is
