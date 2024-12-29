@@ -105,6 +105,7 @@ export default {
   computed: {
     ...mapState([models.inbox, models.users, models.loading, models.currentUser]),
     inboxState() {
+      console.log(this.inbox)
       return this.inbox
     },
     headers() {
@@ -123,13 +124,35 @@ export default {
       }
       return usersHash
     },
+    // formattedMessages() {
+    //   const messages = []
+    //   for (const key in this.inboxState) {
+    //     messages.push(this.formatMessage(this.inboxState[key]))
+    //   }
+    //   console.log(messages)
+    //   return messages
+    // }
     formattedMessages() {
-      const messages = []
-      for (const key in this.inboxState) {
-        messages.push(this.formatMessage(this.inboxState[key]))
-      }
-      return messages
-    }
+      const getLatestTimestamp = (message) => {
+        // Recursively find the latest timestamp from the message and its responses
+        let latestTimestamp = new Date(message.created).getTime();
+        if (message.responses && message.responses.length > 0) {
+          for (const response of message.responses) {
+            const responseLatest = getLatestTimestamp(response);
+            latestTimestamp = Math.max(latestTimestamp, responseLatest);
+          }
+        }
+        return latestTimestamp;
+      };
+
+      const sortedMessages = Object.values(this.inboxState).sort((a, b) => {
+        const latestA = getLatestTimestamp(a);
+        const latestB = getLatestTimestamp(b);
+        return latestB - latestA; // Descending order
+      });
+
+      return sortedMessages.map((message) => this.formatMessage(message));
+    },
   },
   methods: {
     emitHide() {
@@ -140,26 +163,48 @@ export default {
       // this.emitHide()
     },
     markAsRead(message) {
-      this.$api.updateMessage(this.headers, { messageId: message.id }, { status: 'read' }).then(this.loadInbox)
+      console.log(message)
+      if (message.status === 'read') return
+      this.$api.updateMessage(this.headers, { messageId: message.id }, { status: 'read' }).then(() => {
+        this.$store.commit("markMsgAsRead", message)
+      })
     },
     async loadInbox() {
-      console.log("getInbox22222")
-
       await this.$api.getInbox(this.headers)
     },
     deleteMessage({ id }) {
-      let result = prompt('Delete message? (yes/no)')
-      if (result === null) return // User canceled the prompt
-      result = result.toLowerCase()
-      while (result !== 'yes' && result !== 'no') {
-        alert('Please use just yes or no')
-        result = prompt('Delete message? (yes/no)')
-        if (result === null) return // User canceled the prompt during the loop
-        result = result.toLowerCase()
+      const confirmDelete = () => {
+        const result = prompt('Delete message? (yes/no)');
+        if (result === null) return null; // User canceled
+        const lowerCaseResult = result.toLowerCase();
+        if (lowerCaseResult !== 'yes' && lowerCaseResult !== 'no') {
+          alert('Please use just yes or no');
+          return confirmDelete(); // Retry prompt
+        }
+        return lowerCaseResult;
+      };
+
+      const result = confirmDelete();
+      if (result === null || result === 'no') return; // User canceled or chose "no"
+
+      if (result === 'yes') {
+        this.$api.deleteMessage(this.headers, { messageId: id })
+          .then(res => {
+            console.log(res);
+            if (res.success === "Success") {
+              this.$store.commit("deleteMsg", { msgId: id });
+            } else {
+              console.error("Failed to delete message:", res.error || res);
+              alert("Failed to delete the message. Please try again.");
+            }
+          })
+          .catch(err => {
+            console.error("Error deleting message:", err);
+            alert("An error occurred while deleting the message.");
+          });
       }
-      if (result === 'no') return
-      if (result === 'yes') this.$api.deleteMessage(this.headers, { messageId: id })
     },
+
 
     replyTo(parentId, threadId) {
       this.$emit(events.newMessage, parentId, threadId)

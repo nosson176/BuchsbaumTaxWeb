@@ -131,7 +131,6 @@ export default {
       return JSON.parse(JSON.stringify(this.smartviews))
     },
     updatedLog() {
-      console.log("update log")
       const log = this.logs.find((log) => log.id === this.id)
       log.archived = !log.archived
       return log
@@ -187,7 +186,6 @@ export default {
       let item = null
       if (this.isTypeLog) {
         item = this.updatedLog
-        console.log("this.isTypeLog", item)
       } else if (this.isTypeIncome) {
         item = this.updatedIncome
       } else if (this.isTypeFbar) {
@@ -201,10 +199,8 @@ export default {
       } else if (this.isTypeFee) {
         item = this.updatedFee
       } else if (this.isTypeClient) {
-        console.log("updatedClient")
         item = this.updatedClient
       } else if (this.isTypeSmartview) {
-        console.log("updatedSmartview")
         item = this.updatedSmartview
       } else if (this.isTypeChecklist) {
         item = this.updatedChecklist
@@ -217,7 +213,6 @@ export default {
       console.log("delete")
       this.isLoading = true
       if (this.isTypeLog) {
-        console.log("detev log")
         this.updateLog()
       } else if (this.isTypeIncome) {
         this.updateIncome()
@@ -230,7 +225,6 @@ export default {
       } else if (this.isTypeTaxYear) {
         this.updateTaxYear()
       } else if (this.isTypeFee) {
-        console.log("fefef")
         this.updateFee()
       } else if (this.isTypeClient) {
         this.updateClient()
@@ -272,20 +266,16 @@ export default {
         .finally(() => this.updateClientSideData())
     },
     updateTaxYear() {
-      console.log("updateTaxYear", this.updatedItem)
-
       this.$api
         .updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem).then(res => {
           console.log(res)
           if (res.archived === true) {
-            console.log("in")
             this.$store.commit('updateTaxYearState', { taxYearId: this.id, updatedData: this.updatedItem });
           }
         })
         .finally(() => this.updateClientSideData())
     },
     updateFee() {
-      console.log(11111)
       this.$api
         .updateFee(this.headers, { clientId: this.clientId, feeId: this.id }, this.updatedItem)
         .then(() => {
@@ -294,7 +284,6 @@ export default {
         })
     },
     updateClient() {
-      console.log("updateClient")
       this.$api
         .updateClient(this.headers, { clientId: this.updatedItem.id, client: this.updatedItem })
         .then((res) => {

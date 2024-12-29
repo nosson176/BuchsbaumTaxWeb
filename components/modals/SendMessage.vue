@@ -109,13 +109,22 @@ export default {
       this.$emit(events.hide)
     },
     sendMessage() {
-      const messageObj = { recipients: this.userIds, message: this.message }
-      if (this.responseId) {
-        messageObj.parentId = this.responseId
-        messageObj.threadId = this.threadId
-      }
-      this.$api.sendMessage(this.headers, { messageObj }).then(this.emitHide)
-    },
+  console.log("sendMSG");
+  const messageObj = { recipients: this.userIds, message: this.message };
+  if (this.responseId) {
+    console.log("relay");
+    messageObj.parentId = this.responseId;
+    messageObj.threadId = this.threadId;
+  }
+  console.log(messageObj);
+  this.$api.sendMessage(this.headers, { messageObj }).then((res) => {
+    console.log(res);
+    const response = res.data[0];
+    console.log("parentId being sent to mutation:", messageObj.parentId);
+    this.$store.commit("pushNewMsg", { msg: response, parentId: messageObj.parentId });
+    return this.emitHide();
+  });
+}
   },
 }
 </script>
