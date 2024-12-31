@@ -59,19 +59,21 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       endpoint += `?${queryParams.join('&')}`
     }
 
-    return $axios
-      .get(endpoint, {
-        headers,
-        loading: models.clients,
-        loaded: models.clients,
-        store: models.clients,
-      })
-      .then((res) => {
-        console.log(JSON.parse(JSON.stringify(res)))
-      })
-      .catch((e) => {
-        $toast.error('Error loading clients')
-      })
+    return (
+      $axios
+        .get(endpoint, {
+          headers,
+          loading: models.clients,
+          loaded: models.clients,
+          store: models.clients,
+        })
+        // .then((res) => {
+        //   console.log(JSON.parse(JSON.stringify(res)))
+        // })
+        .catch((e) => {
+          $toast.error('Error loading clients')
+        })
+    )
   }
 
   const getClientData = (headers, id) =>
@@ -83,7 +85,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.selectedClient,
       })
       .then((res) => {
-        console.log(JSON.parse(JSON.stringify(res)))
+        // console.log(JSON.parse(JSON.stringify(res)))
         getClientsHistory(headers)
       })
       .catch(() => $toast.error('Error loading client data'))
@@ -122,9 +124,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         loading: models.dayLogs,
         loaded: models.dayLogs,
         store: models.dayLogs,
-      })
-      .then((res) => {
-        // console.log(Object.values(res))
       })
       .catch(() => $toast.error('Error loading value types'))
 
@@ -170,9 +169,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         loading: models.smartviews,
         loaded: models.smartviews,
         store: models.smartviews,
-      })
-      .then((res) => {
-        console.log(res)
       })
       .catch(() => $toast.error('Error loading smartviews'))
 
@@ -269,11 +265,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const createSmartview = async (headers, { smartview }, sendToUserId) => {
     try {
       const url = sendToUserId ? `/smartviews?clientId=${sendToUserId}` : `/smartviews`
-      // console.log('Creating Smartview:', smartview)
       const response = await $axios.post(url, smartview, { headers })
-      // You might want to log or use the response data here
-      // console.log('Smartview created successfully:', response)
-      return response // return the created smartview or relevant data
+      return response
     } catch (error) {
       console.error('Error creating smartview:', error)
       $toast.error('Error creating smartview')
@@ -302,10 +295,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const forgotPassword = async (email) => {
     try {
       const response = await $axios.post('/sessions/forgot-password', { email })
-      console.log(response)
       return response
     } catch (error) {
-      console.log(error)
       console.error('Forgot password error:', error.response)
       throw error
     }
@@ -319,7 +310,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       return response
     } catch (error) {
-      console.log(error)
       console.error('Forgot password error:', error.response)
       throw error
     }
@@ -363,9 +353,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then((res) => {
-      console.log(res)
       return res
-      // getValueTypes(headers)
     })
 
   const sendSms = (headers, { sms }) =>
@@ -375,11 +363,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .post('/users/current/messages', messageObj, { headers })
       .then((res) => {
-        console.log(res)
         return res
       })
       .catch(() => $toast.error('Error sending message'))
-  // .finally(() => getInbox(headers))
 
   // UPDATE
   const updateClient = (headers, { clientId, client }) => {
@@ -439,10 +425,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const updateIncomes = (headers, incomes) => {
-    return $axios
-      .put(`/incomes`, incomes, { headers })
-      .then((res) => {})
-      .catch(() => $toast.error('Error updating income'))
+    return $axios.put(`/incomes`, incomes, { headers }).catch(() => $toast.error('Error updating income'))
   }
 
   const updateFbar = (headers, { clientId, fbarId = '' }, fbar) => {
@@ -498,7 +481,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     return $axios
       .put(url, smartview, { headers })
       .then((res) => {
-        console.log(res.right)
         return returnData ? res.right : true
       })
       .catch((error) => {
@@ -508,7 +490,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const updateSmartviewsBatch = (headers, smartview) => {
-    console.log('API CALL => ', smartview)
     $axios.put(`/smartviews/batchUpdate`, smartview, { headers }).catch(() => $toast.error('Error updating smartview'))
   }
 
@@ -516,17 +497,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/values/${valueId}`, value, { headers })
       .then((res) => {
-        console.log(res)
         return res
       })
       .catch(() => $toast.error('Error updating value type'))
-  // .finally(() => getValueTypes(headers))
 
   const updateUser = (headers, { userId }, user) =>
     $axios
       .put(`/users/${userId}`, user, { headers })
       .catch((e) => $toast.error('Error updating user: ' + e.response.data.message))
-  // .finally(() => getAllUsers(headers))
 
   const updatePassword = (headers, { userId }, newPassword) =>
     $axios
@@ -537,10 +515,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .put(`/users/current/messages/${messageId}`, value, { headers })
       .catch(() => $toast.error('Error updating message'))
-  // .finally(() => getInbox(headers))
 
   const updateWorkTimeByWorkTimeId = (headers, workTime, currentUser) => {
-    // Add userType to the workTime object or include it in a separate payload object
     const payload = { ...workTime, userType: currentUser.userType }
 
     return $axios
@@ -554,11 +530,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .delete(`/values/${valueId}`, { headers })
       .then((res) => {
-        console.log(res)
         return res
       })
       .catch(() => $toast.error('Error deleting value'))
-  // .finally(() => getValueTypes(headers))
 
   const deleteClient = (headers, { clientId }) =>
     $axios.delete(`/clients/${clientId}`, { headers }).catch(() => $toast.error('Error deleting client'))
@@ -584,7 +558,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         return res
       })
       .catch(() => $toast.error('Error deleting message'))
-  // .finally(() => getInbox(headers))
 
   const api = {
     createChecklist,
