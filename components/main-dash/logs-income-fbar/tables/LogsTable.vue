@@ -48,8 +48,8 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(log, idx) in displayedLogs" :key="log.id" :idx="idx" :selected="isSelected(log.id)"
-        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
+      <TableRow v-for="(log, idx) in displayedLogs" v-memo="[log.id, log.note, log.years]" :key="log.id" :idx="idx"
+        :selected="isSelected(log.id)" :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
@@ -646,6 +646,7 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field) {
+      console.log("onblur")
       if (this.oldValue !== val && this.oldValue !== undefined) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
