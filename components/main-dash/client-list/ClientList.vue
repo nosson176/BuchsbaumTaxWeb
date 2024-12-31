@@ -257,15 +257,16 @@ export default {
       link.click();
       document.body.removeChild(link);
     },
-    async selectClient({ id }) {
+    async selectClient(client) {
+      console.log(client)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
       })
       console.log("client")
-      this.selectedClientId = id
+      this.selectedClientId = client.id
       const headers = this.headers
-      await this.$api.getClientData(headers, id)
+      await this.$api.getClientData(headers, client)
     },
     onAddRowClick() {
       this.createClientModel = true

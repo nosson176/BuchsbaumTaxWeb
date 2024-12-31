@@ -37,6 +37,7 @@ export default {
         ]),
 
         logsArray() {
+            console.log(Object.values(this.dayLogs))
             return this.dayLogs ? Object.values(this.dayLogs) : []
         },
 
@@ -108,7 +109,7 @@ export default {
         async handleConfirm(log) {
             this.selectedClientId = log.clientId
             const headers = this.headers
-            await this.$api.getClientData(headers, log.clientId)
+            await this.$api.getClientData(headers, log)
             this.$store.commit(mutations.setModelResponse, {
                 model: models.clientClicked,
                 data: Math.random(),

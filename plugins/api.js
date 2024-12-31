@@ -76,20 +76,38 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     )
   }
 
-  const getClientData = (headers, id) =>
+  const getClientData = (headers, client) => {
+    let clientId
+    if (client.clientId) {
+      clientId = client.clientId
+    } else {
+      clientId = client.id
+    }
+    const active = !!client.active // Simplified boolean conversion
+    let endpoint = `/clients/${clientId}/data`
+    const queryParams = [`active=${active}`] // Add active status as query parameter
+
+    // Append query parameters to the endpoint
+    if (queryParams.length > 0) {
+      endpoint += `?${queryParams.join('&')}`
+    }
+
     $axios
-      .get(`/clients/${id}/data`, {
+      .get(endpoint, {
         headers,
         loading: models.selectedClient,
         loaded: models.selectedClient,
         store: models.selectedClient,
       })
       .then((res) => {
-        // console.log(JSON.parse(JSON.stringify(res)))
-        getClientsHistory(headers)
+        console.log('Client data loaded:', res)
+        getClientsHistory(headers) // Ensure this function handles its errors
       })
-      .catch(() => $toast.error('Error loading client data'))
-
+      .catch((err) => {
+        console.error('Error loading client data:', err)
+        $toast.error('Error loading client data')
+      })
+  }
   const getClientsWithLogs = (headers, clientId) => {
     // Construct URL based on whether clientId is provided
     const url = '/clients/clientsAndlogs' + (clientId ? `?clientId=${clientId}` : '')
