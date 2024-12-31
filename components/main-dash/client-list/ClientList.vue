@@ -258,7 +258,7 @@ export default {
       document.body.removeChild(link);
     },
     async selectClient(client) {
-      console.log(client)
+      // console.log(client)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
