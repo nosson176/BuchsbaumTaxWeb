@@ -51,6 +51,7 @@ export default {
             deep: true,
             immediate: true,
             handler(newDayLogs) {
+                console.log(newDayLogs)
                 this.filterAndSortLogs(Object.values(newDayLogs));
 
             }
@@ -103,7 +104,7 @@ export default {
 
                     this.showTooltip = true
                 }
-            }, 29000)
+            }, 1000)
         },
 
         async handleConfirm(log) {
@@ -122,7 +123,10 @@ export default {
         },
 
         removeLog(log) {
-            this.matchingLogs = this.matchingLogs.filter(l => l !== log)
+            console.log(log)
+            console.log(this.matchingLogs)
+            this.matchingLogs = this.matchingLogs.filter(l => l.id !== log.id)
+            console.log(this.matchingLogs)
             // Keep tooltip open if there are more matching logs
             if (this.matchingLogs.length === 0) {
                 this.showTooltip = false

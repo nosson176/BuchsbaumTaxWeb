@@ -75,7 +75,7 @@ export default {
             this.showPicker = true
         },
         onBlur() {
-            console.log("blur")
+            // console.log("blur")
             this.$emit(events.blur)
         },
     },

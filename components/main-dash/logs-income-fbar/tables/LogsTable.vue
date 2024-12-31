@@ -748,6 +748,7 @@ export default {
       return totalSeconds
     },
     getTimeSpentOnClient(log) {
+      if (log.secondsSpent < 59) return ''
       const seconds = log.secondsSpent || 0
       const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours
