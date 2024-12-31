@@ -104,7 +104,7 @@ export default {
 
                     this.showTooltip = true
                 }
-            }, 1000)
+            }, 29000)
         },
 
         async handleConfirm(log) {

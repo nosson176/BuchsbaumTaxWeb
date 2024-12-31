@@ -123,17 +123,27 @@ const mutations = {
     state.copyLogs = []
   },
 
+  // pushDayLog(state, log) {
+  //   // המרת הערכים של dayLogs למערך
+  //   const dayLogsArray = Object.values(state[models.dayLogs])
+
+  //   // חיפוש האינדקס
+  //   const index = dayLogsArray.findIndex((dayLog) => dayLog.id === log.log.id)
+
+  //   if (index !== -1) {
+  //     const key = Object.keys(state[models.dayLogs])[index]
+  //     Vue.set(state[models.dayLogs], key, log.log)
+  //   } else {
+  //     Vue.set(state[models.dayLogs], log.log.id, log.log)
+  //   }
+  // },
   pushDayLog(state, log) {
-    // המרת הערכים של dayLogs למערך
-    const dayLogsArray = Object.values(state[models.dayLogs])
-
-    // חיפוש האינדקס
-    const index = dayLogsArray.findIndex((dayLog) => dayLog.id === log.log.id)
-
-    if (index !== -1) {
-      const key = Object.keys(state[models.dayLogs])[index]
-      Vue.set(state[models.dayLogs], key, log.log)
+    // בדיקה אם הלוג כבר קיים במפתחות של dayLogs
+    if (state[models.dayLogs][log.log.id]) {
+      // אם הלוג כבר קיים, מעדכן אותו
+      Vue.set(state[models.dayLogs], log.log.id, log.log)
     } else {
+      // אם הלוג לא קיים, מוסיף אותו
       Vue.set(state[models.dayLogs], log.log.id, log.log)
     }
   },
