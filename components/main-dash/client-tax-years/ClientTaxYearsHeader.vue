@@ -79,7 +79,6 @@ export default {
     },
 
     flagColorGlobal() {
-      console.log(this.selectedClient)
       return this.selectedClient?.gflag || 4
     },
     primaryPersonal() {
@@ -199,9 +198,7 @@ export default {
     },
     selectedClient: {
       handler(newClient, oldClient) {
-        console.log("watch")
         if (newClient.id !== oldClient.id && oldClient.id !== undefined) {
-          console.log("watch inside")
           this.updateClient1(oldClient)
         }
       },
@@ -227,7 +224,6 @@ export default {
       updateSelectedClient: mutations.setModelResponse
     }),
     updateClient1(oldClient) {
-      console.log(oldClient)
       if (oldClient.needUpdate === true) {
         const updatedClient = {
           id: oldClient.id,
@@ -242,7 +238,6 @@ export default {
           gFlag: oldClient.gflag,
           active: oldClient.active
         };
-        console.log(updatedClient)
         this.$api.updateClient(this.headers, { clientId: updatedClient.id, client: updatedClient })
       }
     },
@@ -257,7 +252,6 @@ export default {
       return values.some(status => val.startsWith(status));
     },
     async updateStatusDate(newVal) {
-      console.log("upupu")
       const active = await this.checkActiveStatus(newVal)
       this.updateSelectedClient({
         model: models.selectedClient,
@@ -279,7 +273,6 @@ export default {
     },
 
     updateGlobalFlag(globalFlag) {
-      console.log(this.selectedClient, globalFlag)
       this.updateSelectedClient({
         model: models.selectedClient,
         data: { ...this.selectedClient, gflag: globalFlag, needUpdate: true }
@@ -291,7 +284,6 @@ export default {
         flag: globalFlag
       }
       this.$store.dispatch('updateGlobalFlagAction', { gFlag: clientFlag });
-      // this.$store.commit('updateGlobalFlagClient', clientFlag);
     },
 
     needUpdate() {
@@ -332,7 +324,6 @@ export default {
       this.showDelete = false
     },
     handleFlag(flag) {
-      console.log("flagg")
       const clientFlag = {
         clientId: this.selectedClient.id,
         userId: this.currentUser.id,
@@ -353,7 +344,6 @@ export default {
       }
       this.isLoading = true
       await this.$api.deleteClient(this.headers, { clientId: this.selectedClient.id }).then(res => {
-        console.log(res)
         if (res.success === "Success") this.$store.commit('deleteClient', this.selectedClient.id);
       })
       this.showDelete = false

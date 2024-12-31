@@ -186,6 +186,7 @@ export default {
       models.copyLogs,
     ]),
     displayedLogs() {
+      console.log("displaylogs")
       const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
       if (!logs || logs.length === 0) return []
       const mappedLogs = logs?.map((log) => {
@@ -208,6 +209,7 @@ export default {
       return boldSearchWord(filterBySearchInput, this.searchInput)
     },
     shownLogs() {
+      console.log("shownlogs")
       if (this.logs) {
         // מסנן את הלוגים לפי הערך של showArchived
         const filteredLogs = this.logs?.filter(log => this.showArchived === log.archived);
@@ -239,6 +241,7 @@ export default {
       return this.selectedClient.id
     },
     logs() {
+      console.log("logs")
       if (this.selectedClient.logs) {
         return JSON.parse(JSON.stringify(this.selectedClient.logs))
       } else {
@@ -305,7 +308,7 @@ export default {
         if (timeSpent) {
           this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: timeSpent })
         }
-      }, 1000)
+      }, 60000)
     }
   },
   mounted() {
@@ -398,7 +401,6 @@ export default {
       this.selectedLogIds = [];
     },
     pasteLogs() {
-      // Guard clause if copyLogs is empty or undefined
       if (!this.$store.state.copyLogs || this.$store.state.copyLogs.length === 0) return;
 
       // Commit a mutation to update each log's clientId and logDate
@@ -453,9 +455,6 @@ export default {
         this.editableId = id;
         this.editableLogId = logId;
       }
-      // if (id.endsWith('-alermTime')) {
-      //   this.openAlertTimeIndex = parseInt(id.split('-')[0]);
-      // }
     },
     isEditable(id) {
       return this.editableId === id
@@ -654,13 +653,6 @@ export default {
       }
       // || field === 'alarmTime'
       if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
-        // if(field === 'alarmTime'){
-        //   this.$store.commit('pushDayLog', {
-        //   state: this.selectedClient,
-        //   log: newLog
-        // });
-        // }
-        // console.log(val, field)
         this.handleUpdate(val, field)
         this.goToNextColumn()
         return
