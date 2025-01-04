@@ -91,7 +91,7 @@ export default ({ app, store, $toast }, inject) => {
         return
       }
       // Remove unnecessary properties
-      const { historyLogJson, historyLog, timeSpent, ...alarmPayload } = alarm
+      const { historyLogJson, new: isNew, historyLog, timeSpent, ...alarmPayload } = alarm
 
       // Send the alarm with the appropriate type
       const payload = { type: 'alarm', ...alarmPayload }
