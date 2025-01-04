@@ -40,6 +40,7 @@ export default {
     '@/plugins/datePicker.client.js',
     '@/plugins/v-hotkey.client.js',
     '@/plugins/v-tooltip.client.js',
+    { src: '~/plugins/webSocket.js', mode: 'client' },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

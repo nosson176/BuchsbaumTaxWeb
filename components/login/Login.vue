@@ -108,14 +108,12 @@ export default {
       this.isLoading = true;
       this.$api.login(this.loginPayload)
         .then((response) => {
-          console.log(response)
           if (typeof (response) === "number") {
             throw new TypeError('Unauthorized');
           }
           return response;
         })
         .then(async (data) => {
-          console.log(data);
           await this.setSessionKey(data);
           this.loginData = data;
           this.showWorkTimeModal = true;

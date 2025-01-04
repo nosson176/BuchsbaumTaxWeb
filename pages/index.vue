@@ -60,6 +60,7 @@ export default {
 
       // Execute all API requests
       await Promise.all(apiRequests);
+      this.$websocket.connect(this.currentUser.id);
     } catch (error) {
       console.error("Error fetching data:", error);
       this.error = error.message || 'An unknown error occurred.';
