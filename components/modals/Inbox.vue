@@ -124,14 +124,6 @@ export default {
       }
       return usersHash
     },
-    // formattedMessages() {
-    //   const messages = []
-    //   for (const key in this.inboxState) {
-    //     messages.push(this.formatMessage(this.inboxState[key]))
-    //   }
-    //   console.log(messages)
-    //   return messages
-    // }
     formattedMessages() {
       const getLatestTimestamp = (message) => {
         // Recursively find the latest timestamp from the message and its responses
@@ -163,7 +155,6 @@ export default {
       // this.emitHide()
     },
     markAsRead(message) {
-      console.log(message)
       if (message.status === 'read') return
       this.$api.updateMessage(this.headers, { messageId: message.id }, { status: 'read' }).then(() => {
         this.$store.commit("markMsgAsRead", message)
@@ -190,7 +181,6 @@ export default {
       if (result === 'yes') {
         this.$api.deleteMessage(this.headers, { messageId: id })
           .then(res => {
-            console.log(res);
             if (res.success === "Success") {
               this.$store.commit("deleteMsg", { msgId: id });
             } else {

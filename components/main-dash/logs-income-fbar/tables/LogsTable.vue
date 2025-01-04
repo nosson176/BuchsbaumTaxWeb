@@ -20,13 +20,7 @@
         </div>
         <div class="table-header xl">Note</div>
         <div class="table-header sm">Date</div>
-        <div class="table-header sm">Alarm</div>
-        <div class="table-header sm">Time</div>
-        <div class="table-header xs">
-          <button type="button"
-            class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            @click="setAlarmFilter" />
-        </div>
+        <!-- <div class="table-header sm">Alarm</div> -->
         <div class="table-header sm flex flex-col">
           <div class="flex items-center space-x-0.5">
             <span>Emp</span>
@@ -34,6 +28,13 @@
           </div>
           <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
+        <!-- <div class="table-header sm">Time</div> -->
+        <div class="table-header xs">
+          <button type="button"
+            class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            @click="setAlarmFilter" />
+        </div>
+        <div class="table-header sm">Time</div>
         <div v-if="playTime && globalPlayTime" class="table-header sm flex">
           <PauseIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="stopTime" />
           {{ currentTimeSpent }}
@@ -48,8 +49,8 @@
       </TableHeader>
     </template>
     <template #body>
-      <TableRow v-for="(log, idx) in displayedLogs" v-memo="[log.id, log.note, log.years]" :key="log.id" :idx="idx"
-        :selected="isSelected(log.id)" :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
+      <TableRow v-for="(log, idx) in displayedLogs" :key="log.id" :idx="idx" :selected="isSelected(log.id)"
+        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
@@ -79,12 +80,28 @@
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
             @blur="onBlur(log.logDate, 'logDate')" />
         </div>
-        <div :id="`${idx}-alarmDate`" class="table-col sm"
+        <!-- <div :id="`${idx}-alarmDate`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
           <EditableDateCell v-model="log.alarmDate" :is-editable="isEditable(`${idx}-alarmDate`)"
             @blur="onBlur(log.alarmDate, 'alarmDate')" />
-        </div>
+        </div> -->
 
+        <!-- <div :id="`${idx}-alarmTime`" class="table-col sm"
+          @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
+          <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
+            @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
+        </div> -->
+        <div :id="`${idx}-alarmUserName`" class="table-col sm"
+          @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
+          <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
+            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
+        </div>
+        <!-- <div :id="`${idx}-alarmUserName`" class="table-col sm"
+        @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
+        <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
+        :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
+      </div> -->
         <div :id="`${idx}-alarmTime`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
@@ -94,11 +111,6 @@
         <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
           <CheckIcon v-if="log.alarmDate" class="h-5 w-5 cursor-pointer"
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'" />
-        </div>
-        <div :id="`${idx}-alarmUserName`" class="table-col sm"
-          @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
-          <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
         </div>
         <div :id="`${idx}-secondsSpent`" class="table-col sm"
           @click="toggleEditable(`${idx}-secondsSpent`, log.id, log.timeSpent)">
@@ -141,7 +153,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
 import { boldSearchWord, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'secondsSpent', 'delete']
+// const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
 
@@ -456,53 +469,66 @@ export default {
         this.editableLogId = logId;
       }
     },
+
     isEditable(id) {
       return this.editableId === id
     },
+
     handleUpdate(val, field) {
       if (!this.editableLogId) return;
+
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
       if (logIndex === -1) return;
 
       const updatedLog = { ...this.displayedLogs[logIndex] };
 
-      if (field === 'alarmTime') {
-        dayjs.extend(customParseFormat);
+      // Helper function to validate and send alarm
+      const validateAndSendAlarm = (updatedLog, alarmTime) => {
         const currentTime = dayjs();
         const endOfDay = dayjs().endOf('day');
 
-        // Parse the date string with strict mode and correct format
-        const alarmTime = dayjs(val, 'DD-MM-YYYY HH:mm', true);
-        if (alarmTime.isValid()) {
-          // Check if time is within valid range
-          if (alarmTime.isAfter(currentTime) && alarmTime.isBefore(endOfDay)) {
-            updatedLog.alarmTime = val;
+        if (alarmTime.isValid() && alarmTime.isAfter(currentTime) && alarmTime.isBefore(endOfDay)) {
+          if (updatedLog.alarmUserId !== this.currentUser.id) {
+            this.$websocket.sendAlarmToServer(updatedLog);
+          } else {
             this.$store.commit('pushDayLog', {
               state: this.selectedClient,
               log: updatedLog
             });
-          } else {
-            // Optional: Provide user feedback about invalid time range
-            console.warn("Alarm time must be between current time and end of day");
-            return;
           }
-        } else {
-          console.warn("Invalid date format. Use DD-MM-YYYY HH:mm");
-          return;
+        }
+      };
+
+      // Handle alarmTime field update
+      if (field === 'alarmTime') {
+        dayjs.extend(customParseFormat);
+        const alarmTime = dayjs(val, 'DD-MM-YYYY HH:mm', true);
+        if (alarmTime.isValid()) {
+          updatedLog.alarmTime = val;
+          if (updatedLog.alarmUserId) {
+            validateAndSendAlarm(updatedLog, alarmTime);
+          }
         }
       }
 
-      // Update alarmUserId if necessary
+      // Handle alarmUserName field update
       if (field === 'alarmUserName') {
         const user = Object.values(this.users).find(user => user.username === val);
         if (user) {
           updatedLog.alarmUserId = user.id;
+          dayjs.extend(customParseFormat);
+          const alarmTime = dayjs(updatedLog.alarmTime, 'DD-MM-YYYY HH:mm', true);
+          validateAndSendAlarm(updatedLog, alarmTime);
         }
       }
 
+      // Dispatch update action
       this.$store.dispatch('updateLogAction', { log: updatedLog });
+
+      // Update logs in parent component
       this.updateUpdatAndNewLogs(updatedLog, val, field);
-    },
+    }
+    ,
 
     updateUpdatAndNewLogs(updatedLog, val, field) {
       const index = this.updatAndNewLogs.findIndex(log => log.id === updatedLog.id);
@@ -774,7 +800,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .alarm {
   @apply bg-indigo-100;
 }
@@ -795,4 +821,4 @@ export default {
     min-width: 3rem;
   }
 }
-</style>
+</style> -->

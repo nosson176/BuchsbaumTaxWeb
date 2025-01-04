@@ -17,20 +17,15 @@
       </div>
     </div>
     <div class="bg-gray-50 px-6 py-3 flex justify-center">
-      <button
-        type="button"
+      <button type="button"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="emitHide"
-      >
+        @click="emitHide">
         Cancel
       </button>
-      <button
-        type="button"
-        :disabled="isDisabled"
+      <button type="button" :disabled="isDisabled"
         :class="isDisabled ? 'bg-green-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-        @click="sendMessage"
-      >
+        @click="sendMessage">
         Send
       </button>
     </div>
@@ -109,22 +104,29 @@ export default {
       this.$emit(events.hide)
     },
     sendMessage() {
-  console.log("sendMSG");
-  const messageObj = { recipients: this.userIds, message: this.message };
-  if (this.responseId) {
-    console.log("relay");
-    messageObj.parentId = this.responseId;
-    messageObj.threadId = this.threadId;
-  }
-  console.log(messageObj);
-  this.$api.sendMessage(this.headers, { messageObj }).then((res) => {
-    console.log(res);
-    const response = res.data[0];
-    console.log("parentId being sent to mutation:", messageObj.parentId);
-    this.$store.commit("pushNewMsg", { msg: response, parentId: messageObj.parentId });
-    return this.emitHide();
-  });
-}
+      console.log("sendMSG");
+      const messageObj = { recipients: this.userIds, message: this.message };
+      if (this.responseId) {
+        console.log("relay");
+        messageObj.parentId = this.responseId;
+        messageObj.threadId = this.threadId;
+      }
+      this.$api.sendMessage(this.headers, { messageObj }).then((res) => {
+        const response = res.data;
+        console.log(response)
+        response.forEach(msg => {
+          console.log(msg)
+          this.$store.commit("pushNewMsg", { msg, parentId: messageObj.parentId });
+          if (this.responseId) {
+            msg.parentId = this.responseId;
+            msg.threadId = this.threadId;
+          }
+          // delete response.responses
+          this.$websocket.sendMessageToServer(msg);
+        })
+        return this.emitHide();
+      });
+    }
   },
 }
 </script>

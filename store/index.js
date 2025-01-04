@@ -123,30 +123,31 @@ const mutations = {
     state.copyLogs = []
   },
 
-  // pushDayLog(state, log) {
-  //   // המרת הערכים של dayLogs למערך
-  //   const dayLogsArray = Object.values(state[models.dayLogs])
-
-  //   // חיפוש האינדקס
-  //   const index = dayLogsArray.findIndex((dayLog) => dayLog.id === log.log.id)
-
-  //   if (index !== -1) {
-  //     const key = Object.keys(state[models.dayLogs])[index]
-  //     Vue.set(state[models.dayLogs], key, log.log)
-  //   } else {
-  //     Vue.set(state[models.dayLogs], log.log.id, log.log)
-  //   }
-  // },
   pushDayLog(state, log) {
-    // בדיקה אם הלוג כבר קיים במפתחות של dayLogs
-    if (state[models.dayLogs][log.log.id]) {
-      // אם הלוג כבר קיים, מעדכן אותו
-      Vue.set(state[models.dayLogs], log.log.id, log.log)
+    // המרת הערכים של dayLogs למערך
+    const dayLogsArray = Object.values(state[models.dayLogs])
+    console.log(dayLogsArray)
+    // חיפוש האינדקס
+    const index = dayLogsArray.findIndex((dayLog) => dayLog.id === log.log.id)
+    console.log(index)
+    if (index !== -1) {
+      const key = Object.keys(state[models.dayLogs])[index]
+      Vue.set(state[models.dayLogs], key, log.log)
     } else {
-      // אם הלוג לא קיים, מוסיף אותו
       Vue.set(state[models.dayLogs], log.log.id, log.log)
     }
   },
+  // pushDayLog(state, log) {
+  //   // בדיקה אם הלוג כבר קיים במפתחות של dayLogs
+  //   if (state[models.dayLogs][log.log.id]) {
+  //     // אם הלוג כבר קיים, מעדכן אותו
+  //     Vue.set(state[models.dayLogs], log.log.id, log.log)
+  //   } else {
+  //     // אם הלוג לא קיים, מוסיף אותו
+  //     Vue.set(state[models.dayLogs], log.log.id, log.log)
+  //   }
+  //   console.log(state.dayLogs)
+  // },
 
   clearDayLogs(state) {
     // אופציה פשוטה: הופך את dayLogs לאובייקט ריק
@@ -408,24 +409,46 @@ const mutations = {
     // Get inbox as an array
     const inbox = Object.values(state.inbox)
 
+    let messageAdded = false // Flag to track if the message was added
+
     if (parentId) {
       // Find the parent message by ID
-      const index = inbox.findIndex((message) => message.id === parentId)
-      if (index !== -1) {
-        // Push the new message into the parent's responses
-        inbox[index].responses.push(msg)
-
-        // Update state to trigger reactivity
-        state.inbox = inbox
-        return
+      const parentMessage = inbox.find((message) => message.id === parentId)
+      if (parentMessage) {
+        // Check if the message already exists in the parent's responses
+        const existingResponse = parentMessage.responses.find((response) => response.id === msg.id)
+        if (!existingResponse) {
+          parentMessage.responses.push(msg)
+          state.inbox = { ...state.inbox }
+          messageAdded = true
+        }
+      } else {
+        // Check in responses of all messages
+        inbox.forEach((message) => {
+          if (Array.isArray(message.responses)) {
+            const responseIndex = message.responses.findIndex((response) => response.id === parentId)
+            if (responseIndex !== -1) {
+              const existingResponse = message.responses.find((response) => response.id === msg.id)
+              if (!existingResponse) {
+                message.responses.push(msg)
+                state.inbox = { ...state.inbox }
+                messageAdded = true
+              }
+            }
+          }
+        })
       }
     }
-    inbox.push(msg)
 
-    // Update state.inbox for new message
-    state.inbox = { ...state.inbox, [msg.id]: msg }
+    if (!messageAdded) {
+      // Check if the message already exists in the inbox
+      if (!state.inbox[msg.id]) {
+        state.inbox = { ...state.inbox, [msg.id]: msg }
+      } else {
+        console.warn(`Message with id ${msg.id} already exists in inbox.`)
+      }
+    }
   },
-
   deleteMsg(state, { msgId }) {
     const inbox = Object.values(state.inbox)
 

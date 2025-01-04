@@ -37,7 +37,7 @@ export default {
         ]),
 
         logsArray() {
-            console.log(Object.values(this.dayLogs))
+            console.log(this.dayLogs)
             return this.dayLogs ? Object.values(this.dayLogs) : []
         },
 
@@ -51,7 +51,6 @@ export default {
             deep: true,
             immediate: true,
             handler(newDayLogs) {
-                console.log(newDayLogs)
                 this.filterAndSortLogs(Object.values(newDayLogs));
 
             }
@@ -60,6 +59,7 @@ export default {
 
     methods: {
         filterAndSortLogs(logs) {
+            console.log(Object.values(logs))
             const currentUser = this.currentUser
             if (!currentUser) {
                 console.error('Current user is not defined')
@@ -123,10 +123,7 @@ export default {
         },
 
         removeLog(log) {
-            console.log(log)
-            console.log(this.matchingLogs)
             this.matchingLogs = this.matchingLogs.filter(l => l.id !== log.id)
-            console.log(this.matchingLogs)
             // Keep tooltip open if there are more matching logs
             if (this.matchingLogs.length === 0) {
                 this.showTooltip = false
