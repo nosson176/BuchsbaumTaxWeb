@@ -7,10 +7,11 @@ export default ({ app, store, $toast }, inject) => {
     connect(userId) {
       const websocketUrl =
         process.env.NODE_ENV === 'production'
-          ? process.env.BACKEND_URL_P_WEBSOCKET // Production WebSocket URL
-          : process.env.BACKEND_URL_WEBSOCKET // Development WebSocket URL
+          ? `${process.env.BACKEND_URL_P_WEBSOCKET}/websocket` // Append /websocket if missing
+          : `${process.env.BACKEND_URL_WEBSOCKET}/websocket` // Development WebSocket URL
 
       console.log('WebSocket URL:', websocketUrl)
+      console.log('WebSocket userId:', `${websocketUrl}/${userId}`)
 
       // Construct the WebSocket URL with the userId
       this.socket = new WebSocket(`${websocketUrl}/${userId}`)

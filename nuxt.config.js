@@ -103,7 +103,7 @@ export default {
     terser: {
       terserOptions: {
         compress: {
-          drop_console: true, // Remove all console.* statements
+          drop_console: false, // Remove all console.* statements
         },
       },
     },
