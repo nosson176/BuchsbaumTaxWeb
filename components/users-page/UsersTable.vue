@@ -9,8 +9,10 @@
     </template>
     <template #body>
       <div class="table-body-container">
-        <TableRow v-for="(user, index) in users" :key="user.id" class="px-2 py-2" :idx="index"
-          :class="isUserSelected(user.id) ? 'selected' : 'row'">
+        <TableRow v-for="(user, index) in users" :key="user.id" class="px-2 py-2" :idx="index" :class="{
+          'selected': isUserSelected(user.id),
+          'row': !isUserSelected(user.id),
+        }">
           <div class="table-col w-4"></div>
           <div class="table-col w-full cursor-pointer text-black font-medium" @click="setSelected(user)">
             {{ user.username }}
@@ -20,7 +22,7 @@
             <DeleteButton v-if="isCurrentUserAdmin" @click="onDeleteClick(user)" />
           </div>
           <Modal :showing="showDelete" @hide="closeDeleteModal">
-            <DeleteType :label="user.username" @hide="closeDeleteModal" @delete="deleteUser" />
+            <DeleteType :label="currentUserToDelete.username" @hide="closeDeleteModal" @delete="deleteUser" />
           </Modal>
         </TableRow>
       </div>
@@ -31,6 +33,7 @@
 <script>
 import { mapState } from 'vuex'
 import { events, models, USER_TYPE_ADMIN } from '~/shared/constants'
+
 export default {
   name: 'UsersTable',
   props: {
@@ -38,15 +41,12 @@ export default {
       type: Array,
       required: true,
     },
-    userId: {
-      type: Number,
-      default: 0,
-    },
   },
   data() {
     return {
       showDelete: false,
       deleteUserId: null,
+      selectedUserId: null, // To store the selected user id
     }
   },
   computed: {
@@ -57,13 +57,21 @@ export default {
     isCurrentUserAdmin() {
       return this.currentUser.userType === USER_TYPE_ADMIN
     },
+    currentUserToDelete() {
+      if (this.deleteUserId && this.users) {
+        return this.users.find(user => user.id === this.deleteUserId) || null;
+      } else {
+        return ''
+      }
+    },
   },
   methods: {
     setSelected(user) {
+      this.selectedUserId = user.id // Mark the clicked user as selected
       this.$emit(events.click, user.id)
     },
     isUserSelected(userId) {
-      return userId === this.userId
+      return this.selectedUserId === userId // Check if the user is selected
     },
     onAddRowClick() {
       this.$emit(events.change)
@@ -75,7 +83,7 @@ export default {
     async deleteUser() {
       const res = await this.$api.deleteUser(this.headers, { userId: this.deleteUserId })
       if (res.success === 'Success') this.$store.commit('deleteUser', this.deleteUserId)
-
+      this.$toast.success(`${this.currentUserToDelete.username} user delete`)
       this.closeDeleteModal()
     },
     closeDeleteModal() {
@@ -84,6 +92,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 .selected,

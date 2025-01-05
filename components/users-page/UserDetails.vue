@@ -34,6 +34,15 @@
             </div>
           </div>
         </div>
+        <!-- Adding the email field -->
+        <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+          <div class="sm:col-span-1">
+            <div class="text-xs font-bold text-gray-500">EMAIL</div>
+            <div class="mt-1 text-sm text-gray-900">
+              <FormInput v-model="userObj.email" placeholder="Email" type="email" required />
+            </div>
+          </div>
+        </div>
         <div class="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
           <div class="sm:col-span-1">
             <div class="text-xs font-bold text-gray-500">PRIVILEGE SET</div>

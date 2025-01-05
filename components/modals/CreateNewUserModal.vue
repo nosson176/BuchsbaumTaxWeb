@@ -8,6 +8,7 @@
         <FormInput v-model="formModel.firstName" placeholder="FIRST NAME" />
         <FormInput v-model="formModel.lastName" placeholder="LAST NAME" />
       </div>
+      <FormInput v-model="formModel.email" placeholder="EMAIL" required type="email" />
       <div class="grid grid-cols-1 sm:grid-cols-2 sm:gap-4">
         <div class="flex flex-col space-y-0.5">
           <FormInput v-model="formModel.password" placeholder="PASSWORD" type="password" required />
@@ -80,6 +81,11 @@ export default {
     },
     showPasswordError() {
       return this.formModel.password.length >= 1 && this.formModel.password.length < 6
+    },
+    isEmailValid() {
+      // Simple email format validation
+      const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+      return emailPattern.test(this.formModel.email)
     },
   },
   beforeMount() {

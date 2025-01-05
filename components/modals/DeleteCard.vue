@@ -158,7 +158,6 @@ export default {
     updatedTaxYear() {
       const taxYear = this.taxYears.find((taxYear) => taxYear.id === this.id)
       taxYear.archived = !taxYear.archived
-      console.log(taxYear)
       return taxYear
     },
     updatedFee() {
@@ -268,7 +267,6 @@ export default {
     updateTaxYear() {
       this.$api
         .updateTaxYear(this.headers, { clientId: this.clientId, taxYearId: this.id }, this.updatedItem).then(res => {
-          console.log(res)
           if (res.archived === true) {
             this.$store.commit('updateTaxYearState', { taxYearId: this.id, updatedData: this.updatedItem });
           }
