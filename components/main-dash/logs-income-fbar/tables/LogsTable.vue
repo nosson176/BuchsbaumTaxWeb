@@ -124,12 +124,12 @@
               <div class="tooltip-content p-2 max-w-md">
                 <ul v-if="log.historyLogJson && log.historyLogJson.length > 0 || log.createdBy" class="list-disc pl-4">
                   <span class="font-semibold mb-2 block"><strong>Created by</strong> {{ log.createdBy }} => {{
-                    formatDate(log.logDate)
+                    formatDateLog(log.logDate)
                   }}</span>
                   <div class="div"></div>
                   <li v-for="(change, changeIdx) in log.historyLogJson" :key="changeIdx" class="mb-1">
                     <span class="font-semibold">
-                      ({{ formatDate(change.date) }}) {{ change.userName }} => {{ change.field }} =>
+                      ({{ formatDateLog(change.date) }}) {{ change.userName }} => {{ change.field }} =>
                     </span>
                     {{ truncateText(change.val) }}
                   </li>
@@ -147,11 +147,10 @@
 <script>
 import { mapState } from 'vuex'
 import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
-import moment from 'moment-timezone';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
-import { boldSearchWord, generateRandomId, searchArrOfObjs } from '~/shared/utility'
+import { boldSearchWord, formatDateLog, formatUnixTimestampWithMoment, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'secondsSpent', 'delete']
 // const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
@@ -181,7 +180,6 @@ export default {
       intervalId: '',
       oldValue: '',
       updatAndNewLogs: [],
-      openAlertTimeIndex: null,
     }
   },
   computed: {
@@ -199,7 +197,6 @@ export default {
       models.copyLogs,
     ]),
     displayedLogs() {
-      console.log("displaylogs")
       const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
       if (!logs || logs.length === 0) return []
       const mappedLogs = logs?.map((log) => {
@@ -222,7 +219,6 @@ export default {
       return boldSearchWord(filterBySearchInput, this.searchInput)
     },
     shownLogs() {
-      console.log("shownlogs")
       if (this.logs) {
         // מסנן את הלוגים לפי הערך של showArchived
         const filteredLogs = this.logs?.filter(log => this.showArchived === log.archived);
@@ -254,7 +250,6 @@ export default {
       return this.selectedClient.id
     },
     logs() {
-      console.log("logs")
       if (this.selectedClient.logs) {
         return JSON.parse(JSON.stringify(this.selectedClient.logs))
       } else {
@@ -327,9 +322,9 @@ export default {
   mounted() {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
-  async beforeDestroy() {
+  beforeDestroy() {
     clearInterval(this.intervalId);
-    await this.saveUpdatAndNewLogs();
+    this.saveUpdatAndNewLogs();
   },
   watch: {
     globalPlaytimeValue(newValue) {
@@ -344,6 +339,7 @@ export default {
     }
   },
   methods: {
+    formatDateLog,
     handleBeforeUnload(event) {
       clearInterval(this.intervalId);
       this.saveUpdatAndNewLogs();
@@ -367,18 +363,18 @@ export default {
       }
     },
 
-    formatDate(date) {
-      const d = new Date(date);
+    // formatDate(date) {
+    //   const d = new Date(date);
 
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-      const year = d.getFullYear();
+    //   const day = String(d.getDate()).padStart(2, '0');
+    //   const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    //   const year = d.getFullYear();
 
-      const hours = String(d.getHours()).padStart(2, '0');
-      const minutes = String(d.getMinutes()).padStart(2, '0');
+    //   const hours = String(d.getHours()).padStart(2, '0');
+    //   const minutes = String(d.getMinutes()).padStart(2, '0');
 
-      return `${day}/${month}/${year} ${hours}:${minutes}`;
-    },
+    //   return `${day}/${month}/${year} ${hours}:${minutes}`;
+    // },
 
     picnicTablePopup() {
       const url = process.env.NODE_ENV === 'development' ?
@@ -392,11 +388,9 @@ export default {
       if (!this.selectedLogIds) return;
 
       this.selectedLogIds.forEach((logId, idx) => {
-        // בדוק אם הלוג כבר הועתק
         const isLogCopied = this.$store.state.copyLogs.some(log => log.id === Number(logId));
         if (isLogCopied) return;
 
-        // מצא את הלוג המבוקש מתוך displayedLogs
         const logIndex = this.displayedLogs.findIndex(log => log.id === Number(logId));
         const log = this.displayedLogs[logIndex];
 
@@ -576,8 +570,8 @@ export default {
       try {
         const logsToSave = this.updatAndNewLogs.map(log => ({
           ...log,
-          logDate: this.formatUnixTimestamp(log.logDate),
-          alarmDate: this.formatUnixTimestamp(log.alarmDate),
+          logDate: formatUnixTimestampWithMoment(log.logDate),
+          alarmDate: formatUnixTimestampWithMoment(log.alarmDate),
           historyLogJson: JSON.stringify(log.historyLogJson)
         }));
         await this.$api.updateLogs(this.headers, logsToSave);
@@ -585,12 +579,12 @@ export default {
         console.error('Error saving logs:', error);
       }
     },
-    formatUnixTimestamp(unixTimeMillis) {
-      if (unixTimeMillis === null) return
-      return moment(unixTimeMillis)
-        .tz('Asia/Jerusalem')
-        .format('YYYY-MM-DD'); // No timezone offset
-    },
+    // formatUnixTimestamp(unixTimeMillis) {
+    //   if (unixTimeMillis === null) return
+    //   return moment(unixTimeMillis)
+    //     .tz('Asia/Jerusalem')
+    //     .format('YYYY-MM-DD'); // No timezone offset
+    // },
 
     onDeleteClick(logId) {
       const log = this.displayedLogs.find((log) => log.id === logId)
@@ -631,7 +625,7 @@ export default {
         this.resetClock()
       }
       if (this.isCopyingLogs) {
-        this.selectedLogIds.forEach((logId, idx) => {
+        this.selectedLogIds.forEach((logId) => {
           const logIndex = this.displayedLogs.findIndex((log) => log.id === Number(logId))
           const log = this.displayedLogs[logIndex]
 
@@ -672,13 +666,11 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field) {
-      console.log("onblur")
       if (this.oldValue !== val && this.oldValue !== undefined) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
         return
       }
-      // || field === 'alarmTime'
       if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
@@ -800,7 +792,7 @@ export default {
 }
 </script>
 
-<!-- <style scoped>
+<style scoped>
 .alarm {
   @apply bg-indigo-100;
 }
@@ -821,4 +813,4 @@ export default {
     min-width: 3rem;
   }
 }
-</style> -->
+</style>

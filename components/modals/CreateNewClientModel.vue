@@ -94,7 +94,6 @@ export default {
             return this.valueTypes?.periodical || []
         },
         statusOptions() {
-            console.log(this.valueTypes)
             return this.valueTypes?.status || []
         },
         filteredOptions() {

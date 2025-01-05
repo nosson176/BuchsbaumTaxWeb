@@ -33,7 +33,6 @@ export default {
   },
   methods: {
     emitClick() {
-      console.log("delete")
       this.$emit(events.click)
     },
   },

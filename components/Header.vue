@@ -160,7 +160,6 @@ export default {
     },
     togglePlayTime() {
       const newStatus = !this.globalPlayTime
-      console.log('Toggling play time:', newStatus)
       this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
     },
     getSelectedClient(selectedClientName) {
@@ -178,44 +177,34 @@ export default {
       this.$store.commit('setModelResponse', { model: 'secondsNeededToDisplayModal1', data: t })
     },
     openSmsModal() {
-      console.log('Opening SMS modal')
       this.showSmsModal = true
     },
     closeSmsModal() {
-      console.log('Closing SMS modal')
       this.showSmsModal = false
     },
     openInboxModal() {
-      console.log('Opening inbox modal')
       this.showInboxModal = true
     },
     closeInboxModal() {
-      console.log('Closing inbox modal')
       this.showInboxModal = false
     },
     openMessageModal() {
-      console.log('Opening message modal')
       this.showMessageModal = true
     },
     closeMessageModal() {
-      console.log('Closing message modal')
       this.showMessageModal = false
     },
     openLogoutModal() {
-      console.log('Opening logout modal')
       this.ShowLogoutConfirmationModel = true
     },
     closeLogoutConfirmationModel() {
-      console.log('Closing logout confirmation modal')
       this.ShowLogoutConfirmationModel = false
       this.$api.signout()
     },
     async loadInbox() {
-      console.log('Loading inbox messages')
       await this.$api.getInbox(this.headers)
     },
     clockOutWorkTime() {
-      console.log('Clocking out work time')
       const headers = this.$api.getHeaders()
       const now = new Date()
       const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
@@ -226,15 +215,12 @@ export default {
       this.$api.signout()
     },
     irsPopup() {
-      console.log('Opening IRS popup')
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
     },
     shekelatorPopup() {
-      console.log('Opening Shekelator popup')
       window.open('https://docs.google.com/spreadsheets/d/1YZcySBg-aRoG7xlUcZ3kU-9avK8PLMH-HLz352irqts/edit?gid=0#gid=0', 'popup', 'width=770,height=770')
     },
     createNewMessage(responseId, threadId) {
-      console.log('createNewMessage')
       this.responseId = responseId
       this.threadId = threadId
       this.openMessageModal()

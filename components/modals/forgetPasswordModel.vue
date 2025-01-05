@@ -67,7 +67,6 @@ export default {
             this.loading = true;
             try {
                 const response = await this.$api.forgotPassword(this.email);
-                console.log(response)
                 if (response.success === 'Success') {
                     this.$toast.success(response.msg)
                     this.emitHide();

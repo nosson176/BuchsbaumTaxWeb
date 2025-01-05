@@ -137,11 +137,9 @@ export default {
   computed: {
     computedValue: {
       get() {
-        console.log(this.value)
         return this.value
       },
       set(value) {
-        console.log(value)
         this.$emit(events.input, value)
       },
     },
@@ -156,10 +154,7 @@ export default {
       }
     },
     setSelectOption(option) {
-      console.log(option)
-      console.log(typeof option === 'object')
       this.computedValue = typeof option === 'object' ? option.value : option
-      console.log(this.computedValue)
       this.showOptions = false
     },
     calculateOptionsWidth() {

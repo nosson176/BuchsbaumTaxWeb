@@ -234,7 +234,6 @@ export default {
       this.$api.getClientData(headers, this.selectedClient.id)
     },
     toggleEditable(field, id) {
-      console.log(field)
       this.editableYearId = id
       if (!(this.editableId === field)) {
         this.editableId = field
@@ -248,11 +247,9 @@ export default {
       this.editableId = ''
     },
     handleUpdate() {
-      console.log("update")
       const headers = this.$api.getHeaders()
       const yearData = Object.assign({}, this.yearData, this.yearCopy)
       const taxYearId = yearData.id
-      console.log("update", yearData)
       const clientId = this.selectedClient.id
       this.$api.updateTaxYear(headers, { taxYearId, clientId }, yearData)
       this.$store.commit('updateTaxYearState', { taxYearId, updatedData: yearData });

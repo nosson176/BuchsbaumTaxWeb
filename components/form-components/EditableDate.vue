@@ -70,11 +70,6 @@ export default {
       return this.type === 'date'
     },
     displayedValue() {
-      // console.log("displayedValue => ", this.computedValue)
-      // if (this.computedValue === 'null') {
-      //   console.log("inin")
-      //   return this.placeholder
-      // }
       return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
     },
   },

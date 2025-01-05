@@ -104,18 +104,14 @@ export default {
       this.$emit(events.hide)
     },
     sendMessage() {
-      console.log("sendMSG");
       const messageObj = { recipients: this.userIds, message: this.message };
       if (this.responseId) {
-        console.log("relay");
         messageObj.parentId = this.responseId;
         messageObj.threadId = this.threadId;
       }
       this.$api.sendMessage(this.headers, { messageObj }).then((res) => {
         const response = res.data;
-        console.log(response)
         response.forEach(msg => {
-          console.log(msg)
           this.$store.commit("pushNewMsg", { msg, parentId: messageObj.parentId });
           if (this.responseId) {
             msg.parentId = this.responseId;

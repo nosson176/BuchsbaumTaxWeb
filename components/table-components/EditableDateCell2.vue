@@ -61,7 +61,6 @@ export default {
             return this.type === 'datetime'
         },
         displayedValue() {
-            // console.log(this.computedValue)
             return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
         },
     },
@@ -75,7 +74,6 @@ export default {
             this.showPicker = true
         },
         onBlur() {
-            // console.log("blur")
             this.$emit(events.blur)
         },
     },

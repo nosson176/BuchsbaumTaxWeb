@@ -41,7 +41,6 @@ export default {
   },
   methods: {
     toggleItemShown(setValue, taxYear) {
-      console.log("toggleItemShown")
       const updatedTaxYear = Object.assign({}, taxYear, { show: !taxYear.show })
       this.$store.commit('updateTaxYearState', { taxYearId: updatedTaxYear.id, updatedData: updatedTaxYear });
       this.$api
@@ -49,7 +48,6 @@ export default {
     },
     onDeleteClick(taxYearId, taxYear) {
       if (this.showArchived) {
-        console.log("showArchived");
         const taxYearToUpdate = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId);
         if (taxYearToUpdate) {
           // Prepare the updated data
@@ -59,7 +57,6 @@ export default {
         this.$api
           .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
       } else {
-        console.log("UNNNshowArchived");
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
           data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years, label: taxYear.year } } },

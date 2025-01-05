@@ -105,7 +105,6 @@ export default {
   computed: {
     ...mapState([models.inbox, models.users, models.loading, models.currentUser]),
     inboxState() {
-      console.log(this.inbox)
       return this.inbox
     },
     headers() {
