@@ -452,12 +452,6 @@ export default {
       },
       deep: true,
     },
-    localChanges: {
-      handler(newValue) {
-        // console.log('localChanges updated:', newValue);
-      },
-      deep: true
-    },
   },
 
   created() {
@@ -479,10 +473,6 @@ export default {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
 
-  // beforeDestroy() {
-  //   console.log("beforeDestroy filing")
-  //   this.sendUpdatesToServer()
-  // },
   methods: {
     handleBeforeUnload(event) {
       if (this.filingsUpdate.length > 0) {
@@ -497,7 +487,6 @@ export default {
     },
     setEditable(editable) {
       this.editable = editable;
-      // console.log(editable)
       // Store the old value for comparison
       if (editable === "status" || editable === "statusDetail") {
         this.oldValue = this.formModel[editable].value;
@@ -512,7 +501,6 @@ export default {
     },
 
     onBlur(field) {
-      console.log("blur => ", field);
       if (field === 'statusDate') {
         this.times = this.times === 0 ? 1 : 0;
         if (this.times === 1) {
@@ -531,10 +519,6 @@ export default {
       const newValueStr = field === 'status' || field === 'statusDetail'
         ? JSON.stringify(this.formModel[field]?.value)
         : JSON.stringify(this.formModel[field]);
-
-      // console.log("Old Value => ", oldValueStr);
-      // console.log("New Value => ", newValueStr);
-      // console.log("Values match => ", oldValueStr === newValueStr);
 
       // Check if the values are equal and update editability if they are
       if (oldValueStr === newValueStr) {
@@ -560,16 +544,13 @@ export default {
         });
       }
 
-      console.log(field, this.oldCurrencyType, this.currency, this.oldValue)
       if (this.currency === this.oldCurrencyType) return
       if (field === 'currency') {
         // Handle currency change
         const oldCurrency = this.oldValue;
         const newCurrency = this.currency;
-        console.log(oldCurrency, newCurrency)
 
         if (oldCurrency !== newCurrency) {
-          console.log("inside")
           this.$store.commit('updateFilingCurrency', {
             filingId: this.filing.id,
             oldCurrency,
@@ -592,7 +573,6 @@ export default {
     },
 
     handleLocalUpdate() {
-      // console.log('handleLocalUpdate called');
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);

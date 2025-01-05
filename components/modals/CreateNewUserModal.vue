@@ -91,7 +91,6 @@ export default {
   methods: {
     submitCreateUser() {
       this.$api.createUser(this.headers, { user: this.formModel }).then((user) => {
-        console.log(user)
         this.$store.commit('pushNewUser', user)
         this.emitHide(user.id)
       })

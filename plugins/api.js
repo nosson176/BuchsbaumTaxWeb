@@ -59,21 +59,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       endpoint += `?${queryParams.join('&')}`
     }
 
-    return (
-      $axios
-        .get(endpoint, {
-          headers,
-          loading: models.clients,
-          loaded: models.clients,
-          store: models.clients,
-        })
-        // .then((res) => {
-        //   console.log(JSON.parse(JSON.stringify(res)))
-        // })
-        .catch((e) => {
-          $toast.error('Error loading clients')
-        })
-    )
+    return $axios
+      .get(endpoint, {
+        headers,
+        loading: models.clients,
+        loaded: models.clients,
+        store: models.clients,
+      })
+      .catch((e) => {
+        $toast.error('Error loading clients')
+      })
   }
 
   const getClientData = (headers, client) => {
@@ -100,7 +95,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.selectedClient,
       })
       .then((res) => {
-        console.log('Client data loaded:', res)
         getClientsHistory(headers) // Ensure this function handles its errors
       })
       .catch((err) => {
@@ -430,7 +424,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
 
   const updateContacts = async (headers, contacts) => {
     try {
-      await $axios.put(`/contacts`, contacts, { headers }).then((res) => console.log(res))
+      await $axios.put(`/contacts`, contacts, { headers })
     } catch (error) {
       console.error('Error updating contact:', error)
       $toast.error('Error updating contact')

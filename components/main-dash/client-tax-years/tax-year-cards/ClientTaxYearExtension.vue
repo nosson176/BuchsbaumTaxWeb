@@ -77,10 +77,8 @@ export default {
       this.setEditable('')
     },
     handleUpdate() {
-      // console.log(this.filingsUpdate)
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
-        // console.log(updatedModel)
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
 
         if (existingIndex > -1) {
@@ -89,12 +87,10 @@ export default {
           this.$store.commit('pushFilingUpdate', updatedModel);
         }
 
-        // console.log('Updated localChanges:', JSON.parse(JSON.stringify(this.localChanges)));
         this.goToNextItem();
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);
       }
-      console.log(this.formModel)
     },
     emitDelete() {
       this.$emit(events.delete, this.extension.id)

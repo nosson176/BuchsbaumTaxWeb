@@ -30,7 +30,6 @@ export default {
               return a.year - b.year
             })
         )
-        // console.log(JSON.parse(JSON.stringify(items)))
         return items.reverse()
       } else {
         return null
@@ -43,7 +42,6 @@ export default {
   watch: {
     selectedClient: {
       handler(newClient, oldClient) {
-        console.log("im here!")
         if (newClient.id !== oldClient.id && oldClient.id !== undefined) {
           if (this.filingsUpdate.length > 0) {
             this.sendUpdatesToServer()

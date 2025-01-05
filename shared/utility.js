@@ -21,21 +21,7 @@ const formatAsNumber = (s) => {
   return s.toLocaleString('en-US')
 }
 
-// const setAsValidNumber = (input) => {
-//   console.log(input)
-//   let newNumber = 0
-//   if (isNaN(input) || !input) {
-//     if (input.includes(',')) {
-//       newNumber = input.replace(',', '')
-//     }
-//   } else {
-//     newNumber = input
-//   }
-//   return newNumber
-// }
 const setAsValidNumber = (input) => {
-  console.log('Input:', input)
-
   let newNumber = 0
 
   // Check if input is not a valid number
@@ -48,8 +34,6 @@ const setAsValidNumber = (input) => {
     // If input is already a valid number, return it
     newNumber = input
   }
-
-  console.log('Converted number:', newNumber)
   return newNumber
 }
 
@@ -99,10 +83,21 @@ const formatToHHmm = (dateStrings) => {
 }
 
 const formatDate = (dateString) => {
-  // console.log(dateString)
   const date = parseISO(dateString)
-  // console.log(date)
   return format(date, 'dd/MM/yyyy')
+}
+
+const formatDateLog = (date) => {
+  const d = new Date(date)
+
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0') // Months are 0-based
+  const year = d.getFullYear()
+
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`
 }
 
 const convertToISOString = (workTime) => {
@@ -149,12 +144,16 @@ const formatUnixTimestampWithMoment = (unixTimeMillis) => {
   return moment(unixTimeMillis).tz('Asia/Jerusalem').format('YYYY-MM-DD') // No timezone offset
 }
 
-const formatUnixTimestampFee = (unixTimeMillis) => {
-  return moment(unixTimeMillis).tz('Asia/Jerusalem').format('YYYY-MM-DD') // No timezone offset
-}
+// const formatUnixTimestampWithMoment = (unixTimeMillis) => {
+//   if (unixTimeMillis === null) return
+//   return moment(unixTimeMillis).tz('Asia/Jerusalem').format('YYYY-MM-DD') // No timezone offset
+// }
+
+// const formatUnixTimestampFee = (unixTimeMillis) => {
+//   return moment(unixTimeMillis).tz('Asia/Jerusalem').format('YYYY-MM-DD') // No timezone offset
+// }
 
 const formatUnixTimestamp = (timestamp) => {
-  // console.log(timestamp)
   // Check if the timestamp is already in the 'YYYY-MM-DD' format
   const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/
 
@@ -222,6 +221,7 @@ export {
   formatAsNumber,
   formatToHHmm,
   formatDate,
+  formatDateLog,
   searchArrOfObjs,
   capitalizeFirstLetter,
   setAsValidNumber,
@@ -230,6 +230,6 @@ export {
   promptConfirm,
   generateRandomId,
   formatUnixTimestamp,
-  formatUnixTimestampFee,
+  // formatUnixTimestampFee,
   formatUnixTimestampWithMoment,
 }

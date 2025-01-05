@@ -205,7 +205,6 @@ export default {
         } else {
           this.usersList = this.filteredUsers(this.Users);
         }
-        console.log(this.usersList)
       } catch (error) {
         console.error('Error fetching users:', error);
       }

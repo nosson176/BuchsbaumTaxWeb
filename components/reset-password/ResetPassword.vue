@@ -65,7 +65,6 @@ export default {
             }
         },
         homeRoute() {
-            console.log("route")
             this.$router.push({ name: routes.login });
         },
     }

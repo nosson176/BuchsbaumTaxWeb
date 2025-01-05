@@ -79,20 +79,16 @@ export default {
       }
     },
     handleUpdateFee(editedFee) {
-      console.log(editedFee)
       const feeCopy = JSON.parse(JSON.stringify(editedFee));
       const index = this.updateFees.findIndex(fee => fee.id === editedFee.id)
       if (index !== -1) {
-        console.log("find", feeCopy)
         this.updateFees[index] = feeCopy
       } else {
-        console.log("notFind", feeCopy)
         this.updateFees.push(feeCopy)
       }
       this.$store.dispatch('updateFeeAction', { fee: editedFee });
     },
     sendFeesToServer() {
-      console.log(this.updateFees)
       this.updateFees.forEach(async fee => {
         fee.dateFee = await this.formatUnixTimestamp(fee.dateFee)
       })
@@ -105,7 +101,6 @@ export default {
     },
     onAddRowClick() {
       if (!this.selectedClient) {
-        console.log("run")
         return
       }
       const clientId = this.selectedClient.id
@@ -129,7 +124,6 @@ export default {
     },
     async onDeleteClick(feeId) {
       const fee = this.displayedFees.find((fee) => fee.id === feeId);
-      console.log(fee)
       // Create a new object with updated properties
       const updatedFee = {
         ...fee,
@@ -159,7 +153,6 @@ export default {
                 label: 'misc/fee item',
                 // Add a callback to be triggered on confirmation
                 onConfirm: () => {
-                  console.log("confirm")
                   this.handleUpdateFee(updatedFee);
                 }
               }

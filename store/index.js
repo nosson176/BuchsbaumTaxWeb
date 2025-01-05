@@ -49,7 +49,6 @@ const mutations = {
   },
 
   changeDotStatus(state) {
-    console.log('change')
     state.dotStatus = !state.dotStatus
   },
 
@@ -58,20 +57,17 @@ const mutations = {
     const index = usersArray.findIndex((user) => user.id === userId)
 
     if (index !== -1) {
-      console.log('User found, removing from state...')
       usersArray.splice(index, 1)
       state[models.users] = usersArray // עדכון ה-state לאחר הסרה
     }
   },
 
   pushNewUser(state, user) {
-    console.log(user)
     const userId = user.id // מזהה ייחודי למשתמש
     Vue.set(state[models.users], userId, user) // שימוש ב-Vue.set להוספת שדה חדש בצורה ריאקטיבית
   },
 
   updateUser(state, updatedUser) {
-    console.log(updatedUser)
     const userId = updatedUser.id
 
     // Convert the users object to an array and find the user by id
@@ -88,10 +84,7 @@ const mutations = {
   },
 
   updateTaxYearState(state, { taxYearId, updatedData }) {
-    console.log(taxYearId)
-    console.log(updatedData)
     const index = state[models.selectedClient].taxYears.findIndex((taxYear) => taxYear.id === taxYearId)
-    console.log(index)
     if (index !== -1) {
       // if (taxYear) {
       // Object.assign(taxYear, updatedData) // Update the taxYear state with new data
@@ -106,9 +99,7 @@ const mutations = {
   },
 
   showSpinner(state, mode) {
-    console.log('spinner before:', state.spinner, 'changing to:', mode)
     state.spinner = mode
-    console.log('spinner after:', state.spinner)
   },
 
   setCopyLogs(state, log) {
@@ -126,10 +117,8 @@ const mutations = {
   pushDayLog(state, log) {
     // המרת הערכים של dayLogs למערך
     const dayLogsArray = Object.values(state[models.dayLogs])
-    console.log(dayLogsArray)
     // חיפוש האינדקס
     const index = dayLogsArray.findIndex((dayLog) => dayLog.id === log.log.id)
-    console.log(index)
     if (index !== -1) {
       const key = Object.keys(state[models.dayLogs])[index]
       Vue.set(state[models.dayLogs], key, log.log)
@@ -146,7 +135,6 @@ const mutations = {
   //     // אם הלוג לא קיים, מוסיף אותו
   //     Vue.set(state[models.dayLogs], log.log.id, log.log)
   //   }
-  //   console.log(state.dayLogs)
   // },
 
   clearDayLogs(state) {
@@ -189,7 +177,6 @@ const mutations = {
   },
 
   pushNewFee(state, fee) {
-    console.log('run22')
     state[models.selectedClient].fees.unshift(fee.fee)
   },
 
@@ -198,33 +185,22 @@ const mutations = {
   },
 
   pushNewClient(state, newClient) {
-    console.log(state[models.clients])
-    console.log(newClient)
     const clientId = newClient.id // מזהה ייחודי למשתמש
     Vue.set(state[models.clients], clientId, newClient)
   },
 
   pushNewSmartview(state, newSmartview) {
-    console.log(state[models.smartviews])
-    console.log(newSmartview)
     const smartviewId = newSmartview.id // מזהה ייחודי למשתמש
     Vue.set(state[models.smartviews], smartviewId, newSmartview)
   },
 
   updateUserFlagClient(state, clientFlag) {
-    console.log(clientFlag)
-    console.log(state[models.clients])
-
     // Find the key of the client with the given ID
     const clientKey = Object.keys(state[models.clients]).find(
       (key) => state[models.clients][key].id === clientFlag.clientId
     )
 
-    console.log('Client Key:', clientKey)
-
     if (clientKey !== undefined) {
-      console.log('Inside:', state[models.clients][clientKey])
-
       // Update the 'flag' property of the original client object
       Vue.set(state[models.clients][clientKey], 'flag', clientFlag.flag)
     } else {
@@ -259,7 +235,6 @@ const mutations = {
   },
 
   updateSmartview(state, { smartview }) {
-    console.log(smartview)
     const smartviewsArray = Object.values(state[models.smartviews]) // Convert object to array
 
     const index = smartviewsArray.findIndex((l) => l.id === smartview.id)
@@ -270,7 +245,6 @@ const mutations = {
   },
 
   updateSmartviewsBatch(state, { smartviews }) {
-    console.log('Batch update: ', smartviews)
     const smartviewsArray = Object.values(state[models.smartviews]) // Convert object to array
 
     smartviews.forEach((smartview) => {
@@ -371,9 +345,6 @@ const mutations = {
 
   archiveClient(state, clientId) {
     const clientsArray = Object.values(state.clients)
-    console.log('archiveClient=> ', clientsArray)
-    console.log('archiveClient=> ', clientId)
-    console.log('archiveClient=> ', state.clients)
     const index = clientsArray.findIndex((client) => client.id === clientId)
     if (index !== -1) {
       clientsArray[index].archived = true
@@ -383,11 +354,7 @@ const mutations = {
 
   deleteClient(state, clientId) {
     const clientsArray = Object.values(state.clients)
-    console.log('archiveClient=> ', clientsArray)
-    console.log('archiveClient=> ', clientId)
-    console.log('archiveClient=> ', state.clients)
     const index = clientsArray.findIndex((client) => client.id === clientId)
-    console.log(index)
     if (index !== -1) {
       clientsArray.splice(index, 1)
       state.clients = clientsArray
@@ -395,10 +362,8 @@ const mutations = {
   },
 
   markMsgAsRead(state, message) {
-    console.log(message)
     const inbox = Object.values(state.inbox)
     const index = inbox.findIndex((msg) => msg.id === message.id)
-    console.log(index)
     if (index !== -1) {
       inbox[index].status = 'read'
       state.inbox = inbox
@@ -479,7 +444,6 @@ const mutations = {
 
   pushNewValueType(state, { value, tab }) {
     if (value && tab) {
-      console.log(state.valueTypes[tab])
       state.valueTypes[tab].push(value)
     }
   },

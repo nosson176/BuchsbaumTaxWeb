@@ -37,7 +37,6 @@ export default {
         ]),
 
         logsArray() {
-            console.log(this.dayLogs)
             return this.dayLogs ? Object.values(this.dayLogs) : []
         },
 
@@ -59,7 +58,6 @@ export default {
 
     methods: {
         filterAndSortLogs(logs) {
-            console.log(Object.values(logs))
             const currentUser = this.currentUser
             if (!currentUser) {
                 console.error('Current user is not defined')
@@ -72,7 +70,7 @@ export default {
                     dayjs(a.alarmTime, 'DD-MM-YYYY HH:mm').diff(dayjs(b.alarmTime, 'DD-MM-YYYY HH:mm'))
                 )
 
-            if (!this.intervalId) {
+            if (this.filteredLogs.length > 0 && !this.intervalId) {
                 this.startLogCheckingInterval()
             }
         },

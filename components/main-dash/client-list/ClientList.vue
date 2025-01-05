@@ -96,7 +96,6 @@ export default {
     sortedClients() {
       const clients = Object.values(this.filteredClients)
 
-      // console.log(this.sortBy, clients)
       switch (this.sortBy) {
         case 'A-Z':
           return this.sortByLastName(clients)
@@ -137,11 +136,6 @@ export default {
     },
   },
   watch: {
-    loading(newValue) {
-      // This will help trigger updates when loading changes
-      // You can add any additional logic here if needed
-      console.log('Loading state changed:', newValue);
-    },
     selectedClient() {
       this.scrollClientIntoView()
     },
@@ -258,12 +252,10 @@ export default {
       document.body.removeChild(link);
     },
     async selectClient(client) {
-      // console.log(client)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
       })
-      console.log("client")
       this.selectedClientId = client.id
       const headers = this.headers
       await this.$api.getClientData(headers, client)
@@ -285,14 +277,12 @@ export default {
     },
     archiveClient(client) {
       if (this.showArchived) {
-        console.log("archived")
         const clientCopy = Object.assign({}, client)
         clientCopy.archived = false
         this.$api
           .updateClient(this.headers, { clientId: client.id, client: clientCopy })
           .then(() => this.$api.getClientList(this.headers))
       } else {
-        console.log("active")
         this.$store.commit(mutations.setModelResponse, {
           model: models.modals,
           data: { delete: { showing: true, data: { id: client.id, type: tabs.clients, label: client.lastName } } },

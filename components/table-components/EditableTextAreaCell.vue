@@ -174,8 +174,6 @@ export default {
         if (this.$refs.input) {
           this.$refs.input.focus();
           this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px; overflow-y:hidden;');
-        } else {
-          console.log('Input ref not available');
         }
       }
     },

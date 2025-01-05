@@ -371,13 +371,11 @@ export default {
   watch: {
     async isEditable(val) {
       if (!val) {
-        console.log("fff")
         this.showOptions = false;
       } else {
         this.showOptions = true;
         await this.$nextTick(() => {
           this.$refs.button.focus();
-          console.log("isEditable")
           this.inputValue = '';
         });
       }

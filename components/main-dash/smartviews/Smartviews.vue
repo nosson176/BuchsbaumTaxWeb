@@ -46,9 +46,7 @@ export default {
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview, models.spinner]),
     displayedSmartviews() {
-      console.log("displayedSmartviews")
       if (this.smartviews) {
-        console.log(Object.values(JSON.parse(JSON.stringify(this.smartviews))))
         return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
           .filter((smartview) => this.showArchived === smartview.archived)
           .sort((a, b) => a.sortNumber - b.sortNumber)
@@ -76,7 +74,6 @@ export default {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
   beforeDestroy() {
-    console.log('beforeDestroy')
 
     if (this.modifiedSmartviews.length > 0) {
       this.sendBatchUpdate();
@@ -85,54 +82,14 @@ export default {
 
   methods: {
     async selectSmartview(smartview) {
-      console.log("select")
       this.$store.commit("showSpinner", true)
       await this.$api.getFilterClients(this.headers, { smartview }).then(() => {
         this.$store.commit("showSpinner", false)
 
 
       })
-      // this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
-      // if (this.selectedSmartviewId === smartview.id) {
-      //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
-      // } else {
-      //   this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
-      // }
     },
-    // async selectSmartview(smartview) {
-    //   console.log("=== Start selectSmartview ===")
-    //   this.$store.commit("showSpinner", true)
-    //   console.log("After setting spinner to true")
 
-    //   // נעטוף את כל הלוגיקה ב-Promise
-    //   await new Promise(resolve => {
-    //     this.$store.commit(mutations.setModelResponse, {
-    //       model: models.clientSearchValue,
-    //       data: []
-    //     })
-
-    //     if (this.selectedSmartviewId === smartview.id) {
-    //       console.log("Same smartview selected")
-    //       this.$store.commit(mutations.setModelResponse, {
-    //         model: models.selectedSmartview,
-    //         data: []
-    //       })
-    //     } else {
-    //       console.log("New smartview selected")
-    //       this.$store.commit(mutations.setModelResponse, {
-    //         model: models.selectedSmartview,
-    //         data: smartview
-    //       })
-    //     }
-
-    //     // נחכה קצת לפני שנכבה את הספינר
-    //     setTimeout(resolve, 100);
-    //   });
-
-    //   // נכבה את הספינר אחרי שהכל הסתיים
-    //   this.$store.commit("showSpinner", false)
-    //   console.log("=== End selectSmartview ===")
-    // },
     showEdit(smartview) {
       this.$store.commit(mutations.setModelResponse, {
         model: models.modals,
@@ -151,14 +108,12 @@ export default {
         .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
     },
     startDrag(evt) {
-      console.log(evt)
       this.dragActive = true
     },
     onDrop(evt) {
       const { oldIndex, newIndex } = evt;
       const movedSmartview = this.displayedSmartviews.splice(oldIndex, 1)[0];  // Remove the item from the old position
       this.displayedSmartviews.splice(newIndex, 0, movedSmartview);  // Insert it into the new position
-      console.log(this.displayedSmartviews);
 
       // Update sort numbers and modifiedSmartviews with only affected smartviews
       const affectedSmartviews = [];
@@ -192,13 +147,11 @@ export default {
 
     async sendBatchUpdate() {
       try {
-        console.log("sendBatchUpdate => ", this.modifiedSmartviews);
         await this.$api.updateSmartviewsBatch(this.headers, this.modifiedSmartviews);
 
         // Commit the batch update to Vuex
         this.$store.commit('updateSmartviewsBatch', { smartviews: this.modifiedSmartviews });
 
-        console.log('Batch update sent successfully');
       } catch (error) {
         console.error('Error sending batch update:', error);
       } finally {

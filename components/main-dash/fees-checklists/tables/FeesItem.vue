@@ -415,7 +415,6 @@ export default {
         this.editable = ''
         return
       }
-      console.log("run")
       this.handleUpdate()
     },
     handleUpdate() {
