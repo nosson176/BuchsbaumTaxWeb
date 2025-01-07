@@ -802,7 +802,7 @@ export default {
 }
 </script>
 
-<!-- <style scoped>
+<style scoped>
 .head {
   width: 100%
 }
@@ -827,4 +827,4 @@ export default {
     min-width: 3rem;
   }
 }
-</style> -->
+</style>
