@@ -52,8 +52,8 @@
           <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="runTime" />
           -- : --
         </div>
-        <div class="table-header flex ">
-          <PicnicTableIcon @click.native="picnicTablePopup" class="cursor-pointer h-5 w-4 ml-2" />
+        <div class="table-header flex-start ">
+          <PicnicTableIcon @click.native="picnicTablePopup" class="cursor-pointer h-5 w-4  mr-2" />
         </div>
       </TableHeader>
     </template>
