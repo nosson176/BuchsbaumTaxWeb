@@ -60,18 +60,18 @@
     <template #body>
       <TableRow v-for="(log, idx) in displayedLogs" :key="log.id" :idx="idx" :selected="isSelected(log.id)"
         class="flex justify-between " :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
-        <div class="table-col bg-gray-200 mr-1">
+        <div class="table-col bg-gray-200 ">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-priority`" class="table-col xxs"
+        <div :id="`${idx}-priority`" class="table-col w-min"
           @click="toggleEditable(`${idx}-priority`, log.id, log.priority)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)"
             @blur="onBlur(log.priority, 'priority')" @tab="goToNextColumn" />
         </div>
-        <div :id="`${idx}-years`" class="table-col  xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
+        <div :id="`${idx}-years`" class="table-col xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
-            <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
-              @blur="onBlur(log.years, 'years')" />
+            <EditableSelectCell class=" w-10 overflow-ellipsis" v-model="log.years"
+              :is-editable="isEditable(`${idx}-years`)" :options="yearOptions" @blur="onBlur(log.years, 'years')" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
@@ -126,7 +126,7 @@
           <EditableInputCell v-model="log.timeSpent" :is-editable="isEditable(`${idx}-secondsSpent`)"
             @blur="updateSecondsSpent(log)" @keypress.native.enter="updateSecondsSpent(log)" />
         </div>
-        <div :id="`${idx}-delete`" tabindex="-1" class="table-col xxs">
+        <div :id="`${idx}-delete`" tabindex="-1" class="table-col mr-2  xxs">
           <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
             <DeleteButton small @click="onDeleteClick(log.id)" />
             <template #popper>
@@ -802,7 +802,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .head {
   width: 100%
 }
@@ -827,4 +827,4 @@ export default {
     min-width: 3rem;
   }
 }
-</style>
+</style> -->
