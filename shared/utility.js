@@ -172,22 +172,26 @@ const formatUnixTimestamp = (timestamp) => {
 
     if (dateTimeFormatRegex.test(timestamp)) {
       // Return the timestamp in DD/MM/YYYY HH:mm format
-      const [datePart, timePart] = timestamp.split(' ')
+      const [datePart] = timestamp.split(' ')
+      // const [datePart, timePart] = timestamp.split(' ')
 
       // Extract day, month, year from datePart
       const [year, month, day] = datePart.split('-')
 
       // Extract hour and minutes from timePart
-      const [hour, minutes] = timePart.split(':')
+      // const [hour, minutes] = timePart.split(':')
 
-      return `${day}/${month}/${year} ${hour}:${minutes}`
+      // return `${day}/${month}/${year} ${hour}:${minutes}`
+      return `${day}/${month}/${year}`
     }
 
     if (customDateTimeFormatRegex.test(timestamp)) {
       // If the timestamp is in the 'DD-MM-YYYY HH:mm' format, convert '-' to '/' and return
-      const [datePart, timePart] = timestamp.split(' ')
+      const [datePart] = timestamp.split(' ')
+      // const [datePart, timePart] = timestamp.split(' ')
       const [day, month, year] = datePart.split('-')
-      return `${day}/${month}/${year} ${timePart}`
+      return `${day}/${month}/${year}`
+      // return `${day}/${month}/${year} ${timePart}`
     }
 
     // Convert string timestamp to number if it's not in the above formats

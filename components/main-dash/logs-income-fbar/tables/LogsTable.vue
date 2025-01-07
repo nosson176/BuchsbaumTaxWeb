@@ -2,40 +2,49 @@
   <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
     @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
-      <TableHeader class="border-amber-500 w-max">
-        <div class="table-header flex items-start ">
-          <AddRowButton @click="onAddRowClick" class="mt-0" />
-          <CopyIcon @click.native="copyLog" class="cursor-pointer h-5 w-4 ml-2" />
-          <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" class="cursor-pointer h-5 w-4 ml-2" />
+      <TableHeader class="border-amber-500 head">
+        <div class="table-header flex items-center space-x-2">
+          <div class="flex flex-col items-center space-y-1">
+            <AddRowButton @click="onAddRowClick" class="mt-0 mr-0" />
+            <div class="flex">
+              <CopyIcon @click.native="copyLog" class="cursor-pointer h-5 w-5" />
+              <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" clsass="cursor-pointer h-5 w-5" />
+            </div>
+          </div>
         </div>
-        <div class="xs table-header ">
+
+        <div class="xxs table-header">
           <ClockIcon class="h-4 w-4 ml-2 cursor-pointer" @click.native="onAddRowClick(true)" />
         </div>
-        <div class="table-header flex flex-col year">
-          <div class="flex items-center space-x-0.5">
-            <span>Year</span>
-            <DeleteButton small @click="yearFilterValue = ''" />
+        <div class="table-header flex items-end  w-min ml-1.5 ">
+          <div class="flex-col">
+            <div class="flex items-center space-x-0.5">
+              <span>Year</span>
+              <DeleteButton small @click="yearFilterValue = ''" />
+            </div>
+            <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
           </div>
-          <HeaderSelectOption v-model="yearFilterValue" :options="filteredYearOptions" />
         </div>
-        <div class="table-header xl">Note</div>
-        <div class="table-header sm">Date</div>
+        <div class="table-header w-3/4 ml-3">Note</div>
+        <div class="table-header xs">Date</div>
         <!-- <div class="table-header sm">Alarm</div> -->
-        <div class="table-header sm flex flex-col">
-          <div class="flex items-center space-x-0.5">
+        <div class="table-header sm flex flex-col ml-3 ">
+          <div class="flex items-center space-x-0.5 ">
             <span>Emp</span>
             <DeleteButton small @click="employeeFilterValue = ''" />
           </div>
-          <HeaderSelectOption v-model="employeeFilterValue" :options="filteredUserOptions" />
+          <HeaderSelectOption class="w-3/4" v-model="employeeFilterValue" :options="filteredUserOptions" />
         </div>
         <!-- <div class="table-header sm">Time</div> -->
-        <div class="table-header xs">
-          <button type="button"
-            class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            @click="setAlarmFilter" />
+        <div class="flex ">
+          <div class="table-header ">
+            <button type="button"
+              class="w-4 h-4 border border-transparent rounded bg-indigo-200 shadow-sm hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              @click="setAlarmFilter" />
+          </div>
+          <div class="table-header sm">Time</div>
         </div>
-        <div class="table-header sm">Time</div>
-        <div v-if="playTime && globalPlayTime" class="table-header sm flex">
+        <div v-if="playTime && globalPlayTime" class="table-header sm flex justify-center">
           <PauseIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="stopTime" />
           {{ currentTimeSpent }}
         </div>
@@ -43,23 +52,23 @@
           <PlayIcon class="h-4 w-4 text-green-500 mr-2 cursor-pointer" @click.native="runTime" />
           -- : --
         </div>
-        <div class="table-header xs">
+        <div class="table-header flex ">
           <PicnicTableIcon @click.native="picnicTablePopup" class="cursor-pointer h-5 w-4 ml-2" />
         </div>
       </TableHeader>
     </template>
     <template #body>
       <TableRow v-for="(log, idx) in displayedLogs" :key="log.id" :idx="idx" :selected="isSelected(log.id)"
-        :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
+        class="flex justify-between " :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
-        <div :id="`${idx}-priority`" class="table-col xs"
+        <div :id="`${idx}-priority`" class="table-col xxs"
           @click="toggleEditable(`${idx}-priority`, log.id, log.priority)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)"
             @blur="onBlur(log.priority, 'priority')" @tab="goToNextColumn" />
         </div>
-        <div :id="`${idx}-years`" class="table-col year" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
+        <div :id="`${idx}-years`" class="table-col  xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell v-model="log.years" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
               @blur="onBlur(log.years, 'years')" />
@@ -76,7 +85,7 @@
           <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note, 'note')"
             :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
         </div>
-        <div :id="`${idx}-logDate`" class="table-col sm" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
+        <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
             @blur="onBlur(log.logDate, 'logDate')" />
         </div>
@@ -92,7 +101,7 @@
             @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
             placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
         </div> -->
-        <div :id="`${idx}-alarmUserName`" class="table-col sm"
+        <div :id="`${idx}-alarmUserName`" class="table-col xs"
           @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
             :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
@@ -102,22 +111,22 @@
         <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
         :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
       </div> -->
-        <div :id="`${idx}-alarmTime`" class="table-col sm"
+        <div :id="`${idx}-alarmTime`" class="table-col xs"
           @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
             @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
             placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
         </div>
-        <div :id="`${idx}-alarmComplete`" class="table-col xs" @click="toggleComplete(log)">
-          <CheckIcon v-if="log.alarmDate" class="h-5 w-5 cursor-pointer"
+        <div :id="`${idx}-alarmComplete`" class="table-col xxs" @click="toggleComplete(log)">
+          <CheckIcon v-if="log.alarmTime" class="h-5 w-5 cursor-pointer"
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'" />
         </div>
-        <div :id="`${idx}-secondsSpent`" class="table-col sm"
+        <div :id="`${idx}-secondsSpent`" class="table-col xxs"
           @click="toggleEditable(`${idx}-secondsSpent`, log.id, log.timeSpent)">
           <EditableInputCell v-model="log.timeSpent" :is-editable="isEditable(`${idx}-secondsSpent`)"
             @blur="updateSecondsSpent(log)" @keypress.native.enter="updateSecondsSpent(log)" />
         </div>
-        <div :id="`${idx}-delete`" tabindex="-1" class="table-col xs">
+        <div :id="`${idx}-delete`" tabindex="-1" class="table-col xxs">
           <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
             <DeleteButton small @click="onDeleteClick(log.id)" />
             <template #popper>
@@ -152,7 +161,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
 import { boldSearchWord, formatDateLog, formatUnixTimestampWithMoment, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'secondsSpent', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'alarmComplete', 'secondsSpent', 'delete']
 // const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
@@ -205,6 +214,7 @@ export default {
         }
 
         log.timeSpent = this.getTimeSpentOnClient(log)
+        console.log(log)
         return log
       })
       if (
@@ -793,6 +803,10 @@ export default {
 </script>
 
 <style scoped>
+.head {
+  width: 100%
+}
+
 .alarm {
   @apply bg-indigo-100;
 }

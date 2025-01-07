@@ -22,6 +22,14 @@
   @apply text-gray-300;
 }
 
+.table-col.xxs{
+  min-width: 2rem;
+}
+
+.table-col.xsl{
+  min-width: 28rem;
+}
+
 .table-col.xs,
 .table-header.xs,
 .table-col-primary.xs {
