@@ -80,7 +80,7 @@ export default {
   <div class="relative inline-block text-left">
     <div ref="selectButton">
       <button id="menu-button" type="button"
-        class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+        class="inline-flex mt-0 justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-1 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         aria-expanded="true" aria-haspopup="true" @click="toggleShowOptions">
         {{ value || shownValue || computedValue }}
         <svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
