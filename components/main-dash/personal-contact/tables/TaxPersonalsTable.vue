@@ -128,6 +128,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedPersonals() {
+      console.log("pes")
       const personals = this.filteredPersonals
       return searchArrOfObjs(personals, this.searchInput)
     },
@@ -156,6 +157,7 @@ export default {
     taxPersonals() {
       if (this.selectedClient.taxPersonals) {
         return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
+        // return this.selectedClient.taxPersonals
       } else {
         return null
       }
@@ -213,15 +215,21 @@ export default {
     handleUpdate() {
       if (!this.editablePersonalId) return
       const personal = this.displayedPersonals.find((personal) => personal.id === this.editablePersonalId)
+      console.log(personal)
       if (/^([0-9]{9})$/.test(personal.ssn)) {
+        console.log("in")
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
+      console.log("out")
       const index = this.updateTaxPersonal.findIndex(per => per.id === personal.id)
       if (index !== -1) {
+        console.log("in2")
         this.updateTaxPersonal[index] = personal
       } else {
+        console.log("out2")
         this.updateTaxPersonal.push(personal)
       }
+      this.$store.dispatch('updateTaxPersonalAction', { personal });
     },
     sendUpdateTaxPersonal() {
       this.$api.updateTaxPersonals(this.headers, this.updateTaxPersonal)
@@ -250,6 +258,7 @@ export default {
     },
     onAddRowClick() {
       if (!this.selectedClient) {
+        console.log("select")
         return
       }
       const clientId = this.selectedClient.id
@@ -261,6 +270,7 @@ export default {
         id: generateRandomId(),
       }
       if (this.isCopyingPersonals) {
+        console.log("copy")
         this.selectedPersonalIds.forEach((personalId, idx) => {
           const personalIndex = this.displayedPersonals.findIndex((personal) => personal.id === Number(personalId))
           const personal = this.displayedPersonals[personalIndex]
@@ -274,6 +284,7 @@ export default {
           this.toggleEditable(`${personalIndex}-${columns[0]}`, newPersonal.id)
         })
       } else {
+        console.log("else")
         const personal = Object.assign({}, defaultValues)
         this.updateTaxPersonal.push(personal)
         this.$store.commit('pushNewTaxPersonal', {

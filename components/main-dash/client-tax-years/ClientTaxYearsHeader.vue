@@ -270,6 +270,7 @@ export default {
         model: models.selectedClient,
         data: { ...this.selectedClient, lastName: newLastName }
       })
+      this.$store.commit('updateLastNameClient', { selectedClient: this.selectedClient, lastName: newLastName })
     },
 
     updateGlobalFlag(globalFlag) {

@@ -159,6 +159,7 @@ const mutations = {
 
   updateContact(state, contact) {
     const index = state[models.selectedClient].contacts.findIndex((l) => l.id === contact.contact.id)
+    console.log(index)
     if (index !== -1) {
       state[models.selectedClient].contacts.splice(index, 1, contact.contact)
     }
@@ -216,6 +217,17 @@ const mutations = {
       Vue.set(state[models.clients], index, {
         ...state[models.clients][index],
         gFlag: clientFlag.gFlag.flag,
+      })
+    }
+  },
+
+  updateLastNameClient(state, { selectedClient, lastName }) {
+    const clientsArray = Object.values(state[models.clients])
+    const index = clientsArray.findIndex((client) => client.id === selectedClient.id)
+    if (index !== -1) {
+      Vue.set(state[models.clients], index, {
+        ...state[models.clients][index],
+        lastName,
       })
     }
   },
