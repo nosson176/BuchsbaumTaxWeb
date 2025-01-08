@@ -1,6 +1,9 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
+      <div class="p-3 ">
+        <span class="font-bold">{{ username }}</span>
+      </div>
       <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus">
       </div>
       <!-- <button type="button"
@@ -9,7 +12,7 @@
         Send SMS
       </button> -->
       <div
-        class="inline-flex justify-center shadow-sm px-2 py-1  text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+        class="inline-flex justify-center shadow-sm px-2 py-1 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
         <Dropdown shown-value="Time" :value="selectedTime" :options="[2, 5, 10, 15, 20]"
           @input="chooseSecondsNeededToDisplayModal1" />
       </div>
@@ -101,6 +104,9 @@ export default {
       } else {
         return []
       }
+    },
+    username() {
+      return this.currentUser ? this.currentUser.username : ''
     },
     statusCheck() {
       return this.dotStatus
