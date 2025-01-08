@@ -244,6 +244,7 @@ export default {
           });
         }
       }
+      this.$store.dispatch('updateContactAction', { contact });
       // this.editableId = ""
     },
 

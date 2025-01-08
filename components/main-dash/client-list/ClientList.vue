@@ -252,6 +252,7 @@ export default {
       document.body.removeChild(link);
     },
     async selectClient(client) {
+      console.log(client)
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),
@@ -270,6 +271,7 @@ export default {
       if (this.selectedClient) {
         this.selectedClientId = this.selectedClient.id
         const selectedClientRef = this.$refs[this.selectedClient.id]
+        console.log(selectedClientRef)
         if (selectedClientRef) {
           selectedClientRef[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
         }

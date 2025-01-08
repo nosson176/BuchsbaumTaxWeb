@@ -6,7 +6,7 @@
         <date-picker v-if="isEditable" ref="input" v-model="computedValue" tabindex="0" :value-type="valueType"
             :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus">
             <template #header="{ emit }">
-                <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="emit(new Date())">
+                <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="setToday(emit)">
                     Today
                 </button>
             </template>
@@ -39,16 +39,21 @@ export default {
     data() {
         return {
             showPicker: false,
+            shouldEmitBlur: false
         }
     },
     computed: {
         computedValue: {
             get() {
-                return this.value
+                return this.value;
             },
             set(newVal) {
-                this.$emit('input', newVal)
-                // this.$emit(events.blur)
+                this.$emit('input', newVal);
+
+                // Emit blur event only if explicitly triggered (e.g., via Today button)
+                if (this.shouldEmitBlur) {
+                    this.$emit(events.blur);
+                }
             },
         },
         format() {
@@ -75,6 +80,10 @@ export default {
         },
         onBlur() {
             this.$emit(events.blur)
+        },
+        setToday(emit) {
+            this.shouldEmitBlur = true; // Enable blur event emission
+            emit(new Date()); // Set today's date
         },
     },
 }

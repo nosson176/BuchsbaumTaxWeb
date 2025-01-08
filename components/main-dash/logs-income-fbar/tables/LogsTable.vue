@@ -59,7 +59,7 @@
     </template>
     <template #body>
       <TableRow v-for="(log, idx) in displayedLogs" :key="log.id" :idx="idx" :selected="isSelected(log.id)"
-        class="flex justify-between " :class="{ alarm: isTodayOrPast(log.alarmDate) && !log.alarmComplete }">
+        class="flex justify-between " :class="{ alarm: isTodayOrPast(log.alarmTime) && !log.alarmComplete }">
         <div class="table-col bg-gray-200 ">
           <ClickCell @click="toggleSelected(log)">{{ idx + 1 }}</ClickCell>
         </div>
@@ -155,7 +155,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { isToday, isPast, parseISO, intervalToDuration } from 'date-fns'
+import { isToday, isPast, intervalToDuration, parse, startOfDay } from 'date-fns'
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
@@ -214,7 +214,7 @@ export default {
         }
 
         log.timeSpent = this.getTimeSpentOnClient(log)
-        console.log(log)
+        // console.log(log)
         return log
       })
       if (
@@ -535,45 +535,53 @@ export default {
     ,
 
     updateUpdatAndNewLogs(updatedLog, val, field) {
+      // Find the index of the log to update
       const index = this.updatAndNewLogs.findIndex(log => log.id === updatedLog.id);
-      if (index !== -1) {
-        const historyEntry = {
-          userName: this.currentUser.username,
-          date: Date.now(),
-          field,
-          val
-        };
 
-        // Use Vue.set to ensure reactivity
+      // Define the history entry to log changes
+      const historyEntry = {
+        userName: this.currentUser.username,
+        date: Date.now(),
+        field,
+        val
+      };
+
+      if (index !== -1) {
+        // Ensure reactivity for specific fields
         if (field === 'alarmDate') {
           this.$set(this.updatAndNewLogs[index], 'alarmCreateChange', Date.now());
         }
+
         if (field === 'alarmUserName') {
           this.$set(this.updatAndNewLogs[index], 'alarmUserId', updatedLog.alarmUserId);
         }
+
+        // Update the field value
         this.$set(this.updatAndNewLogs[index], field, val);
 
+        // Initialize `historyLogJson` if not already an array
         if (!this.updatAndNewLogs[index].new) {
           if (!Array.isArray(this.updatAndNewLogs[index].historyLogJson)) {
             this.$set(this.updatAndNewLogs[index], 'historyLogJson', []);
           }
+          // Add the new history entry
           this.updatAndNewLogs[index].historyLogJson.push(historyEntry);
         }
       } else {
-        const historyEntry = {
-          userName: this.currentUser.userName,
-          date: Date.now(),
-          field,
-          val
-        };
+        // Initialize `historyLogJson` if it doesn't exist
+        const newHistoryLogJson = Array.isArray(updatedLog.historyLogJson)
+          ? [...updatedLog.historyLogJson]
+          : [];
+        newHistoryLogJson.push(historyEntry);
 
-        // Add new log if it doesn't exist
+        // Push the new log object
         this.updatAndNewLogs.push({
           ...updatedLog,
-          historyLogJson: [historyEntry]
+          historyLogJson: newHistoryLogJson
         });
       }
     },
+
 
     async saveUpdatAndNewLogs() {
       if (this.updatAndNewLogs.length === 0) return
@@ -689,15 +697,21 @@ export default {
       this.editableId = ""
     },
     isTodayOrPast(date) {
-      const parsedDate = parseISO(date)
-      return isToday(parsedDate) || isPast(parsedDate)
+      // Parse the date using your expected format
+      const parsedDate = parse(date, 'dd-MM-yyyy HH:mm', new Date());
+
+      // Normalize the date to ignore the time portion for comparison
+      const normalizedDate = startOfDay(parsedDate); // Removes time part of the date
+
+      // Check if it's today or in the past
+      return isToday(normalizedDate) || isPast(normalizedDate);
     },
     toggleComplete(log) {
-      if (!this.isTodayOrPast(log.alarmDate) && !log.alarmComplete) {
+      if (!this.isTodayOrPast(log.alarmTime) && !log.alarmComplete) {
         return
       } else if (log.alarmComplete) {
         log.alarmComplete = false
-      } else if (this.isTodayOrPast(log.alarmDate) && !log.alarmComplete) {
+      } else if (this.isTodayOrPast(log.alarmTime) && !log.alarmComplete) {
         log.alarmComplete = true
       }
       this.editableLogId = log.id
