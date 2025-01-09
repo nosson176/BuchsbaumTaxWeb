@@ -170,9 +170,10 @@ export default {
     },
     getSelectedClient(selectedClientName) {
       const selectedClient = Object.values(this.clientsHistory).find((client) => client.lastName === selectedClientName)
+      console.log(selectedClient)
       const headers = this.headers
-      const id = selectedClient.id
-      this.$api.getClientData(headers, id)
+      // const id = selectedClient.id
+      this.$api.getClientData(headers, selectedClient)
     },
     chooseSecondsNeededToDisplayModal1(selectTime) {
       this.selectedTime = selectTime
