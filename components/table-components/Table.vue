@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col flex-grow overflow-hidden bg-white" @keydown.tab.prevent="emitKeyDown"
     @keyup.tab.prevent="emitKeyUp">
-    <div class="overflow-auto h-full">
+    <div class="overflow-auto h-full pb-10">
       <slot name="header" />
       <slot name="body" />
     </div>

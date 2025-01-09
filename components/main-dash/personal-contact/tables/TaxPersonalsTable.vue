@@ -121,16 +121,41 @@ export default {
       editablePersonalId: '',
       oldValue: '',
       selectedItems: {},
-      updateTaxPersonal: []
+      updateTaxPersonal: [],
+      trackedPersonalId: null // Add this to track the personal being edited
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedPersonals() {
-      console.log("pes")
-      const personals = this.filteredPersonals
-      return searchArrOfObjs(personals, this.searchInput)
+      const personals = this.filteredPersonals;
+      if (!personals) return [];
+
+      // Define category order
+      const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };
+
+      // Sort by category
+      const sortedPersonals = personals.sort((a, b) => {
+        // Normalize categories to remove trailing punctuation or whitespace
+        const categoryA = (a.category || "").replace(/\W+$/, "").toUpperCase();
+        const categoryB = (b.category || "").replace(/\W+$/, "").toUpperCase();
+
+        return (categoryOrder[categoryA] || 4) - (categoryOrder[categoryB] || 4);
+      });
+      if (this.trackedPersonalId) {
+        const newIndex = sortedPersonals.findIndex(p => p.id === this.trackedPersonalId);
+        if (newIndex !== -1) {
+          // Update editable cell ID to match new position
+          this.$nextTick(() => {
+            const currentColumn = this.editableId.split('-')[1];
+            this.editableId = `${newIndex}-${currentColumn}`;
+          });
+        }
+      }
+      // Apply search filter
+      return searchArrOfObjs(sortedPersonals, this.searchInput);
     },
+
     filteredPersonals() {
       if (this.taxPersonals) {
         return this.taxPersonals.filter((personal) => this.showArchived === personal.archived)
@@ -196,7 +221,10 @@ export default {
         const personal = this.displayedPersonals.find((personal) => personal.id === personalId)
         this.oldValue = personal[val]
       } else this.oldValue = value
+
       this.editablePersonalId = personalId
+      this.trackedPersonalId = personalId // Track the personal being edited
+
       if (!(this.editableId === id)) {
         this.editableId = id
       }
@@ -214,26 +242,32 @@ export default {
     handleUpdate() {
       if (!this.editablePersonalId) return
       const personal = this.displayedPersonals.find((personal) => personal.id === this.editablePersonalId)
-      console.log(personal)
       if (/^([0-9]{9})$/.test(personal.ssn)) {
-        console.log("in")
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
       console.log("out")
       const index = this.updateTaxPersonal.findIndex(per => per.id === personal.id)
       if (index !== -1) {
-        console.log("in2")
         this.updateTaxPersonal[index] = personal
       } else {
-        console.log("out2")
         this.updateTaxPersonal.push(personal)
       }
       this.$store.dispatch('updateTaxPersonalAction', { personal });
     },
     sendUpdateTaxPersonal() {
-      this.$api.updateTaxPersonals(this.headers, this.updateTaxPersonal)
-        .catch(() => this.$toast.error('Error updating contact'))
+      const data = this.updateTaxPersonal.map(personal => {
+        const updatedPersonal = { ...personal }; // Shallow copy each object
+        if (typeof updatedPersonal.dateOfBirth === 'number') {
+          // Convert Unix timestamp to ISO date string
+          updatedPersonal.dateOfBirth = new Date(updatedPersonal.dateOfBirth).toISOString().split('T')[0];
+        }
+        return updatedPersonal;
+      });
+      // Use the processed data for the API request
+      this.$api.updateTaxPersonals(this.headers, data)
+        .catch(() => this.$toast.error('Error updating contact'));
     },
+
     onDeleteClick(personalObj) {
       const personal = this.displayedPersonals.find((personal) => personal.id === personalObj.id)
       if (this.showArchived) {
@@ -290,7 +324,15 @@ export default {
           state: this.selectedClient,
           personal
         });
-        this.toggleEditable(`0-${columns[0]}`, personal.id)
+        // Track the new personal immediately
+        this.trackedPersonalId = personal.id;
+
+        // Wait for Vue to update the DOM before setting focus
+        this.$nextTick(() => {
+          const newIndex = this.displayedPersonals.findIndex(p => p.id === personal.id);
+          this.toggleEditable(`${newIndex}-${columns[1]}`, personal.id)
+        });
+        this.toggleEditable(`${this.displayedPersonals.length - 1}-${columns[1]}`, personal.id)
       }
     },
     goToNextColumn() {
