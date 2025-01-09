@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex h-20 px-1 py-1 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
+    <div class="flex h-20 pl-1 py-1 pr-3 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
       :class="classObj" @click="toggleSelectTaxYear">
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col">

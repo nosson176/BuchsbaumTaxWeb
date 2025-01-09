@@ -38,21 +38,16 @@ const setAsValidNumber = (input) => {
 }
 
 const searchArrOfObjs = (arr, searchKey) => {
-  if (!arr) {
-    return []
-  }
-  if (!searchKey) {
-    return arr
-  }
-  return arr.filter(function (obj) {
-    return Object.keys(obj).some(function (key) {
-      if (typeof obj[key] === 'string') {
-        return obj[key].toLowerCase().includes(searchKey.toLowerCase())
-      }
-      return false
-    })
-  })
+  if (!arr) return []
+  if (!searchKey) return arr
+
+  const lowerSearchKey = searchKey.toLowerCase()
+
+  return arr.filter((obj) =>
+    Object.keys(obj).some((key) => typeof obj[key] === 'string' && obj[key].toLowerCase().includes(lowerSearchKey))
+  )
 }
+
 const boldSearchWord = (arr, searchKey) => {
   if (!arr) {
     return []

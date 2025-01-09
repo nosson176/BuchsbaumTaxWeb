@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-grow overflow-auto">
-    <div class="bg-white sticky top-0 shadow flex items-center p-2 overflow-y-auto">
+  <div class="flex-grow overflow-auto  pr-3">
+    <div class="bg-white sticky top-0 shadow flex items-center p-2 ">
       <div class="flex items-center">
         <AddRowButton @click="onAddRowClick" />
         <ExportIcon class="ml-1" @export-click="exportToExcel" />
