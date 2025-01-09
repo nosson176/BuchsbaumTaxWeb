@@ -13,10 +13,9 @@
         <div class="normal table-header">Last</div>
         <div class="sm table-header">DOB</div>
         <div class="normal table-header">SSN</div>
-        <div class="sm table-header">Informal</div>
-        <div class="sm table-header">Relation</div>
+        <div class="sm table-header mr-4">Informal</div>
+        <div class="sm table-header mr-3">Relation</div>
         <div class="sm table-header">Lang</div>
-        <div class="xs table-header" />
       </TableHeader>
     </template>
     <template #body>
@@ -340,6 +339,7 @@ export default {
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')
     },
     ssnClassObj(ssn, include) {
+      if (!include) return "italic"
       if (this.isRedText(ssn) && include) {
         return 'text-red-500'
       } else if (this.isRedText(ssn) && !include) {

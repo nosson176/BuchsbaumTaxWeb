@@ -71,7 +71,8 @@
         <div :id="`${idx}-years`" class="table-col xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
             <EditableSelectCell class=" w-10 overflow-ellipsis" v-model="log.years"
-              :is-editable="isEditable(`${idx}-years`)" :options="yearOptions" @blur="onBlur(log.years, 'years')" />
+              :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
+              @blur="onBlur(log.years, 'years')" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
@@ -249,6 +250,10 @@ export default {
       } else {
         return null;
       }
+    },
+    isEditable() {
+      console.log("isEditable")
+      return (id) => this.editableId === id
     },
     yearOptions() {
       return this.valueTypes.year_name.filter((year) => year.show)
@@ -460,6 +465,7 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
+      console.log("toggleEditable")
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -474,9 +480,11 @@ export default {
       }
     },
 
-    isEditable(id) {
-      return this.editableId === id
-    },
+
+    // isEditable(id) {
+    //   console.log(this.editableId)
+    //   return this.editableId === id
+    // },
 
     handleUpdate(val, field) {
       if (!this.editableLogId) return;
@@ -677,7 +685,12 @@ export default {
           state: this.selectedClient,
           log
         });
-        this.toggleEditable(`0-${columns[1]}`, log.id)
+        this.$nextTick(() => {
+          // Set the editable state after the new row is rendered
+          this.editableId = `0-years`
+          this.editableLogId = this.isCopyingLogs ? this.displayedLogs[0].id : defaultValues.id
+        })
+        // this.toggleEditable(`0-years`, log.id)
         // })
       }
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
