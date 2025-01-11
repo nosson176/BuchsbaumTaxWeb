@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="header bg-gray-700">
     <div v-if="isClientSelected" class="w-full flex items-center justify-between">
       <div class="flex items-center w-1/3">
         <div>
@@ -7,7 +7,7 @@
           <FlagDropdown v-if="showGlobalFlagDropdown" @input="this.updateGlobalFlag"
             @blur="toggleShowGlobalFlagDropdown" />
         </div>
-        <div class="font-bold text-2xl cursor-pointer m-0.5" @click="openEditNameDialogue">
+        <div class="font-bold text-2xl cursor-pointer " @click="openEditNameDialogue">
           {{ selectedClient.lastName }}
         </div>
         <div>
@@ -19,16 +19,16 @@
           <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
         </div>
       </div>
-      <div class="font-bold text-white flex justify-center text-2xl ml-20" @click="setEditable('status')">
+      <div class="font-bold text-white flex justify-center text-2xl mr-10" @click="setEditable('status')">
         <EditableSelectCell :value="selectedClient.status" :options="statusOptions" :is-editable="isEditable('status')"
           @input="updateStatusDate" @blur="onBlur('status')" />
       </div>
-      <div class="text-gray-100 flex text-sm justify-center ml-20" @click="setEditable('periodical')">
-        <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
-          :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" />
-      </div>
       <div class="flex justify-end items-center w-1/3">
         <div class="flex gap-x-10  items-center">
+          <div class="text-gray-100 flex text-sm justify-center " @click="setEditable('periodical')">
+            <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
+              :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" />
+          </div>
           <div class="text-sm aa">{{ formattedCreatedDate }}</div>
           <div v-if="isArchived" class="place-self-end">
             <button type="button"
