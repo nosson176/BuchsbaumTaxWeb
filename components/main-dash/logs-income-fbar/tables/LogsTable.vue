@@ -5,10 +5,10 @@
       <TableHeader class="border-amber-500 head">
         <div class="table-header flex items-center space-x-2">
           <div class="flex flex-col items-center space-y-1">
-            <AddRowButton @click="onAddRowClick" class="mt-0 mr-0" />
-            <div class="flex">
+            <AddRowButton @click="onAddRowClick" class="self-start m-0" />
+            <div class="flex items-center" style="flex-shrink: 0; min-width: auto;">
               <CopyIcon @click.native="copyLog" class="cursor-pointer h-5 w-5" />
-              <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" clsass="cursor-pointer h-5 w-5" />
+              <PasteIcon v-if="hasCopyLogs" @click.native="pasteLogs" class="cursor-pointer h-5 w-5" />
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@
           </Tooltip>
         </div>
         <div :id="`${idx}-note`" class="table-col xl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
-          <EditableTextAreaCell v-model="log.note" @keyup.enter.native="onBlur(log.note, 'note')"
+          <EditableTextAreaCell v-model="log.note" :prevent-enter="true" @keyup.enter.native="onBlur(log.note, 'note')"
             :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
@@ -444,7 +444,7 @@ export default {
           log: newLog
         });
       });
-
+      this.selectedItems = {}
       // Clear the copyLogs after pasting
       this.$store.commit('clearCopyLogs');
     },
@@ -674,7 +674,9 @@ export default {
             state: this.selectedClient,
             log: newLog
           });
-
+          console.log(this.selectedItems)
+          this.selectedItems = {}
+          console.log(this.selectedItems)
           const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
           this.toggleEditable(`${copyLogIndex}-${columns[0]}`, newLog.id)
         })

@@ -1,41 +1,49 @@
 <template>
-  <div class="header">
-    <div v-if="isClientSelected" class="w-full flex items-center">
-      <div>
-        <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
-        <FlagDropdown v-if="showGlobalFlagDropdown" @input="this.updateGlobalFlag"
-          @blur="toggleShowGlobalFlagDropdown" />
+  <div class="header bg-gray-700">
+    <div v-if="isClientSelected" class="w-full flex items-center justify-between">
+      <div class="flex items-center w-1/3">
+        <div>
+          <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
+          <FlagDropdown v-if="showGlobalFlagDropdown" @input="this.updateGlobalFlag"
+            @blur="toggleShowGlobalFlagDropdown" />
+        </div>
+        <div class="font-bold text-2xl cursor-pointer " @click="openEditNameDialogue">
+          {{ selectedClient.lastName }}
+        </div>
+        <div>
+          <FlagIcon class="h-5 w-5 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
+          <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
+        </div>
+        <div class="ml-12">
+          <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
+          <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
+        </div>
       </div>
-      <div class="font-bold text-2xl cursor-pointer ml-4" @click="openEditNameDialogue">
-        {{ selectedClient.lastName }}
-      </div>
-      <div>
-        <FlagIcon class="h-5 w-5 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
-        <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
-      </div>
-      <div class="ml-12">
-        <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
-        <ClientTaxYearsHeaderPersonal :personal="secondaryPersonal" />
-      </div>
-      <div class="font-bold text-white flex justify-center text-2xl ml-20" @click="setEditable('status')">
+      <div class="font-bold text-white flex justify-center text-2xl mr-10" @click="setEditable('status')">
         <EditableSelectCell :value="selectedClient.status" :options="statusOptions" :is-editable="isEditable('status')"
           @input="updateStatusDate" @blur="onBlur('status')" />
       </div>
-      <div class="text-gray-100 flex text-sm justify-center ml-20" @click="setEditable('periodical')">
-        <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
-          :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" />
+      <div class="flex justify-end items-center w-1/3">
+        <div class="flex gap-x-10  items-center">
+          <div class="text-gray-100 flex text-sm justify-center " @click="setEditable('periodical')">
+            <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
+              :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" />
+          </div>
+          <div class="text-sm aa">{{ formattedCreatedDate }}</div>
+          <div v-if="isArchived" class="place-self-end">
+            <button type="button"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+              @click="confirmDelete">
+              <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
+              <span v-else class="capitalize">Delete</span>
+            </button>
+          </div>
+          <div class="flex gap-x-3">
+            <div class=" font-bold text-lg" :class="dollarsClassObj">{{ summationDollars }}</div>
+            <div class=" font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
+          </div>
+        </div>
       </div>
-      <div class="text-sm ml-24">{{ formattedCreatedDate }}</div>
-      <div v-if="isArchived" class="place-self-end">
-        <button type="button"
-          class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-          @click="confirmDelete">
-          <LoadingIndicator v-if="isLoading" class="px-4 cursor-not-allowed h-5 w-5 text-white" />
-          <span v-else class="capitalize">Delete</span>
-        </button>
-      </div>
-      <div class="ml-24 font-bold text-lg" :class="dollarsClassObj">{{ summationDollars }}</div>
-      <div class="ml-6 font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
     </div>
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate('lastName')">
