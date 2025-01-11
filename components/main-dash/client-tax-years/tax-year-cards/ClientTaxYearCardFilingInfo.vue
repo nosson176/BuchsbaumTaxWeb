@@ -11,10 +11,6 @@
         <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')"
           placeholder="Tax Form" @blur="onBlur('taxForm')" />
       </div>
-      <div class="mb-1" @click="setEditable('statusDate')">
-        <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')"
-          @blur="onBlur('statusDate')" />
-      </div>
       <div class="mb-1" @click="setEditable('status')">
         <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')"
           placeholder="Status" @blur="onBlur('status')" />
@@ -24,9 +20,13 @@
           :is-editable="isEditable('statusDetail')" placeholder="Detail" @blur="onBlur('statusDetail')"
           @keyup.enter.native="onBlur('statusDetail')" />
       </div>
+      <div class="mb-1" @click="setEditable('statusDate')">
+        <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')"
+          @blur="onBlur('statusDate')" />
+      </div>
       <div class="col-span-2 cursor-pointer mb-1" @click="setEditable('memo')">
-        <EditableTextAreaCell v-model="memo" show-overflow placeholder="Memo" :is-editable="isEditable('memo')"
-          @blur="onMemoBlur" @keyup.enter.native="onMemoBlur" />
+        <EditableTextAreaCell v-model="memo" :prevent-enter="false" show-overflow placeholder="Memo"
+          :is-editable="isEditable('memo')" @blur="onMemoBlur" @keyup.tab.native="onMemoBlur" class="h-max" />
       </div>
       <div class="flex justify-center mb-1">
         <div class="flex items-center mr-3">
@@ -124,9 +124,9 @@ import { formatAsNumber, setAsValidNumber } from '~/shared/utility'
 
 const items = [
   'taxForm',
-  'statusDate',
   'status',
   'statusDetail',
+  'statusDate',
   'memo',
   'includeInRefund',
   'paid',
