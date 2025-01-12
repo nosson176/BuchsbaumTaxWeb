@@ -486,21 +486,25 @@ export default {
       }
     },
     setEditable(editable) {
+      // console.log(editable)
       this.editable = editable;
       // Store the old value for comparison
       if (editable === "status" || editable === "statusDetail") {
         this.oldValue = this.formModel[editable].value;
       } else {
+        // console.log(this.formModel[editable])
         this.oldValue = typeof this.formModel[editable] === 'object'
           ? JSON.stringify(this.formModel[editable])
           : this.formModel[editable];
       }
     },
+
     isEditable(value) {
       return this.editable === value
     },
 
     onBlur(field) {
+      console.log("onmemoblur", field)
       if (field === 'statusDate') {
         this.times = this.times === 0 ? 1 : 0;
         if (this.times === 1) {
@@ -525,7 +529,6 @@ export default {
         this.editable = '';
         return;
       }
-
       if (['owes', 'paid', 'owesFee', 'paidFee', 'includeInRefund', 'includeFee', 'currency'].includes(field)) {
         const filing = {
           currency: this.currency || 'USD',
@@ -569,10 +572,30 @@ export default {
       this.handleLocalUpdate();
     },
     onMemoBlur() {
-      this.onBlur('memo')
+      console.log("onmemoblur")
+      const oldValueStr = JSON.stringify(this.oldValue);
+      const newValueStr = JSON.stringify(this.formModel.memo);
+
+      // If values are equal, just move to next item
+      if (oldValueStr === newValueStr) {
+        const currentCell = 'memo';
+        const itemIndex = items.findIndex((col) => col === currentCell);
+        if (itemIndex < items.length - 1) {
+          // const nextCell = items[itemIndex + 1];
+          // console.log(nextCell)
+          // this.setEditable(nextCell);
+        } else {
+          this.editable = '';
+        }
+        return;
+      }
+
+      // If values are different, handle the update
+      this.onBlur('memo');
     },
 
     handleLocalUpdate() {
+      console.log("handle")
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -598,10 +621,14 @@ export default {
     },
 
     goToNextItem() {
+      // Store current cell before any editable changes
       const currentCell = this.editable
+
+      // Find index of current cell
       const itemIndex = items.findIndex((col) => col === currentCell)
 
-      if (itemIndex < items.length - 1) {
+      // If we have a valid index
+      if (itemIndex > -1 && itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
         this.setEditable(nextCell)
       } else {

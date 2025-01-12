@@ -162,8 +162,12 @@ export default {
   @apply bg-pink-500;
 }
 
+.turquoise {
+  background-color: #40E0D0
+}
+
 .green {
-  @apply bg-green-200;
+  @apply bg-green-500;
 }
 
 .blue {
@@ -184,6 +188,10 @@ export default {
 
 .light-pink {
   @apply bg-pink-200;
+}
+
+.purple {
+  @apply bg-purple-600;
 }
 
 .black {

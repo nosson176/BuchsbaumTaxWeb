@@ -485,6 +485,11 @@ export default {
           state: this.selectedClient,
           income
         });
+        this.$nextTick(() => {
+          // Set the editable state after the new row is rendered
+          this.editableId = `0-years`
+          this.editableLogId = this.isCopyingLogs ? this.displayedIncomes[0].id : defaultValues.id
+        })
         this.toggleEditable(`0-${columns[0]}`, income.id)
         // })
       }

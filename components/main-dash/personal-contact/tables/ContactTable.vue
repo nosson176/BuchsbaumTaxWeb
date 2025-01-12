@@ -279,6 +279,7 @@ export default {
         sortOrder: this.isDefaultOrder ? 0 : 1,
         archived: false,
         id: generateRandomId(),
+        enabled: true
       }
       if (this.isCopyingContacts) {
         this.selectedContactIds.forEach((contactId, idx) => {
@@ -292,7 +293,21 @@ export default {
             state: this.selectedClient,
             contact: newContact
           });
-          this.toggleEditable(`${contactIndex}-${columns[0]}`, newContact.id)
+
+          // Wait for Vue to update the DOM before setting focus
+          this.$nextTick(() => {
+            const newIndex = this.displayedContacts.findIndex(c => c.id === newContact.id);
+            if (newIndex !== -1) {
+              // Focus specifically on the contactType field
+              this.toggleEditable(`${newIndex}-contactType`, newContact.id);
+
+              // Find and click the contactType cell to open the dropdown
+              const typeCell = document.getElementById(`${newIndex}-contactType`);
+              if (typeCell) {
+                typeCell.click();
+              }
+            }
+          });
         })
       } else {
         const contact = Object.assign({}, defaultValues)
@@ -301,7 +316,21 @@ export default {
           state: this.selectedClient,
           contact
         });
-        this.toggleEditable(`0-${columns[0]}`, contact.id)
+
+        // Wait for Vue to update the DOM before setting focus
+        this.$nextTick(() => {
+          const newIndex = this.displayedContacts.findIndex(c => c.id === contact.id);
+          if (newIndex !== -1) {
+            // Focus specifically on the contactType field
+            this.toggleEditable(`${newIndex}-contactType`, contact.id);
+
+            // Find and click the contactType cell to open the dropdown
+            const typeCell = document.getElementById(`${newIndex}-contactType`);
+            if (typeCell) {
+              typeCell.click();
+            }
+          }
+        });
       }
     },
 

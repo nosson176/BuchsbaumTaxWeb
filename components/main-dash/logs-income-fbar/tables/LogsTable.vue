@@ -125,7 +125,7 @@
         <div :id="`${idx}-secondsSpent`" class="table-col xxs"
           @click="toggleEditable(`${idx}-secondsSpent`, log.id, log.timeSpent)">
           <EditableInputCell v-model="log.timeSpent" :is-editable="isEditable(`${idx}-secondsSpent`)"
-            @blur="updateSecondsSpent(log)" @keypress.native.enter="updateSecondsSpent(log)" />
+            @blur="updateSecondsSpent(log, log.secondsSpent, 'secondsSpent')" />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col mr-2  xxs">
           <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
@@ -233,7 +233,6 @@ export default {
       if (this.logs) {
         // מסנן את הלוגים לפי הערך של showArchived
         const filteredLogs = this.logs?.filter(log => this.showArchived === log.archived);
-
         // ממיר את ה-historyLogJson מ-JSON string לאובייקט JSON
         const updatedLogs = filteredLogs.map(log => {
           if (log.historyLogJson && typeof log.historyLogJson === 'string') {
@@ -252,7 +251,6 @@ export default {
       }
     },
     isEditable() {
-      console.log("isEditable")
       return (id) => this.editableId === id
     },
     yearOptions() {
@@ -465,7 +463,6 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
-      console.log("toggleEditable")
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -628,7 +625,7 @@ export default {
       }
       const defaultValues = {
         clientId: this.selectedClient.id,
-        logDate: new Date(),
+        logDate: Date.now(),
         id: generateRandomId(),
         archived: false,
         years: '',
@@ -658,7 +655,7 @@ export default {
           const newLog = {
             ...log,
             id: generateRandomId(),
-            logDate: new Date(),
+            logDate: Date.now(),
             new: true,
             historyLogJson: [],
             createdBy: this.currentUser.username,
@@ -674,9 +671,7 @@ export default {
             state: this.selectedClient,
             log: newLog
           });
-          console.log(this.selectedItems)
           this.selectedItems = {}
-          console.log(this.selectedItems)
           const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
           this.toggleEditable(`${copyLogIndex}-${columns[0]}`, newLog.id)
         })
@@ -699,17 +694,20 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field) {
+      console.log(val, field)
       if (this.oldValue !== val && this.oldValue !== undefined) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
+        // this.editableId = ""
         return
       }
       if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
-        return
+
       }
       this.editableId = ""
+      // this.goToNextColumn()
     },
     isTodayOrPast(date) {
       // Parse the date using your expected format
@@ -818,8 +816,9 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true })
     },
-    updateSecondsSpent(log) {
-      this.onBlur()
+    updateSecondsSpent(log, val, field) {
+      console.log(log)
+      this.onBlur(val, field)
       const timeArr = log.timeSpent.split(':')
       if (timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {
         log.timeSpent = this.getTimeSpentOnClient(log)

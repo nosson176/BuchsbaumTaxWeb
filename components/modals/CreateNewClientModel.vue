@@ -56,13 +56,14 @@
 
 <script>
 import { mapState } from 'vuex'
-import { events, models } from '~/shared/constants'
+import { events, models, mutations } from '~/shared/constants'
 
 export default {
     name: 'CreateClientModal',
 
     data() {
         return {
+            selectedClientId: NaN,
             newClient: {
                 active: true,
                 archived: false,
@@ -119,9 +120,18 @@ export default {
                 this.$store.commit('pushNewClient', data)
                 this.$toast.success('Client created successfully')
                 this.emitHide()
-            }).catch(error => {
-                this.$toast.error('Failed to create client: ' + error.message)
+                console.log(data)
+                this.$store.commit(mutations.setModelResponse, {
+                    model: models.clientClicked,
+                    data: Math.random(),
+                })
+                this.selectedClientId = data.id
+                const headers = this.headers
+                this.$api.getClientData(headers, data)
             })
+                .catch(error => {
+                    this.$toast.error('Failed to create client: ' + error.message)
+                })
         },
 
         emitHide() {

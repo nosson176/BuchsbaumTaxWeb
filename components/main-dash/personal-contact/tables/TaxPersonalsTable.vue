@@ -157,9 +157,12 @@ export default {
     },
 
     filteredPersonals() {
+      console.log(this.taxPersonals)
       if (this.taxPersonals) {
-        return this.taxPersonals.filter((personal) => this.showArchived === personal.archived)
+        console.log("inside", this.taxPersonals)
+        return this.taxPersonals.filter((personal) => this.showArchived === personal?.archived)
       } else {
+        console.log("out")
         return null
       }
     },
@@ -179,6 +182,7 @@ export default {
       return this.selectedClient.id
     },
     taxPersonals() {
+      console.log(this.selectedClient.taxPersonals)
       if (this.selectedClient.taxPersonals) {
         return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
         // return this.selectedClient.taxPersonals
@@ -216,9 +220,17 @@ export default {
       }
     },
     toggleEditable(id, personalId, value) {
+      console.log(id)
+      console.log(personalId)
+      console.log(value)
       if (!value) {
         const val = id.split("-")[1]
         const personal = this.displayedPersonals.find((personal) => personal.id === personalId)
+        if (!personal) {
+          console.log("personal not found")
+          return
+        }
+        console.log(personal)
         this.oldValue = personal[val]
       } else this.oldValue = value
 
@@ -303,7 +315,6 @@ export default {
         id: generateRandomId(),
       }
       if (this.isCopyingPersonals) {
-        console.log("copy")
         this.selectedPersonalIds.forEach((personalId, idx) => {
           const personalIndex = this.displayedPersonals.findIndex((personal) => personal.id === Number(personalId))
           const personal = this.displayedPersonals[personalIndex]
@@ -312,8 +323,9 @@ export default {
           this.updateTaxPersonal.push(newPersonal)
           this.$store.commit('pushNewTaxPersonal', {
             state: this.selectedClient,
-            taxPersonal: newPersonal
+            personal: newPersonal
           });
+          console.log("copy", newPersonal)
           this.toggleEditable(`${personalIndex}-${columns[0]}`, newPersonal.id)
         })
       } else {
@@ -330,9 +342,19 @@ export default {
         // Wait for Vue to update the DOM before setting focus
         this.$nextTick(() => {
           const newIndex = this.displayedPersonals.findIndex(p => p.id === personal.id);
-          this.toggleEditable(`${newIndex}-${columns[1]}`, personal.id)
-        });
-        this.toggleEditable(`${this.displayedPersonals.length - 1}-${columns[1]}`, personal.id)
+          if (newIndex !== -1) {
+            // Focus specifically on the category field (index 1 in columns array)
+            this.toggleEditable(`${newIndex}-category`, personal.id);
+
+            // Find and click the category cell to open the dropdown
+            const categoryCell = document.getElementById(`${newIndex}-category`);
+            if (categoryCell) {
+              categoryCell.click();
+            }
+          }
+        })
+        // console.log("newIndex")
+        // this.toggleEditable(`${this.displayedPersonals.length - 1}-${columns[1]}`, personal.id)
       }
     },
     goToNextColumn() {

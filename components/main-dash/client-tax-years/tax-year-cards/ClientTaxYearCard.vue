@@ -45,13 +45,14 @@
           </draggable>
         </div>
       </div>
-      <div class="flex">
+
+      <!-- <div class="flex">
         <nuxt-link :to="shekelatorRoute"
           class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">$</nuxt-link>
         <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Tab</div>
         <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Win</div>
         <div class="border bg-blue-200 w-1/4 text-sm font-bold capitalize text-center">Sub</div>
-      </div>
+      </div> -->
     </div>
     <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
       <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteItem" />
