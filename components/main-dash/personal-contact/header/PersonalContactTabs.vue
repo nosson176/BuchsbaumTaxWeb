@@ -28,7 +28,7 @@ export default {
       return this.selectedClient?.contacts?.filter((contact) => !contact.archived).length
     },
     taxPersonalsCount() {
-      return this.selectedClient?.taxPersonals?.filter((taxPersonal) => !taxPersonal.archived).length
+      return this.selectedClient?.taxPersonals?.filter((taxPersonal) => !taxPersonal?.archived).length
     },
   },
   methods: {
