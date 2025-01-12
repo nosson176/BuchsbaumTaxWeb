@@ -46,8 +46,9 @@
             </div>
             <div :id="`${idx}-mainDetail`" class="table-col lg"
               @click="toggleEditable(`${idx}-mainDetail`, contact.id, contact.mainDetail)">
-              <EditableInputCell v-model="contact.mainDetail" @keyup.enter.native="onBlur(contact.mainDetail)"
-                :is-editable="isEditable(`${idx}-mainDetail`)" @blur="onBlur(contact.mainDetail)" />
+              <EditableInputCell v-model="contact.mainDetail"
+                @keyup.enter.native="onBlur(contact.mainDetail, 'mainDetail')"
+                :is-editable="isEditable(`${idx}-mainDetail`)" @blur="onBlur(contact.mainDetail, 'mainDetail')" />
             </div>
             <div :id="`${idx}-secondaryDetail`" class="table-col lg"
               @click="toggleEditable(`${idx}-secondaryDetail`, contact.id, contact.secondaryDetail)">
@@ -201,10 +202,35 @@ export default {
     isSelected(contactId) {
       return this.selectedItems[contactId]
     },
+    checkTelphone(contact) {
+      const validTypes = ['Cell', 'Phone', 'Fax'];
+      return validTypes.some(type => contact.contactType.includes(type));
+    },
+    formatPhoneNumber(number) {
+      // Remove non-digit characters
+      const digits = number.replace(/\D/g, '');
+
+      if (digits.length === 10) {
+        // Format for 10-digit numbers: (XXX) XXX-XXXX
+        return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+      } else if (digits.length === 9) {
+        // Format for 9-digit numbers: (XX) XXX-XXXX
+        return `(${digits.slice(0, 2)}) ${digits.slice(2, 5)}-${digits.slice(5)}`;
+      } else {
+        // Return the original input if it doesn't match the expected length
+        return number;
+      }
+    },
     async handleUpdate(field) {
       if (!this.editableContactId) return;
       let oldVal
       const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId);
+      if (field === 'mainDetail' && contact.contactType) {
+        const res = this.checkTelphone(contact)
+        if (!res) return
+        const tel = this.formatPhoneNumber(contact.mainDetail)
+        contact.mainDetail = tel
+      }
       // Get only enabled contacts
       const enabledContacts = this.displayedContacts.filter(c => c.enabled);
 
