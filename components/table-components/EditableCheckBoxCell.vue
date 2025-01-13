@@ -1,16 +1,8 @@
 <template>
   <div>
-    <input
-      ref="checkbox"
-      v-model="computedValue"
-      tabindex="0"
-      autofocus
-      type="checkbox"
-      class="h-3 w-3 text-indigo-600 border-gray-300 rounded cursor-pointer outline-none"
-      @blur="onBlur"
-      @click="onClick"
-      @change="onChange"
-    />
+    <input ref="checkbox" v-model="computedValue" tabindex="0" autofocus type="checkbox"
+      class="h-3 w-3 text-indigo-600 border-gray-300 rounded cursor-pointer outline-none" @blur="onBlur"
+      @click="onClick" @change="onChange" />
   </div>
 </template>
 

@@ -134,14 +134,28 @@ export default {
       // Define category order
       const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };
 
-      // Sort by category
+      // Sort by category and then by DOB for DEP
       const sortedPersonals = personals.sort((a, b) => {
         // Normalize categories to remove trailing punctuation or whitespace
         const categoryA = (a.category || "").replace(/\W+$/, "").toUpperCase();
         const categoryB = (b.category || "").replace(/\W+$/, "").toUpperCase();
 
-        return (categoryOrder[categoryA] || 4) - (categoryOrder[categoryB] || 4);
+        // If categories are different, sort by category order
+        if (categoryA !== categoryB) {
+          return (categoryOrder[categoryA] || 4) - (categoryOrder[categoryB] || 4);
+        }
+
+        // If both are DEP category, sort by date of birth
+        if (categoryA === 'DEP') {
+          // Convert dates to timestamps for comparison
+          const dateA = a.dateOfBirth ? new Date(a.dateOfBirth).getTime() : 0;
+          const dateB = b.dateOfBirth ? new Date(b.dateOfBirth).getTime() : 0;
+          return dateA - dateB; // Changed to descending order (oldest on top)
+        }
+
+        return 0; // Keep original order for non-DEP categories
       });
+
       if (this.trackedPersonalId) {
         const newIndex = sortedPersonals.findIndex(p => p.id === this.trackedPersonalId);
         if (newIndex !== -1) {
@@ -152,22 +166,25 @@ export default {
           });
         }
       }
+
       // Apply search filter
       return searchArrOfObjs(sortedPersonals, this.searchInput);
     },
 
     filteredPersonals() {
-      console.log(this.taxPersonals)
       if (this.taxPersonals) {
-        console.log("inside", this.taxPersonals)
         return this.taxPersonals.filter((personal) => this.showArchived === personal?.archived)
       } else {
-        console.log("out")
         return null
       }
     },
     categoryOptions() {
-      return this.valueTypes.category.filter((category) => category.show)
+      return this.valueTypes.category
+        .filter((category) => category.show)
+        .sort((a, b) => {
+          const order = ['PRI.', 'SEC.', 'DEP.'];
+          return order.indexOf(a.value) - order.indexOf(b.value);
+        });
     },
     languageOptions() {
       return this.valueTypes.language.filter((language) => language.show)
@@ -182,7 +199,6 @@ export default {
       return this.selectedClient.id
     },
     taxPersonals() {
-      console.log(this.selectedClient.taxPersonals)
       if (this.selectedClient.taxPersonals) {
         return JSON.parse(JSON.stringify(this.selectedClient.taxPersonals))
         // return this.selectedClient.taxPersonals
@@ -220,17 +236,12 @@ export default {
       }
     },
     toggleEditable(id, personalId, value) {
-      console.log(id)
-      console.log(personalId)
-      console.log(value)
       if (!value) {
         const val = id.split("-")[1]
         const personal = this.displayedPersonals.find((personal) => personal.id === personalId)
         if (!personal) {
-          console.log("personal not found")
           return
         }
-        console.log(personal)
         this.oldValue = personal[val]
       } else this.oldValue = value
 
@@ -257,7 +268,6 @@ export default {
       if (/^([0-9]{9})$/.test(personal.ssn)) {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
-      console.log("out")
       const index = this.updateTaxPersonal.findIndex(per => per.id === personal.id)
       if (index !== -1) {
         this.updateTaxPersonal[index] = personal
@@ -303,7 +313,6 @@ export default {
     },
     onAddRowClick() {
       if (!this.selectedClient) {
-        console.log("select")
         return
       }
       const clientId = this.selectedClient.id
@@ -325,11 +334,9 @@ export default {
             state: this.selectedClient,
             personal: newPersonal
           });
-          console.log("copy", newPersonal)
           this.toggleEditable(`${personalIndex}-${columns[0]}`, newPersonal.id)
         })
       } else {
-        console.log("else")
         const personal = Object.assign({}, defaultValues)
         this.updateTaxPersonal.push(personal)
         this.$store.commit('pushNewTaxPersonal', {
@@ -353,7 +360,6 @@ export default {
             }
           }
         })
-        // console.log("newIndex")
         // this.toggleEditable(`${this.displayedPersonals.length - 1}-${columns[1]}`, personal.id)
       }
     },
