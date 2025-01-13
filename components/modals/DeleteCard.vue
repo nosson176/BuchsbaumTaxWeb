@@ -290,7 +290,6 @@ export default {
         .then(() => this.updateClientSideData())
     },
     updateSmartview() {
-      console.log("updateSmartview")
       this.$api
         .updateSmartview(this.headers, { smartviewId: this.updatedItem.id }, this.updatedItem)
         .then(() => {

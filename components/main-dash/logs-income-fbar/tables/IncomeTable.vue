@@ -75,7 +75,7 @@
         <div :id="`${idx}-include`" class="table-col w-6"
           @click="toggleEditable(`${idx}-include`, income.id, income.include)">
           <EditableCheckBoxCell v-model="income.include" :is-editable="isEditable(`${idx}-include`)"
-            @input="handleUpdate" />
+            @input="handleUpdate('include')" />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary xs"
           @click="toggleEditable(`${idx}-years`, income.id, income.years)">
@@ -108,8 +108,9 @@
         </div>
         <div :id="`${idx}-amount`" tabindex="-1" class="table-col sm"
           @click="toggleEditable(`${idx}-amount`, income.id, income.amount, `selectAll`)">
-          <EditableInputCell v-model="income.amount" :selectAll="true" @keyup.enter.native="onBlur(fbar.amount)"
-            :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur(income.amount)" />
+          <EditableInputCell v-model.number="income.amount" :selectAll="true"
+            @keyup.enter.native="onBlur(income.amount, 'amount')" :is-editable="isEditable(`${idx}-amount`)" currency
+            @blur="onBlur(income.amount, 'amount')" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, income.id, income.currency)">
@@ -118,12 +119,12 @@
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-frequency`, income.id, income.frequency)">
-          <EditableInputCell v-model="income.frequency" @keyup.enter.native="onBlur(fbar.frequency)"
+          <EditableInputCell v-model="income.frequency" @keyup.enter.native="onBlur(income.frequency)"
             :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur(income.frequency)" />
         </div>
         <div :id="`${idx}-amount`" class="table-col sm"
           @click="toggleEditable(`${idx}-$`, income.id, income.amountUSD)">
-          <EditableInputCell v-model="income.amountUSD" :selectAll="true" @keyup.enter.native="onBlur(fbar.amountUSD)"
+          <EditableInputCell v-model="income.amountUSD" :selectAll="true" @keyup.enter.native="onBlur(income.amountUSD)"
             readonly :is-editable="isEditable(`${idx}-amount`)" currency rounded @blur="onBlur(income.amountUSD)" />
         </div>
         <div :id="`${idx}-documents`" class="table-col xs" tabindex="-1"
@@ -403,24 +404,24 @@ export default {
         this.oldValue = income[val]
       } else this.oldValue = value
       this.editableIncomeId = incomeId
-      if (!(this.editableId === id)) {
+      if (this.editableId !== id) {
         this.editableId = id
       }
     },
     isEditable(id) {
       return this.editableId === id
     },
-    handleUpdate() {
+    handleUpdate(field) {
       if (!this.editableIncomeId) return
       const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
       income.amount = setAsValidNumber(income.amount)
-
       const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
       if (index !== -1) {
         this.updateIncomes[index] = income
       } else {
         this.updateIncomes.push(income)
       }
+      if (field === 'include' || field === "amount") this.$store.dispatch('updateIncomeAction', { income });
     },
     sendIncomesToServer() {
       this.$api.updateIncomes(this.headers, this.updateIncomes)
@@ -468,6 +469,8 @@ export default {
           const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
           const income = this.displayedIncomes[incomeIndex]
           const newIncome = Object.assign({}, income)
+          newIncome.amount = 0
+          newIncome.amountUSD = 0
           newIncome.id = generateRandomId()
           this.updateIncomes.push(newIncome)
           this.$store.commit('pushNewIncome', {
@@ -522,9 +525,9 @@ export default {
         this.toggleEditable(prevCell, this.editableIncomeId)
       }
     },
-    onBlur(val) {
+    onBlur(val, field) {
       if (this.oldValue !== val && this.oldValue !== undefined) {
-        this.handleUpdate()
+        this.handleUpdate(field)
         this.goToNextColumn()
         return
       }
@@ -554,4 +557,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.disabled {
+  opacity: 0.5;
+  background-color: #f3f4f6;
+}
+</style>

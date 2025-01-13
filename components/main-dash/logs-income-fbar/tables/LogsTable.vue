@@ -477,12 +477,6 @@ export default {
       }
     },
 
-
-    // isEditable(id) {
-    //   console.log(this.editableId)
-    //   return this.editableId === id
-    // },
-
     handleUpdate(val, field) {
       if (!this.editableLogId) return;
 
@@ -694,7 +688,6 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field) {
-      console.log(val, field)
       if (this.oldValue !== val && this.oldValue !== undefined) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
@@ -817,7 +810,6 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: true })
     },
     updateSecondsSpent(log, val, field) {
-      console.log(log)
       this.onBlur(val, field)
       const timeArr = log.timeSpent.split(':')
       if (timeArr.length < 2 || isNaN(timeArr[0]) || isNaN(timeArr[1])) {

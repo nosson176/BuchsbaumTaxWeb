@@ -3,11 +3,11 @@
     <div v-if="isClientSelected" class="w-full flex items-center justify-between">
       <div class="flex items-center w-1/3">
         <div>
-          <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
+          <FlagIcon class="h-8 w-8 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
           <FlagDropdown v-if="showGlobalFlagDropdown" @input="this.updateGlobalFlag"
             @blur="toggleShowGlobalFlagDropdown" />
         </div>
-        <div class="font-bold text-2xl cursor-pointer " @click="openEditNameDialogue">
+        <div class="font-bold text-2xl cursor-pointer px-1 " @click="openEditNameDialogue">
           {{ selectedClient.lastName }}
         </div>
         <div>

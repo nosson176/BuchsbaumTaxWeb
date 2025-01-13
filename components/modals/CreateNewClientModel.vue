@@ -120,7 +120,6 @@ export default {
                 this.$store.commit('pushNewClient', data)
                 this.$toast.success('Client created successfully')
                 this.emitHide()
-                console.log(data)
                 this.$store.commit(mutations.setModelResponse, {
                     model: models.clientClicked,
                     data: Math.random(),

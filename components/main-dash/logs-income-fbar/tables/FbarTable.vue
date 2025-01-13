@@ -73,7 +73,7 @@
         </div>
         <div :id="`${idx}-include`" class="table-col w-6 p-1" @click="toggleEditable(`${idx}-include`, fbar.id)">
           <EditableCheckBoxCell v-model="fbar.include" :is-editable="isEditable(`${idx}-include`)"
-            @input="handleUpdate" />
+            @input="handleUpdate('include')" />
         </div>
         <div :id="`${idx}-years`" class="table-col-primary xs"
           @click="toggleEditable(`${idx}-years`, fbar.id, fbar.years)">
@@ -100,8 +100,9 @@
             @blur="onBlur(fbar.job)" />
         </div>
         <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id, fbar.amount)">
-          <EditableInputCell v-model="fbar.amount" :selectAll="true" @keyup.enter.native="onBlur(fbar.amount)"
-            :is-editable="isEditable(`${idx}-amount`)" currency @blur="onBlur(fbar.amount)" />
+          <EditableInputCell v-model="fbar.amount" :selectAll="selectAll"
+            @keyup.enter.native="onBlur(fbar.amount, 'amount')" :is-editable="isEditable(`${idx}-amount`)" currency
+            @blur="onBlur(fbar.amount, 'amount')" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, fbar.id, fbar.currency)">
@@ -171,7 +172,7 @@ const columns = [
   'amount',
   'currency',
   'frequency',
-  '$',
+  // '$',
   'documents',
   'description',
   'depend',
@@ -208,7 +209,8 @@ export default {
       includeAll: '',
       selectedItems: {},
       oldValue: '',
-      updateFbars: []
+      updateFbars: [],
+      selectAll: true
     }
   },
   computed: {
@@ -382,6 +384,24 @@ export default {
     if (this.updateFbars.length > 0) this.sendFbarsToServer()
   },
   methods: {
+    // validateNumberInput(fbar) {
+    //   // Remove non-numeric characters
+    //   fbar.amount = fbar.amount.replace(/[^0-9.]/g, '');
+
+    //   // Optional: Prevent multiple decimal points
+    //   if ((fbar.amount.match(/\./g) || []).length > 1) {
+    //     fbar.amount = fbar.amount.substring(0, fbar.amount.length - 1);
+    //   }
+
+    //   // Ensure numeric formatting (optional)
+    //   if (fbar.amount && !isNaN(fbar.amount)) {
+    //     console.log("fff")
+    //     fbar.amount = parseFloat(fbar.amount).toString();
+    //   }
+    //   if (fbar.amount === '') {
+    //     fbar.amount = '0';
+    //   }
+    // },
     handleBeforeUnload(event) {
       if (this.updateFbars.length > 0) {
         this.sendFbarsToServer();
@@ -404,9 +424,10 @@ export default {
     isEditable(id) {
       return this.editableId === id
     },
-    handleUpdate() {
+    handleUpdate(field) {
       if (!this.editableFbarId) return
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
+      if (fbar.amount === '') fbar.amount = 0
 
       const index = this.updateFbars.findIndex(f => f.id === fbar.id)
       if (index !== -1) {
@@ -414,6 +435,7 @@ export default {
       } else {
         this.updateFbars.push(fbar)
       }
+      if (field === 'include' || field === 'amount') this.$store.dispatch('updateFbarAction', { fbar });
       // this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
     },
     sendFbarsToServer() {
@@ -462,6 +484,8 @@ export default {
           const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
           const fbar = this.displayedFbars[fbarIndex]
           const newFbar = Object.assign({}, fbar)
+          newFbar.amount = 0
+          newFbar.amountUSD = 0
           newFbar.id = generateRandomId()
           this.updateFbars.push(newFbar)
           this.$store.commit('pushNewFbar', {
@@ -516,9 +540,9 @@ export default {
         this.toggleEditable(prevCell, this.editableFbarId)
       }
     },
-    onBlur(val) {
+    onBlur(val, field) {
       if (this.oldValue !== val) {
-        this.handleUpdate()
+        this.handleUpdate(field)
         this.goToNextColumn()
         return
       }

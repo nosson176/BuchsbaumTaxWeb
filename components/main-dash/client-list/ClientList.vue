@@ -33,7 +33,7 @@
     <!-- Client list when loading is false -->
     <template v-else>
       <div v-for="client in displayedClients" :ref="client.id" :key="`${client.id} ${isSelected(client)}`"
-        class="flex text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
+        class="flex items-center text-gray-500 bg-gray-50 pl-0.5 pr-px py-1 text-xs client cursor-pointer group hover:bg-gray-400 hover:text-white"
         :class="{ selected: isSelected(client) }" @click="openChangeClientModal(client)">
         <div class="w-5">
           <FlagIcon class="w-4 h-4" :color="client.gFlag" />
@@ -271,7 +271,6 @@ export default {
       if (this.selectedClient) {
         this.selectedClientId = this.selectedClient.id
         const selectedClientRef = this.$refs[this.selectedClient.id]
-        console.log(selectedClientRef)
         if (selectedClientRef) {
           selectedClientRef[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
         }

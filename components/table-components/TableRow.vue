@@ -27,7 +27,7 @@ export default {
   computed: {
     bgColorClassObj() {
       if (this.selected) {
-        return { 'bg-indigo-200': true }
+        return { 'bg-indigo-300': true }
       } else if (this.idx % 2 === 0) {
         return { 'bg-white': true }
       } else {

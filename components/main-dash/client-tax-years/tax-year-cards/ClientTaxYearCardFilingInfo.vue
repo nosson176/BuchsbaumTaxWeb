@@ -486,13 +486,11 @@ export default {
       }
     },
     setEditable(editable) {
-      // console.log(editable)
       this.editable = editable;
       // Store the old value for comparison
       if (editable === "status" || editable === "statusDetail") {
         this.oldValue = this.formModel[editable].value;
       } else {
-        // console.log(this.formModel[editable])
         this.oldValue = typeof this.formModel[editable] === 'object'
           ? JSON.stringify(this.formModel[editable])
           : this.formModel[editable];
@@ -504,7 +502,6 @@ export default {
     },
 
     onBlur(field) {
-      console.log("onmemoblur", field)
       if (field === 'statusDate') {
         this.times = this.times === 0 ? 1 : 0;
         if (this.times === 1) {
@@ -572,7 +569,6 @@ export default {
       this.handleLocalUpdate();
     },
     onMemoBlur() {
-      console.log("onmemoblur")
       const oldValueStr = JSON.stringify(this.oldValue);
       const newValueStr = JSON.stringify(this.formModel.memo);
 
@@ -595,7 +591,6 @@ export default {
     },
 
     handleLocalUpdate() {
-      console.log("handle")
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);

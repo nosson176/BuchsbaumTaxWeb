@@ -50,14 +50,15 @@ export default {
     computedValue: {
       get() {
         if (this.rounded) {
-          return this.value ? formatAsNumber(Math.round(this.value)) : ''
+          return this.value ? formatAsNumber(Math.round(this.value)) : 0
         } else if (this.currency) {
-          return this.value ? formatAsNumber(this.value) : ''
+          return this.value ? formatAsNumber(this.value) : 0
         }
         return this.value
       },
       set(newVal) {
-        this.$emit(events.input, newVal)
+        if (newVal === '') newVal = 0
+        this.$emit(events.input, Number(newVal))
       },
     },
     showEditMode() {
