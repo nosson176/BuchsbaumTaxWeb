@@ -256,7 +256,7 @@ export default {
       return this.editingId === editingId
     },
     checkActiveStatus(val) {
-      const values = ['INTERNAL', 'ITIN PENDING', 'MISSING', 'W/ SHUMA', 'WAITING', 'READY', 'FBAR'];
+      const values = ['INTERNAL', 'ITIN PENDING', 'MISSING', 'W/ SHUMA', 'WAITING', 'READY', 'FBAR', '-'];
       return values.some(status => val.startsWith(status));
     },
     async updateStatusDate(newVal) {

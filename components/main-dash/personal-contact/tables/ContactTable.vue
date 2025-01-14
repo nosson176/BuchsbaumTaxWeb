@@ -210,6 +210,7 @@ export default {
       // Remove non-digit characters
       const digits = number.replace(/\D/g, '');
 
+      console.log(digits)
       if (digits.length === 10) {
         // Format for 10-digit numbers: (XXX) XXX-XXXX
         return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
@@ -225,12 +226,16 @@ export default {
       if (!this.editableContactId) return;
       let oldVal
       const contact = this.displayedContacts.find((contact) => contact.id === this.editableContactId);
-      if (field === 'mainDetail' && contact.contactType) {
-        const res = this.checkTelphone(contact)
-        if (!res) return
-        const tel = this.formatPhoneNumber(contact.mainDetail)
-        contact.mainDetail = tel
+      if (!contact) return
+
+      if (field === 'mainDetail' && this.checkTelphone(contact)) {
+        contact.mainDetail = contact.mainDetail.replace(/[()\-\s]/g, '');
+        if (!isNaN(contact.mainDetail)) {
+          const tel = this.formatPhoneNumber(contact.mainDetail)
+          contact.mainDetail = tel
+        }
       }
+
       // Get only enabled contacts
       const enabledContacts = this.displayedContacts.filter(c => c.enabled);
 

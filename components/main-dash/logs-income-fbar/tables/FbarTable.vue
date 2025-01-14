@@ -160,7 +160,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models, tableGroups } from '~/shared/constants'
-import { formatAsNumber, generateRandomId, searchArrOfObjs } from '~/shared/utility'
+import { formatAsNumber, generateRandomId, searchArrOfObjs, setAsValidNumber } from '~/shared/utility'
 
 const columns = [
   'include',
@@ -274,7 +274,7 @@ export default {
       return formatAsNumber(
         this.displayedFbars
           .filter((fbar) => fbar.include)
-          .reduce((acc, fbar) => (fbar.frequency ? acc + fbar.amount * fbar.frequency : acc + fbar.amount), 0)
+          .reduce((acc, fbar) => (fbar.frequency ? acc + Number(fbar.amount) * fbar.frequency : acc + Number(fbar.amount)), 0)
       )
     },
     amountUSDTotal() {
@@ -286,7 +286,7 @@ export default {
               if (!fbar.amountUSD) {
                 return acc
               }
-              return fbar.frequency ? acc + fbar.amountUSD * fbar.frequency : acc + fbar.amountUSD
+              return fbar.frequency ? acc + Number(fbar.amountUSD) * fbar.frequency : acc + Number(fbar.amountUSD)
             }, 0)
         )
       )}`
@@ -427,7 +427,12 @@ export default {
     handleUpdate(field) {
       if (!this.editableFbarId) return
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
-      if (fbar.amount === '') fbar.amount = 0
+      if (fbar.amount === '') {
+        fbar.amount = 0
+      } else {
+        fbar.amount = setAsValidNumber(fbar.amount)
+      }
+      fbar.amountUSD = fbar.amount
 
       const index = this.updateFbars.findIndex(f => f.id === fbar.id)
       if (index !== -1) {
@@ -486,6 +491,7 @@ export default {
           const newFbar = Object.assign({}, fbar)
           newFbar.amount = 0
           newFbar.amountUSD = 0
+          newFbar.documents = 'NEED'
           newFbar.id = generateRandomId()
           this.updateFbars.push(newFbar)
           this.$store.commit('pushNewFbar', {

@@ -134,12 +134,12 @@
         </div>
         <div :id="`${idx}-description`" tabindex="-1" class="table-col xl"
           @click="toggleEditable(`${idx}-description`, income.id, income.description)">
-          <EditableInputCell v-model="income.description" @keyup.enter.native="onBlur(fbar.description)"
+          <EditableInputCell v-model="income.description" @keyup.enter.native="onBlur(income.description)"
             :is-editable="isEditable(`${idx}-description`)" @blur="onBlur(income.description)" />
         </div>
         <div :id="`${idx}-depend`" tabindex="-1" class="table-col sm"
           @click="toggleEditable(`${idx}-depend`, income.id, income.depend)">
-          <EditableInputCell v-model="income.depend" @keyup.enter.native="onBlur(fbar.depend)"
+          <EditableInputCell v-model="income.depend" @keyup.enter.native="onBlur(income.depend)"
             :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur(income.depend)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
@@ -415,6 +415,7 @@ export default {
       if (!this.editableIncomeId) return
       const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
       income.amount = setAsValidNumber(income.amount)
+      income.amountUSD = income.amount
       const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
       if (index !== -1) {
         this.updateIncomes[index] = income
@@ -471,12 +472,14 @@ export default {
           const newIncome = Object.assign({}, income)
           newIncome.amount = 0
           newIncome.amountUSD = 0
+          newIncome.documents = 'NEED'
           newIncome.id = generateRandomId()
           this.updateIncomes.push(newIncome)
           this.$store.commit('pushNewIncome', {
             state: this.selectedClient,
             income: newIncome
           });
+
           this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
           //   }
           // })
