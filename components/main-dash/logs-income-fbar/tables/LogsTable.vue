@@ -83,8 +83,14 @@
           </Tooltip>
         </div>
         <div :id="`${idx}-note`" class="table-col xl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
-          <EditableTextAreaCell v-model="log.note" :prevent-enter="true" @keyup.enter.native="onBlur(log.note, 'note')"
-            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
+          <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
+            <EditableTextAreaCell v-model="log.note" :prevent-enter="true"
+              @keyup.enter.native="onBlur(log.note, 'note')" :is-editable="isEditable(`${idx}-note`)"
+              @blur="onBlur(log.note, 'note')" />
+            <template #popper>
+              <span>{{ log.note }}</span>
+            </template>
+          </Tooltip>
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"

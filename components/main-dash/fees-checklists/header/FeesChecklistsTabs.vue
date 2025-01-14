@@ -1,7 +1,7 @@
 <template>
   <div class="flex space-x-2 justify-center">
     <Tab :active="isFeesActive" :count="feesCount" @click="setTabFees"> Fees </Tab>
-    <Tab :active="isChecklistsActive" :count="checklistsCount" @click="setTabChecklists"> Checklists </Tab>
+    <!-- <Tab :active="isChecklistsActive" :count="checklistsCount" @click="setTabChecklists"> Checklists </Tab> -->
   </div>
 </template>
 

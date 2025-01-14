@@ -52,7 +52,7 @@ export default {
       },
     },
     format() {
-      return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
+      return this.isTypeDate ? 'D/M/YYYY' : 'HH:mm:ss'
     },
     valueType() {
       return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
