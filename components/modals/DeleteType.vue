@@ -40,6 +40,7 @@ export default {
   },
   methods: {
     handleDelete() {
+      console.log('delete')
       this.$emit(events.delete)
     },
     emitHide() {

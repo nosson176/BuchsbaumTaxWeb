@@ -78,7 +78,7 @@
         <div :id="`${idx}-years`" class="table-col-primary xs"
           @click="toggleEditable(`${idx}-years`, fbar.id, fbar.years)">
           <EditableSelectCell v-model="fbar.years" :is-editable="isEditable(`${idx}-years`)" :options="yearNameOptions"
-            @blur="onBlur(fbar.years)" />
+            @blur="onBlur(fbar.years, 'years')" />
         </div>
         <div :id="`${idx}-category`" class="table-col xs"
           @click="toggleEditable(`${idx}-category`, fbar.id, fbar.category)">
@@ -210,7 +210,8 @@ export default {
       selectedItems: {},
       oldValue: '',
       updateFbars: [],
-      selectAll: true
+      selectAll: true,
+      trackedFbarId: null
     }
   },
   computed: {
@@ -417,6 +418,7 @@ export default {
         this.oldValue = fbar[val]
       } else this.oldValue = value
       this.editableFbarId = fbarId
+      this.trackedFbarId = fbarId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
@@ -425,14 +427,17 @@ export default {
       return this.editableId === id
     },
     handleUpdate(field) {
+      console.log(field)
       if (!this.editableFbarId) return
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
-      if (fbar.amount === '') {
-        fbar.amount = 0
-      } else {
-        fbar.amount = setAsValidNumber(fbar.amount)
+      if (field === 'amount') {
+        if (fbar.amount === '') {
+          fbar.amount = 0
+        } else {
+          fbar.amount = setAsValidNumber(fbar.amount)
+        }
+        fbar.amountUSD = fbar.amount
       }
-      fbar.amountUSD = fbar.amount
 
       const index = this.updateFbars.findIndex(f => f.id === fbar.id)
       if (index !== -1) {
@@ -441,7 +446,22 @@ export default {
         this.updateFbars.push(fbar)
       }
       if (field === 'include' || field === 'amount') this.$store.dispatch('updateFbarAction', { fbar });
+      if (field === 'years') this.sortFbars()
       // this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+    },
+
+    sortFbars() {
+      this.displayedFbars.sort((a, b) => a.years - b.years)
+      if (this.trackedFbarId) {
+        const newIndex = this.displayedFbars.findIndex(p => p.id === this.trackedFbarId);
+        if (newIndex !== -1) {
+          // Update editable cell ID to match new position
+          this.$nextTick(() => {
+            const currentColumn = this.editableId.split('-')[1];
+            this.editableId = `${newIndex}-${currentColumn}`;
+          });
+        }
+      }
     },
     sendFbarsToServer() {
       this.$api.updateFbars(this.headers, this.updateFbars)
