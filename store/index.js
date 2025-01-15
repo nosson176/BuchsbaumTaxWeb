@@ -343,6 +343,16 @@ const mutations = {
     }
   },
 
+  deleteFiling(state, { filingId, taxYearId }) {
+    const taxYear = state.selectedClient.taxYears.find((ty) => ty.id === taxYearId)
+    if (taxYear) {
+      const index = taxYear.filings.findIndex((f) => f.id === filingId)
+      if (index !== -1) {
+        taxYear.filings.splice(index, 1)
+      }
+    }
+  },
+
   updateFilingCurrency(state, { filingId, oldCurrency, newCurrency, amount }) {
     // Update currency totals when currency changes
     if (newCurrency === 'NIS') {
@@ -370,6 +380,11 @@ const mutations = {
       clientsArray.splice(index, 1)
       state.clients = clientsArray
     }
+  },
+
+  deleteTaxYear(state, { taxId }) {
+    const index = state[models.selectedClient].taxYears.findIndex((taxYear) => taxYear.id === taxId)
+    if (index !== -1) state[models.selectedClient].taxYears.splice(index, 1)
   },
 
   markMsgAsRead(state, message) {

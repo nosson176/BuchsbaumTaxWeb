@@ -608,6 +608,7 @@ export default {
 
     emitDelete(id) {
       this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
+
     },
 
     setSecondDeliveryContact(value) {

@@ -311,7 +311,13 @@ export default {
       this.showDeleteModal = true
     },
     deleteItem() {
-      this.$api.deleteFiling(this.headers, { filingId: this.deleteId, clientId: this.selectedClient.id }).then(() => {
+      this.$api.deleteFiling(this.headers, { filingId: this.deleteId, clientId: this.selectedClient.id }).then((res) => {
+        if (res.success === 'Success') {
+          this.$store.commit('deleteFiling', {
+            filingId: this.deleteId,
+            taxYearId: this.yearData.id,
+          })
+        }
         this.showDeleteModal = false
         this.deleteId = ''
         this.activeFilingIndex = 0

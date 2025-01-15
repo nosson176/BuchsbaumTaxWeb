@@ -80,7 +80,7 @@
         <div :id="`${idx}-years`" class="table-col-primary xs"
           @click="toggleEditable(`${idx}-years`, income.id, income.years)">
           <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)"
-            :options="yearNameOptions" @blur="onBlur(income.years)" />
+            :options="yearNameOptions" @blur="onBlur(income.years, 'years')" />
         </div>
         <div :id="`${idx}-category`" class="table-col xs"
           @click="toggleEditable(`${idx}-category`, income.id, income.category)">
@@ -220,7 +220,8 @@ export default {
       includeAll: '',
       selectedItems: {},
       oldValue: '',
-      updateIncomes: []
+      updateIncomes: [],
+      trackedIncomeId: null
 
     }
   },
@@ -404,6 +405,7 @@ export default {
         this.oldValue = income[val]
       } else this.oldValue = value
       this.editableIncomeId = incomeId
+      this.trackedIncomeId = incomeId
       if (this.editableId !== id) {
         this.editableId = id
       }
@@ -414,8 +416,10 @@ export default {
     handleUpdate(field) {
       if (!this.editableIncomeId) return
       const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
-      income.amount = setAsValidNumber(income.amount)
-      income.amountUSD = income.amount
+      if (field === 'amount') {
+        income.amount = setAsValidNumber(income.amount)
+        income.amountUSD = income.amount
+      }
       const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
       if (index !== -1) {
         this.updateIncomes[index] = income
@@ -423,6 +427,20 @@ export default {
         this.updateIncomes.push(income)
       }
       if (field === 'include' || field === "amount") this.$store.dispatch('updateIncomeAction', { income });
+      if (field === 'years') this.sortIncomes()
+    },
+    sortIncomes() {
+      this.displayedIncomes.sort((a, b) => a.years - b.years)
+      if (this.trackedIncomeId) {
+        const newIndex = this.displayedIncomes.findIndex(p => p.id === this.trackedIncomeId);
+        if (newIndex !== -1) {
+          // Update editable cell ID to match new position
+          this.$nextTick(() => {
+            const currentColumn = this.editableId.split('-')[1];
+            this.editableId = `${newIndex}-${currentColumn}`;
+          });
+        }
+      }
     },
     sendIncomesToServer() {
       this.$api.updateIncomes(this.headers, this.updateIncomes)

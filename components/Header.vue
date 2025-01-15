@@ -73,7 +73,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { models, routes, USER_TYPE_ADMIN } from '~/shared/constants'
+import { models, mutations, routes, USER_TYPE_ADMIN } from '~/shared/constants'
 
 export default {
   name: 'Header',
@@ -173,6 +173,10 @@ export default {
       console.log(selectedClient)
       const headers = this.headers
       // const id = selectedClient.id
+      this.$store.commit(mutations.setModelResponse, {
+        model: models.clientClicked,
+        data: Math.random(),
+      })
       this.$api.getClientData(headers, selectedClient)
     },
     chooseSecondsNeededToDisplayModal1(selectTime) {

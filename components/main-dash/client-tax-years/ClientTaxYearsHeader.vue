@@ -1,13 +1,16 @@
 <template>
   <div class="header bg-gray-700">
-    <div v-if="isClientSelected" class="w-full flex items-center justify-between">
+    <!-- Show LoadingIndicator while loading -->
+    <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-white mx-auto my-auto" />
+
+    <!-- Show the main header content when loading is complete -->
+    <div v-else-if="isClientSelected" class="w-full flex items-center justify-between">
       <div class="flex items-center w-1/3">
         <div>
           <FlagIcon class="h-8 w-8 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
-          <FlagDropdown v-if="showGlobalFlagDropdown" @input="this.updateGlobalFlag"
-            @blur="toggleShowGlobalFlagDropdown" />
+          <FlagDropdown v-if="showGlobalFlagDropdown" @input="updateGlobalFlag" @blur="toggleShowGlobalFlagDropdown" />
         </div>
-        <div class="font-bold text-2xl cursor-pointer px-1 " @click="openEditNameDialogue">
+        <div class="font-bold text-2xl cursor-pointer px-1" @click="openEditNameDialogue">
           {{ selectedClient.lastName }}
         </div>
         <div>
@@ -24,12 +27,12 @@
           @input="updateStatusDate" @blur="onBlur('status')" />
       </div>
       <div class="flex justify-end items-center w-1/3">
-        <div class="flex gap-x-10  items-center">
-          <div class="text-gray-100 flex text-sm justify-center " @click="setEditable('periodical')">
+        <div class="flex gap-x-10 items-center">
+          <div class="text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
             <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
               :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" />
           </div>
-          <div class="text-sm aa">{{ formattedCreatedDate }}</div>
+          <div class="text-sm">{{ formattedCreatedDate }}</div>
           <div v-if="isArchived" class="place-self-end">
             <button type="button"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -39,12 +42,14 @@
             </button>
           </div>
           <div class="flex gap-x-3">
-            <div class=" font-bold text-lg" :class="dollarsClassObj">{{ summationDollars }}</div>
-            <div class=" font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
+            <div class="font-bold text-lg" :class="dollarsClassObj">{{ summationDollars }}</div>
+            <div class="font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Modals -->
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate('lastName')">
         <FormInput ref="lastNameInput" v-model="editedLastName" label="Lastname" />
@@ -55,6 +60,7 @@
     </Modal>
   </div>
 </template>
+
 
 <script>
 import { mapState, mapMutations } from 'vuex'
@@ -78,9 +84,15 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser, models.clientClicked]),
+    ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser, models.clientClicked, models.loading]),
     isClientSelected() {
       return this.selectedClient && Object.keys(this.selectedClient).length > 0
+    },
+    isSelectedClientLoading() {
+      return this.loading.selectedClient
+    },
+    showLoadingSpinner() {
+      return this.isSelectedClientLoading && this.clientClicked > 0
     },
     flagColor() {
       return this.selectedClient?.flag || 4

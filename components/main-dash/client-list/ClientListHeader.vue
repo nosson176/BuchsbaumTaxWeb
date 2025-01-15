@@ -66,8 +66,9 @@ export default {
       this.$emit(events.change)
     },
     searchClients() {
+      this.$store.commit("showSpinner", true)
       const headers = this.$api.getHeaders()
-      this.$api.getClientList(headers)
+      this.$api.getClientList(headers).finally(() => this.$store.commit("showSpinner", false))
     },
     clearSearch() {
       this.searchInput = ''

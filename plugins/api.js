@@ -571,6 +571,20 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error deleting message'))
 
+  const deleteTaxYear = (headers, { taxYearId }) => {
+    console.log(taxYearId)
+    return $axios
+      .delete(`/tax-years/${taxYearId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        console.log(res)
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting tax year:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
   const api = {
     createChecklist,
     createClient,
@@ -642,6 +656,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateMessage,
     updateWorkTimeByWorkTimeId,
     deleteMessage,
+    deleteTaxYear,
     forgotPassword,
     resetPassword,
   }

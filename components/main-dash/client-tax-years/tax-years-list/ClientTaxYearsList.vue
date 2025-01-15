@@ -1,13 +1,18 @@
 <template>
   <div class="flex-grow overflow-auto">
     <ClientTaxYearsListItem v-for="(taxYear, idx) in displayedTaxYearData" :key="taxYear.id" :idx="idx"
-      :tax-year="taxYear" @delete="onDeleteClick($event, taxYear)" @change="toggleItemShown($event, taxYear)" />
+      :tax-year="taxYear" @delete="startDelete($event, taxYear)" @change="toggleItemShown($event, taxYear)" />
+    <div>
+      <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+        <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="onDeleteClick" />
+      </Modal>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { filingTypes, models, mutations, tabs } from '~/shared/constants'
+import { filingTypes, models } from '~/shared/constants'
 
 export default {
   name: 'ClientTaxYearsList',
@@ -16,6 +21,13 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      showDeleteModal: false,
+      deleteTypeLabel: '',
+      taxId: null
+    }
   },
   computed: {
     ...mapState([models.selectedClient, models.loading, models.selectedTaxYearId]),
@@ -46,22 +58,43 @@ export default {
       this.$api
         .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId: updatedTaxYear.id }, updatedTaxYear)
     },
-    onDeleteClick(taxYearId, taxYear) {
-      if (this.showArchived) {
-        const taxYearToUpdate = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId);
-        if (taxYearToUpdate) {
-          // Prepare the updated data
-          const updatedData = { archived: false, show: true };
-          this.$store.commit('updateTaxYearState', { taxYearId, updatedData });
-        }
-        this.$api
-          .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
-      } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years, label: taxYear.year } } },
-        });
-      }
+
+    startDelete(e) {
+      this.taxId = e
+      this.showDeleteModal = true
+      this.deleteTypeLabel = 'tax Year'
+
+    },
+    onDeleteClick() {
+      this.$api
+        .deleteTaxYear(this.headers, { taxYearId: this.taxId }).then(res => {
+          if (res.success === "Success") {
+            this.$store.commit("deleteTaxYear", { taxId: this.taxId })
+            this.closeDeleteModal()
+          }
+        })
+
+
+      // if (this.showArchived) {
+      //   const taxYearToUpdate = this.displayedTaxYearData.find((taxYear) => taxYear.id === taxYearId);
+      //   if (taxYearToUpdate) {
+      //     // Prepare the updated data
+      //     const updatedData = { archived: false, show: true };
+      //     this.$store.commit('updateTaxYearState', { taxYearId, updatedData });
+      //   }
+      //   this.$api
+      //     .updateTaxYear(this.headers, { clientId: this.selectedClient.id, taxYearId }, taxYear)
+      // } else {
+      //   this.$store.commit(mutations.setModelResponse, {
+      //     model: models.modals,
+      //     data: { delete: { showing: true, data: { id: taxYearId, type: tabs.tax_years } } },
+      //   });
+      // }
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
+      this.taxId = ''
     },
 
     isSelected({ id }) {
