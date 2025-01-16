@@ -80,9 +80,14 @@
             :options="languageOptions" @blur="onBlur(personal.language)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(personal)" />
+          <DeleteButton small @click="onDeleteClick(personal.id)" />
         </div>
       </TableRow>
+      <div>
+        <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+          <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteTaxPersonal" />
+        </Modal>
+      </div>
     </template>
   </Table>
 </template>
@@ -122,7 +127,10 @@ export default {
       oldValue: '',
       selectedItems: {},
       updateTaxPersonal: [],
-      trackedPersonalId: null // Add this to track the personal being edited
+      trackedPersonalId: null, // Add this to track the personal being edited
+      showDeleteModal: false,
+      deleteTypeLabel: 'Tax personal',
+      deletePersonalId: null
     }
   },
   computed: {
@@ -290,21 +298,35 @@ export default {
         .catch(() => this.$toast.error('Error updating contact'));
     },
 
-    onDeleteClick(personalObj) {
-      const personal = this.displayedPersonals.find((personal) => personal.id === personalObj.id)
-      if (this.showArchived) {
-        personal.archived = false
-      } else {
-        personal.archived = true
-      }
-      const index = this.updateTaxPersonal.findIndex(c => c.id === personal.id)
-      if (index !== -1) {
-        this.updateTaxPersonal[index] = personal
-      } else {
-        this.updateTaxPersonal.push(personal)
-      }
+    onDeleteClick(personalId) {
+      this.showDeleteModal = true
+      this.deletePersonalId = personalId
+      // const personal = this.displayedPersonals.find((personal) => personal.id === personalObj.id)
+      // if (this.showArchived) {
+      //   personal.archived = false
+      // } else {
+      //   personal.archived = true
+      // }
+      // const index = this.updateTaxPersonal.findIndex(c => c.id === personal.id)
+      // if (index !== -1) {
+      //   this.updateTaxPersonal[index] = personal
+      // } else {
+      //   this.updateTaxPersonal.push(personal)
+      // }
 
-      this.$store.dispatch('updateTaxPersonalAction', { personal });
+      // this.$store.dispatch('updateTaxPersonalAction', { personal });
+    },
+
+    deleteTaxPersonal() {
+      this.$api.deleteTaxPersonal(this.headers, { personalId: this.deletePersonalId }).then(res => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteTaxPersonal', { personalId: this.deletePersonalId })
+      }).catch(e => {
+      })
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
     },
     updateClient(personalId, personal) {
       const taxPersonalIndex = this.taxPersonals.findIndex((taxPersonal) => taxPersonal.id === personalId)

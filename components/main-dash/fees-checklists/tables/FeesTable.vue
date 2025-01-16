@@ -4,7 +4,7 @@
       <AddRowButton @click="onAddRowClick" />
     </div>
     <FeesItem v-for="(fee, idx) in displayedFees" :key="idx" :idx="idx" :fee="fee" :is-new="newFeeId === fee.id"
-      @input="handleUpdateFee" @delete="onDeleteClick" />
+      @input="handleUpdateFee" @delete="onDeleteClick" :headers="headers" />
   </div>
 </template>
 

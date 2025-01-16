@@ -387,6 +387,31 @@ const mutations = {
     if (index !== -1) state[models.selectedClient].taxYears.splice(index, 1)
   },
 
+  deleteLog(state, logId) {
+    const index = state[models.selectedClient].logs.findIndex((log) => log.id === logId)
+    if (index !== -1) state[models.selectedClient].logs.splice(index, 1)
+  },
+
+  deleteTaxPersonal(state, { personalId }) {
+    const index = state[models.selectedClient].taxPersonals.findIndex((personal) => personal.id === personalId)
+    if (index !== -1) state[models.selectedClient].taxPersonals.splice(index, 1)
+  },
+
+  deleteIncome(state, deleteIncomeId) {
+    const index = state[models.selectedClient].incomeBreakdowns.findIndex((income) => income.id === deleteIncomeId)
+    if (index !== -1) state[models.selectedClient].incomeBreakdowns.splice(index, 1)
+  },
+
+  deleteFbar(state, deleteFbarId) {
+    const index = state[models.selectedClient].fbarBreakdowns.findIndex((fbar) => fbar.id === deleteFbarId)
+    if (index !== -1) state[models.selectedClient].fbarBreakdowns.splice(index, 1)
+  },
+
+  deleteFee(state, deleteFeeId) {
+    const index = state[models.selectedClient].fees.findIndex((fee) => fee.id === deleteFeeId)
+    if (index !== -1) state[models.selectedClient].fees.splice(index, 1)
+  },
+
   markMsgAsRead(state, message) {
     const inbox = Object.values(state.inbox)
     const index = inbox.findIndex((msg) => msg.id === message.id)

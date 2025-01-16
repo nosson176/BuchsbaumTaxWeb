@@ -153,6 +153,11 @@
         <div class="table-col sm" />
         <div class="table-col xs" />
       </TableRow>
+      <div>
+        <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+          <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteFbar" />
+        </Modal>
+      </div>
     </template>
   </Table>
 </template>
@@ -211,7 +216,10 @@ export default {
       oldValue: '',
       updateFbars: [],
       selectAll: true,
-      trackedFbarId: null
+      trackedFbarId: null,
+      showDeleteModal: false,
+      deleteFbarId: null,
+      deleteTypeLabel: 'Fbar'
     }
   },
   computed: {
@@ -427,7 +435,6 @@ export default {
       return this.editableId === id
     },
     handleUpdate(field) {
-      console.log(field)
       if (!this.editableFbarId) return
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
       if (field === 'amount') {
@@ -479,20 +486,33 @@ export default {
       }
     },
     onDeleteClick(fbarId) {
-      const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
-      if (this.showArchived) {
-        fbar.archived = false
-      } else {
-        fbar.archived = true
-      }
-      const index = this.updateFbars.findIndex(f => f.id === fbar.id)
-      if (index !== -1) {
-        this.updateFbars[index] = fbar
-      } else {
-        this.updateFbars.push(fbar)
-      }
+      // const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
+      // if (this.showArchived) {
+      //   fbar.archived = false
+      // } else {
+      //   fbar.archived = true
+      // }
+      // const index = this.updateFbars.findIndex(f => f.id === fbar.id)
+      // if (index !== -1) {
+      //   this.updateFbars[index] = fbar
+      // } else {
+      //   this.updateFbars.push(fbar)
+      // }
 
-      this.$store.dispatch('updateFbarAction', { fbar });
+      // this.$store.dispatch('updateFbarAction', { fbar });
+      this.deleteFbarId = fbarId
+      this.showDeleteModal = true
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
+    },
+
+    deleteFbar() {
+      this.$api.deleteFbar(this.headers, { fbarId: this.deleteFbarId }).then(() => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteFbar', this.deleteFbarId)
+      })
     },
     onAddRowClick() {
       if (!this.selectedClient) {

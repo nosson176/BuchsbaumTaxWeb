@@ -210,7 +210,6 @@ export default {
       // Remove non-digit characters
       const digits = number.replace(/\D/g, '');
 
-      console.log(digits)
       if (digits.length === 10) {
         // Format for 10-digit numbers: (XXX) XXX-XXXX
         return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;

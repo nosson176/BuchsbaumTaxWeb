@@ -164,6 +164,11 @@
         <div class="table-col sm" />
         <div class="table-col xs" />
       </TableRow>
+      <div>
+        <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+          <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteIncome" />
+        </Modal>
+      </div>
     </template>
   </Table>
 </template>
@@ -221,7 +226,10 @@ export default {
       selectedItems: {},
       oldValue: '',
       updateIncomes: [],
-      trackedIncomeId: null
+      trackedIncomeId: null,
+      showDeleteModal: false,
+      deleteIncomeId: null,
+      deleteTypeLabel: 'Income'
 
     }
   },
@@ -458,20 +466,33 @@ export default {
       }
     },
     onDeleteClick(incomeId) {
-      const income = this.displayedIncomes.find((income) => income.id === incomeId)
-      if (this.showArchived) {
-        income.archived = false
-      } else {
-        income.archived = true
-      }
-      const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
-      if (index !== -1) {
-        this.updateIncomes[index] = income
-      } else {
-        this.updateIncomes.push(income)
-      }
+      this.deleteIncomeId = incomeId
+      this.showDeleteModal = true
+      // const income = this.displayedIncomes.find((income) => income.id === incomeId)
+      // if (this.showArchived) {
+      //   income.archived = false
+      // } else {
+      //   income.archived = true
+      // }
+      // const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
+      // if (index !== -1) {
+      //   this.updateIncomes[index] = income
+      // } else {
+      //   this.updateIncomes.push(income)
+      // }
 
-      this.$store.dispatch('updateIncomeAction', { income });
+      // this.$store.dispatch('updateIncomeAction', { income });
+    },
+
+    deleteIncome() {
+      this.$api.deleteIncome(this.headers, { incomeId: this.deleteIncomeId }).then(res => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteIncome', this.deleteIncomeId)
+      })
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
     },
     onAddRowClick() {
       if (!this.selectedClient) {

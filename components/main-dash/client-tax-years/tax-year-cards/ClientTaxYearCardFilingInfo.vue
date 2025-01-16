@@ -577,9 +577,8 @@ export default {
         const currentCell = 'memo';
         const itemIndex = items.findIndex((col) => col === currentCell);
         if (itemIndex < items.length - 1) {
-          // const nextCell = items[itemIndex + 1];
-          // console.log(nextCell)
-          // this.setEditable(nextCell);
+          const nextCell = items[itemIndex + 1];
+          this.setEditable(nextCell);
         } else {
           this.editable = '';
         }
