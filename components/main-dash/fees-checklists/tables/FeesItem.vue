@@ -131,7 +131,7 @@
       :class="classObj" @keydown.tab.prevent @keyup.tab.exact="goToNextItem" @keyup.shift.tab.exact="goToPrevItem">
       <div class="flex h-full flex-col space-y-1.5 justify-center">
         <div class="flex justify-end pt-1">
-          <DeleteButton small @click="onDeleteClick()" />
+          <DeleteButton small @click="onDeleteClick(fee.id)" />
         </div>
         <div class="flex justify-between">
           <div class="flex flex-col w-1/3">
@@ -202,6 +202,11 @@
         </div>
       </div>
     </div>
+    <div>
+      <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+        <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteFee" />
+      </Modal>
+    </div>
   </div>
 </template>
 
@@ -238,11 +243,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    headers: {
+      type: Object,
+      required: true,
+    }
   },
   data() {
     return {
       editable: '',
-      oldValue: ''
+      oldValue: '',
+      showDeleteModal: false,
+      deleteFeeId: null,
+      deleteTypeLabel: 'Fee'
     }
   },
   computed: {
@@ -421,8 +433,21 @@ export default {
       this.$emit(events.input, this.formModel)
       this.goToNextItem()
     },
-    onDeleteClick() {
-      this.$emit(events.delete, this.fee.id)
+    onDeleteClick(feeId) {
+      this.deleteFeeId = feeId
+      this.showDeleteModal = true
+      // this.$emit(events.delete, this.fee.id)
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
+    },
+
+    deleteFee() {
+      this.$api.deleteFee(this.headers, { feeId: this.deleteFeeId }).then(() => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteFee', this.deleteFeeId)
+      })
     },
     goToNextItem() {
       const currentCell = this.editable

@@ -170,7 +170,6 @@ export default {
     },
     getSelectedClient(selectedClientName) {
       const selectedClient = Object.values(this.clientsHistory).find((client) => client.lastName === selectedClientName)
-      console.log(selectedClient)
       const headers = this.headers
       // const id = selectedClient.id
       this.$store.commit(mutations.setModelResponse, {

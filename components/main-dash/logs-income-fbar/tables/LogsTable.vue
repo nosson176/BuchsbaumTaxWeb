@@ -156,6 +156,11 @@
           </Tooltip>
         </div>
       </TableRow>
+      <div>
+        <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+          <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteLog" />
+        </Modal>
+      </div>
     </template>
   </Table>
 </template>
@@ -196,6 +201,9 @@ export default {
       intervalId: '',
       oldValue: '',
       updatAndNewLogs: [],
+      showDeleteModal: false,
+      deleteLogId: null,
+      deleteTypeLabel: 'log'
     }
   },
   computed: {
@@ -610,14 +618,33 @@ export default {
     // },
 
     onDeleteClick(logId) {
-      const log = this.displayedLogs.find((log) => log.id === logId)
-      if (this.showArchived) {
-        log.archived = false
-      } else {
-        log.archived = true
-      }
-      this.$store.dispatch('updateLogAction', { log });
-      this.updateUpdatAndNewLogs(log, log.archived, 'archived');
+      this.deleteLogId = logId
+      this.showDeleteModal = true
+      // const log = this.displayedLogs.find((log) => log.id === logId)
+      // this.$api.deleteLog(this.headers, logId).then(res => {
+      //   console.log(res)
+      //   if (res.success === 'Success') {
+      //     this.$store.commit('deleteLog', logId)
+      //   }
+      // })
+      // if (this.showArchived) {
+      //   log.archived = false
+      // } else {
+      //   log.archived = true
+      // }
+      // this.$store.dispatch('updateLogAction', { log });
+      // this.updateUpdatAndNewLogs(log, log.archived, 'archived');
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
+    },
+
+    deleteLog() {
+      this.$api.deleteLog(this.headers, { logId: this.deleteLogId }).then(res => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteLog', this.deleteLogId)
+      })
     },
     onAddRowClick(addSecondsSpent = false) {
       if (!this.selectedClient) {

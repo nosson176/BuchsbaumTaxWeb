@@ -572,15 +572,73 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error deleting message'))
 
   const deleteTaxYear = (headers, { taxYearId }) => {
-    console.log(taxYearId)
     return $axios
       .delete(`/tax-years/${taxYearId}`, { headers }) // Ensure we return the promise from the axios call
       .then((res) => {
-        console.log(res)
         return res // Return the response from the API call
       })
       .catch((error) => {
         console.error('Error deleting tax year:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
+  const deleteLog = (headers, { logId }) => {
+    return $axios
+      .delete(`/logs/${logId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting log:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
+  const deleteTaxPersonal = (headers, { personalId }) => {
+    return $axios
+      .delete(`/personals/${personalId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting TaxPersonal:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
+  const deleteIncome = (headers, { incomeId }) => {
+    return $axios
+      .delete(`/incomes/${incomeId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting Income:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
+  const deleteFbar = (headers, { fbarId }) => {
+    return $axios
+      .delete(`/fbars/${fbarId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting Fbar:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
+  const deleteFee = (headers, { feeId }) => {
+    return $axios
+      .delete(`/fees/${feeId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting Fee:', error)
         throw error // Ensure we throw the error so that it can be handled in the caller
       })
   }
@@ -657,6 +715,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateWorkTimeByWorkTimeId,
     deleteMessage,
     deleteTaxYear,
+    deleteLog,
+    deleteTaxPersonal,
+    deleteIncome,
+    deleteFbar,
+    deleteFee,
     forgotPassword,
     resetPassword,
   }

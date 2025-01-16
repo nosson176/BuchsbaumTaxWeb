@@ -46,7 +46,8 @@
           <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
         </div>
         <div class="w-5" @click.stop>
-          <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" />
+          <!-- <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" /> -->
+          <DeleteButton small @click="onDeleteClick(client)" />
         </div>
       </div>
     </template>
@@ -57,13 +58,18 @@
     <Modal :showing="createClientModel" @hide="closeCreateClientModal">
       <CreateNewClientModel @hide="closeCreateClientModal" />
     </Modal>
+    <div>
+      <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+        <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteClient" />
+      </Modal>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import * as XLSX from "xlsx";
-import { events, models, mutations, routes, tabs } from '~/shared/constants'
+import { events, models, mutations, routes } from '~/shared/constants'
 import { generateRandomId } from '~/shared/utility';
 
 export default {
@@ -81,7 +87,10 @@ export default {
       selectedClientId: NaN,
       showChangeClientModal: false,
       switchToClient: '',
-      createClientModel: false
+      createClientModel: false,
+      showDeleteModal: false,
+      deleteClientId: null,
+      deleteTypeLabel: 'Client'
     }
   },
   computed: {
@@ -119,7 +128,7 @@ export default {
     filteredClients() {
       return Object.fromEntries(
         Object.entries(this.clients)
-          .filter(([key, client]) => this.showArchived === client.archived)
+          // .filter(([key, client]) => this.showArchived === client.archived)
           .filter(([key, client]) =>
             this.hasSelectedSmartview ? this.selectedSmartview.clientIds?.includes(client.id) : true
           )
@@ -276,20 +285,39 @@ export default {
         }
       }
     },
-    archiveClient(client) {
-      if (this.showArchived) {
-        const clientCopy = Object.assign({}, client)
-        clientCopy.archived = false
-        this.$api
-          .updateClient(this.headers, { clientId: client.id, client: clientCopy })
-          .then(() => this.$api.getClientList(this.headers))
-      } else {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { delete: { showing: true, data: { id: client.id, type: tabs.clients, label: client.lastName } } },
-        })
-      }
+    // archiveClient(client) {
+    //   if (this.showArchived) {
+    //     const clientCopy = Object.assign({}, client)
+    //     clientCopy.archived = false
+    //     this.$api
+    //       .updateClient(this.headers, { clientId: client.id, client: clientCopy })
+    //       .then(() => this.$api.getClientList(this.headers))
+    //   } else {
+    //     this.$store.commit(mutations.setModelResponse, {
+    //       model: models.modals,
+    //       data: { delete: { showing: true, data: { id: client.id, type: tabs.clients, label: client.lastName } } },
+    //     })
+    //   }
+    // },
+
+    onDeleteClick(client) {
+      this.deleteClientId = client.id
+      this.deleteTypeLabel = client.displayName
+      this.showDeleteModal = true
+
     },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false
+    },
+
+    deleteClient() {
+      this.$api.deleteClient(this.headers, { clientId: this.deleteClientId }).then(res => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteClient', this.deleteClientId)
+      })
+    },
+
     openChangeClientModal(client) {
       if (
         this.selectedClient?.id &&
