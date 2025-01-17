@@ -25,6 +25,7 @@
     "@iconify/vue": "^4.1.2",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/dotenv": "^1.4.1",
+    "@popperjs/core": "^2.11.8",
     "@tailwindcss/forms": "^0.3.4",
     "core-js": "^3.15.1",
     "date-fns": "^2.23.0",

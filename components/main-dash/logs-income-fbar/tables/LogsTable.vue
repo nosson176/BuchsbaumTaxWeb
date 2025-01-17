@@ -82,15 +82,18 @@
             </template>
           </Tooltip>
         </div>
-        <div :id="`${idx}-note`" class="table-col xl" @click="toggleEditable(`${idx}-note`, log.id, log.note)">
-          <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
-            <EditableTextAreaCell v-model="log.note" :prevent-enter="true"
-              @keyup.enter.native="onBlur(log.note, 'note')" :is-editable="isEditable(`${idx}-note`)"
-              @blur="onBlur(log.note, 'note')" />
-            <template #popper>
-              <span>{{ log.note }}</span>
-            </template>
-          </Tooltip>
+        <div :id="`${idx}-note`" class="table-col xl relative" @click="toggleEditable(`${idx}-note`, log.id, log.note)"
+          @mouseenter="!isEditable(`${idx}-note`) && showTooltip(idx)" @mouseleave="hideTooltip">
+          <EditableTextAreaCell v-model="log.note" :prevent-enter="true" @keyup.enter.native="onBlur(log.note, 'note')"
+            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
+
+          <!-- Custom Tooltip -->
+          <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-note`)"
+            class="absolute z-50 bg-gray-800 text-white p-2 rounded-md shadow-lg max-w-md whitespace-normal break-words"
+            style="top: calc(50% + 25%); left: 0;">
+            <div class="absolute -top-2 left-4 border-8 border-transparent border-b-gray-800"></div>
+            {{ log.note }}
+          </div>
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
@@ -203,7 +206,9 @@ export default {
       updatAndNewLogs: [],
       showDeleteModal: false,
       deleteLogId: null,
-      deleteTypeLabel: 'log'
+      deleteTypeLabel: 'log',
+      activeTooltipIndex: null,
+      tooltipTimer: null,
     }
   },
   computed: {
@@ -351,6 +356,9 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.intervalId);
+    if (this.tooltipTimer) {
+      clearTimeout(this.tooltipTimer);
+    }
     this.saveUpdatAndNewLogs();
   },
   watch: {
@@ -366,6 +374,21 @@ export default {
     }
   },
   methods: {
+    showTooltip(idx) {
+      if (this.tooltipTimer) {
+        clearTimeout(this.tooltipTimer);
+      }
+      this.tooltipTimer = setTimeout(() => {
+        this.activeTooltipIndex = idx;
+      }, 500);
+    },
+
+    hideTooltip() {
+      if (this.tooltipTimer) {
+        clearTimeout(this.tooltipTimer);
+      }
+      this.activeTooltipIndex = null;
+    },
     formatDateLog,
     handleBeforeUnload(event) {
       clearInterval(this.intervalId);
@@ -733,6 +756,7 @@ export default {
 
       }
       this.editableId = ""
+      this.activeTooltipIndex = null
       // this.goToNextColumn()
     },
     isTodayOrPast(date) {
@@ -786,6 +810,7 @@ export default {
         const nextCell = `${nextRow}-${columns[0]}`
         this.toggleEditable(nextCell, this.editableLogId)
       }
+      this.activeTooltipIndex = null
     },
     goToPrevColumn() {
       const currentCell = this.editableId
@@ -800,6 +825,7 @@ export default {
         const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
         this.toggleEditable(prevCell, this.editableLogId)
       }
+      this.activeTooltipIndex = null
     },
     setAlarmFilter() {
       this.filterByAlarmStatusIndex = (this.filterByAlarmStatusIndex + 1) % 3
