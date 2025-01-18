@@ -1,129 +1,3 @@
-<!-- <template>
-  <div>
-    <div
-      class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100"
-      :class="classObj"
-      @keydown.tab.prevent
-      @keyup.tab.exact="goToNextItem"
-      @keyup.shift.tab.exact="goToPrevItem"
-    >
-      <div class="flex h-full flex-col space-y-1.5 justify-center">
-        <div class="flex justify-end pt-1">
-          <DeleteButton small @click="onDeleteClick()" />
-        </div>
-        <div  class="flex justify-between">
-          <div class="flex flex-col w-1/3">
-            <div @click="setEditable('feeType')">
-              <EditableSelectCell
-                v-model="feeType"
-                placeholder="Type"
-                :is-editable="isEditable('feeType')"
-                :options="feeTypeOptions"
-                @blur="onBlur"
-              />
-            </div>
-            <div @click="setEditable('year')">
-              <EditableSelectCell
-                v-model="year"
-                :class="isRedBG ? 'text-red-500' : ''"
-                placeholder="Year"
-                :is-editable="isEditable('year')"
-                :options="yearOptions"
-                @blur="onBlur"
-              />
-            </div>
-          </div>
-          <div class="flex flex-col w-1/3">
-            <div @click="setEditable('status')">
-              <EditableSelectCell
-                v-model="status"
-                placeholder="Status"
-                :is-editable="isEditable('status')"
-                :options="feeStatusOptions"
-                @blur="onBlur"
-              />
-            </div>
-            <div @click="setEditable('statusDetail')">
-              <EditableSelectCell
-                v-model="statusDetail"
-                placeholder="Detail"
-                :is-editable="isEditable('statusDetail')"
-                :options="feeStatusDetailOptions"
-                @blur="onBlur"
-              />
-            </div>
-          </div>
-          <div class="flex items-center w-1/3 space-x-1">
-            <div @click="setEditable('sum')">
-              <EditableCheckBoxCell v-model="sum" placeholder="Sum" :is-editable="isEditable('sum')" @blur="onBlur" />
-            </div>
-            <div class="flex flex-col">
-              <div class="flex items-center" @click="setEditable('manualAmount')">
-                <HeaderSelectOption
-                  v-if="manualAmount"
-                  v-model="currency"
-                  :options="currencyOptions"
-                  currency
-                  @input="onBlur"
-                />
-                <EditableInput
-                  v-model="manualAmount"
-                  placeholder="Amount"
-                  currency
-                  :is-editable="isEditable('manualAmount')"
-                  @blur="onBlur"
-                />
-                <div v-if="isEditable('manualAmount')" />
-              </div>
-              <div class="flex items-center" @click="setEditable('paidAmount')">
-                <HeaderSelectOption
-                  v-if="paidAmount"
-                  v-model="currency"
-                  :options="currencyOptions"
-                  currency
-                  @input="onBlur"
-                />
-                <EditableInput
-                  v-model="paidAmount"
-                  placeholder="Paid"
-                  currency
-                  :is-editable="isEditable('paidAmount')"
-                  @blur="onBlur"
-                />
-                <div v-if="isEditable('paidAmount')" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex justify-between">
-          <div @click="setEditable('include')">
-            <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @blur="onBlur" />
-          </div>
-          <div class="flex space-x-2">
-            <span class="missing">Time</span>
-            <div @click="setEditable('dateFee')">
-              <EditableDate
-                v-model="dateFee"
-                placeholder="Date"
-                type="date"
-                :is-editable="isEditable('dateFee')"
-                @blur="onBlur"
-              />
-            </div>
-          </div>
-          <div class="w-1/3">
-            <div @click="setEditable('rate')">
-              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr" @blur="onBlur" />
-            </div>
-          </div>
-        </div>
-        <div @click="setEditable('notes')">
-          <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur" />
-        </div>
-      </div>
-    </div>
-  </div>
-</template> -->
 <template>
   <div>
     <div
@@ -377,14 +251,24 @@ export default {
       return this.valueTypes.fee_status.filter((feeStatus) => feeStatus.show)
     },
     feeStatusDetailOptions() {
-      return this.valueTypes.fee_status_detail.filter((feeStatusDetail) => {
-        const parentId = this.feeStatusOptions.find((statusOption) => statusOption.value === this.formModel.status)?.id
-        if (this.formModel.status) {
-          return feeStatusDetail.parentId === parentId
-        } else {
-          return feeStatusDetail.show
-        }
-      })
+      return this.valueTypes.fee_status_detail
+        .filter((feeStatusDetail) => {
+          const parentId = this.feeStatusOptions.find(
+            (statusOption) => statusOption.value === this.formModel.status
+          )?.id;
+
+          if (this.formModel.status) {
+            return feeStatusDetail.parentId === parentId;
+          } else {
+            return feeStatusDetail.show;
+          }
+        })
+        .sort((a, b) => {
+          // Place blank options first
+          if (!a.value) return -1;
+          if (!b.value) return 1;
+          return 0;
+        });
     },
     currencySymbol() {
       if (this.currency === currencies.NIS.type) {

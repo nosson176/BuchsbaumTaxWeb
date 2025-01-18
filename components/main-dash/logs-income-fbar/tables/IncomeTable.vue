@@ -195,7 +195,7 @@ const columns = [
   'delete',
 ]
 
-const docOptions = [{ value: 'HAS' }, { value: 'NEEDS' }]
+const docOptions = [{ value: '' }, { value: 'HAS' }, { value: 'NEEDS' }]
 
 const includeOptions = [
   { value: '', name: '' },
@@ -254,7 +254,10 @@ export default {
     },
     taxTypeOptions() {
       return this.valueTypes.tax_type.filter(
-        (taxType) => taxType.show && taxType.parentId === this.editableIncomeTaxGroupId
+        (taxType) => {
+          if (taxType.value === '') return true
+          return taxType.show && taxType.parentId === this.editableIncomeTaxGroupId
+        }
       )
     },
     editableIncomeTaxGroupId() {
@@ -269,7 +272,9 @@ export default {
       return this.valueTypes.currency.filter((currency) => currency.show)
     },
     taxGroupOptions() {
-      return Object.values(this.valueTaxGroups).filter((taxGroup) => taxGroup.show)
+      return Object.values(this.valueTaxGroups)
+        .filter((taxGroup) => taxGroup.show)
+        .sort((a, b) => (a.value === "" ? -1 : b.value === "" ? 1 : 0));
     },
     headers() {
       return this.$api.getHeaders()

@@ -289,9 +289,15 @@ export default {
       }
     },
     userOptions() {
-      return Object.values(this.users).map((user) => {
-        return { value: user.username }
-      })
+      const options = Object.values(this.users).map((user) => {
+        return { value: user.username };
+      });
+
+      // Add a blank option at the beginning or end
+      options.unshift({ value: '' });  // To add a blank option at the beginning
+      // Alternatively, you can use `options.push({ value: '' });` to add at the end
+
+      return options;
     },
     searchInput() {
       return this.search?.[tableGroups.logsIncomeFbar]
@@ -304,6 +310,7 @@ export default {
       return options
     },
     filteredUserOptions() {
+      console.log("here")
       const options = this.userOptions.filter((user) => this.shownLogs?.find((log) => log.alarmUserName === user.value))
       return options
     },
@@ -550,16 +557,13 @@ export default {
           }
         }
       }
-
-      // Handle alarmUserName field update
       if (field === 'alarmUserName') {
-        const user = Object.values(this.users).find(user => user.username === val);
-        if (user) {
-          updatedLog.alarmUserId = user.id;
-          dayjs.extend(customParseFormat);
-          const alarmTime = dayjs(updatedLog.alarmTime, 'DD-MM-YYYY HH:mm', true);
-          validateAndSendAlarm(updatedLog, alarmTime);
-        }
+        // אם הערך ריק, נאפס גם את ה-ID
+        const user = val ? Object.values(this.users).find(user => user.username === val) : null;
+        updatedLog.alarmUserId = user ? user.id : null;
+        dayjs.extend(customParseFormat);
+        const alarmTime = dayjs(updatedLog.alarmTime, 'DD-MM-YYYY HH:mm', true);
+        validateAndSendAlarm(updatedLog, alarmTime);
       }
 
       // Dispatch update action
@@ -745,12 +749,14 @@ export default {
     },
     onBlur(val, field) {
       if (this.oldValue !== val && this.oldValue !== undefined) {
+        console.log(val, field)
         this.handleUpdate(val, field)
         this.goToNextColumn()
         // this.editableId = ""
         return
       }
       if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
+        console.log(val, field)
         this.handleUpdate(val, field)
         this.goToNextColumn()
 
