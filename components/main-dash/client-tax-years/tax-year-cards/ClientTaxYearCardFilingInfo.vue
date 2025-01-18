@@ -160,7 +160,9 @@ export default {
       formModel: null,
       localChanges: [],
       times: 0,
-      tiems2: 0
+      tiems2: 0,
+      isProcessingDate: false,
+      dateFieldsInProgress: new Set() // Track date fields currently being processed
     }
   },
   computed: {
@@ -392,48 +394,66 @@ export default {
       }
     },
     statusDetailOptions() {
-      const parentId = this.statusOptions.find((statusOption) => statusOption.value === this.formModel.status)?.id
+      const parentId = this.statusOptions.find(
+        (statusOption) => statusOption.value === this.formModel.status
+      )?.id;
+
+      const sortOptions = (options) => {
+        return options.sort((a, b) => (a.value === "" ? -1 : b.value === "" ? 1 : 0));
+      };
+
       if (this.filingType === filingTypes.fbar) {
-        return this.valueTypes.fbar_status_detail.filter((status) => {
-          if (this.formModel.status) {
-            return status.show && status.parentId === parentId
-          } else {
-            return status.show
-          }
-        })
+        return sortOptions(
+          this.valueTypes.fbar_status_detail.filter((status) => {
+            if (this.formModel.status) {
+              return status.show && status.parentId === parentId;
+            } else {
+              return status.show;
+            }
+          })
+        );
       } else if (this.filingType === filingTypes.state) {
-        return this.valueTypes.state_status_detail.filter((status) => {
-          if (this.formModel.status) {
-            return status.show && status.parentId === parentId
-          } else {
-            return status.show
-          }
-        })
+        return sortOptions(
+          this.valueTypes.state_status_detail.filter((status) => {
+            if (this.formModel.status) {
+              return status.show && status.parentId === parentId;
+            } else {
+              return status.show;
+            }
+          })
+        );
       } else {
-        return this.valueTypes.tax_year_status_detail.filter((status) => {
-          if (this.formModel.status) {
-            return status.show && status.parentId === parentId
-          } else {
-            return status.show
-          }
-        })
+        return sortOptions(
+          this.valueTypes.tax_year_status_detail.filter((status) => {
+            if (this.formModel.status) {
+              return status.show && status.parentId === parentId;
+            } else {
+              return status.show;
+            }
+          })
+        );
       }
     },
     fileTypeOptions() {
       return this.valueTypes.file_type.filter((fileType) => fileType.show)
     },
     contactTypeOptions() {
-      return this.valueTypes.contact_type.filter((contactType) => {
-        return contactType.show && this.selectedClientContactTypes[contactType.value]
-      })
+      const options = this.valueTypes.contact_type.filter((contactType) => {
+        return contactType.show && this.selectedClientContactTypes[contactType.value];
+      });
+
+      // Add a blank option at the beginning
+      return [{ value: "", label: "Select an option" }, ...options];
     },
+
     selectedClientContactTypes() {
-      const contactTypes = {}
+      const contactTypes = {};
       this.selectedClient.contacts.forEach((contact) => {
-        contactTypes[contact.contactType] = true
-      })
-      return contactTypes
+        contactTypes[contact.contactType] = true;
+      });
+      return contactTypes;
     },
+
     currencySymbol() {
       if (this.currency === currencies.NIS.type) {
         return currencies.NIS.symbol
@@ -446,20 +466,48 @@ export default {
     },
   },
   watch: {
+    //   filing: {
+    //     handler(newFiling) {
+    //       this.formModel = JSON.parse(JSON.stringify(newFiling))
+    //     },
+    //     deep: true,
+    //   },
+    // },
+
+    // created() {
+    //   console.log("created")
+    //   this.formModel = JSON.parse(JSON.stringify(this.filing));
+    //   // Initialize localChanges if needed
+    //   if (!this.localChanges.length) {
+    //     this.localChanges = [this.formModel];
+    //   }
     filing: {
-      handler(newFiling) {
-        this.formModel = JSON.parse(JSON.stringify(newFiling))
+      handler(newFiling, oldFiling) {
+        // Only do the deep copy if:
+        // 1. Component isn't initialized yet, OR
+        // 2. We're switching to a completely different filing (different ID)
+        if (!this.isInitialized || (oldFiling && newFiling && oldFiling.id !== newFiling.id)) {
+          this.formModel = JSON.parse(JSON.stringify(newFiling));
+
+          // Check if there are pending updates for this filing in Vuex
+          const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id);
+          if (pendingUpdate) {
+            // Apply pending updates to the form model
+            Object.assign(this.formModel, pendingUpdate);
+          }
+
+          if (!this.isInitialized) {
+            this.isInitialized = true;
+          }
+        }
       },
-      deep: true,
-    },
+      immediate: true,
+    }
   },
 
   created() {
-    this.formModel = JSON.parse(JSON.stringify(this.filing));
-    // Initialize localChanges if needed
-    if (!this.localChanges.length) {
-      this.localChanges = [this.formModel];
-    }
+    // Remove the direct formModel initialization here since it's handled by the watcher
+    this.localChanges = [];
   },
 
   updated() {
@@ -472,6 +520,8 @@ export default {
   mounted() {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
+
+
 
   methods: {
     handleBeforeUnload(event) {
@@ -486,8 +536,10 @@ export default {
       }
     },
     setEditable(editable) {
+      // Clear any pending date field processing when switching fields
+      this.dateFieldsInProgress.clear();
       this.editable = editable;
-      // Store the old value for comparison
+
       if (editable === "status" || editable === "statusDetail") {
         this.oldValue = this.formModel[editable].value;
       } else {
@@ -502,17 +554,34 @@ export default {
     },
 
     onBlur(field) {
-      if (field === 'statusDate') {
-        this.times = this.times === 0 ? 1 : 0;
-        if (this.times === 1) {
+      // Special handling for date fields
+      if (field === 'statusDate' || field === 'dateFiled') {
+        // If this field is already being processed, skip
+        if (this.dateFieldsInProgress.has(field)) {
           return;
         }
-      }
-      if (field === 'dateFiled') {
-        this.times2 = this.times2 === 0 ? 1 : 0;
-        if (this.times2 === 1) {
-          return;
-        }
+
+        // Mark this field as being processed
+        this.dateFieldsInProgress.add(field);
+
+        // Use setTimeout to allow the date picker to complete its update
+        setTimeout(() => {
+          const oldValueStr = JSON.stringify(this.oldValue);
+          const newValueStr = JSON.stringify(this.formModel[field]);
+
+          // Only proceed with update if values are different
+          if (oldValueStr !== newValueStr) {
+            this.handleLocalUpdate();
+          } else {
+            // If no changes, still move to next item
+            this.goToNextItem();
+          }
+
+          // Remove field from processing set
+          this.dateFieldsInProgress.delete(field);
+        }, 100);
+
+        return;
       }
 
 

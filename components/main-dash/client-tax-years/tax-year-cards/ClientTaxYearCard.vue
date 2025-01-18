@@ -116,7 +116,7 @@ export default {
       return null
     },
     filings() {
-      const clonedData = JSON.parse(JSON.stringify(this.yearData))
+      const clonedData = this.yearData
       return clonedData.filings.filter(
         (filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
       )

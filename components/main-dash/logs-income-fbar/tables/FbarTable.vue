@@ -184,7 +184,7 @@ const columns = [
   'delete',
 ]
 
-const docOptions = [{ value: 'HAS' }, { value: 'NEEDS' }]
+const docOptions = [{ value: '' }, { value: 'HAS' }, { value: 'NEEDS' }]
 
 const includeOptions = [
   { value: '', name: '' },
@@ -257,8 +257,11 @@ export default {
     currencyOptions() {
       return this.valueTypes.currency.filter((currency) => currency.show)
     },
+
     taxGroupOptions() {
-      return Object.values(this.valueTaxGroups).filter((taxGroup) => taxGroup.show)
+      return Object.values(this.valueTaxGroups)
+        .filter((taxGroup) => taxGroup.show)
+        .sort((a, b) => (a.value === "" ? -1 : b.value === "" ? 1 : 0));
     },
     headers() {
       return this.$api.getHeaders()

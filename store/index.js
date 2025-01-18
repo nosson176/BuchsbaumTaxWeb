@@ -233,9 +233,11 @@ const mutations = {
 
   updateLog(state, { log }) {
     const index = state[models.selectedClient].logs.findIndex((l) => l.id === log.id)
+    console.log(index)
     if (index !== -1) {
       state[models.selectedClient].logs.splice(index, 1, log)
     }
+    console.log(state[models.selectedClient].logs[index])
   },
 
   updateFee(state, { fee }) {
