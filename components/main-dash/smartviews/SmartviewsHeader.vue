@@ -12,12 +12,14 @@
 import { mapState } from 'vuex'
 import { events, models, mutations } from '~/shared/constants'
 
-const smartviewConstructor = {
+// Move this outside the component to keep it as a template
+const createNewSmartview = () => ({
   name: '',
   sortNumber: 1,
   archived: false,
   smartviewLines: [],
-}
+  // Add a temporary ID to prevent null reference errors
+})
 
 export default {
   name: 'SmartviewsHeader',
@@ -32,7 +34,7 @@ export default {
       return this.$api.getHeaders()
     },
     selectedSmView() {
-      return this.selectedSmartview
+      return this.selectedSmartview || []
     },
     isSmartViewSelected() {
       return this.selectedSmView.length !== 0
@@ -44,20 +46,43 @@ export default {
       this.$emit(events.change)
     },
     addSmartview() {
-      const smartview = smartviewConstructor
+      // Create a new smartview object each time
+      const smartview = createNewSmartview()
+
+      // Set the initial sort number based on existing smartviews
+      if (this.smartviews && Object.keys(this.smartviews).length > 0) {
+        const maxSortNumber = Math.max(
+          ...Object.values(this.smartviews).map(sv => sv.sortNumber || 0)
+        )
+        smartview.sortNumber = maxSortNumber + 1
+      }
+
       this.$store.commit(mutations.setModelResponse, {
         model: models.modals,
         data: { smartview: { showing: true, data: smartview } },
       })
     },
     copySmartView() {
-      const smartview = this.selectedSmView
-      this.$api.createSmartview(this.headers, { smartview }).then((res) => {
-        this.$store.commit(mutations.setModelResponse, {
-          model: models.modals,
-          data: { smartview: { showing: true, data: res } },
+      if (!this.selectedSmView) return
+
+      const smartviewCopy = {
+        ...this.selectedSmView,
+        name: `${this.selectedSmView.name} (copy)`,
+        id: Date.now(), // Temporary ID for the copy
+        sortNumber: this.selectedSmView.sortNumber + 1
+      }
+
+      this.$api.createSmartview(this.headers, { smartview: smartviewCopy })
+        .then((res) => {
+          this.$store.commit(mutations.setModelResponse, {
+            model: models.modals,
+            data: { smartview: { showing: true, data: res } },
+          })
         })
-      })
+        .catch((error) => {
+          console.error('Error copying smartview:', error)
+          this.$toast.error('Error copying smartview')
+        })
     }
   },
 }
