@@ -133,7 +133,6 @@ export default {
     },
     filteredOptions() {
       return this.options.filter((option) => {
-        console.log(option)
         const nameFilter = option.name?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
         const valueFilter = option.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
         return nameFilter || valueFilter

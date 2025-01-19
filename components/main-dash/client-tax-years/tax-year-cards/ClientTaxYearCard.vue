@@ -258,18 +258,20 @@ export default {
 
     addFilingType(filingType) {
       if (!filingType) {
-        return
+        return;
       }
-      let sortOrder = this.yearData.filings.length + 1
+
+      let sortOrder = this.yearData.filings.length + 1;
       if (filingType === filingTypes.federal) {
         const firstOccurenceOfStateFiling = this.yearData.filings.find(
           (filing) => filing.filingType === filingTypes.state
-        )
+        );
         if (firstOccurenceOfStateFiling !== undefined) {
-          sortOrder = firstOccurenceOfStateFiling.sortOrder
-
+          sortOrder = firstOccurenceOfStateFiling.sortOrder;
         }
       }
+
+      // Create the new filing with all required fields initialized
       const defaultValues = {
         filingType,
         taxYearId: this.yearData.id,
@@ -278,7 +280,7 @@ export default {
         statusDetail: { date: null, value: null },
         clientId: this.selectedClient.id,
         completed: false,
-        currency: null,
+        currency: 'USD', // Set a default currency
         dateFiled: null,
         deliveryContact: null,
         fileType: null,
@@ -296,10 +298,20 @@ export default {
         state: null,
         statusDate: null,
         taxForm: null,
-      }
-      const filing = Object.assign({}, defaultValues)
+      };
 
+      const filing = Object.assign({}, defaultValues);
+
+      // Add the filing to Vuex store
       this.$store.commit('pushNewFiling', filing);
+
+      // Ensure the new filing is immediately selected
+      this.$nextTick(() => {
+        const index = this.filings.findIndex(f => f.id === filing.id);
+        if (index !== -1) {
+          this.setActiveFilingIndex(index);
+        }
+      });
     },
     updateIrsHistory() {
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
