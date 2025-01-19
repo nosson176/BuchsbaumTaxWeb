@@ -11,11 +11,16 @@
           </div>
           <div class="flex space-x-1">
             <span class="select-none">{{ smartview.clientIds ? smartview.clientIds.length : 0 }}</span>
-            <DeleteButton v-if="!hideEditButtons" @click.native.stop="archiveSmartview(smartview)" />
+            <DeleteButton v-if="!hideEditButtons" @click.native.stop="showDeleteModal(smartview)" />
           </div>
         </div>
       </transition-group>
     </draggable>
+
+    <Modal :showing="isDeleteModalVisible" @hide="closeDeleteModal">
+      <DeleteArchiveModal label="smartview" :mode="showArchived ? 'archived' : 'normal'" @hide="closeDeleteModal"
+        @delete="handleDelete" @archive="handleArchive" @unarchive="handleUnarchive" />
+    </Modal>
   </div>
 </template>
 
@@ -26,7 +31,9 @@ import { models, mutations, TRANSITION_NAME, routes } from '~/shared/constants'
 
 export default {
   name: 'Smartviews',
-  components: { draggable },
+  components: {
+    draggable,
+  },
   props: {
     showArchived: {
       type: Boolean,
@@ -41,19 +48,23 @@ export default {
         animation: 200,
         ghostClass: 'ghost',
       },
+      isDeleteModalVisible: false,
+      selectedForAction: null,
     }
   },
   computed: {
     ...mapState([models.smartviews, models.selectedSmartview, models.spinner]),
     displayedSmartviews() {
-      if (this.smartviews) {
-        return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
-          .filter((smartview) => this.showArchived === smartview.archived)
-          .sort((a, b) => a.sortNumber - b.sortNumber)
-      } else {
-        return []
+      if (!this.smartviews) {
+        console.warn("smartviews is undefined or null.");
+        return [];
       }
+      console.log(this.smartviews)
+      return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
+        .filter((smartview) => this.showArchived === smartview?.archived)
+        .sort((a, b) => a.sortNumber - b.sortNumber);
     },
+
     selectedSmartviewId() {
       return this.selectedSmartview?.id
     },
@@ -74,7 +85,7 @@ export default {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
   beforeDestroy() {
-
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
     if (this.modifiedSmartviews.length > 0) {
       this.sendBatchUpdate();
     }
@@ -85,8 +96,6 @@ export default {
       this.$store.commit("showSpinner", true)
       await this.$api.getFilterClients(this.headers, { smartview }).then(() => {
         this.$store.commit("showSpinner", false)
-
-
       })
     },
 
@@ -96,29 +105,103 @@ export default {
         data: { smartview: { showing: true, data: smartview } },
       })
     },
-    archiveSmartview(smartview) {
+
+    // New modal related methods
+    showDeleteModal(smartview) {
+      this.selectedForAction = smartview;
+      this.isDeleteModalVisible = true;
+    },
+
+    closeDeleteModal() {
+      this.isDeleteModalVisible = false;
+      this.selectedForAction = null;
+    },
+
+    handleDelete() {
+      if (!this.selectedForAction) return;
+
+      // Implement permanent deletion logic here
+      this.$api.deleteSmartview(this.headers, { smartviewId: this.selectedForAction.id })
+        .then(() => {
+          this.$store.commit('deleteSmartview', { smartviewId: this.selectedForAction.id });
+          if (this.selectedSmartviewId === this.selectedForAction.id) {
+            this.$store.commit(mutations.setModelResponse, {
+              model: models.selectedSmartview,
+              data: null
+            });
+          }
+          this.closeDeleteModal();
+        })
+        .catch((error) => {
+          this.$toast.error('Error deleting smartview');
+          console.error('Error deleting smartview:', error);
+        });
+    },
+
+    handleArchive() {
+      if (!this.selectedForAction) return;
+      const smartview = this.displayedSmartviews.find((smartview) => smartview.id === this.selectedForAction.id)
       if (this.showArchived) {
         smartview.archived = false
       } else {
         smartview.archived = true
       }
+      const index = this.modifiedSmartviews.findIndex(a => a.id === smartview.id)
+      if (index !== -1) {
+        this.modifiedSmartviews[index] = smartview
+      } else {
+        this.modifiedSmartviews.push(smartview)
+      }
+      this.closeDeleteModal()
       this.$store.dispatch('updateSmartviewAction', { smartview });
-      this.$api
-        .updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
-        .then(() => this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] }))
     },
+
+    handleUnarchive() {
+      if (!this.selectedForAction) return;
+      const smartview = this.displayedSmartviews.find((smartview) => smartview.id === this.selectedForAction.id)
+      if (this.showArchived) {
+        smartview.archived = false
+      } else {
+        smartview.archived = true
+      }
+      const index = this.modifiedSmartviews.findIndex(a => a.id === smartview.id)
+      if (index !== -1) {
+        this.modifiedSmartviews[index] = smartview
+      } else {
+        this.modifiedSmartviews.push(smartview)
+      }
+      this.closeDeleteModal()
+      this.$store.dispatch('updateSmartviewAction', { smartview });
+    },
+
+    updateSmartviewAndClose(smartview) {
+      this.$api.updateSmartview(this.headers, { smartviewId: smartview.id }, smartview)
+        .then(() => {
+          this.$store.dispatch('updateSmartviewAction', { smartview });
+          if (this.selectedSmartviewId === smartview.id) {
+            this.$store.commit(mutations.setModelResponse, {
+              model: models.selectedSmartview,
+              data: null
+            });
+          }
+          this.closeDeleteModal();
+        })
+        .catch((error) => {
+          this.$toast.error('Error updating smartview');
+          console.error('Error updating smartview:', error);
+        });
+    },
+
     startDrag(evt) {
       this.dragActive = true
     },
+
     onDrop(evt) {
       const { oldIndex, newIndex } = evt;
-      const movedSmartview = this.displayedSmartviews.splice(oldIndex, 1)[0];  // Remove the item from the old position
-      this.displayedSmartviews.splice(newIndex, 0, movedSmartview);  // Insert it into the new position
+      const movedSmartview = this.displayedSmartviews.splice(oldIndex, 1)[0];
+      this.displayedSmartviews.splice(newIndex, 0, movedSmartview);
 
-      // Update sort numbers and modifiedSmartviews with only affected smartviews
       const affectedSmartviews = [];
-
-      // Only add smartviews between the old and new indices (inclusive)
       const startIndex = Math.min(oldIndex, newIndex);
       const endIndex = Math.max(oldIndex, newIndex);
 
@@ -132,13 +215,12 @@ export default {
         }
       }
 
-      // Update modifiedSmartviews only with affected smartviews
       affectedSmartviews.forEach((updatedSmartview) => {
         const existingIndex = this.modifiedSmartviews.findIndex((item) => item.id === updatedSmartview.id);
         if (existingIndex === -1) {
-          this.modifiedSmartviews.push(updatedSmartview);  // Add new entry for modified smartview
+          this.modifiedSmartviews.push(updatedSmartview);
         } else {
-          this.modifiedSmartviews[existingIndex].sortNumber = updatedSmartview.sortNumber;  // Update existing entry
+          this.modifiedSmartviews[existingIndex].sortNumber = updatedSmartview.sortNumber;
         }
       });
 
@@ -148,28 +230,21 @@ export default {
     async sendBatchUpdate() {
       try {
         await this.$api.updateSmartviewsBatch(this.headers, this.modifiedSmartviews);
-
-        // Commit the batch update to Vuex
         this.$store.commit('updateSmartviewsBatch', { smartviews: this.modifiedSmartviews });
-
       } catch (error) {
         console.error('Error sending batch update:', error);
       } finally {
-        // Clear modifiedSmartviews to avoid re-sending on future destroys
         this.modifiedSmartviews = [];
       }
     },
 
-
     handleBeforeUnload(event) {
       if (this.modifiedSmartviews.length > 0) {
         this.sendBatchUpdate();
-        // Optionally, to show a confirmation dialog
         event.preventDefault();
         event.returnValue = '';
       }
     },
-
   },
 }
 </script>

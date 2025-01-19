@@ -161,9 +161,11 @@ export default {
       if (this.isLoading || !this.smartviewIsValid) {
         return
       }
+      console.log("create")
       this.isLoading = true
       const smartview = Object.assign({}, this.smartview, { smartviewLines: this.smartview.smartviewLines })
       this.$api.createSmartview(this.headers, { smartview }).then((data) => {
+        console.log(data)
         this.$store.commit('pushNewSmartview', data)
         this.isLoading = false
         this.emitHide()

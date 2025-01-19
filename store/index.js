@@ -190,7 +190,12 @@ const mutations = {
   },
 
   pushNewSmartview(state, newSmartview) {
-    const smartviewId = newSmartview.id // מזהה ייחודי למשתמש
+    // Ensure we're working with an object structure
+    const smartviewId = String(newSmartview.id)
+    if (!state[models.smartviews]) {
+      state[models.smartviews] = {}
+    }
+    // Add new smartview to the object
     Vue.set(state[models.smartviews], smartviewId, newSmartview)
   },
 
@@ -233,11 +238,9 @@ const mutations = {
 
   updateLog(state, { log }) {
     const index = state[models.selectedClient].logs.findIndex((l) => l.id === log.id)
-    console.log(index)
     if (index !== -1) {
       state[models.selectedClient].logs.splice(index, 1, log)
     }
-    console.log(state[models.selectedClient].logs[index])
   },
 
   updateFee(state, { fee }) {
@@ -411,6 +414,11 @@ const mutations = {
     if (index !== -1) state[models.selectedClient].taxPersonals.splice(index, 1)
   },
 
+  deleteContact(state, { contactId }) {
+    const index = state[models.selectedClient].contacts.findIndex((contact) => contact.id === contactId)
+    if (index !== -1) state[models.selectedClient].contacts.splice(index, 1)
+  },
+
   deleteIncome(state, deleteIncomeId) {
     const index = state[models.selectedClient].incomeBreakdowns.findIndex((income) => income.id === deleteIncomeId)
     if (index !== -1) state[models.selectedClient].incomeBreakdowns.splice(index, 1)
@@ -504,6 +512,16 @@ const mutations = {
 
       // Update the state with the modified inbox
       state.inbox = inbox
+    }
+  },
+
+  deleteSmartview(state, { smartviewId }) {
+    const smartviewsArray = Object.values(state[models.smartviews]) // Convert object to array
+
+    const index = smartviewsArray.findIndex((l) => l.id === smartviewId)
+    if (index !== -1) {
+      smartviewsArray.splice(index, 1) // Remove the smartview from the array
+      state[models.smartviews] = smartviewsArray // Update the state with the modified array
     }
   },
 

@@ -83,6 +83,8 @@ export const events = Object.freeze({
   change: 'change',
   click: 'click',
   delete: 'delete',
+  archive: 'archive',
+  unarchive: 'unarchive',
   hide: 'hide',
   input: 'input',
   keydown: 'keydown',

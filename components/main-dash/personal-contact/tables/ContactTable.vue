@@ -70,6 +70,10 @@
           </TableRow>
         </transition-group>
       </draggable>
+      <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
+        <DeleteArchiveModal :label="'contact'" :mode="showArchived ? 'archived' : 'normal'" @hide="closeDeleteModal"
+          @delete="handleDelete" @archive="handleArchive" @unarchive="handleUnarchive" />
+      </Modal>
     </template>
   </Table>
 </template>
@@ -93,16 +97,18 @@ export default {
   },
   data() {
     return {
-      editableId: '',
-      editableContactId: '',
-      oldValue: '',
-      dragActive: false,
       dragOptions: {
         animation: 200,
         ghostClass: 'ghost',
       },
+      dragActive: false,
+      showDeleteModal: false,
+      editableContactId: '',
+      editableId: '',
+      oldValue: '',
+      updateData: [],
       selectedItems: {},
-      updateData: []
+      contactToModify: null,
     }
   },
   computed: {
@@ -282,8 +288,33 @@ export default {
       this.$api.updateContacts(this.headers, this.updateData)
         .catch(() => this.$toast.error('Error updating contact'))
     },
+    // onDeleteClick(contactObj) {
+    //   const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
+    //   if (this.showArchived) {
+    //     contact.archived = false
+    //   } else {
+    //     contact.archived = true
+    //   }
+    //   const index = this.updateData.findIndex(c => c.id === contact.id)
+    //   if (index !== -1) {
+    //     this.updateData[index] = contact
+    //   } else {
+    //     this.updateData.push(contact)
+    //   }
+
+    //   this.$store.dispatch('updateContactAction', { contact });
+    // },
+    closeDeleteModal() {
+      this.showDeleteModal = false;
+
+    },
     onDeleteClick(contactObj) {
-      const contact = this.displayedContacts.find((contact) => contact.id === contactObj.id)
+      this.showDeleteModal = true;
+      this.contactToModify = contactObj;
+      console.log("run")
+    },
+    handleArchive() {
+      const contact = this.displayedContacts.find((contact) => contact.id === this.contactToModify.id)
       if (this.showArchived) {
         contact.archived = false
       } else {
@@ -295,9 +326,52 @@ export default {
       } else {
         this.updateData.push(contact)
       }
-
+      this.closeDeleteModal()
       this.$store.dispatch('updateContactAction', { contact });
     },
+
+    handleUnarchive() {
+      const contact = this.displayedContacts.find((contact) => contact.id === this.contactToModify.id)
+      if (this.showArchived) {
+        contact.archived = false
+      } else {
+        contact.archived = true
+      }
+      const index = this.updateData.findIndex(c => c.id === contact.id)
+      if (index !== -1) {
+        this.updateData[index] = contact
+      } else {
+        this.updateData.push(contact)
+      }
+      this.closeDeleteModal()
+      this.$store.dispatch('updateContactAction', { contact });
+    },
+
+    handleDelete() {
+      this.$api.deleteContact(this.headers, { contactId: this.contactToModify.id }).then(res => {
+        this.closeDeleteModal()
+        this.$store.commit('deleteContact', { contactId: this.contactToModify.id })
+      })
+    },
+
+    // updateContactAndClose(contact, isDelete = false) {
+    //   if (!isDelete) {
+    //     const index = this.updateData.findIndex(c => c.id === contact.id);
+    //     if (index !== -1) {
+    //       this.updateData[index] = contact;
+    //     } else {
+    //       this.updateData.push(contact);
+    //     }
+    //     this.$store.dispatch('updateContactAction', { contact });
+    //   } else {
+    //     // Handle permanent deletion
+    //     this.$store.dispatch('deleteContactAction', { contactId: contact.id });
+    //   }
+    //   this.showDeleteModal = false;
+    //   this.contactToModify = null;
+    // },
+
+
     onAddRowClick() {
       if (!this.selectedClient) {
         return

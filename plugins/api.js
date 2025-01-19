@@ -607,6 +607,18 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
   }
 
+  const deleteContact = (headers, { contactId }) => {
+    return $axios
+      .delete(`/contacts/${contactId}`, { headers }) // Ensure we return the promise from the axios call
+      .then((res) => {
+        return res // Return the response from the API call
+      })
+      .catch((error) => {
+        console.error('Error deleting contact:', error)
+        throw error // Ensure we throw the error so that it can be handled in the caller
+      })
+  }
+
   const deleteIncome = (headers, { incomeId }) => {
     return $axios
       .delete(`/incomes/${incomeId}`, { headers }) // Ensure we return the promise from the axios call
@@ -717,6 +729,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     deleteTaxYear,
     deleteLog,
     deleteTaxPersonal,
+    deleteContact,
     deleteIncome,
     deleteFbar,
     deleteFee,
