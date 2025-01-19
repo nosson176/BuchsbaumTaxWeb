@@ -172,7 +172,7 @@ export default {
     },
     taxForm: {
       get() {
-        return this.formModel.taxForm
+        return this.formModel?.taxForm
       },
       set(newValue) {
         this.formModel.taxForm = newValue
@@ -180,7 +180,7 @@ export default {
     },
     state: {
       get() {
-        return this.formModel.state
+        return this.formModel?.state
       },
       set(newValue) {
         this.formModel.state = newValue
@@ -188,11 +188,11 @@ export default {
     },
     status: {
       get() {
-        return this.formModel.status?.value;
+        return this.formModel?.status?.value;
       },
       set(newVal) {
         // Check if the status object is empty or undefined
-        if (!this.formModel.status || Object.keys(this.formModel.status).length === 0) {
+        if (!this.formModel?.status || Object.keys(this.formModel?.status).length === 0) {
           // Initialize the status object with the given value and current timestamp if empty
           this.formModel.status = {
             value: newVal,
@@ -208,7 +208,7 @@ export default {
 
     statusDetail: {
       get() {
-        return this.formModel.statusDetail?.value;
+        return this.formModel?.statusDetail?.value;
       },
       set(newVal) {
         // Check if the statusDetail object is empty or undefined
@@ -228,7 +228,7 @@ export default {
 
     statusDate: {
       get() {
-        return String(this.formModel.statusDate)
+        return String(this.formModel?.statusDate)
       },
       set(newVal) {
         this.formModel.statusDate = newVal
@@ -236,7 +236,7 @@ export default {
     },
     memo: {
       get() {
-        return this.formModel.memo
+        return this.formModel?.memo
       },
       set(newVal) {
         this.formModel.memo = newVal
@@ -244,7 +244,7 @@ export default {
     },
     includeInRefund: {
       get() {
-        return this.formModel.includeInRefund
+        return this.formModel?.includeInRefund
       },
       set(newVal) {
         this.formModel.includeInRefund = newVal
@@ -252,7 +252,7 @@ export default {
     },
     owes: {
       get() {
-        return this.formModel.owes
+        return this.formModel?.owes
       },
       set(newVal) {
         this.formModel.owes = setAsValidNumber(newVal)
@@ -260,7 +260,7 @@ export default {
     },
     paid: {
       get() {
-        return this.formModel.paid
+        return this.formModel?.paid
       },
       set(newVal) {
         this.formModel.paid = setAsValidNumber(newVal)
@@ -268,7 +268,7 @@ export default {
     },
     includeFee: {
       get() {
-        return this.formModel.includeFee
+        return this.formModel?.includeFee
       },
       set(newVal) {
         this.formModel.includeFee = newVal
@@ -276,7 +276,7 @@ export default {
     },
     owesFee: {
       get() {
-        return this.formModel.owesFee
+        return this.formModel?.owesFee
       },
       set(newVal) {
         this.formModel.owesFee = setAsValidNumber(newVal)
@@ -284,7 +284,7 @@ export default {
     },
     paidFee: {
       get() {
-        return this.formModel.paidFee
+        return this.formModel?.paidFee
       },
       set(newVal) {
         this.formModel.paidFee = setAsValidNumber(newVal)
@@ -292,7 +292,7 @@ export default {
     },
     fileType: {
       get() {
-        return this.formModel.fileType
+        return this.formModel?.fileType
       },
       set(newVal) {
         this.formModel.fileType = newVal
@@ -300,7 +300,7 @@ export default {
     },
     refund: {
       get() {
-        return this.formModel.refund
+        return this.formModel?.refund
       },
       set(newVal) {
         this.formModel.refund = setAsValidNumber(newVal)
@@ -308,7 +308,7 @@ export default {
     },
     rebate: {
       get() {
-        return this.formModel.rebate
+        return this.formModel?.rebate
       },
       set(newVal) {
         this.formModel.rebate = setAsValidNumber(newVal)
@@ -316,7 +316,7 @@ export default {
     },
     completed: {
       get() {
-        return this.formModel.completed
+        return this.formModel?.completed
       },
       set(newVal) {
         this.formModel.completed = newVal
@@ -343,7 +343,7 @@ export default {
     },
     deliveryContact: {
       get() {
-        return this.formModel.deliveryContact
+        return this.formModel?.deliveryContact
       },
       set(newVal) {
         this.formModel.deliveryContact = newVal
@@ -351,7 +351,7 @@ export default {
     },
     secondDeliveryContact: {
       get() {
-        return this.formModel.secondDeliveryContact
+        return this.formModel?.secondDeliveryContact
       },
       set(newVal) {
         this.formModel.secondDeliveryContact = newVal
@@ -359,7 +359,7 @@ export default {
     },
     dateFiled: {
       get() {
-        return this.formModel.dateFiled
+        return this.formModel?.dateFiled
       },
       set(newVal) {
         this.formModel.dateFiled = newVal
@@ -368,7 +368,7 @@ export default {
     currency: {
 
       get() {
-        return this.formModel.currency
+        return this.formModel?.currency
       },
       set(newVal) {
         this.oldCurrencyType = this.formModel.currency
@@ -395,7 +395,7 @@ export default {
     },
     statusDetailOptions() {
       const parentId = this.statusOptions.find(
-        (statusOption) => statusOption.value === this.formModel.status
+        (statusOption) => statusOption.value === this.formModel?.status
       )?.id;
 
       const sortOptions = (options) => {
@@ -405,7 +405,7 @@ export default {
       if (this.filingType === filingTypes.fbar) {
         return sortOptions(
           this.valueTypes.fbar_status_detail.filter((status) => {
-            if (this.formModel.status) {
+            if (this.formModel?.status) {
               return status.show && status.parentId === parentId;
             } else {
               return status.show;
@@ -415,7 +415,7 @@ export default {
       } else if (this.filingType === filingTypes.state) {
         return sortOptions(
           this.valueTypes.state_status_detail.filter((status) => {
-            if (this.formModel.status) {
+            if (this.formModel?.status) {
               return status.show && status.parentId === parentId;
             } else {
               return status.show;
@@ -425,7 +425,7 @@ export default {
       } else {
         return sortOptions(
           this.valueTypes.tax_year_status_detail.filter((status) => {
-            if (this.formModel.status) {
+            if (this.formModel?.status) {
               return status.show && status.parentId === parentId;
             } else {
               return status.show;
@@ -482,11 +482,9 @@ export default {
     //     this.localChanges = [this.formModel];
     //   }
     filing: {
-      handler(newFiling, oldFiling) {
-        // Only do the deep copy if:
-        // 1. Component isn't initialized yet, OR
-        // 2. We're switching to a completely different filing (different ID)
-        if (!this.isInitialized || (oldFiling && newFiling && oldFiling.id !== newFiling.id)) {
+      handler(newFiling) {
+        if (newFiling) {
+          // Deep clone the filing to avoid reference issues
           this.formModel = JSON.parse(JSON.stringify(newFiling));
 
           // Check if there are pending updates for this filing in Vuex
@@ -495,13 +493,13 @@ export default {
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
           }
-
-          if (!this.isInitialized) {
-            this.isInitialized = true;
-          }
+        } else {
+          // Initialize with empty object if no filing provided
+          this.formModel = {};
         }
       },
-      immediate: true,
+      immediate: true, // This ensures the watcher runs immediately when component is created
+      deep: true
     }
   },
 
@@ -536,12 +534,17 @@ export default {
       }
     },
     setEditable(editable) {
-      // Clear any pending date field processing when switching fields
+      // Early return if formModel isn't initialized
+      if (!this.formModel) {
+        console.warn('Attempting to edit before form model is initialized');
+        return;
+      }
+
       this.dateFieldsInProgress.clear();
       this.editable = editable;
 
       if (editable === "status" || editable === "statusDetail") {
-        this.oldValue = this.formModel[editable].value;
+        this.oldValue = this.formModel[editable]?.value || null;
       } else {
         this.oldValue = typeof this.formModel[editable] === 'object'
           ? JSON.stringify(this.formModel[editable])
@@ -613,8 +616,8 @@ export default {
         });
       }
 
-      if (this.currency === this.oldCurrencyType) return
       if (field === 'currency') {
+        if (this.currency === this.oldCurrencyType) return
         // Handle currency change
         const oldCurrency = this.oldValue;
         const newCurrency = this.currency;
@@ -659,6 +662,7 @@ export default {
     },
 
     handleLocalUpdate() {
+
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);

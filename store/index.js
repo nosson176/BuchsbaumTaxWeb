@@ -298,9 +298,21 @@ const mutations = {
   pushNewFiling(state, filing) {
     const index = state[models.selectedClient].taxYears.findIndex((f) => f.id === filing.taxYearId)
     if (index !== -1) {
-      state[models.selectedClient].taxYears[index].filings.push(filing)
+      // Use spread operator to ensure reactivity
+      state[models.selectedClient].taxYears[index].filings = [
+        ...state[models.selectedClient].taxYears[index].filings,
+        filing,
+      ]
     }
   },
+  // pushNewFiling(state, filing) {
+  //   console.log(state[models.selectedClient].taxYears)
+  //   const index = state[models.selectedClient].taxYears.findIndex((f) => f.id === filing.taxYearId)
+  //   console.log(index)
+  //   if (index !== -1) {
+  //     state[models.selectedClient].taxYears[index].filings.push(filing)
+  //   }
+  // },
 
   pushFilingUpdate(state, filing) {
     state.filingsUpdate.push(filing)
