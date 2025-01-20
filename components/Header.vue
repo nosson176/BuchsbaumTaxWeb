@@ -3,6 +3,7 @@
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
       <div class="p-3 ">
         <span class="font-bold">{{ username }}</span>
+        <span class="m-2 cursor-pointer" @click="toggleTimer" @dblclick="resetTimer">{{ formatTime }}</span>
       </div>
       <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus">
       </div>
@@ -11,14 +12,14 @@
         aria-expanded="true" @click="openSmsModal">
         Send SMS
       </button> -->
-      <div
+      <!-- <div
         class="inline-flex justify-center shadow-sm px-2 py-1 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
         <Dropdown shown-value="Time" :value="selectedTime" :options="[2, 5, 10, 15, 20]"
           @input="chooseSecondsNeededToDisplayModal1" />
-      </div>
-      <div class="flex h-7 w-7 ml-5 cursor-pointer" @click="togglePlayTime">
-        <PauseIcon v-if="playTime" />
-        <PlayIcon v-else class="text-green-500" />
+      </div> -->
+      <div class="flex h-7 w-7 ml-5 cursor-pointer">
+        <PauseIcon v-if="workTimePlay" @click.native="clockOutWorkTime" />
+        <PlayIcon v-else class="text-green-500" @click.native="createWorkTime" />
       </div>
       <div class="ml-auto">
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
@@ -88,10 +89,13 @@ export default {
       intervalId: null,
       ShowLogoutConfirmationModel: false,
       selectedTime: null,
+      timerRun: false,
+      displayTime: Number(localStorage.getItem('timer')) || '00:00'
+
     }
   },
   computed: {
-    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime, models.dotStatus]),
+    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime, models.dotStatus, models.workTimeActive]),
     mappedClientHistory() {
       if (this.clientsHistoryLoaded) {
         return Object.values(this.clientsHistory).map((item) => {
@@ -113,6 +117,21 @@ export default {
     },
     playTime() {
       return this.globalPlayTime
+    },
+    formatTime() {
+      if (this.displayTime === '00:00') return '00:00'
+      const date = new Date(0); // Create a Date object starting from Unix epoch (1970-01-01)
+      date.setSeconds(this.displayTime); // Set the number of seconds
+
+      const hours = String(date.getUTCHours()).padStart(2, '0'); // Get hours in 2 digits
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0'); // Get minutes in 2 digits
+
+      return `${hours}:${minutes}`; // Return the formatted time
+
+    },
+
+    workTimePlay() {
+      return this.workTimeActive;
     },
     clientsHistoryLoaded() {
       return !Array.isArray(this.clientsHistory.length) || !this.clientsHistory.length.length
@@ -154,6 +173,7 @@ export default {
   },
   created() {
     this.loadInbox()
+    this.playTimer()
   },
   beforeDestroy() {
     clearInterval(this.intervalId)
@@ -162,12 +182,38 @@ export default {
     toggleStatus() {
       this.$store.commit('changeDotStatus')
       this.$api.getClientList(this.headers)
+    },
+    toggleTimer() {
+      if (this.timerRun) {
+        this.timerRun = false
+        this.stopTimer()
+      } else {
+        // this.timerRun = true
+        this.playTimer()
+      }
+    },
+    playTimer() {
+      if (!this.timerRun) this.timerRun = true
+      if (this.displayTime === '00:00') this.displayTime = 0
+      this.intervalId = setInterval(() => {
+        this.displayTime += 10
+        localStorage.setItem('timer', this.displayTime)
+      }, 10000)
+    },
 
+    stopTimer() {
+      clearInterval(this.intervalId)
     },
-    togglePlayTime() {
-      const newStatus = !this.globalPlayTime
-      this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
+    resetTimer() {
+      localStorage.removeItem('timer')
+      clearInterval(this.intervalId)
+      this.displayTime = '00:00'
     },
+
+    // togglePlayTime() {
+    //   const newStatus = !this.globalPlayTime
+    //   this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
+    // },
     getSelectedClient(selectedClientName) {
       const selectedClient = Object.values(this.clientsHistory).find((client) => client.lastName === selectedClientName)
       const headers = this.headers
@@ -210,19 +256,29 @@ export default {
     closeLogoutConfirmationModel() {
       this.ShowLogoutConfirmationModel = false
       this.$api.signout()
+      localStorage.removeItem('timer')
     },
     async loadInbox() {
       await this.$api.getInbox(this.headers)
+    },
+    createWorkTime() {
+      const now = new Date()
+      const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+      const headers = this.$api.getHeaders()
+      this.$api.createWorkTime(headers, this.currentUser.id, this.currentUser.username, startDay).then((res) => {
+        if (res === 'success') this.$store.commit('toggleWorkTime', true)
+      })
     },
     clockOutWorkTime() {
       const headers = this.$api.getHeaders()
       const now = new Date()
       const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
-      this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay)
+      this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay).then((res) => {
+        if (res === 'success') this.$store.commit('toggleWorkTime', false)
+      })
         .catch((error) => {
           console.error('Error logging out:', error)
         })
-      this.$api.signout()
     },
     irsPopup() {
       window.open('https://sa.www4.irs.gov/irfof/lang/en/irfofgetstatus.jsp', 'popup', 'width=770,height=770')

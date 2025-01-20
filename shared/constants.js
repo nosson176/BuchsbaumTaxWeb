@@ -34,6 +34,8 @@ export const models = Object.freeze({
   filingsUpdate: 'filingsUpdate',
   spinner: 'spinner',
   dotStatus: 'dotStatus',
+  workTimeActive: 'workTimeActive',
+  timerState: 'timerState',
 })
 
 // Store Mutations

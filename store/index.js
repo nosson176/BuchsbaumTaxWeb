@@ -24,6 +24,11 @@ const state = () => {
     filingsUpdate: [],
     spinner: false,
     dotStatus: true,
+    workTimeActive: false,
+    timerState: {
+      startTime: null,
+      isRunning: false,
+    },
   }
 }
 
@@ -48,8 +53,16 @@ const mutations = {
     state[model] = data
   },
 
+  SET_TIMER_STATE(state, { startTime, isRunning }) {
+    state.timerState = { startTime, isRunning }
+  },
+
   changeDotStatus(state) {
     state.dotStatus = !state.dotStatus
+  },
+
+  toggleWorkTime(state, mode) {
+    state.workTimeActive = mode
   },
 
   deleteUser(state, userId) {

@@ -171,7 +171,9 @@ export default {
       const now = new Date()
       const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
       const headers = this.$api.getHeaders()
-      this.$api.createWorkTime(headers, data.userId, data.username, startDay)
+      this.$api.createWorkTime(headers, data.userId, data.username, startDay).then(res => {
+        if (res === 'success') this.$store.commit('toggleWorkTime', true)
+      })
       this.routeToMainDash()
     },
     closeWorkTimeModal() {
