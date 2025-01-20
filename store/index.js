@@ -146,6 +146,16 @@ const mutations = {
     state[models.selectedClient].logs.unshift(log.log)
   },
 
+  pushRestLogs(state, logs) {
+    state[models.selectedClient].logs.push(...logs)
+  },
+
+  hideRestLogs(state, count) {
+    // Remove 'count' number of logs from the end of the array
+    const updatedLogs = state[models.selectedClient].logs.slice(0, -count) // Create a new array with the remaining logs
+    state[models.selectedClient].logs = updatedLogs // Reassign the array to trigger reactivity
+  },
+
   pushNewIncome(state, income) {
     state[models.selectedClient].incomeBreakdowns.unshift(income.income)
   },
