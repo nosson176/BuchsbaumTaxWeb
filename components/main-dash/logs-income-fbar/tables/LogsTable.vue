@@ -159,6 +159,15 @@
           </Tooltip>
         </div>
       </TableRow>
+
+      <div v-if="isLoading" class="bg-gray-200 cursor-pointer italic font-bold text-center">
+        <div class="spinner-overlay">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div v-else class="bg-gray-200 cursor-pointer italic font-bold text-center" @click="toggleShowOrHide">{{
+        showOrHide }}
+      </div>
       <div>
         <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
           <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteLog" />
@@ -209,6 +218,10 @@ export default {
       deleteTypeLabel: 'log',
       activeTooltipIndex: null,
       tooltipTimer: null,
+      showOrHide: 'Show',
+      isDataVisible: false, // flag to toggle visibility of data
+      fetchedLogs: [],    // store the fetched data
+      isLoading: false
     }
   },
   computed: {
@@ -381,6 +394,38 @@ export default {
     }
   },
   methods: {
+    toggleShowOrHide() {
+      if (this.showOrHide === 'Show') {
+        this.showOrHide = 'Hide'
+        this.getRestLogs()
+      } else {
+        this.showOrHide = 'Show'
+        this.hideRestLogs()
+      }
+    },
+    getRestLogs() {
+      if (this.fetchedLogs.length > 0) {
+        this.isDataVisible = true
+        this.$store.commit('pushRestLogs', this.fetchedLogs)
+        return
+      }
+      this.isLoading = true
+      this.$api.getRestLogsByClient(this.headers, { clientId: this.selectedClient.id }).then(res => {
+        const data = Object.values(res)
+        if (data.length > 0) {
+          this.isDataVisible = true // flag to toggle visibility of data
+          this.fetchedLogs = data
+          this.$store.commit('pushRestLogs', Object.values(data))
+        }
+      })
+      this.isLoading = false
+    },
+
+    hideRestLogs() {
+      const count = this.fetchedLogs.length
+      this.isDataVisible = false
+      if (count > 0) this.$store.commit('hideRestLogs', count)
+    },
     showTooltip(idx) {
       if (this.tooltipTimer) {
         clearTimeout(this.tooltipTimer);
@@ -671,6 +716,8 @@ export default {
       this.$api.deleteLog(this.headers, { logId: this.deleteLogId }).then(res => {
         this.closeDeleteModal()
         this.$store.commit('deleteLog', this.deleteLogId)
+        const index = this.updatAndNewLogs.findIndex(log => log.id === this.deleteLogId)
+        this.updatAndNewLogs.splice(index, 1)
       })
     },
     onAddRowClick(addSecondsSpent = false) {
@@ -749,14 +796,12 @@ export default {
     },
     onBlur(val, field) {
       if (this.oldValue !== val && this.oldValue !== undefined) {
-        console.log(val, field)
         this.handleUpdate(val, field)
         this.goToNextColumn()
         // this.editableId = ""
         return
       }
       if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
-        console.log(val, field)
         this.handleUpdate(val, field)
         this.goToNextColumn()
 
@@ -910,6 +955,42 @@ export default {
     @apply w-1/5;
 
     min-width: 3rem;
+  }
+
+  .spinner-overlay {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* background-color: rgba(0, 0, 0, 0.2); */
+    z-index: 100;
+    height: 100%;
+  }
+
+  /* Spinner design */
+  .spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1.5s linear infinite;
+  }
+
+  /* Spinner rotation animation */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 }
 </style>

@@ -102,6 +102,13 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         $toast.error('Error loading client data')
       })
   }
+
+  const getRestLogsByClient = (headers, { clientId }) => {
+    return $axios.get(`logs/restLogs/${clientId}`, { headers }).then((res) => {
+      return res
+    })
+  }
+
   const getClientsWithLogs = (headers, clientId) => {
     // Construct URL based on whether clientId is provided
     const url = '/clients/clientsAndlogs' + (clientId ? `?clientId=${clientId}` : '')
@@ -678,6 +685,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     deleteUser,
     getAllUsers,
     getClientData,
+    getRestLogsByClient,
     getClientList,
     getClientsHistory,
     getHeaders,
