@@ -1,7 +1,8 @@
 <template>
-  <div class="flex flex-col bg-blue-200 px-0.5 py-1">
+  <div class="flex flex-col bg-gray-700 px-0.5 py-1">
     <div></div>
-    <ViewArchivedHeader :view-active="showActive" @change="emitChange" />
+    <!-- <ViewArchivedHeader :view-active="showActive" @change="emitChange" /> -->
+    <!-- <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"></div> -->
     <div class="flex items-center justify-between space-x-1">
       <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
       <span v-if="clientCount" class="text-xs mt-1 p-1 font-semibold text-indigo-600 bg-blue-100 rounded">{{
@@ -25,7 +26,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clientSearchValue, models.clientSearchOption, models.clients, models.selectedSmartview]),
+    ...mapState([models.clientSearchValue, models.clientSearchOption, models.clients, models.selectedSmartview, models.dotStatus]),
     debounceSearch() {
       return debounce(this.searchClients, 2000)
     },
@@ -59,6 +60,9 @@ export default {
     hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     },
+    // statusCheck() {
+    //   return this.dotStatus
+    // },
   },
   methods: {
     emitChange(value) {

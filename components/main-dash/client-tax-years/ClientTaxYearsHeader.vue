@@ -1,5 +1,5 @@
 <template>
-  <div class="header bg-gray-700">
+  <div :class="$style.header" class="header bg-gray-700" :key="uniqueKey">
     <!-- Show LoadingIndicator while loading -->
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-white mx-auto my-auto" />
 
@@ -7,14 +7,14 @@
     <div v-else-if="isClientSelected" class="w-full flex items-center justify-between">
       <div class="flex items-center w-1/3">
         <div>
-          <FlagIcon class="h-8 w-8 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
+          <FlagIcon class="h-9 w-9 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
           <FlagDropdown v-if="showGlobalFlagDropdown" @input="updateGlobalFlag" @blur="toggleShowGlobalFlagDropdown" />
         </div>
         <div class="font-bold text-2xl cursor-pointer px-1" @click="openEditNameDialogue">
           {{ selectedClient.lastName }}
         </div>
         <div>
-          <FlagIcon class="h-5 w-5 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
+          <FlagIcon class="h-4 w-4 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
           <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
         </div>
         <div class="ml-12">
@@ -41,9 +41,9 @@
               <span v-else class="capitalize">Delete</span>
             </button>
           </div>
-          <div class="flex gap-x-3">
-            <div class="font-bold text-lg" :class="dollarsClassObj">{{ summationDollars }}</div>
-            <div class="font-bold text-lg" :class="shekelsClassObj">{{ summationShekels }}</div>
+          <div class="flex gap-x-3 ml-16">
+            <div class="font-bold text-2xl" :class="dollarsClassObj">{{ summationDollars }}</div>
+            <div class="font-bold text-2xl" :class="shekelsClassObj">{{ summationShekels }}</div>
           </div>
         </div>
       </div>
@@ -81,6 +81,7 @@ export default {
       showGlobalFlagDropdown: false,
       editedLastName: '',
       globalFlag: null,
+      uniqueKey: 0
     }
   },
   computed: {
@@ -240,6 +241,9 @@ export default {
 
 
   methods: {
+    forceRerender() {
+      this.uniqueKey += 1
+    },
     ...mapMutations({
       updateSelectedClient: mutations.setModelResponse
     }),
@@ -378,9 +382,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style module>
 .header {
-
   @apply flex bg-gray-700 text-white rounded-t-sm px-3 items-center z-10 shadow;
 
   min-height: 4rem;

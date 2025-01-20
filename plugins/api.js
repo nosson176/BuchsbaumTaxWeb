@@ -341,10 +341,11 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       date,
     }
 
-    $axios
+    return $axios
       .post('/worktimes', workTimeData, { headers })
       .then(() => {
         $toast.success('Work time created successfully')
+        return 'success'
       })
       .catch((error) => {
         // Handle error
@@ -357,11 +358,12 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       userId,
       date,
     }
-    $axios
+    return $axios
       .post(`/worktimes/clockout`, workTimeData, { headers })
       .then(() => {
         // Handle success
         $toast.success('Clock out successful')
+        return 'success'
       })
       .catch((error) => {
         // Handle error

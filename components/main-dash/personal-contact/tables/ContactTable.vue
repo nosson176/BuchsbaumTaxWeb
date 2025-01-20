@@ -241,22 +241,25 @@ export default {
         }
       }
 
-      // Get only enabled contacts
-      const enabledContacts = this.displayedContacts.filter(c => c.enabled);
+      if (contact.include) {
+        // Get only enabled contacts
+        const enabledContacts = this.displayedContacts.filter(c => c.enabled);
 
-      // Check if the contactType already exists among enabled contacts (excluding the current one)
-      const duplicate = enabledContacts.some(
-        c => c.contactType === contact.contactType && c.id !== this.editableContactId
-      );
+        // Check if the contactType already exists among enabled contacts (excluding the current one)
 
-      if (duplicate) {
-        this.$toast.error('This contact type already exists for another enabled contact');
+        const duplicate = enabledContacts.some(
+          c => c.contactType === contact.contactType && c.id !== this.editableContactId
+        );
 
-        // Reset the value to the old one
-        contact.contactType = this.oldValue;
+        if (duplicate) {
+          this.$toast.error('This contact type already exists for another enabled contact');
 
-        this.editableId = "";
-        // return;
+          // Reset the value to the old one
+          contact.contactType = this.oldValue;
+
+          this.editableId = "";
+          // return;
+        }
       }
       const index = this.updateData.findIndex(con => con.id === contact.id)
       if (index !== -1) {

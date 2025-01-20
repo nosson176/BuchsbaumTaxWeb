@@ -3,6 +3,11 @@
     <div class="flex bg-blue-200 p-0.5">
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
+      <div
+        class="inline-flex justify-end shadow-sm px-2 py-1 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ml-auto">
+        <Dropdown shown-value="10" :value="selectedTime" :options="[2, 5, 10, 15, 20, 'OFF']"
+          @input="chooseSecondsNeededToDisplayModal1" />
+      </div>
     </div>
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
     <KeepAlive v-else>
@@ -25,6 +30,7 @@ const initialState = () => ({
   showActiveIncome: true,
   showActiveFbar: true,
   clickOnClient: false,
+  selectedTime: null,
 })
 
 export default {
@@ -39,7 +45,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.loading, models.clientClicked]),
+    ...mapState([models.loading, models.clientClicked, models.globalPlayTime]),
     showLogs() {
       return this.currentTab === tabs.logs
     },
@@ -82,6 +88,9 @@ export default {
         }
       },
     },
+    playTime() {
+      return this.globalPlayTime
+    },
     isSelectedClientLoading() {
       return this.loading.selectedClient
     },
@@ -122,7 +131,25 @@ export default {
       if (this.$refs.logsTableRef) {
         this.$refs.logsTableRef.resetClock()
       }
-    }
+    },
+    chooseSecondsNeededToDisplayModal1(selectTime) {
+      if (selectTime === 'OFF') return this.togglePlayTime(selectTime)
+      this.selectedTime = selectTime
+      this.setTimeToSecond(selectTime)
+
+      if (!this.globalPlayTime && selectTime !== 'OFF') this.togglePlayTime(selectTime)
+    },
+    setTimeToSecond(time) {
+      const t = time * 60
+      this.$store.commit('setModelResponse', { model: 'secondsNeededToDisplayModal1', data: t })
+    },
+    togglePlayTime(selectTime) {
+      let newStatus
+      if (selectTime === 'OFF') newStatus = false
+      else newStatus = true
+
+      this.$store.commit('setModelResponse', { model: 'globalPlayTime', data: newStatus })
+    },
   },
 }
 </script>
