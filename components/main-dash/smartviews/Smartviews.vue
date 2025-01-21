@@ -59,7 +59,6 @@ export default {
         console.warn("smartviews is undefined or null.");
         return [];
       }
-      console.log(this.smartviews)
       return Object.values(JSON.parse(JSON.stringify(this.smartviews)))
         .filter((smartview) => this.showArchived === smartview?.archived)
         .sort((a, b) => a.sortNumber - b.sortNumber);

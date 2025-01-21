@@ -372,6 +372,20 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
   }
 
+  const getSumHourWorkTime = (headers, { startDate, endDate, userId }) => {
+    return $axios
+      .get(`/worktimes/user/${userId}/date-range`, {
+        headers,
+        params: { startDate, endDate },
+      })
+      .then((res) => {
+        return Object.values(res)
+      })
+      .catch((e) => {
+        console.error(e)
+      })
+  }
+
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then((res) => {
       return res
@@ -697,8 +711,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getValueTypes,
     getCurrentUser,
     getInbox,
-    getTimeWorksByUserId,
     getTimeWorks,
+    getSumHourWorkTime,
+    getTimeWorksByUserId,
     getTimeWorksByMonthAndUserId,
     getAllTimeWorksByDate,
     getClientsWithLogs,

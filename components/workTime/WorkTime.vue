@@ -152,6 +152,7 @@ export default {
   },
   methods: {
     sumHourForEachDate(day) {
+      console.log(day)
       const entries = Object.values(day);
       const sum = entries[1].reduce((acc, el) => acc + el.sumHoursWork, 0);
       return this.calculateDurationUnixToHHmm(sum);
