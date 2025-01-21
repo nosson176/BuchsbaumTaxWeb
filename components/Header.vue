@@ -1,12 +1,11 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
-      <div class="p-3 ">
+      <div class="p-3 flex items-center gap-1">
         <span class="font-bold">{{ username }}</span>
-        <span class="m-2 cursor-pointer" @click="toggleTimer" @dblclick="resetTimer">{{ formatTime }}</span>
+        <span class="ml-1 mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"> </span>
       </div>
-      <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus">
-      </div>
+
       <!-- <button type="button"
         class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-2 py-1 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         aria-expanded="true" @click="openSmsModal">
@@ -17,9 +16,11 @@
         <Dropdown shown-value="Time" :value="selectedTime" :options="[2, 5, 10, 15, 20]"
           @input="chooseSecondsNeededToDisplayModal1" />
       </div> -->
-      <div class="flex h-7 w-7 ml-5 cursor-pointer">
-        <PauseIcon v-if="workTimePlay" @click.native="clockOutWorkTime" />
-        <PlayIcon v-else class="text-green-500" @click.native="createWorkTime" />
+
+      <div class="flex justify-between items-center  h-7 cursor-pointer">
+        <span class="cursor-pointer">{{ formatTime }}</span>
+        <PauseIcon v-if="workTimePlay" class="w-4 ml-1.5" @click.native="toggleTimer" />
+        <PlayIcon v-else class="text-green-500 w-7" @click.native="toggleTimer" />
       </div>
       <div class="ml-auto">
         <Dropdown shown-value="History" :options="mappedClientHistory" @input="getSelectedClient" />
@@ -79,6 +80,7 @@ import { models, mutations, routes, USER_TYPE_ADMIN } from '~/shared/constants'
 export default {
   name: 'Header',
   data() {
+    const now = new Date()
     return {
       // status: true,
       showSmsModal: false,
@@ -90,7 +92,9 @@ export default {
       ShowLogoutConfirmationModel: false,
       selectedTime: null,
       timerRun: false,
-      displayTime: Number(localStorage.getItem('timer')) || '00:00'
+      displayTime: '00:00',
+      startRange: new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(),
+      endRange: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime(),
 
     }
   },
@@ -119,14 +123,15 @@ export default {
       return this.globalPlayTime
     },
     formatTime() {
+      console.log(this.displayTime)
       if (this.displayTime === '00:00') return '00:00'
-      const date = new Date(0); // Create a Date object starting from Unix epoch (1970-01-01)
-      date.setSeconds(this.displayTime); // Set the number of seconds
+      const totalMinutes = Math.floor(this.displayTime / 60000); // להמיר למספר הדקות הכולל
+      const hours = Math.floor(totalMinutes / 60); // להמיר שעות
+      const minutes = totalMinutes % 60; // לחשב את הדקות הנותרות
 
-      const hours = String(date.getUTCHours()).padStart(2, '0'); // Get hours in 2 digits
-      const minutes = String(date.getUTCMinutes()).padStart(2, '0'); // Get minutes in 2 digits
-
-      return `${hours}:${minutes}`; // Return the formatted time
+      console.log(this.displayTime, `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`)
+      // להחזיר בפורמט HH:mm
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
     },
 
@@ -173,32 +178,100 @@ export default {
   },
   created() {
     this.loadInbox()
-    this.playTimer()
+    // this.playTimer()
+    this.$watch(
+      () => this.currentUser,
+      (newVal) => {
+        if (newVal && Object.keys(newVal).length > 0) {
+          this.getSumHourWorkTime();
+        }
+      },
+      { immediate: true } // Ensures it checks the current value immediately
+    )
+  },
+  watch: {
+    workTimePlay(newVal) {
+      console.log(newVal)
+      if (newVal === true) {
+        console.log("call")
+        this.getSumHourWorkTime();
+      }
+    }
   },
   beforeDestroy() {
     clearInterval(this.intervalId)
   },
   methods: {
+    getSumHourWorkTime() {
+      // Exit early if the 'timer' exists in localStorage
+      console.log(this.timerRun, this.workTimePlay)
+      if (!this.workTimePlay) {
+        if (localStorage.getItem('timer')) this.displayTime = Number(localStorage.getItem('timer'))
+        return
+      }
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('timer')) {
+        this.displayTime = Number(localStorage.getItem('timer'))
+        this.playTimer()
+        console.log("Timer is active; skipping API call.");
+        return;
+      }
+
+      // Check if currentUser is available and has data
+      if (this.currentUser && Object.keys(this.currentUser).length > 0) {
+        this.$api.getSumHourWorkTime(this.headers, {
+          startDate: this.startRange,
+          endDate: this.endRange,
+          userId: this.currentUser.id,
+        })
+          .then(res => {
+            console.log("API Response:", res);
+
+            // Check if response is an array and calculate total hours
+            if (Array.isArray(res)) {
+              const totalHours = res.reduce((acc, el) => acc + (el.sumHoursWork || 0), 0);
+              console.log(totalHours)
+              this.displayTime = totalHours
+              this.playTimer()
+              console.log("Total Sum of Hours Worked:", totalHours);
+            } else {
+              console.error("Unexpected API response format. Expected an array:", res);
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching sum of work hours:", err);
+          });
+      } else {
+        console.warn("Current user is not set or invalid.");
+      }
+    }
+    ,
     toggleStatus() {
       this.$store.commit('changeDotStatus')
       this.$api.getClientList(this.headers)
     },
-    toggleTimer() {
+    async toggleTimer() {
       if (this.timerRun) {
         this.timerRun = false
+        await this.clockOutWorkTime()
         this.stopTimer()
+
       } else {
-        // this.timerRun = true
-        this.playTimer()
+        this.timerRun = true
+        await this.createWorkTime()
+        this.getSumHourWorkTime()
       }
     },
     playTimer() {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
       if (!this.timerRun) this.timerRun = true
       if (this.displayTime === '00:00') this.displayTime = 0
       this.intervalId = setInterval(() => {
-        this.displayTime += 10
+        this.displayTime += 60000
+        console.log(this.displayTime)
         localStorage.setItem('timer', this.displayTime)
-      }, 10000)
+      }, 60000)
     },
 
     stopTimer() {
@@ -262,19 +335,21 @@ export default {
       await this.$api.getInbox(this.headers)
     },
     createWorkTime() {
+      if (this.workTimePlay) return
       const now = new Date()
       const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
       const headers = this.$api.getHeaders()
       this.$api.createWorkTime(headers, this.currentUser.id, this.currentUser.username, startDay).then((res) => {
-        if (res === 'success') this.$store.commit('toggleWorkTime', true)
+        if (res === 'success' && !this.workTimePlay) this.$store.commit('toggleWorkTime', true)
       })
     },
     clockOutWorkTime() {
+      if (!this.workTimePlay) return
       const headers = this.$api.getHeaders()
       const now = new Date()
       const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
       this.$api.clockOutWorkTime(headers, this.currentUser.id, startDay).then((res) => {
-        if (res === 'success') this.$store.commit('toggleWorkTime', false)
+        if (res === 'success' && this.workTimePlay) this.$store.commit('toggleWorkTime', false)
       })
         .catch((error) => {
           console.error('Error logging out:', error)

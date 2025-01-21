@@ -62,6 +62,7 @@ const mutations = {
   },
 
   toggleWorkTime(state, mode) {
+    console.log('mode', mode)
     state.workTimeActive = mode
   },
 
