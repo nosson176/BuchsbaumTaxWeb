@@ -48,6 +48,7 @@ export default {
         this.$api.getValueTaxGroups(this.headers),
         this.$api.getClientsHistory(this.headers),
         this.$api.getTodayLogs(this.headers),
+        this.$api.getExchangeRates(this.headers),
       ];
 
       // Conditionally add getSmartviews if smartviews is empty

@@ -36,6 +36,7 @@ export const models = Object.freeze({
   dotStatus: 'dotStatus',
   workTimeActive: 'workTimeActive',
   timerState: 'timerState',
+  exchangeRate: 'exchangeRate',
 })
 
 // Store Mutations

@@ -17,15 +17,17 @@
     <template #body>
       <draggable :value="incFbarCurrencies" v-bind="dragOptions" @start="startDrag" @end="onDrop">
         <transition-group type="transition" :name="transitionName">
-          <TableRow v-for="(type, idx) in incFbarCurrencies" :key="type.id" class="pr-1">
+          <TableRow v-for="(type, idx) in incFbarCurrencies" :key="type.id" class="pr-1 cursor-pointer"
+            :class="{ 'bg-indigo-200': selectedId === type.id }" @click="selectRow(type)">
             <div class="table-col bg-gray-200 mr-1">
               <ClickCell>{{ idx + 1 }}</ClickCell>
             </div>
             <div class="table-col">
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" @click="toggleEditable(type.id)" />
             </div>
-            <div class="table-col w-full" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur" />
+            <div class="table-col w-full">
+              <EditableInput v-model="type.value" @click="toggleEditable(type.id)" :is-editable="isEditable(type.id)"
+                @blur="onBlur" class="w-1/4" />
             </div>
             <div class="table-col xs">
               <DeleteButton @click="deleteValue(type)" />
@@ -55,6 +57,7 @@ export default {
   data() {
     return {
       editableId: null,
+      selectedId: null,
       showDelete: false,
       deleteId: '',
       dragActive: false,
@@ -65,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.valueTypes]),
+    ...mapState([models.valueTypes, models.exchangeRate]),
     incFbarCurrencies() {
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
     },
@@ -83,6 +86,11 @@ export default {
     },
   },
   methods: {
+    selectRow(value) {
+      this.selectedId = value.id
+      this.selectedValue = value.value
+      this.$emit('currency-selected', value.value)
+    },
     toggleEditable(id) {
       this.editableId = id
     },

@@ -143,7 +143,20 @@
             :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur(income.depend)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(income.id)" />
+          <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
+            <DeleteButton small @click="onDeleteClick(income.id)" />
+            <template #popper>
+              <div class="tooltip-content p-2 max-w-md">
+                <ul v-if="income.createdBy" class="list-disc pl-4">
+                  <span class="font-semibold mb-2 block"><strong>Created by</strong> {{ income.createdBy }} => {{
+                    formatDateLog(income.createdTime)
+                  }}</span>
+                  <div class="div"></div>
+                </ul>
+                <p v-else class="text-gray-500">No changes recorded</p>
+              </div>
+            </template>
+          </Tooltip>
         </div>
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
@@ -176,7 +189,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models, tableGroups } from '~/shared/constants'
-import { formatAsNumber, generateRandomId, searchArrOfObjs, setAsValidNumber } from '~/shared/utility'
+import { formatAsNumber, formatDateLog, generateRandomId, searchArrOfObjs, setAsValidNumber } from '~/shared/utility'
 
 const columns = [
   'include',
@@ -234,9 +247,10 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
+    ...mapState([models.selectedClient, models.valueTypes, models.currentUser, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedIncomes() {
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
+      console.log(incomes)
       return searchArrOfObjs(incomes, this.searchInput)
     },
     shownIncomes() {
@@ -403,6 +417,7 @@ export default {
     if (this.updateIncomes.length > 0) this.sendIncomesToServer()
   },
   methods: {
+    formatDateLog,
     handleBeforeUnload(event) {
       if (this.updateIncomes.length > 0) {
         this.sendIncomesToServer();
@@ -508,6 +523,8 @@ export default {
         include: true,
         archived: false,
         id: generateRandomId(),
+        createdBy: this.currentUser.username,
+        userId: this.currentUser.id
       }
       if (this.isCopyingIncomes) {
         this.selectedIncomeIds.forEach((incomeId, idx) => {
@@ -518,12 +535,15 @@ export default {
           newIncome.amountUSD = 0
           newIncome.documents = 'NEED'
           newIncome.id = generateRandomId()
+          newIncome.createdBy = this.currentUser.username
+          newIncome.userId = this.currentUser.id
           this.updateIncomes.push(newIncome)
           this.$store.commit('pushNewIncome', {
             state: this.selectedClient,
             income: newIncome
           });
 
+          this.selectedItems = {}
           this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
           //   }
           // })
