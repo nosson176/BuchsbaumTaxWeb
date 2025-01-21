@@ -3,8 +3,9 @@
         <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
             <div class="h-full" @click="onBlur" />
         </div>
-        <date-picker v-if="isEditable" ref="input" v-model="computedValue" tabindex="0" :value-type="valueType"
-            :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus">
+        <date-picker v-if="isEditable" ref="input" v-model="internalValue" tabindex="0" :value-type="valueType"
+            :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus" @select="handleSelect"
+            @change="handleChange">
             <template #header="{ emit }">
                 <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="setToday(emit)">
                     Today
@@ -17,7 +18,6 @@
 
 <script>
 import { events } from '~/shared/constants'
-// import { formatDateForClient } from '~/shared/domain-utilities'
 import { formatUnixTimestamp } from '~/shared/utility';
 
 export default {
@@ -39,23 +39,20 @@ export default {
     data() {
         return {
             showPicker: false,
-            shouldEmitBlur: false
+            shouldEmitBlur: false,
+            internalValue: null,
+            selectedDate: null
+        }
+    },
+    watch: {
+        value: {
+            immediate: true,
+            handler(newVal) {
+                this.internalValue = newVal;
+            }
         }
     },
     computed: {
-        computedValue: {
-            get() {
-                return this.value;
-            },
-            set(newVal) {
-                this.$emit('input', newVal);
-
-                // Emit blur event only if explicitly triggered (e.g., via Today button)
-                if (this.shouldEmitBlur) {
-                    this.$emit(events.blur);
-                }
-            },
-        },
         format() {
             return this.isTypeDate ? 'DD-MM-YYYY HH:mm' : 'HH:mm:ss'
         },
@@ -66,24 +63,59 @@ export default {
             return this.type === 'datetime'
         },
         displayedValue() {
-            return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
+            return this.isTypeDate && this.internalValue ? formatUnixTimestamp(this.internalValue) : this.internalValue
         },
     },
     updated() {
         if (this.isEditable) {
-            this.$refs.input.focus()
+            this.$refs.input?.focus()
         }
     },
     methods: {
+        handleSelect(value) {
+            // Store the selected date when user picks from calendar
+            if (!this.selectedDate) {
+                this.selectedDate = value;
+            }
+        },
+        handleChange(value) {
+            console.log("value=>>", value)
+            // Combine the previously selected date with the new time
+            if (this.selectedDate && value) {
+                const dateStr = this.selectedDate.split(' ')[0]; // Get just the date part
+                const timeStr = value.split(' ')[1]; // Get just the time part
+                if (timeStr) {
+                    // Only combine if we have both parts
+                    this.internalValue = `${dateStr} ${timeStr}`;
+                    this.$emit('input', this.internalValue);
+                    if (this.shouldEmitBlur) {
+                        this.$emit(events.blur);
+                    }
+                }
+            } else {
+                // Handle case where only date is selected
+                this.internalValue = value;
+                this.$emit('input', value);
+                if (this.shouldEmitBlur) {
+                    this.$emit(events.blur);
+                }
+            }
+        },
         onFocus() {
-            this.showPicker = true
+            this.showPicker = true;
+            this.selectedDate = null; // Reset selected date when focusing
         },
         onBlur() {
-            this.$emit(events.blur)
+            this.$emit(events.blur);
+            this.selectedDate = null; // Reset selected date when blurring
         },
         setToday(emit) {
-            this.shouldEmitBlur = true; // Enable blur event emission
-            emit(new Date()); // Set today's date
+            this.shouldEmitBlur = true;
+            const now = new Date();
+            const today = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            this.internalValue = today;
+            emit(now);
+            this.shouldEmitBlur = false
         },
     },
 }
