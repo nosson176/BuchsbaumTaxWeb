@@ -1,3 +1,4 @@
+//update
 <template>
   <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
     @keyup.shift.tab.exact="goToPrevColumn">
@@ -552,6 +553,7 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
+      console.log("ssss")
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -567,6 +569,7 @@ export default {
     },
 
     handleUpdate(val, field) {
+      console.log(val, field)
       if (!this.editableLogId) return;
 
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
@@ -795,21 +798,43 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field) {
+      console.log(val)
+      // For new logs or alarm-related fields, always handle navigation
+      if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
+        ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
+        this.handleUpdate(val, field)
+        this.goToNextColumn()
+        return
+      }
+
+      // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined) {
         this.handleUpdate(val, field)
         this.goToNextColumn()
-        // this.editableId = ""
         return
       }
-      if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
-        this.handleUpdate(val, field)
-        this.goToNextColumn()
 
-      }
       this.editableId = ""
       this.activeTooltipIndex = null
-      // this.goToNextColumn()
     },
+    // onBlur(val, field) {
+    //   console.log(val, field)
+    //   if (this.oldValue !== val && this.oldValue !== undefined) {
+    //     this.handleUpdate(val, field)
+    //     this.goToNextColumn()
+    //     // this.editableId = ""
+    //     return
+    //   }
+    //   if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
+    //     this.handleUpdate(val, field)
+    //     this.goToNextColumn()
+
+    //   }
+    //   this.editableId = ""
+    //   this.activeTooltipIndex = null
+
+    //   // this.goToNextColumn()
+    // },
     isTodayOrPast(date) {
       // Parse the date using your expected format
       const parsedDate = parse(date, 'dd-MM-yyyy HH:mm', new Date());
@@ -848,18 +873,54 @@ export default {
     isSelected(logId) {
       return this.selectedItems[logId]
     },
+    // goToNextColumn() {
+    //   const currentCell = this.editableId
+    //   console.log(currentCell)
+    //   const idArr = currentCell.split('-')
+    //   const columnIndex = columns.findIndex((col) => col === idArr[1])
+    //   const currentRow = Number(idArr[0])
+    //   if (columnIndex < columns.length - 1) {
+    //     const nextCell = `${currentRow}-${columns[columnIndex + 1]}`
+    //     this.toggleEditable(nextCell, this.editableLogId)
+    //   } else if (columnIndex === columns.length - 1 && currentRow < this.displayedLogs.length - 1) {
+    //     const nextRow = currentRow + 1
+    //     const nextCell = `${nextRow}-${columns[0]}`
+    //     console.log(nextCell)
+    //     this.toggleEditable(nextCell, this.editableLogId)
+    //   }
+    //   this.activeTooltipIndex = null
+    // },
     goToNextColumn() {
+      if (!this.editableId) {
+        console.warn('No editable ID found');
+        return;
+      }
+
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
       const columnIndex = columns.findIndex((col) => col === idArr[1])
       const currentRow = Number(idArr[0])
+
+      // Handle special case for alarmUserName to alarmTime transition
+      if (idArr[1] === 'alarmUserName') {
+        const nextCell = `${currentRow}-alarmTime`
+        this.$nextTick(() => {
+          this.toggleEditable(nextCell, this.editableLogId)
+        })
+        return
+      }
+
       if (columnIndex < columns.length - 1) {
         const nextCell = `${currentRow}-${columns[columnIndex + 1]}`
-        this.toggleEditable(nextCell, this.editableLogId)
+        this.$nextTick(() => {
+          this.toggleEditable(nextCell, this.editableLogId)
+        })
       } else if (columnIndex === columns.length - 1 && currentRow < this.displayedLogs.length - 1) {
         const nextRow = currentRow + 1
         const nextCell = `${nextRow}-${columns[0]}`
-        this.toggleEditable(nextCell, this.editableLogId)
+        this.$nextTick(() => {
+          this.toggleEditable(nextCell, this.editableLogId)
+        })
       }
       this.activeTooltipIndex = null
     },
