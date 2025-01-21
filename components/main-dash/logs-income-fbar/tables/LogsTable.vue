@@ -466,19 +466,6 @@ export default {
       }
     },
 
-    // formatDate(date) {
-    //   const d = new Date(date);
-
-    //   const day = String(d.getDate()).padStart(2, '0');
-    //   const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    //   const year = d.getFullYear();
-
-    //   const hours = String(d.getHours()).padStart(2, '0');
-    //   const minutes = String(d.getMinutes()).padStart(2, '0');
-
-    //   return `${day}/${month}/${year} ${hours}:${minutes}`;
-    // },
-
     picnicTablePopup() {
       const url = process.env.NODE_ENV === 'development' ?
         `http://localhost:3000/picnicTable?client=${encodeURIComponent(this.selectedClient.id)}`
@@ -516,13 +503,13 @@ export default {
       // Commit a mutation to update each log's clientId and logDate
       this.$store.commit('updateCopyLogs', {
         clientId: this.selectedClient.id,
-        logDate: new Date()
+        logDate: Date.now()
       });
-
+      let newLogC
       // Loop through the copyLogs and push to updatAndNewLogs locally in the component
       this.$store.state.copyLogs.forEach(copy => {
         const newLog = { ...copy, id: generateRandomId(), createdBy: this.currentUser.username }; // Create a new log with a new ID
-
+        newLogC = newLog
         // Push the log into the local data (updatAndNewLogs)
         this.updatAndNewLogs.push(newLog);
 
@@ -533,6 +520,8 @@ export default {
         });
       });
       this.selectedItems = {}
+      const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLogC.id))
+      this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLogC.id)
       // Clear the copyLogs after pasting
       this.$store.commit('clearCopyLogs');
     },
@@ -553,7 +542,6 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
-      console.log("ssss")
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -777,7 +765,7 @@ export default {
           });
           this.selectedItems = {}
           const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
-          this.toggleEditable(`${copyLogIndex}-${columns[0]}`, newLog.id)
+          this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLog.id)
         })
       } else {
         const log = Object.assign({}, defaultValues)

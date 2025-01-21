@@ -386,6 +386,20 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
   }
 
+  const getExchangeRates = (headers) => {
+    return $axios
+      .get(`/exchangeRate`, {
+        headers,
+        loading: models.exchangeRate,
+        loaded: models.exchangeRate,
+        store: models.exchangeRate,
+      })
+      .then((res) => {
+        console.log(res)
+        return res
+      })
+  }
+
   const createValueType = (headers, { value }) =>
     $axios.post('/values', value, { headers }).then((res) => {
       return res
@@ -713,6 +727,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getInbox,
     getTimeWorks,
     getSumHourWorkTime,
+    getExchangeRates,
     getTimeWorksByUserId,
     getTimeWorksByMonthAndUserId,
     getAllTimeWorksByDate,

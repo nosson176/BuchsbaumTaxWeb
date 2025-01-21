@@ -133,7 +133,20 @@
             :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur(fbar.depend)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
-          <DeleteButton small @click="onDeleteClick(fbar.id)" />
+          <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
+            <DeleteButton small @click="onDeleteClick(fbar.id)" />
+            <template #popper>
+              <div class="tooltip-content p-2 max-w-md">
+                <ul v-if="fbar.createdBy" class="list-disc pl-4">
+                  <span class="font-semibold mb-2 block"><strong>Created by</strong> {{ fbar.createdBy }} => {{
+                    formatDateLog(fbar.createdTime)
+                  }}</span>
+                  <div class="div"></div>
+                </ul>
+                <p v-else class="text-gray-500">No changes recorded</p>
+              </div>
+            </template>
+          </Tooltip>
         </div>
       </TableRow>
       <TableRow class="sticky bottom-0 bg-gray-300 shadow">
@@ -165,7 +178,7 @@
 <script>
 import { mapState } from 'vuex'
 import { models, tableGroups } from '~/shared/constants'
-import { formatAsNumber, generateRandomId, searchArrOfObjs, setAsValidNumber } from '~/shared/utility'
+import { formatAsNumber, formatDateLog, generateRandomId, searchArrOfObjs, setAsValidNumber } from '~/shared/utility'
 
 const columns = [
   'include',
@@ -223,7 +236,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
+    ...mapState([models.selectedClient, models.currentUser, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
     displayedFbars() {
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar))
       return searchArrOfObjs(fbars, this.searchInput)
@@ -395,7 +408,11 @@ export default {
   beforeDestroy() {
     if (this.updateFbars.length > 0) this.sendFbarsToServer()
   },
+
+
+
   methods: {
+    formatDateLog,
     // validateNumberInput(fbar) {
     //   // Remove non-numeric characters
     //   fbar.amount = fbar.amount.replace(/[^0-9.]/g, '');
@@ -525,7 +542,9 @@ export default {
         clientId: this.selectedClient.id,
         include: true,
         archived: false,
-        id: generateRandomId()
+        id: generateRandomId(),
+        createdBy: this.currentUser.username,
+        userId: this.currentUser.id
       }
       if (this.isCopyingFbars) {
         this.selectedFbarIds.forEach((fbarId, idx) => {
@@ -536,12 +555,17 @@ export default {
           newFbar.amountUSD = 0
           newFbar.documents = 'NEED'
           newFbar.id = generateRandomId()
+          newFbar.createdBy = this.currentUser.username
+          newFbar.userId = this.currentUser.id
           this.updateFbars.push(newFbar)
           this.$store.commit('pushNewFbar', {
             state: this.selectedClient,
             fbar: newFbar
           });
-          this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
+          this.selectedItems = {}
+          const copyFbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(newFbar.id))
+          this.toggleEditable(`${copyFbarIndex}-${columns[0]}`, newFbar.id)
+          // this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
           //     }
           //   })
         })
