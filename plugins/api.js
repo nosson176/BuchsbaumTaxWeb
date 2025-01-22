@@ -144,7 +144,10 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         loaded: models.dayLogs,
         store: models.dayLogs,
       })
-      .catch(() => $toast.error('Error loading value types'))
+      .catch((e) => {
+        console.log(e)
+        $toast.error('Error loading alarm logs')
+      })
 
   const getValueTypes = (headers) =>
     $axios

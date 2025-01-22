@@ -92,7 +92,7 @@ const formatDateLog = (date) => {
   const hours = String(d.getHours()).padStart(2, '0')
   const minutes = String(d.getMinutes()).padStart(2, '0')
 
-  return `${day}/${month}/${year} ${hours}:${minutes}`
+  return `${month}/${day}/${year} ${hours}:${minutes}`
 }
 
 const convertToISOString = (workTime) => {
@@ -162,7 +162,7 @@ const formatUnixTimestamp = (timestamp) => {
     if (dateFormatRegex.test(timestamp)) {
       // Return the timestamp in DD/MM/YYYY format
       const [year, month, day] = timestamp.split('-')
-      return `${day}/${month}/${year}`
+      return `${month}/${day}/${year}`
     }
 
     if (dateTimeFormatRegex.test(timestamp)) {
@@ -211,7 +211,7 @@ const formatUnixTimestamp = (timestamp) => {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const year = date.getFullYear()
 
-  return `${day}/${month}/${year}`
+  return `${month}/${day}/${year}`
 }
 
 export {

@@ -63,7 +63,9 @@
           <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionsOptions" />
         </div>
         <div class="table-header sm">Depend</div>
-        <div class="table-header xs" />
+        <div class="table-header xs mt-1">
+          <DeleteButton small v-if="hasActiveFilters" @click="clearAllFilters" tooltip="Clear All Filters" />
+        </div>
       </TableHeader>
     </template>
     <template #body>
@@ -115,7 +117,7 @@
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, income.id, income.currency)">
           <EditableSelectCell v-model="income.currency" :is-editable="isEditable(`${idx}-currency`)"
-            :options="currencyOptions" @blur="onBlur(income.currency)" />
+            :options="currencyOptions" @blur="onBlur(income.currency, 'currency')" />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-frequency`, income.id, income.frequency)">
@@ -215,7 +217,7 @@ const includeOptions = [
   { value: 'select', name: 'Select All' },
   { value: 'deselect', name: 'Deselect All' },
 ]
-
+const notifiedErrors = new Set();
 export default {
   name: 'IncomeTable',
   props: {
@@ -242,15 +244,15 @@ export default {
       trackedIncomeId: null,
       showDeleteModal: false,
       deleteIncomeId: null,
-      deleteTypeLabel: 'Income'
+      deleteTypeLabel: 'Income',
+      showClearAll: false,
 
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.valueTypes, models.currentUser, models.valueTaxGroups, models.search, models.cmdPressed]),
+    ...mapState([models.selectedClient, models.valueTypes, models.currentUser, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedIncomes() {
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
-      console.log(incomes)
       return searchArrOfObjs(incomes, this.searchInput)
     },
     shownIncomes() {
@@ -322,13 +324,15 @@ export default {
           this.displayedIncomes
             .filter((income) => income.include)
             .reduce((acc, income) => {
-              if (!income.amountUSD) {
-                return acc
+              if (!income.amount || !income.years || !income.currency) {
+                return acc;
               }
-              return income.frequency ? acc + income.amountUSD * income.frequency : acc + income.amountUSD
+
+              const rate = this.getCurrencyRate(income.years, income.currency);
+              return rate ? acc + (income.amount * rate) : acc;
             }, 0)
         )
-      )}`
+      )}`;
     },
     filteredYearsOptions() {
       const options = this.yearNameOptions.filter((yearName) =>
@@ -408,16 +412,60 @@ export default {
     isCopyingIncomes() {
       return this.isCmdPressed && this.selectedIncomeIds.length > 0
     },
+    hasActiveFilters() {
+      return this.yearFilterValue !== '' ||
+        this.categoryFilterValue !== '' ||
+        this.groupFilterValue !== '' ||
+        this.typeFilterValue !== '' ||
+        this.jobFilterValue !== '' ||
+        this.currencyFilterValue !== '' ||
+        this.descriptionFilterValue !== '';
+    }
   },
   mounted() {
-
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
   beforeDestroy() {
     if (this.updateIncomes.length > 0) this.sendIncomesToServer()
   },
   methods: {
-    formatDateLog,
+    clearAllFilters() {
+      this.yearFilterValue = '';
+      this.categoryFilterValue = '';
+      this.groupFilterValue = '';
+      this.typeFilterValue = '';
+      this.jobFilterValue = '';
+      this.currencyFilterValue = '';
+      this.descriptionFilterValue = '';
+      this.includeAll = '';
+    },
+    getCurrencyRate(year, currency) {
+      if (!year || !currency) return null;
+
+      // Extract numeric year from the input
+      const numericYear = String(year).match(/\d{4}/)?.[0];
+      if (!numericYear) {
+        console.warn("Could not extract valid year from:", year);
+        return null;
+      }
+
+      const exchange = Object.values(this.exchangeRate);
+      const match = exchange.find(ex => ex.year?.includes(numericYear) && ex.currency === currency);
+
+      if (!match) {
+        const errorKey = `${numericYear}-${currency}`;
+        if (!notifiedErrors.has(errorKey)) {
+          notifiedErrors.add(errorKey);
+          console.warn("No matching exchange rate found for:", { year: numericYear, currency });
+          this.$nextTick(() => {
+            this.$toast.error(`No exchange rate found for ${currency} in ${numericYear}`);
+          });
+        }
+        return null;
+      }
+
+      return match.rate;
+    },
     handleBeforeUnload(event) {
       if (this.updateIncomes.length > 0) {
         this.sendIncomesToServer();
@@ -441,21 +489,57 @@ export default {
     isEditable(id) {
       return this.editableId === id
     },
+    // handleUpdate(field) {
+    //   if (!this.editableIncomeId) return
+    //   const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
+    //   if (field === 'amount') {
+    //     income.amount = setAsValidNumber(income.amount)
+    //     income.amountUSD = income.amount
+    //   }
+    //   const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
+    //   if (index !== -1) {
+    //     this.updateIncomes[index] = income
+    //   } else {
+    //     this.updateIncomes.push(income)
+    //   }
+    //   if (field === 'include' || field === "amount") this.$store.dispatch('updateIncomeAction', { income });
+    //   if (field === 'years') this.sortIncomes()
+    // },
     handleUpdate(field) {
-      if (!this.editableIncomeId) return
-      const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId)
+      console.log(field)
+      if (!this.editableIncomeId) return;
+      const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId);
+
+      // Handle amount changes
       if (field === 'amount') {
-        income.amount = setAsValidNumber(income.amount)
-        income.amountUSD = income.amount
+        income.amount = setAsValidNumber(income.amount);
+        // Recalculate amountUSD based on the new amount and current exchange rate
+        const rate = this.getCurrencyRate(income.years, income.currency);
+        income.amountUSD = rate ? income.amount * rate : income.amount;
       }
-      const index = this.updateIncomes.findIndex(inc => inc.id === income.id)
+
+      // Update store for specific fields that should trigger recalculation
+      if (field === 'years' || field === 'currency' || field === 'amount' || field === 'include') {
+        // If currency or year changes, we need to recalculate amountUSD
+        if (field === 'years' || field === 'currency') {
+          const rate = this.getCurrencyRate(income.years, income.currency);
+          income.amountUSD = rate ? income.amount * rate : income.amount;
+        }
+
+        // Dispatch update to store
+        this.$store.dispatch('updateIncomeAction', { income });
+      }
+
+      // Handle updates array for API
+      const index = this.updateIncomes.findIndex(inc => inc.id === income.id);
       if (index !== -1) {
-        this.updateIncomes[index] = income
+        this.updateIncomes[index] = income;
       } else {
-        this.updateIncomes.push(income)
+        this.updateIncomes.push(income);
       }
-      if (field === 'include' || field === "amount") this.$store.dispatch('updateIncomeAction', { income });
-      if (field === 'years') this.sortIncomes()
+
+      // Sort if year changes
+      if (field === 'years') this.sortIncomes();
     },
     sortIncomes() {
       this.displayedIncomes.sort((a, b) => a.years - b.years)
@@ -620,6 +704,8 @@ export default {
     isSelected(incomeId) {
       return this.selectedItems[incomeId]
     },
+    formatDateLog,
+
   },
 }
 </script>

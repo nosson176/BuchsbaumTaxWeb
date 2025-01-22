@@ -1,6 +1,6 @@
 <template>
   <div v-hotkey="keymap" class="flex flex-col bg-gray-100" style="max-height: 130vh;">
-    <div class="main-grid">
+    <div class="main-grid" style="height: 130vh">
       <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-3 bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />

@@ -35,6 +35,10 @@ export default {
             type: String,
             default: 'datetime',
         },
+        format: {
+            type: String,
+            default: 'MM/DD/YYYY HH:mm', // Default to 'dd/mm/yyyy'
+        },
     },
     data() {
         return {
@@ -53,11 +57,11 @@ export default {
         }
     },
     computed: {
-        format() {
-            return this.isTypeDate ? 'DD-MM-YYYY HH:mm' : 'HH:mm:ss'
-        },
+        // format() {
+        //     return this.isTypeDate ? 'MM-DD-YYYY HH:mm' : 'HH:mm:ss'
+        // },
         valueType() {
-            return this.isTypeDate ? 'DD-MM-YYYY HH:mm' : 'HH:mm:ss'
+            return this.isTypeDate ? 'MM-DD-YYYY HH:mm' : 'HH:mm:ss'
         },
         isTypeDate() {
             return this.type === 'datetime'
@@ -112,7 +116,7 @@ export default {
         setToday(emit) {
             this.shouldEmitBlur = true;
             const now = new Date();
-            const today = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const today = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             this.internalValue = today;
             emit(now);
             this.shouldEmitBlur = false
