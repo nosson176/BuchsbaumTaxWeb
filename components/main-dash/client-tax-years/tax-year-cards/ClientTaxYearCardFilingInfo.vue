@@ -228,7 +228,7 @@ export default {
 
     statusDate: {
       get() {
-        return String(this.formModel?.statusDate)
+        return this.formModel?.statusDate
       },
       set(newVal) {
         this.formModel.statusDate = newVal

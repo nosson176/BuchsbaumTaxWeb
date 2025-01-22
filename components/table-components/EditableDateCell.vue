@@ -35,6 +35,10 @@ export default {
       type: String,
       default: 'date',
     },
+    format: {
+      type: String,
+      default: 'MM/DD/YYYY', // Default to 'dd/mm/yyyy'
+    },
   },
   data() {
     return {
@@ -44,24 +48,30 @@ export default {
   computed: {
     computedValue: {
       get() {
-        return this.value
+        console.log('get', this.value)
+
+        return this.value ? new Date(this.value) : null; // Ensure it's a Date object for the date-picker
       },
       set(newVal) {
-        this.$emit('input', newVal)
-        this.$emit(events.blur)
+        console.log('set')
+        const unixTimestamp = newVal ? newVal.getTime() : null; // Convert Date to Unix timestamp
+        this.$emit('input', unixTimestamp); // Emit updated value
+        this.$emit(events.blur);
       },
     },
-    format() {
-      return this.isTypeDate ? 'D/M/YYYY' : 'HH:mm:ss'
-    },
+    // format() {
+    //   return this.isTypeDate ? 'D/M/YYYY' : 'HH:mm:ss'
+    // },
     valueType() {
-      return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
+      return this.isTypeDate ? 'date' : 'time';
     },
     isTypeDate() {
       return this.type === 'date'
     },
     displayedValue() {
-      return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
+      return this.isTypeDate && this.value
+        ? formatUnixTimestamp(this.value)
+        : this.value;
     },
   },
   updated() {

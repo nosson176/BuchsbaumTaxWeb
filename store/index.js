@@ -32,6 +32,24 @@ const state = () => {
   }
 }
 
+// const defaultState = {
+//   loading: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: true }), {}),
+//   loaded: Object.keys(models).reduce((obj, cur) => ({ ...obj, [cur]: false }), {}),
+//   globalPlayTime: true,
+//   secondsNeededToDisplayModal1: 600,
+//   copyLogs: [],
+//   clientAndLogs: [],
+//   filingsUpdate: [],
+//   spinner: false,
+//   dotStatus: true,
+//   workTimeActive: false,
+//   timerState: {
+//     startTime: null,
+//     isRunning: false,
+//   },
+//   [models.selectedClient]: {},
+// }
+
 const getters = {
   isAuthenticated: (state) => Object.keys(state[models.token]).length > 0,
   [models.appWidth]: (state) => state[models.appWidth],
@@ -44,6 +62,14 @@ const getters = {
 }
 
 const mutations = {
+  resetState(state) {
+    // Reset the state using the default values
+    state[models.users] = {}
+    state[models.selectedClient] = {}
+    state[models.currentUser] = {}
+    state[models.smartviews] = {}
+    state[models.clients] = {}
+  },
   // Set data from API responses. `model` is 'lists', 'campaigns' etc.
   setModelResponse(state, { model, data }) {
     if (model === models.clientAndLogs) {

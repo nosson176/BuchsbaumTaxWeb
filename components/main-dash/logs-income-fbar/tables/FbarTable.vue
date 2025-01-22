@@ -62,7 +62,10 @@
           <HeaderSelectOption v-model="descriptionFilterValue" :options="filteredDescriptionOptions" />
         </div>
         <div class="table-header sm">Depend</div>
-        <div class="table-header xs" />
+        <div class="table-header xs">
+          <DeleteButton small v-if="hasActiveFilters" @click="clearAllFilters"
+            class="px-2 py-1 text-xs rounded flex justify-center" />
+        </div>
       </TableHeader>
     </template>
     <template #body>
@@ -107,7 +110,7 @@
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, fbar.id, fbar.currency)">
           <EditableSelectCell v-model="fbar.currency" :is-editable="isEditable(`${idx}-currency`)"
-            :options="currencyOptions" @blur="onBlur(fbar.currency)" />
+            :options="currencyOptions" @blur="onBlur(fbar.currency, 'currency')" />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs"
           @click="toggleEditable(`${idx}-frequency`, fbar.id, fbar.frequency)">
@@ -204,7 +207,7 @@ const includeOptions = [
   { value: 'select', name: 'Select All' },
   { value: 'deselect', name: 'Deselect All' },
 ]
-
+const notifiedErrors = new Set();
 export default {
   name: 'FbarTable',
   props: {
@@ -232,11 +235,12 @@ export default {
       trackedFbarId: null,
       showDeleteModal: false,
       deleteFbarId: null,
-      deleteTypeLabel: 'Fbar'
+      deleteTypeLabel: 'Fbar',
+      showClearAll: false,
     }
   },
   computed: {
-    ...mapState([models.selectedClient, models.currentUser, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed]),
+    ...mapState([models.selectedClient, models.currentUser, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedFbars() {
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar))
       return searchArrOfObjs(fbars, this.searchInput)
@@ -303,15 +307,19 @@ export default {
       )
     },
     amountUSDTotal() {
+      console.log('amountUSDTotal')
       return `$${formatAsNumber(
         Math.round(
           this.displayedFbars
             .filter((fbar) => fbar.include)
             .reduce((acc, fbar) => {
-              if (!fbar.amountUSD) {
+              console.log('amountUSDTotal222 =>> ', fbar)
+              if (!fbar.amount || !fbar.years || !fbar.currency) {
                 return acc
               }
-              return fbar.frequency ? acc + Number(fbar.amountUSD) * fbar.frequency : acc + Number(fbar.amountUSD)
+              console.log('amountUSDTotal =>> ', fbar)
+              const rate = this.getCurrencyRate(fbar.years, fbar.currency);
+              return rate ? acc + (fbar.amount * rate) : acc;
             }, 0)
         )
       )}`
@@ -401,6 +409,15 @@ export default {
     isCopyingFbars() {
       return this.isCmdPressed && this.selectedFbarIds.length > 0
     },
+    hasActiveFilters() {
+      return this.yearFilterValue !== '' ||
+        this.categoryFilterValue !== '' ||
+        this.groupFilterValue !== '' ||
+        this.typeFilterValue !== '' ||
+        this.jobFilterValue !== '' ||
+        this.currencyFilterValue !== '' ||
+        this.descriptionFilterValue !== '';
+    }
   },
   mounted() {
     window.addEventListener('beforeunload', this.handleBeforeUnload);
@@ -409,28 +426,44 @@ export default {
     if (this.updateFbars.length > 0) this.sendFbarsToServer()
   },
 
-
-
   methods: {
-    formatDateLog,
-    // validateNumberInput(fbar) {
-    //   // Remove non-numeric characters
-    //   fbar.amount = fbar.amount.replace(/[^0-9.]/g, '');
+    clearAllFilters() {
+      this.yearFilterValue = '';
+      this.categoryFilterValue = '';
+      this.groupFilterValue = '';
+      this.typeFilterValue = '';
+      this.jobFilterValue = '';
+      this.currencyFilterValue = '';
+      this.descriptionFilterValue = '';
+    },
+    getCurrencyRate(year, currency) {
+      console.log(year, currency)
+      if (!year || !currency) return null;
 
-    //   // Optional: Prevent multiple decimal points
-    //   if ((fbar.amount.match(/\./g) || []).length > 1) {
-    //     fbar.amount = fbar.amount.substring(0, fbar.amount.length - 1);
-    //   }
+      // Extract numeric year from the input
+      const numericYear = String(year).match(/\d{4}/)?.[0];
+      if (!numericYear) {
+        console.warn("Could not extract valid year from:", year);
+        return null;
+      }
+      console.log(numericYear)
+      const exchange = Object.values(this.exchangeRate);
+      const match = exchange.find(ex => ex.year?.includes(numericYear) && ex.currency === currency);
+      console.log(match)
+      if (!match) {
+        const errorKey = `${numericYear}-${currency}`;
+        if (!notifiedErrors.has(errorKey)) {
+          notifiedErrors.add(errorKey);
+          console.warn("No matching exchange rate found for:", { year: numericYear, currency });
+          this.$nextTick(() => {
+            this.$toast.error(`No exchange rate found for ${currency} in ${numericYear}`);
+          });
+        }
+        return null;
+      }
 
-    //   // Ensure numeric formatting (optional)
-    //   if (fbar.amount && !isNaN(fbar.amount)) {
-    //     console.log("fff")
-    //     fbar.amount = parseFloat(fbar.amount).toString();
-    //   }
-    //   if (fbar.amount === '') {
-    //     fbar.amount = '0';
-    //   }
-    // },
+      return match.rate;
+    },
     handleBeforeUnload(event) {
       if (this.updateFbars.length > 0) {
         this.sendFbarsToServer();
@@ -454,27 +487,63 @@ export default {
     isEditable(id) {
       return this.editableId === id
     },
+    // handleUpdate(field) {
+    //   if (!this.editableFbarId) return
+    //   const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
+    //   if (field === 'amount') {
+    //     if (fbar.amount === '') {
+    //       fbar.amount = 0
+    //     } else {
+    //       fbar.amount = setAsValidNumber(fbar.amount)
+    //     }
+    //     fbar.amountUSD = fbar.amount
+    //   }
+
+    //   const index = this.updateFbars.findIndex(f => f.id === fbar.id)
+    //   if (index !== -1) {
+    //     this.updateFbars[index] = fbar
+    //   } else {
+    //     this.updateFbars.push(fbar)
+    //   }
+    //   if (field === 'include' || field === 'amount') this.$store.dispatch('updateFbarAction', { fbar });
+    //   if (field === 'years') this.sortFbars()
+    //   // this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+    // },
     handleUpdate(field) {
-      if (!this.editableFbarId) return
-      const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
+      if (!this.editableFbarId) return;
+      const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId);
+      console.log(field)
+
+      // Handle amount changes
       if (field === 'amount') {
-        if (fbar.amount === '') {
-          fbar.amount = 0
-        } else {
-          fbar.amount = setAsValidNumber(fbar.amount)
-        }
-        fbar.amountUSD = fbar.amount
+        fbar.amount = setAsValidNumber(fbar.amount);
+        // Recalculate amountUSD based on the new amount and current exchange rate
+        const rate = this.getCurrencyRate(fbar.years, fbar.currency);
+        fbar.amountUSD = rate ? fbar.amount * rate : fbar.amount;
       }
 
-      const index = this.updateFbars.findIndex(f => f.id === fbar.id)
-      if (index !== -1) {
-        this.updateFbars[index] = fbar
-      } else {
-        this.updateFbars.push(fbar)
+      // Update store for specific fields that should trigger recalculation
+      if (field === 'years' || field === 'currency' || field === 'amount' || field === 'include') {
+        // If currency or year changes, we need to recalculate amountUSD
+        if (field === 'years' || field === 'currency') {
+          const rate = this.getCurrencyRate(fbar.years, fbar.currency);
+          fbar.amountUSD = rate ? fbar.amount * rate : fbar.amount;
+        }
+
+        // Dispatch update to store
+        this.$store.dispatch('updateFbarAction', { fbar });
       }
-      if (field === 'include' || field === 'amount') this.$store.dispatch('updateFbarAction', { fbar });
-      if (field === 'years') this.sortFbars()
-      // this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
+
+      // Handle updates array for API
+      const index = this.updateFbars.findIndex(fb => fb.id === fbar.id);
+      if (index !== -1) {
+        this.updateFbars[index] = fbar;
+      } else {
+        this.updateFbars.push(fbar);
+      }
+
+      // Sort if year changes
+      if (field === 'years') this.sortFbars();
     },
 
     sortFbars() {
@@ -641,6 +710,8 @@ export default {
     isSelected(fbarId) {
       return this.selectedItems[fbarId]
     },
+    formatDateLog,
+
   },
 }
 </script>

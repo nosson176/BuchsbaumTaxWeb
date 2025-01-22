@@ -4,8 +4,7 @@
       <div class="h-full" @click="onBlur" />
     </div>
     <date-picker v-if="isEditable" ref="input" v-model="computedValue" :value-type="valueType" tabindex="0"
-      :format="format" :type="type" :placeholder="placeholder" :open.sync="showPicker" @focus="onFocus"
-      @input="onInput">
+      :format="format" :type="type" :placeholder="placeholder" :open.sync="showPicker" @focus="onFocus">
       <template #header="{ emit }">
         <button class="w-full bg-gray-200 flex items-center justify-center mx-btn mx-btn-text"
           @click="emit(new Date())">
@@ -13,16 +12,17 @@
         </button>
       </template>
     </date-picker>
-    <span v-else class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
+    <span v-else class="cursor-pointer" :class="value ? '' : 'text-gray-400 italic'">
       {{ displayedValue || placeholder }}
     </span>
   </div>
 </template>
 
+
 <script>
-import { events } from '~/shared/constants'
-// import { formatDateForClient } from '~/shared/domain-utilities'
+import { events } from '~/shared/constants';
 import { formatUnixTimestamp } from '~/shared/utility';
+
 export default {
   name: 'EditableDate',
   props: {
@@ -35,62 +35,71 @@ export default {
       required: true,
     },
     type: {
-      type: [String, Number],
+      type: String,
       default: 'date',
     },
     placeholder: {
       type: String,
       default: '',
     },
+    format: {
+      type: String,
+      default: 'MM/DD/YYYY', // Default to 'dd/mm/yyyy'
+    },
   },
   data() {
     return {
       showPicker: false,
-    }
+    };
   },
   computed: {
     computedValue: {
       get() {
-        if (this.value === "null") return false
-        return this.value
+        // Convert the incoming value to a date object if it's valid
+        return this.value ? new Date(this.value) : null;
       },
       set(newVal) {
-        const date = new Date(newVal).getTime()
-        this.$emit('input', date)
-        this.$emit(events.blur)
+        if (newVal) {
+          // Emit the Unix timestamp (milliseconds)
+          this.$emit('input', newVal.getTime());
+          this.$emit(events.blur);
+        } else {
+          // Emit null if no date is selected
+          this.$emit('input', null);
+          this.$emit(events.blur);
+        }
       },
     },
-    format() {
-      return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss'
-    },
+    // format() {
+    //   return this.isTypeDate ? 'M/D/YY' : 'HH:mm:ss';
+    // },
     valueType() {
-      return this.isTypeDate ? 'YYYY-MM-DD' : 'HH:mm:ss'
+      return this.isTypeDate ? 'date' : 'time';
     },
     isTypeDate() {
-      return this.type === 'date'
+      return this.type === 'date';
     },
     displayedValue() {
-      return this.isTypeDate && this.computedValue ? formatUnixTimestamp(this.computedValue) : this.computedValue
+      // Display formatted date if value exists; otherwise, show placeholder
+      return this.value ? formatUnixTimestamp(this.value) : '';
     },
   },
   updated() {
-    if (this.isEditable) {
-      this.$refs.input.focus()
+    if (this.isEditable && this.$refs.input) {
+      this.$refs.input.focus();
     }
   },
   methods: {
     onFocus() {
-      this.showPicker = true
-    },
-    onInput(newVal) {
-      this.computedValue = newVal
+      this.showPicker = true;
     },
     onBlur() {
-      this.$emit(events.blur)
+      this.$emit(events.blur);
     },
   },
-}
+};
 </script>
+
 
 <style scoped>
 input {

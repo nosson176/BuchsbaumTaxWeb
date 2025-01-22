@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col relative">
     <Header />
     <Home />
-    <LogHandler />
+    <!-- <LogHandler /> -->
 
     <!-- Loading overlay with spinner -->
     <div v-if="isLoading" class="overlay">
@@ -29,7 +29,10 @@ export default {
     }
   },
   fetch() {
-    if (!this.clients || Object.keys(this.clients).length === 0) this.$api.getClientList(this.headers)
+    if (!this.clients || Object.keys(this.clients).length === 0) {
+      console.log('inside clients')
+      this.$api.getClientList(this.headers)
+    }
   },
   computed: {
     ...mapState([models.clientSearchValue, models.smartviews, models.clients, models.currentUser]),
@@ -53,9 +56,11 @@ export default {
 
       // Conditionally add getSmartviews if smartviews is empty
       if (!this.smartviews || Object.keys(this.smartviews).length === 0) {
+        console.log("inside smart")
         apiRequests.push(this.$api.getSmartviews(this.headers));
       }
       if (!this.currentUser || Object.keys(this.currentUser).length === 0) {
+        console.log("inside current user")
         apiRequests.push(this.$api.getCurrentUser(this.headers));
       }
 

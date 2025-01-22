@@ -125,7 +125,7 @@
         <div :id="`${idx}-alarmTime`" class="table-col xs"
           @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
-            @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="DD-MM-YYYY HH:mm"
+            @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="MM-DD-YYYY HH:mm"
             placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xxs" @click="toggleComplete(log)">
@@ -287,7 +287,7 @@ export default {
       return (id) => this.editableId === id
     },
     yearOptions() {
-      return this.valueTypes.year_name.filter((year) => year.show)
+      return this.valueTypes?.year_name?.filter((year) => year.show)
     },
     headers() {
       return this.$api.getHeaders()
@@ -320,7 +320,7 @@ export default {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     },
     filteredYearOptions() {
-      const options = this.yearOptions.filter((yearName) => this.shownLogs?.find((log) => log.years === yearName.value))
+      const options = this.yearOptions?.filter((yearName) => this.shownLogs?.find((log) => log.years === yearName.value))
       return options
     },
     filteredUserOptions() {
@@ -585,7 +585,7 @@ export default {
       // Handle alarmTime field update
       if (field === 'alarmTime') {
         dayjs.extend(customParseFormat);
-        const alarmTime = dayjs(val, 'DD-MM-YYYY HH:mm', true);
+        const alarmTime = dayjs(val, 'MM-DD-YYYY HH:mm', true);
         if (alarmTime.isValid()) {
           updatedLog.alarmTime = val;
           if (updatedLog.alarmUserId) {
@@ -825,7 +825,7 @@ export default {
     // },
     isTodayOrPast(date) {
       // Parse the date using your expected format
-      const parsedDate = parse(date, 'dd-MM-yyyy HH:mm', new Date());
+      const parsedDate = parse(date, 'MM-dd-yyyy HH:mm', new Date());
 
       // Normalize the date to ignore the time portion for comparison
       const normalizedDate = startOfDay(parsedDate); // Removes time part of the date

@@ -1,6 +1,9 @@
 <template>
   <div>
     <div class="bg-gray-800 text-white w-full flex justify-center items-center h-10 z-10 shadow px-4">
+      <button @click="openLogoutModal" class="m-0">
+        <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
+      </button>
       <div class="p-3 flex items-center gap-1">
         <span class="font-bold">{{ username }}</span>
         <span class="ml-1 mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"> </span>
@@ -53,9 +56,9 @@
         <nuxt-link :to="homeRoute">
           <HomeIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
         </nuxt-link>
-        <button @click="openLogoutModal">
+        <!-- <button @click="openLogoutModal">
           <LogoutIcon class="w-4 cursor-pointer transform hover:text-indigo-400 hover:scale-150" />
-        </button>
+        </button> -->
       </div>
     </div>
     <Modal :showing="showSmsModal" @hide="closeSmsModal">
@@ -326,9 +329,12 @@ export default {
     openLogoutModal() {
       this.ShowLogoutConfirmationModel = true
     },
-    closeLogoutConfirmationModel() {
+    async closeLogoutConfirmationModel() {
       this.ShowLogoutConfirmationModel = false
-      this.$api.signout()
+      await this.$api.signout()
+      this.$store.commit('resetState');
+      localStorage.clear();
+      sessionStorage.clear();
       localStorage.removeItem('timer')
     },
     async loadInbox() {
