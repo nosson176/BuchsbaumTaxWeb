@@ -51,6 +51,8 @@ export default {
   },
   methods: {
     setSelectedTaxYearStatus(status) {
+      console.log(status)
+      console.log(this.selectedTaxYearStatus)
       if (this.selectedTaxYearStatus?.id === status.id) {
         this.selectedTaxYearStatus = null
       } else {

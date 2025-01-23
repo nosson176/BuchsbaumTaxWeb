@@ -72,6 +72,7 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     taxYearStateStatus() {
+      console.log("status")
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
     },
     taxYearStateStatusDetail() {

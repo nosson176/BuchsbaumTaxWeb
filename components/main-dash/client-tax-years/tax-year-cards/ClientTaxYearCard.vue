@@ -329,6 +329,7 @@ export default {
             filingId: this.deleteId,
             taxYearId: this.yearData.id,
           })
+          this.$store.commit('deleteFromFilingUpdate', this.deleteId)
         }
         this.showDeleteModal = false
         this.deleteId = ''

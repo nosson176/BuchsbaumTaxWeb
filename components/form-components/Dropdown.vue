@@ -101,7 +101,8 @@ export default {
           <a v-for="(option, idx) in options" :id="`menu-item-${idx}`" :key="option.id || idx" href="#"
             class="text-gray-700 block px-4 py-2 text-xs hover:bg-gray-100 hover:text-gray-900 focus:outline-none"
             role="menuitem" tabindex="-1" @click.prevent="setSelectOption(option)">
-            {{ option.name || option.value || option }}
+            {{ option.value ? (option.name || option.value || option) : ' ' }}
+
           </a>
         </div>
       </div>
@@ -126,6 +127,10 @@ export default {
     shownValue: {
       type: String,
       default: '',
+    },
+    showArrow: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

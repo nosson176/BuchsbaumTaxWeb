@@ -24,7 +24,8 @@
         <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')"
           @blur="onBlur('statusDate')" />
       </div>
-      <div class="col-span-2 cursor-pointer mb-1" @click="setEditable('memo')">
+      <div class="col-span-2 cursor-pointer mb-1 overflow-auto" style="min-height: 5rem; max-height: 5rem;"
+        @click="setEditable('memo')">
         <EditableTextAreaCell v-model="memo" :prevent-enter="false" show-overflow placeholder="Memo"
           :is-editable="isEditable('memo')" @blur="onMemoBlur" @keyup.tab.native="onMemoBlur" class="h-max" />
       </div>
@@ -128,13 +129,13 @@ const items = [
   'statusDetail',
   'statusDate',
   'memo',
-  'includeInRefund',
-  'paid',
-  'owes',
-  'includeFee',
+  // 'includeInRefund',
   'currency',
-  'paidFee',
+  'owes',
+  'paid',
+  // 'includeFee',
   'owesFee',
+  'paidFee',
   'fileType',
   'refund',
   'rebate',
@@ -398,6 +399,7 @@ export default {
         (statusOption) => statusOption.value === this.formModel?.status
       )?.id;
 
+
       const sortOptions = (options) => {
         return options.sort((a, b) => (a.value === "" ? -1 : b.value === "" ? 1 : 0));
       };
@@ -492,6 +494,10 @@ export default {
           if (pendingUpdate) {
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
+          } else {
+            if (newFiling.filingType === 'federal' && newFiling.taxForm === null) this.setEditable('taxForm')
+            if (newFiling.filingType === 'state' && newFiling.state === null) this.setEditable('state')
+
           }
         } else {
           // Initialize with empty object if no filing provided
@@ -534,6 +540,7 @@ export default {
       }
     },
     setEditable(editable) {
+      console.log(editable)
       // Early return if formModel isn't initialized
       if (!this.formModel) {
         console.warn('Attempting to edit before form model is initialized');
@@ -679,7 +686,8 @@ export default {
     },
 
     emitDelete(id) {
-      this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
+      const d = this.$emit(events.delete, id, this.filingType === 'state' ? this.formModel.state : this.formModel.taxForm)
+      console.log(d)
 
     },
 
