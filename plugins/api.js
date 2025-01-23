@@ -592,8 +592,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const deleteSmartview = (headers, { smartviewId }) =>
     $axios.delete(`/smartviews/${smartviewId}`, { headers }).catch(() => $toast.error('Error deleting smartview'))
 
-  const deleteFiling = (headers, { filingId, clientId }) =>
-    $axios.delete(`/filings/${filingId}`, { headers }).catch(() => $toast.error('Error deleting filing'))
+  const deleteFiling = (headers, { filingId, clientId }) => {
+    return $axios.delete(`/filings/${filingId}`, { headers }).catch(() => $toast.error('Error deleting filing'))
+  }
 
   const deleteUser = (headers, { userId }) =>
     $axios

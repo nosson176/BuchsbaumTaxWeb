@@ -1,7 +1,7 @@
 <template>
   <div v-hotkey="keymap" class="flex flex-col bg-gray-100" style="max-height: 130vh;">
-    <div class="main-grid" style="height: 130vh">
-      <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-3 bg-white">
+    <div class="main-grid">
+      <div class="shadow rounded flex flex-col row-start-1 col-start-1 row-span-2 bg-white">
         <ClientListHeader @change="toggleShowArchivedClients" />
         <ClientList :show-archived="showArchivedClients" @resetClock="resetClock" />
       </div>
@@ -9,15 +9,15 @@
         <FeesChecklistsHeader @click="switchFeesChecklistsTab" />
         <FeesChecklistsBody :current-tab="currentFeesChecklistsTab" />
       </div>
-      <div class="shadow rounded flex flex-col row-start-4 col-start-1 bg-white">
+      <div class="shadow rounded flex flex-col row-start-3 col-start-1 row-span-4 bg-white">
         <SmartviewsHeader @change="toggleShowArchivedSmartviews" />
         <Smartviews :show-archived="showArchivedSmartviews" />
       </div>
-      <div class="shadow rounded flex flex-col row-start-3 row-span-2 col-start-2 col-span-5 bg-white">
+      <div class="shadow rounded flex flex-col row-start-3 row-span-3 col-start-2 col-span-5 bg-white">
         <LogsIncomeFbarHeader @click="switchLogsIncomeFbarTab" />
         <LogsIncomeFbarBody ref="logsBodyRef" :current-tab="currentLogsIncomeFbarTab" />
       </div>
-      <div class="shadow rounded flex flex-col row-start-3 row-span-2 col-start-7 col-span-3 bg-white">
+      <div class="shadow rounded flex flex-col row-start-3 row-span-3 col-start-7 col-span-3 bg-white">
         <PersonalContactHeader @click="switchPersonalsTab" />
         <PersonalContactBody :current-tab="currentPersonalsTab" />
       </div>
@@ -153,6 +153,6 @@ export default {
   @apply grid gap-2 flex-grow overflow-hidden p-2;
 
   grid-template-columns: minmax(240px, 1fr) repeat(8, minmax(0, 1fr));
-  grid-template-rows: repeat(2, 300px) repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, 270px) repeat(1, minmax(0, 1fr));
 }
 </style>

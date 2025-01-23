@@ -46,6 +46,18 @@
             <div class="font-bold text-2xl" :class="shekelsClassObj">{{ summationShekels }}</div>
           </div>
         </div>
+        <div class="ml-2">
+          <!-- <EditableSelectCell :options="oewsStatusOptions" @input="selectType" :value="selectMode" class="ml-2 px-0"
+            :showArrow="false" /> -->
+          <select
+            class="text-xl bg-gray-700 border-none font-bold p-0 outline-none focus:ring-0 appearance-none text-right cursor-pointer"
+            :class="selectType ? 'bg-none' : ''" @change="selectType">
+            <!-- Generate options dynamically -->
+            <option v-for="(option, index) in oewsStatusOptions" :key="index" :value="option.value">
+              {{ option.value }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -81,7 +93,8 @@ export default {
       showGlobalFlagDropdown: false,
       editedLastName: '',
       globalFlag: null,
-      uniqueKey: 0
+      uniqueKey: 0,
+      selectMode: null
     }
   },
   computed: {
@@ -122,7 +135,11 @@ export default {
     statusOptions() {
       return this.valueTypes.status || []
     },
+    oewsStatusOptions() {
+      return this.valueTypes.owes_status || []
+    },
     periodicalOptions() {
+      console.log(this.valueTypes)
       return this.valueTypes.periodical || []
     },
     isArchived() {
@@ -241,6 +258,10 @@ export default {
 
 
   methods: {
+    selectType(e) {
+      this.selectMode = e
+      return this.selectMode.length > 0
+    },
     forceRerender() {
       this.uniqueKey += 1
     },

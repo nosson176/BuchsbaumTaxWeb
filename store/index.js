@@ -378,6 +378,13 @@ const mutations = {
     }
     state.filingsUpdate.push(filing)
   },
+
+  deleteFromFilingUpdate(state, id) {
+    const index = state.filingsUpdate.findIndex((f) => f.id === id)
+    if (index !== -1) {
+      state.filingsUpdate.splice(index, 1)
+    }
+  },
   clearFilingUpdate(state) {
     state.filingsUpdate = []
   },

@@ -71,7 +71,7 @@
                 <input type="text" v-model="user.endTime" @change="onBlur(user, 'endTime')"
                   class="bg-transparent text-sm w-16 focus:outline-none border-0 cursor-pointer" />
               </div>
-              <span class="w-32 text-sm text-gray-600">{{ calculateDurationUnixToHHmm(user.sumHoursWork) }}</span>
+              <span class="w-auto text-sm text-gray-600">{{ calculateDurationUnixToHHmm(user.sumHoursWork) }}</span>
             </div>
             <!-- Total hours for the day -->
             <div class="flex justify-end px-6 py-2 bg-gray-100">
@@ -360,13 +360,22 @@ export default {
       return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     },
 
+    // calculateDurationUnixToHHmm(duration) {
+    //   const totalSeconds = Math.floor(duration / 1000);
+    //   // Calculate hours and minutes
+    //   const hours = Math.floor(totalSeconds / 3600);
+    //   const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+    //   return `${hours} hours, ${minutes} minutes`;
+    // },
     calculateDurationUnixToHHmm(duration) {
       const totalSeconds = Math.floor(duration / 1000);
-      // Calculate hours and minutes
+      // Calculate hours, minutes, and seconds
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
 
-      return `${hours} hours, ${minutes} minutes`;
+      return `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
     },
 
     getUserColor(name) {

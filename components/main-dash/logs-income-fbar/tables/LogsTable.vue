@@ -70,7 +70,8 @@
             @blur="onBlur(log.priority, 'priority')" @tab="goToNextColumn" />
         </div>
         <div :id="`${idx}-years`" class="table-col xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
-          <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover">
+          <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover" :delay="500"
+            placement="right" :interactive="true" :html="true">
             <EditableSelectCell class=" w-10 overflow-ellipsis" v-model="log.years"
               :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
               @blur="onBlur(log.years, 'years')" />
@@ -824,16 +825,19 @@ export default {
     //   // this.goToNextColumn()
     // },
     isTodayOrPast(date) {
+      console.log(date)
       // Parse the date using your expected format
       const parsedDate = parse(date, 'MM-dd-yyyy HH:mm', new Date());
 
       // Normalize the date to ignore the time portion for comparison
       const normalizedDate = startOfDay(parsedDate); // Removes time part of the date
-
+      console.log(normalizedDate)
       // Check if it's today or in the past
+      console.log(isToday(normalizedDate) || isPast(normalizedDate))
       return isToday(normalizedDate) || isPast(normalizedDate);
     },
     toggleComplete(log) {
+      console.log(log)
       if (!this.isTodayOrPast(log.alarmTime) && !log.alarmComplete) {
         return
       } else if (log.alarmComplete) {
@@ -987,7 +991,7 @@ export default {
 }
 
 .alarm {
-  @apply bg-indigo-100;
+  @apply bg-purple-200;
 }
 
 .year {

@@ -613,7 +613,9 @@ export default {
         archived: false,
         id: generateRandomId(),
         createdBy: this.currentUser.username,
-        userId: this.currentUser.id
+        userId: this.currentUser.id,
+        taxGroup: 'FBAR YITROT'
+
       }
       if (this.isCopyingFbars) {
         this.selectedFbarIds.forEach((fbarId, idx) => {
@@ -623,6 +625,7 @@ export default {
           newFbar.amount = 0
           newFbar.amountUSD = 0
           newFbar.documents = 'NEED'
+          newFbar.taxGroup = 'FBAR YITROT'
           newFbar.id = generateRandomId()
           newFbar.createdBy = this.currentUser.username
           newFbar.userId = this.currentUser.id
