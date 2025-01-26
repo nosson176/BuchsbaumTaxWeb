@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col flex-grow overflow-hidden">
-    <div class="flex bg-blue-200 p-0.5">
+  <div class="flex flex-col flex-grow overflow-hidden ">
+    <div class=" flex bg-blue-200 p-0.5">
       <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
       <SearchHeader v-model="searchInput" :active-tab="currentTab" />
       <div
@@ -12,7 +12,7 @@
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
     <KeepAlive v-else>
       <LogsTable v-if="showLogs" ref="logsTableRef" :show-archived="!showActiveLogs" />
-      <IncomeTable v-else-if="showIncome" :show-archived="!showActiveIncome" />
+      <IncomeTable class="h-full" v-else-if="showIncome" :show-archived="!showActiveIncome" />
       <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
     </KeepAlive>
   </div>

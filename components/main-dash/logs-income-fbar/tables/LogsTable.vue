@@ -325,7 +325,6 @@ export default {
       return options
     },
     filteredUserOptions() {
-      console.log("here")
       const options = this.userOptions.filter((user) => this.shownLogs?.find((log) => log.alarmUserName === user.value))
       return options
     },
@@ -342,7 +341,7 @@ export default {
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
     isCopyingLogs() {
-      return this.isCmdPressed && this.selectedLogIds.length > 0
+      return this.isCmdPressed || this.selectedLogIds.length > 0
     },
     filterByAlarmStatus() {
       return !(this.filterByAlarmStatusValue === '')
@@ -558,7 +557,6 @@ export default {
     },
 
     handleUpdate(val, field) {
-      console.log(val, field)
       if (!this.editableLogId) return;
 
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
@@ -787,7 +785,6 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field) {
-      console.log(val)
       // For new logs or alarm-related fields, always handle navigation
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
@@ -825,19 +822,15 @@ export default {
     //   // this.goToNextColumn()
     // },
     isTodayOrPast(date) {
-      console.log(date)
       // Parse the date using your expected format
       const parsedDate = parse(date, 'MM-dd-yyyy HH:mm', new Date());
 
       // Normalize the date to ignore the time portion for comparison
       const normalizedDate = startOfDay(parsedDate); // Removes time part of the date
-      console.log(normalizedDate)
       // Check if it's today or in the past
-      console.log(isToday(normalizedDate) || isPast(normalizedDate))
       return isToday(normalizedDate) || isPast(normalizedDate);
     },
     toggleComplete(log) {
-      console.log(log)
       if (!this.isTodayOrPast(log.alarmTime) && !log.alarmComplete) {
         return
       } else if (log.alarmComplete) {

@@ -88,7 +88,6 @@ const mutations = {
   },
 
   toggleWorkTime(state, mode) {
-    console.log('mode', mode)
     state.workTimeActive = mode
   },
 
@@ -203,7 +202,8 @@ const mutations = {
   updateIncome(state, income) {
     const index = state[models.selectedClient].incomeBreakdowns.findIndex((l) => l.id === income.income.id)
     if (index !== -1) {
-      state[models.selectedClient].incomeBreakdowns.splice(index, 1, income.income)
+      // state[models.selectedClient].incomeBreakdowns.splice(index, 1, income.income)
+      state[models.selectedClient].incomeBreakdowns[index] = income.income
     }
   },
 
@@ -387,6 +387,16 @@ const mutations = {
   },
   clearFilingUpdate(state) {
     state.filingsUpdate = []
+  },
+
+  updateFilingTab(state, { filing, taxYearId }) {
+    const taxYear = state.selectedClient.taxYears.find((ty) => ty.id === taxYearId)
+    if (taxYear) {
+      const index = taxYear.filings.findIndex((f) => f.id === filing.id)
+      if (index !== -1) {
+        taxYear.filings.splice(index, 1, filing)
+      }
+    }
   },
 
   UPDATE_FILINGS_CONTACT(state, { oldValue, newValue }) {

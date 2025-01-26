@@ -66,9 +66,66 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.extension))
   },
+  updated() {
+    if (this.isEditable) {
+      this.$nextTick(() => {
+        // Open the date picker automatically
+        this.showPicker = true;
+
+        // Focus on the input if it exists
+        if (this.$refs.input) {
+          this.$refs.input.focus();
+        }
+      });
+    }
+  },
+
+  watch: {
+    extension: {
+      handler(newFiling) {
+        if (newFiling) {
+          // Deep clone the filing to avoid reference issues
+          this.formModel = JSON.parse(JSON.stringify(newFiling));
+
+          // Check if there are pending updates for this filing in Vuex
+          const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id);
+          if (pendingUpdate) {
+            // Apply pending updates to the form model
+            Object.assign(this.formModel, pendingUpdate);
+          } else if (newFiling.filingType === 'ext' && newFiling.taxForm === null) {
+            this.setEditable('statusDate', true);
+          }
+        } else {
+          // Initialize with an empty object if no filing provided
+          this.formModel = {};
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   methods: {
-    setEditable(editable) {
+    setEditable(editable, newExt) {
       this.editable = editable
+      if (!newExt) return
+      this.$nextTick(() => {
+        // Try multiple selectors
+        const dateInput =
+          this.$el.querySelector('input[type="date"]') ||
+          this.$el.querySelector('.mx-input') || // typical datepicker input class
+          this.$refs.input?.$el?.querySelector('input'); // if using a component ref
+
+        if (dateInput) {
+          dateInput.focus();
+
+          // For vue-datepicker, use component method instead of showPicker
+          if (this.$refs.input && typeof this.$refs.input.open === 'function') {
+            this.$refs.input.open();
+          } else {
+            this.showPicker = true;
+          }
+        }
+      });
     },
     isEditable(value) {
       return this.editable === value

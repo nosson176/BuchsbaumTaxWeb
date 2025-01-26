@@ -39,7 +39,6 @@ export default {
     this.$api
       .getExchangeRates(this.headers)
       .then(response => {
-        console.log("Exchange rates fetched successfully:", response);
         // Handle the response, e.g., update a data property
       })
       .catch(error => {
@@ -50,7 +49,6 @@ export default {
 
   methods: {
     handleCurrencySelect(currencyId) {
-      console.log(currencyId)
       this.CurrencyValue = currencyId
     }
   }

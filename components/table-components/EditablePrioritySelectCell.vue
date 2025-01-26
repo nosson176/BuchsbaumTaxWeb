@@ -1,9 +1,9 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20" v-click-outside="handleClickOutside">
-      <input ref="button" v-model="computedValue" type="number" tabindex="0"
-        class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
-        @mousedown.stop="onButtonClick" @keyup.prevent="onInputKeyup($event.key)" />
+      <input ref="button" autofocus v-model="computedValue" type="number" tabindex="0"
+        class="p-0 text-xs w-3 relative h-5 bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
+        @mousedown.stop="onButtonClick" @keyup.prevent="onInputKeyup($event.key)" /></input>
       <ul v-if="showOptions" ref="select"
         class="absolute z-10 bg-white max-h-32 text-base w-10 shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="showOptions ? 'opacity-100' : 'opacity-0'" tabindex="-1" role="listbox" aria-labelledby="listbox-label"
@@ -74,10 +74,11 @@ export default {
   computed: {
     computedValue: {
       get() {
-        return this.value || ''
+        return this.value?.toString() || ''
       },
       set(newVal) {
         if (newVal) {
+          this.$refs.button.select()
           this.$emit(events.input, newVal)
         }
       },
@@ -98,6 +99,12 @@ export default {
       }
     },
   },
+  updated() {
+    if (this.isEditable) {
+      this.$refs.button.select()
+      //  this.$refs.button.focus()
+    }
+  },
   methods: {
     handleClickOutside(event) {
       if (this.showOptions) {
@@ -107,7 +114,7 @@ export default {
       }
     },
     priorityColor(priority) {
-      return this.priorityOptions.find((option) => option.value === priority)?.color
+      return this.priorityOptions.find((option) => option.value === Number(priority))?.color
     },
     emitChange(value) {
       this.computedValue = value

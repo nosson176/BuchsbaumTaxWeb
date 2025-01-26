@@ -48,12 +48,9 @@ export default {
   computed: {
     computedValue: {
       get() {
-        console.log('get', this.value)
-
         return this.value ? new Date(this.value) : null; // Ensure it's a Date object for the date-picker
       },
       set(newVal) {
-        console.log('set')
         const unixTimestamp = newVal ? newVal.getTime() : null; // Convert Date to Unix timestamp
         this.$emit('input', unixTimestamp); // Emit updated value
         this.$emit(events.blur);

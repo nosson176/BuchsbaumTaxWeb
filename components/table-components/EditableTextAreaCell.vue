@@ -4,8 +4,10 @@
       <div class="h-full" @click="onBlur" />
     </div>
     <textarea v-if="isEditable" ref="input" v-model="computedValue" tabindex="0"
-      class="resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 absolute top-0 min-h-full z-20"
-      spellcheck @click.prevent @keydown.tab.prevent="emitTab" @keydown.enter="handleEnterKey" @input="onInput" />
+      class="overflow-visible resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 min-h-full z-20"
+      :class="{
+        'absolute top-0': position,
+      }" spellcheck @click.prevent @keydown.tab.prevent="emitTab" @keydown.enter="handleEnterKey" @input="onInput" />
     <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'"
       v-html="formattedValue"></span>
   </div>
@@ -42,6 +44,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    position: {
+      type: [Boolean, String],
+      default: true
+    },
+    over: {
+      type: [Boolean, String],
+      default: true
+    }
   },
   computed: {
     computedValue: {
@@ -61,10 +71,16 @@ export default {
       return (this.computedValue || this.placeholder).replace(regex, '<span>$1</span>');
     },
     classObj() {
-      const editMode = this.isEditable
-      const readMode = !this.isEditable
-      const overFlow = this.showOverflow
-      return { editMode, readMode, overFlow }
+      const editMode = this.isEditable;
+      const readMode = !this.isEditable;
+      const overFlow = this.showOverflow && this.over !== false; // Only allow overflow-visible if position is not false
+      const hiddenOverflow = !this.position; // If position is false, apply overflow-hidden
+      return {
+        editMode,
+        readMode,
+        overFlow,
+        hiddenOverflow,
+      };
     },
   },
   watch: {
@@ -129,4 +145,8 @@ export default {
 .overFlow {
   @apply overflow-visible h-full;
 }
+
+/* .hiddenOverflow {
+  @apply overflow-hidden;
+} */
 </style>

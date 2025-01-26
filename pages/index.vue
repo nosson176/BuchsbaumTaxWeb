@@ -30,7 +30,6 @@ export default {
   },
   fetch() {
     if (!this.clients || Object.keys(this.clients).length === 0) {
-      console.log('inside clients')
       this.$api.getClientList(this.headers)
     }
   },
@@ -56,11 +55,9 @@ export default {
 
       // Conditionally add getSmartviews if smartviews is empty
       if (!this.smartviews || Object.keys(this.smartviews).length === 0) {
-        console.log("inside smart")
         apiRequests.push(this.$api.getSmartviews(this.headers));
       }
       if (!this.currentUser || Object.keys(this.currentUser).length === 0) {
-        console.log("inside current user")
         apiRequests.push(this.$api.getCurrentUser(this.headers));
       }
 

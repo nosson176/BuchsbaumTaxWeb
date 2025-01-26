@@ -314,7 +314,6 @@ export default {
     onDeleteClick(contactObj) {
       this.showDeleteModal = true;
       this.contactToModify = contactObj;
-      console.log("run")
     },
     handleArchive() {
       const contact = this.displayedContacts.find((contact) => contact.id === this.contactToModify.id)

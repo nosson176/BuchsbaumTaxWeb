@@ -83,7 +83,6 @@ export default {
             }
         },
         handleChange(value) {
-            console.log("value=>>", value)
             // Combine the previously selected date with the new time
             if (this.selectedDate && value) {
                 const dateStr = this.selectedDate.split(' ')[0]; // Get just the date part
