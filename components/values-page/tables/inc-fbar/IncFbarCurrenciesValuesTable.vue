@@ -84,7 +84,6 @@ export default {
         //     return Object.values(this.exchangeRate)
         // },
         filteredCurrencyValues() {
-            console.log(this.CurrencyValue, Object.values(this.exchangeRate))
             return Object.values(this.exchangeRate).filter(value => value.currency === this.CurrencyValue).sort((a, b) => a.year - b.year)
         },
         headers() {

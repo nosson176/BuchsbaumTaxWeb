@@ -9,8 +9,11 @@
         @click="onButtonClick" @keyup="onInputKeyup($event.key)" />
       <ul v-if="showOptions && isEditable" ref="select" @mouseleave="resetHover"
         class="absolute z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
-        :class="showOptions && isEditable ? 'opacity-100' : 'opacity-0'" tabindex="-1" role="listbox"
-        aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+        :class="{
+          'opacity-100': showOptions && isEditable,
+          'opacity-0': !(showOptions && isEditable),
+          'absolute': position
+        }" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
         <li v-for="(option, idx) in filteredOptions" :id="idx" :key="idx" ref="option"
           class="text-xs cursor-default select-none relative py-0 pl-0 pr-1" :class="isSelectOrHover(option, idx)"
           role="option" @mouseover="onMouseOver(idx)" @click.stop="emitChange(option.value)">
@@ -56,6 +59,10 @@ export default {
       type: String,
       default: '',
     },
+    position: {
+      type: [Boolean, String],
+      default: true
+    }
   },
   data() {
     return {
@@ -89,9 +96,11 @@ export default {
       return this.value || this.placeholder;
     },
     filteredOptions() {
-      return this.options.filter((option) =>
-        option?.value?.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
-      );
+      // console.log(this.filterOptionsValue);
+      // const index = this.options.findIndex((option) =>
+      //   option?.value?.toLowerCase().startsWith(this.filterOptionsValue.toLowerCase())
+      // );
+      return this.options
     },
   },
   watch: {
@@ -106,12 +115,28 @@ export default {
         });
       }
     },
+    // filterOptionsValue(newVal) {
+    //   const index = this.options.findIndex((option) =>
+    //     option?.value?.toLowerCase().startsWith(newVal.toLowerCase())
+    //   );
+    //   if (index === -1) return
+    //   this.hoverIndex = index;
+    //   // this.scrollToHoveredOption()
+    // },
   },
   methods: {
     emitChange(value) {
       this.computedValue = value;
       this.$emit('change');
       this.onBlur();
+    },
+    scrollToHoveredOption() {
+      if (this.$refs.option && this.$refs.option[this.hoverIndex]) {
+        this.$refs.option[this.hoverIndex].scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }
     },
     isSelected(option) {
       if (!Array.isArray(this.computedValue)) {
@@ -146,6 +171,7 @@ export default {
           this.hoverIndex = matchingOptionIndex;
         }
       }
+      this.scrollToHoveredOption();
     },
     isSelectOrHover(option, idx) {
       return this.isSelected(option) || this.hoverIndex === idx ? 'text-white bg-indigo-600' : 'text-gray-900'

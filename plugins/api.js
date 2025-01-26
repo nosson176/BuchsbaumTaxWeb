@@ -145,7 +145,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.dayLogs,
       })
       .catch((e) => {
-        console.log(e)
         $toast.error('Error loading alarm logs')
       })
 
@@ -398,7 +397,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         store: models.exchangeRate,
       })
       .then((res) => {
-        console.log(res)
         return res
       })
   }

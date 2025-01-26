@@ -242,8 +242,8 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.currentUser, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedFbars() {
-      const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar))
-      return searchArrOfObjs(fbars, this.searchInput)
+      const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar));
+      return searchArrOfObjs(fbars, this.searchInput);
     },
     shownFbars() {
       if (this.fbarBreakdowns) {
@@ -307,17 +307,14 @@ export default {
       )
     },
     amountUSDTotal() {
-      console.log('amountUSDTotal')
       return `$${formatAsNumber(
         Math.round(
           this.displayedFbars
             .filter((fbar) => fbar.include)
             .reduce((acc, fbar) => {
-              console.log('amountUSDTotal222 =>> ', fbar)
               if (!fbar.amount || !fbar.years || !fbar.currency) {
                 return acc
               }
-              console.log('amountUSDTotal =>> ', fbar)
               const rate = this.getCurrencyRate(fbar.years, fbar.currency);
               return rate ? acc + (fbar.amount * rate) : acc;
             }, 0)
@@ -407,7 +404,7 @@ export default {
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
     isCopyingFbars() {
-      return this.isCmdPressed && this.selectedFbarIds.length > 0
+      return this.isCmdPressed || this.selectedFbarIds.length > 0
     },
     hasActiveFilters() {
       return this.yearFilterValue !== '' ||
@@ -425,6 +422,9 @@ export default {
   beforeDestroy() {
     if (this.updateFbars.length > 0) this.sendFbarsToServer()
   },
+  created() {
+    this.sortFbars()
+  },
 
   methods: {
     clearAllFilters() {
@@ -437,7 +437,6 @@ export default {
       this.descriptionFilterValue = '';
     },
     getCurrencyRate(year, currency) {
-      console.log(year, currency)
       if (!year || !currency) return null;
 
       // Extract numeric year from the input
@@ -446,10 +445,8 @@ export default {
         console.warn("Could not extract valid year from:", year);
         return null;
       }
-      console.log(numericYear)
       const exchange = Object.values(this.exchangeRate);
       const match = exchange.find(ex => ex.year?.includes(numericYear) && ex.currency === currency);
-      console.log(match)
       if (!match) {
         const errorKey = `${numericYear}-${currency}`;
         if (!notifiedErrors.has(errorKey)) {
@@ -512,7 +509,6 @@ export default {
     handleUpdate(field) {
       if (!this.editableFbarId) return;
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId);
-      console.log(field)
 
       // Handle amount changes
       if (field === 'amount') {
@@ -547,11 +543,42 @@ export default {
     },
 
     sortFbars() {
-      this.displayedFbars.sort((a, b) => a.years - b.years)
+      this.displayedFbars.sort((a, b) => {
+
+        // Check if 'years' is null or undefined and place those items first
+        if (a.years == null && b.years == null) return 0; // Both are null/undefined, no change
+        if (a.years == null) return -1; // a has null/undefined, place it at the top
+        if (b.years == null) return 1;  // b has null/undefined, place it at the top
+
+        const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
+        const aYearMatch = a.years?.match(yearRegex);
+        const bYearMatch = b.years?.match(yearRegex);
+
+        if (aYearMatch && bYearMatch) {
+          const aYear = parseInt(aYearMatch[0]);
+          const bYear = parseInt(bYearMatch[0]);
+
+          // Sort by year in descending order
+          if (aYear !== bYear) {
+            return bYear - aYear;
+          }
+
+          // Sort by remaining string after the year (e.g., X, X2)
+          return a.years.localeCompare(b.years);
+        }
+
+        // If one has a year and the other doesn't, place the one with the year first
+        if (aYearMatch) return -1;
+        if (bYearMatch) return 1;
+
+        // If neither has a year, sort alphabetically
+        return a.years.localeCompare(b.years);
+      });
+
       if (this.trackedFbarId) {
         const newIndex = this.displayedFbars.findIndex(p => p.id === this.trackedFbarId);
         if (newIndex !== -1) {
-          // Update editable cell ID to match new position
+          // Update editable cell ID to match the new position
           this.$nextTick(() => {
             const currentColumn = this.editableId.split('-')[1];
             this.editableId = `${newIndex}-${currentColumn}`;
@@ -601,6 +628,8 @@ export default {
       this.$api.deleteFbar(this.headers, { fbarId: this.deleteFbarId }).then(() => {
         this.closeDeleteModal()
         this.$store.commit('deleteFbar', this.deleteFbarId)
+        const index = this.updateFbars.findIndex(fbar => fbar.id === this.deleteFbarId)
+        this.updateFbars.splice(index, 1)
       })
     },
     onAddRowClick() {
@@ -656,6 +685,7 @@ export default {
         })
         this.toggleEditable(`0-${columns[0]}`, fbar.id)
       }
+      this.sortFbars()
     },
     goToNextColumn() {
       const currentCell = this.editableId

@@ -1,6 +1,6 @@
 <template>
   <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
-    @keyup.shift.tab.exact="goToPrevColumn">
+    @keyup.shift.tab.exact="goToPrevColumn" style="height: inherit;">
     <template #header>
       <TableHeader>
         <div class="table-header w-6 flex flex-col">
@@ -410,7 +410,7 @@ export default {
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
     },
     isCopyingIncomes() {
-      return this.isCmdPressed && this.selectedIncomeIds.length > 0
+      return this.isCmdPressed || this.selectedIncomeIds.length > 0
     },
     hasActiveFilters() {
       return this.yearFilterValue !== '' ||
@@ -427,6 +427,9 @@ export default {
   },
   beforeDestroy() {
     if (this.updateIncomes.length > 0) this.sendIncomesToServer()
+  },
+  created() {
+    this.sortIncomes()
   },
   methods: {
     clearAllFilters() {
@@ -506,7 +509,6 @@ export default {
     //   if (field === 'years') this.sortIncomes()
     // },
     handleUpdate(field) {
-      console.log(field)
       if (!this.editableIncomeId) return;
       const income = this.displayedIncomes.find((income) => income.id === this.editableIncomeId);
 
@@ -542,11 +544,42 @@ export default {
       if (field === 'years') this.sortIncomes();
     },
     sortIncomes() {
-      this.displayedIncomes.sort((a, b) => a.years - b.years)
+      this.displayedIncomes.sort((a, b) => {
+        const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
+
+        // Check if 'years' is null or undefined and place those items first
+        if (a.years == null && b.years == null) return 0; // Both are null/undefined, no change
+        if (a.years == null) return -1; // a has null/undefined, place it at the top
+        if (b.years == null) return 1;  // b has null/undefined, place it at the top
+
+        const aYearMatch = a.years.match(yearRegex);
+        const bYearMatch = b.years.match(yearRegex);
+
+        if (aYearMatch && bYearMatch) {
+          const aYear = parseInt(aYearMatch[0]);
+          const bYear = parseInt(bYearMatch[0]);
+
+          // Sort by year in descending order
+          if (aYear !== bYear) {
+            return bYear - aYear;
+          }
+
+          // Sort by remaining string after the year (e.g., X, X2)
+          return a.years.localeCompare(b.years);
+        }
+
+        // If one has a year and the other doesn't, place the one with the year first
+        if (aYearMatch) return -1;
+        if (bYearMatch) return 1;
+
+        // If neither has a year, sort alphabetically
+        return a.years.localeCompare(b.years);
+      });
+
       if (this.trackedIncomeId) {
         const newIndex = this.displayedIncomes.findIndex(p => p.id === this.trackedIncomeId);
         if (newIndex !== -1) {
-          // Update editable cell ID to match new position
+          // Update editable cell ID to match the new position
           this.$nextTick(() => {
             const currentColumn = this.editableId.split('-')[1];
             this.editableId = `${newIndex}-${currentColumn}`;
@@ -592,12 +625,16 @@ export default {
       this.$api.deleteIncome(this.headers, { incomeId: this.deleteIncomeId }).then(res => {
         this.closeDeleteModal()
         this.$store.commit('deleteIncome', this.deleteIncomeId)
+        const index = this.updateIncomes.findIndex(income => income.id === this.deleteIncomeId)
+        this.updateIncomes.splice(index, 1)
+
       })
     },
 
     closeDeleteModal() {
       this.showDeleteModal = false
     },
+
     onAddRowClick() {
       if (!this.selectedClient) {
         return
@@ -608,7 +645,22 @@ export default {
         archived: false,
         id: generateRandomId(),
         createdBy: this.currentUser.username,
-        userId: this.currentUser.id
+        userId: this.currentUser.id,
+        years: '',
+        category: '',
+        taxGroup: '',
+        exclusion: false,
+        taxType: '',
+        job: '',
+        amount: null,
+        currency: '',
+        frequency: null,
+        documents: '',
+        description: '',
+        depend: '',
+        delete: null,
+
+
       }
       if (this.isCopyingIncomes) {
         this.selectedIncomeIds.forEach((incomeId, idx) => {
@@ -647,6 +699,7 @@ export default {
         this.toggleEditable(`0-${columns[0]}`, income.id)
         // })
       }
+      this.sortIncomes()
     },
     goToNextColumn() {
       const currentCell = this.editableId

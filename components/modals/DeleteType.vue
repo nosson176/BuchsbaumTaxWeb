@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4" @keydown.enter="handleDelete">
       <div class="sm:flex sm:items-start">
         <div
           class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -38,7 +38,28 @@ export default {
       default: 'item'
     }
   },
+  mounted() {
+    // Automatically focus the delete button when the modal is shown
+    this.$nextTick(() => {
+      if (this.$refs.deleteButton) {
+        this.$refs.deleteButton.focus();
+      }
+    });
+
+    // Add event listener for keydown
+    window.addEventListener('keydown', this.onKeyDown);
+  },
+  beforeDestroy() {
+    // Remove event listener to prevent memory leaks
+    window.removeEventListener('keydown', this.onKeyDown);
+  },
   methods: {
+    onKeyDown(event) {
+      // Check if Enter key is pressed
+      if (event.key === 'Enter') {
+        this.handleDelete();
+      }
+    },
     handleDelete() {
       console.log('delete')
       this.$emit(events.delete)

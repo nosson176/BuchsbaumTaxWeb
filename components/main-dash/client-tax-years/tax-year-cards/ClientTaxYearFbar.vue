@@ -1,15 +1,15 @@
 <template>
-  <div class="fbar" @click="setEditable('')" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
-    @keyup.shift.tab.exact="goToPrevItem">
+  <div class="fbar max-w-xs" @keydown.tab.prevent @keyup.tab.exact="goToNextItem" @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div class="fbar-i">
       <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
-        <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap"
-          :options="fileTypeOptions" :is-editable="false" placeholder="Type" />
+        <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 " :options="fileTypeOptions"
+          :is-editable="false" placeholder="Type" />
       </div>
-      <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-        <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap select-cell"
-          :options="fileTypeOptions" :is-editable="true" placeholder="Type" @blur="onBlur" />
+      <div v-else v-click-outside="onBlur">
+        <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap "
+          :options="fileTypeOptions" :is-editable="true" placeholder="Type"
+          @blur="onBlur(formModel.fileType, 'fileType')" />
       </div>
     </div>
     <div class="fbar-i">
@@ -17,9 +17,9 @@
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
           :is-editable="false" placeholder="Status" />
       </div>
-      <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40 ">
-        <EditableSelectCell v-model="formModel.status.value" :options="statusOptions"
-          class="whitespace-nowrap select-cell" :is-editable="true" placeholder="Status" @blur="onBlur" />
+      <div v-else v-click-outside="onBlur">
+        <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap "
+          :is-editable="true" placeholder="Status" @blur="onBlur(formModel.status.value, 'status')" />
       </div>
     </div>
     <div class="fbar-i">
@@ -27,16 +27,36 @@
         <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
           class="whitespace-nowrap" :is-editable="false" placeholder="Detail" />
       </div>
-      <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-        <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap select-cell"
-          :options="statusDetailOptions" :is-editable="true" placeholder="Detail" @blur="onBlur('statusDetail')" />
+      <div v-else v-click-outside="onBlur">
+        <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap "
+          :options="statusDetailOptions" :is-editable="true" placeholder="Detail"
+          @blur="onBlur(formModel.statusDetail.value, 'statusDetail')" />
       </div>
     </div>
     <!-- <div class="mt-85"> -->
     <div class="fbar-i" @click.stop="setEditable('statusDate')">
       <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
-        :is-editable="isEditable('statusDate')" @blur="onBlur" />
+        :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
       <!-- </div> -->
+    </div>
+    <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative "
+      :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
+      @mouseenter="!isEditable(`${idx}-memo`) && showTooltip(idx)" @mouseleave="hideTooltip"
+      style="max-height: 5rem; max-width: 5rem; " @click.stop="setEditable('memo')">
+      <EditableTextAreaCell v-model="formModel.memo" :prevent-enter="false" show-overflow placeholder="Memo"
+        :is-editable="isEditable('memo')" :over="false" @blur="onBlur" @keyup.tab.native="onBlur" />
+      <!-- Custom Tooltip -->
+      <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-memo`)"
+        class="absolute z-50 bg-gray-800 text-white p-2 rounded-md shadow-lg max-w-md whitespace-normal break-words overflow-visible"
+        style="top: calc(50% + 25%); right: 0; max-width: inherit;">
+        <div class="absolute -top-2 left-4 border-8 border-transparent border-b-gray-800"></div>
+        {{ formModel.memo }}
+      </div>
+    </div>
+    <div v-else v-click-outside="onBlur">
+      <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
+        @blur="onBlur(formModel.memo, 'memo')" class="w-full" style="min-height: 5rem;" />
+
     </div>
   </div>
 </template>
@@ -46,7 +66,7 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
-const items = ['fileType', 'status', 'statusDetail', 'statusDate']
+const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'memo']
 
 export default {
   name: 'ClientTaxYearFbar',
@@ -58,13 +78,23 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    idx: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
       editable: '',
       formModel: null,
+      activeTooltipIndex: null,
+      tooltipTimer: null, // Timer to control tooltip delay
+      isOverflow: false,
+      oldValue: '',
+      newFlag: false
     }
   },
+
   computed: {
     ...mapState([models.valueTypes, models.selectedClient, models.filingsUpdate]),
     headers() {
@@ -82,18 +112,81 @@ export default {
       return this.valueTypes.fbar_filing.filter((fileType) => fileType.show)
     },
   },
+  watch: {
+    fbar: {
+      handler(newFiling) {
+        if (newFiling) {
+          // Deep clone the filing to avoid reference issues
+          this.formModel = JSON.parse(JSON.stringify(newFiling));
+
+          // Check if there are pending updates for this filing in Vuex
+          const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id);
+          if (pendingUpdate) {
+            // Apply pending updates to the form model
+            Object.assign(this.formModel, pendingUpdate);
+          } else if (newFiling.filingType === 'fbar' && newFiling.taxForm === null) {
+            this.setEditable('fileType');
+            this.newFlag = true
+          }
+        } else {
+          // Initialize with an empty object if no filing provided
+          this.formModel = {};
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.fbar))
   },
   methods: {
+    showTooltip(idx) {
+      if (this.formModel.memo.length < 1) return
+      if (this.tooltipTimer) {
+        clearTimeout(this.tooltipTimer);
+      }
+      this.isOverflow = true
+      this.tooltipTimer = setTimeout(() => {
+        this.activeTooltipIndex = idx;
+      }, 500);
+    },
+
+    hideTooltip() {
+      if (this.tooltipTimer) {
+        clearTimeout(this.tooltipTimer);
+      }
+      this.activeTooltipIndex = null;
+      this.isOverflow = false
+    },
     setEditable(editable) {
-      this.editable = editable
+      if (!this.formModel) {
+        console.warn('Attempting to edit before form model is initialized');
+        return;
+      }
+
+      this.editable = editable;
+
+      if (editable === "status" || editable === "statusDetail") {
+        this.oldValue = this.formModel[editable]?.value || null;
+      } else {
+        this.oldValue = typeof this.formModel[editable] === 'object'
+          ? JSON.stringify(this.formModel[editable])
+          : this.formModel[editable];
+      }
     },
     isEditable(value) {
       return this.editable === value
     },
-    onBlur(field) {
-      this.handleUpdate(field)
+    onBlur(val, field) {
+      if (this.newFlag) {
+        this.newFlag = false
+        return
+      }
+      if (this.oldValue !== val && this.oldValue !== undefined) {
+        this.handleUpdate(field)
+        return
+      }
       this.setEditable('')
     },
     // handleUpdate() {
@@ -146,18 +239,21 @@ export default {
   min-height: 280px;
   width: 100%;
   margin-bottom: 10px;
+  overflow: visible;
 }
 
 
 .fbar-i {
-  position: relative;
-  transform: rotate(90deg);
+  /* position: relative; */
+
+  /* transform: rotate(90deg); */
 }
 
 
 .select-cell {
-  transform: rotate(270deg);
   min-width: 40px;
   margin-top: 55px;
+
+  /* transform: rotate(270deg); */
 }
 </style>

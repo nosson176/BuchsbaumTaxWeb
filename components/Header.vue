@@ -102,7 +102,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime, models.dotStatus, models.workTimeActive]),
+    ...mapState([models.clientsHistory, models.inbox, models.currentUser, models.globalPlayTime, models.dotStatus, models.workTimeActive, models.spinner]),
     mappedClientHistory() {
       if (this.clientsHistoryLoaded) {
         return Object.values(this.clientsHistory).map((item) => {
@@ -126,13 +126,11 @@ export default {
       return this.globalPlayTime
     },
     formatTime() {
-      console.log(this.displayTime)
       if (this.displayTime === '00:00') return '00:00'
       const totalMinutes = Math.floor(this.displayTime / 60000); // להמיר למספר הדקות הכולל
       const hours = Math.floor(totalMinutes / 60); // להמיר שעות
       const minutes = totalMinutes % 60; // לחשב את הדקות הנותרות
 
-      console.log(this.displayTime, `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`)
       // להחזיר בפורמט HH:mm
       return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
@@ -194,9 +192,7 @@ export default {
   },
   watch: {
     workTimePlay(newVal) {
-      console.log(newVal)
       if (newVal === true) {
-        console.log("call")
         this.getSumHourWorkTime();
       }
     }
@@ -207,7 +203,6 @@ export default {
   methods: {
     getSumHourWorkTime() {
       // Exit early if the 'timer' exists in localStorage
-      console.log(this.timerRun, this.workTimePlay)
       if (!this.workTimePlay) {
         if (localStorage.getItem('timer')) this.displayTime = Number(localStorage.getItem('timer'))
         return
@@ -215,7 +210,6 @@ export default {
       if (typeof localStorage !== 'undefined' && localStorage.getItem('timer')) {
         this.displayTime = Number(localStorage.getItem('timer'))
         this.playTimer()
-        console.log("Timer is active; skipping API call.");
         return;
       }
 
@@ -227,15 +221,12 @@ export default {
           userId: this.currentUser.id,
         })
           .then(res => {
-            console.log("API Response:", res);
 
             // Check if response is an array and calculate total hours
             if (Array.isArray(res)) {
               const totalHours = res.reduce((acc, el) => acc + (el.sumHoursWork || 0), 0);
-              console.log(totalHours)
               this.displayTime = totalHours
               this.playTimer()
-              console.log("Total Sum of Hours Worked:", totalHours);
             } else {
               console.error("Unexpected API response format. Expected an array:", res);
             }
@@ -250,7 +241,11 @@ export default {
     ,
     toggleStatus() {
       this.$store.commit('changeDotStatus')
+      this.$store.commit("showSpinner", true)
       this.$api.getClientList(this.headers)
+        .finally(() => {
+          this.$store.commit("showSpinner", false)
+        })
     },
     async toggleTimer() {
       if (this.timerRun) {
@@ -272,7 +267,6 @@ export default {
       if (this.displayTime === '00:00') this.displayTime = 0
       this.intervalId = setInterval(() => {
         this.displayTime += 60000
-        console.log(this.displayTime)
         localStorage.setItem('timer', this.displayTime)
       }, 60000)
     },

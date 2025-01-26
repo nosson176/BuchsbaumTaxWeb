@@ -139,7 +139,6 @@ export default {
       return this.valueTypes.owes_status || []
     },
     periodicalOptions() {
-      console.log(this.valueTypes)
       return this.valueTypes.periodical || []
     },
     isArchived() {

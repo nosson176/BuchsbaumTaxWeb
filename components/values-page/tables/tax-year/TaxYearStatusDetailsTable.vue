@@ -74,7 +74,6 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     taxYearStatusDetails() {
-      console.log(this.status)
       if (!this.status) return []
       return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE])).filter((item) => item.parentId === this.status.id)
     },

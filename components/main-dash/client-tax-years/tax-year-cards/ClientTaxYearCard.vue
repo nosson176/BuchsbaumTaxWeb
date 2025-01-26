@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-60 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-80 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
         <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full flex justify-center relative">
           <div class="absolute top-2 left-1 h-3 w-3 rounded-full cursor-pointer" title="IRS History"
@@ -20,26 +20,29 @@
           <div class="flex flex-col  w-8 z-10" ref="extensionColumn" :style="{ height: extensionColumnHeight }">
             <draggable v-model="extensions" v-bind="dragOptions" class="extension-draggable" @start="startDrag"
               @end="onDropExtension">
-              <transition-group name="extension-list" tag="div" class="extension-list">
-                <div v-for="extension in extensions" :key="extension.id" class="extension-item mb-4">
+              <transition-group name="extension-list h-full" tag="div" class="extension-list">
+                <div v-for="(extension, idx) in extensions" :key="extension.id" class="extension-item mb-4"
+                  :style="idx !== 0 ? { 'border-left': '1px solid rgba(229, 231, 235, var(--tw-border-opacity))' } : {}">
                   <ClientTaxYearExtension :extension="extension" @delete="startDelete($event, 'extension')" />
                 </div>
               </transition-group>
             </draggable>
           </div>
         </div>
-        <div class="flex flex-col overflow-auto h-full w-full">
+        <div class="flex flex-col overflow-auto h-full w-8/12">
           <ClientTaxYearCardTabs :filings="filings" :active-filing-idx="activeFilingIndex" :tax-year="yearData"
             @change="updateOnClient" @click="setActiveFilingIndex" />
           <div class="mt-2" />
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
-          <div class="mt-2" />
+          <div class="mt-2" :tax-year="yearData" />
         </div>
-        <div class="flex flex-col border border-b-0  w-8 z-10" ref="fbarColumn" :style="{ height: fbarColumnHeight }">
+        <div class="flex flex-col border border-b-0  flex-grow z-10" ref="fbarColumn"
+          :style="{ height: fbarColumnHeight }">
           <draggable v-model="fbars" v-bind="dragOptions" class="fbar-draggable" @start="startDrag" @end="onDrop">
             <transition-group name="fbar-list border" tag="div" class="fbar-list">
-              <div v-for="fbar in fbars" :key="fbar.id" class="fbar-item mb-4">
-                <ClientTaxYearFbar :fbar="fbar" @delete="startDelete($event, 'fbar')" />
+              <div v-for="(fbar, idx) in fbars" :key="fbar.id" class="fbar-item mb-4"
+                :style="idx !== 0 ? { 'border-left': '1px solid rgba(229, 231, 235, var(--tw-border-opacity))' } : {}">
+                <ClientTaxYearFbar :fbar="fbar" :idx="idx" @delete="startDelete($event, 'fbar')" />
               </div>
             </transition-group>
           </draggable>
@@ -378,7 +381,8 @@ export default {
   flex-direction: column;
   width: 100%;
   margin-top: 10px;
-  border: 1px solid inherit;
+
+  /* border: 1px solid inherit; */
   justify-content: space-between;
   gap: 10px;
 
