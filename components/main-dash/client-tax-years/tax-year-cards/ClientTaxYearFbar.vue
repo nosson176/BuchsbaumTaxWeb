@@ -55,7 +55,8 @@
     </div>
     <div v-else v-click-outside="onBlur">
       <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
-        @blur="onBlur(formModel.memo, 'memo')" class="w-full" style="min-height: 5rem;" />
+        @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
+        style="min-height: 5rem;" />
 
     </div>
   </div>
@@ -104,9 +105,12 @@ export default {
       return this.valueTypes.fbar_status.filter((status) => status.show)
     },
     statusDetailOptions() {
-      const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status.value)?.id
+      // const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status.value)?.id
       // const parentId = this.valueTypes.fbar_status.find((status) => status.value === this.formModel.status)?.id
-      return this.valueTypes.fbar_status_detail.filter((status) => status.parentId === parentId && status.show)
+      return this.valueTypes.fbar_status_detail.filter((status) =>
+        // status.parentId === parentId &&
+        status.show
+      )
     },
     fileTypeOptions() {
       return this.valueTypes.fbar_filing.filter((fileType) => fileType.show)
@@ -160,6 +164,7 @@ export default {
       this.isOverflow = false
     },
     setEditable(editable) {
+      console.log(editable)
       if (!this.formModel) {
         console.warn('Attempting to edit before form model is initialized');
         return;
@@ -174,17 +179,19 @@ export default {
           ? JSON.stringify(this.formModel[editable])
           : this.formModel[editable];
       }
+      if (editable === 'memo') this.activeTooltipIndex = null;
     },
     isEditable(value) {
       return this.editable === value
     },
-    onBlur(val, field) {
+    onBlur(val, field, event = null) {
+      if (field === 'memo') this.activeTooltipIndex = null;
       if (this.newFlag) {
         this.newFlag = false
         return
       }
       if (this.oldValue !== val && this.oldValue !== undefined) {
-        this.handleUpdate(field)
+        this.handleUpdate(field, event)
         return
       }
       this.setEditable('')
@@ -192,7 +199,7 @@ export default {
     // handleUpdate() {
     //   this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
     // },
-    handleUpdate(field) {
+    handleUpdate(field, event = null) {
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -202,6 +209,10 @@ export default {
           this.$store.dispatch('updateFilingAction', { filing: updatedModel });
         } else {
           this.$store.commit('pushFilingUpdate', updatedModel);
+        }
+        if (event?.key === 'Escape') {
+          this.setEditable('')
+          return
         }
         this.goToNextItem();
       } catch (error) {
@@ -217,7 +228,7 @@ export default {
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
         this.setEditable(nextCell)
-      }
+      } else this.setEditable('')
     },
     goToPrevItem() {
       const currentCell = this.editable

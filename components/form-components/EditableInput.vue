@@ -66,8 +66,8 @@ export default {
     }
   },
   methods: {
-    onBlur() {
-      this.$emit(events.blur)
+    onBlur(event) {
+      this.$emit(events.blur, event)
     },
     onClick() {
       this.$emit(events.blur)

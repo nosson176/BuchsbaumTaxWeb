@@ -111,8 +111,9 @@
         <div :id="`${idx}-amount`" tabindex="-1" class="table-col sm"
           @click="toggleEditable(`${idx}-amount`, income.id, income.amount, `selectAll`)">
           <EditableInputCell v-model.number="income.amount" :selectAll="true"
-            @keyup.enter.native="onBlur(income.amount, 'amount')" :is-editable="isEditable(`${idx}-amount`)" currency
-            @blur="onBlur(income.amount, 'amount')" />
+            @keyup.enter.native="onBlur(income.amount, 'amount')"
+            @keyup.esc.native="onBlur(income.amount, 'amount', $event)" :is-editable="isEditable(`${idx}-amount`)"
+            currency @blur="onBlur(income.amount, 'amount')" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, income.id, income.currency)">
@@ -122,6 +123,7 @@
         <div :id="`${idx}-frequency`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-frequency`, income.id, income.frequency)">
           <EditableInputCell v-model="income.frequency" @keyup.enter.native="onBlur(income.frequency)"
+            @keyup.esc.native="onBlur(income.frequency, 'frequency', $event)"
             :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur(income.frequency)" />
         </div>
         <div :id="`${idx}-amount`" class="table-col sm"
@@ -136,13 +138,16 @@
         </div>
         <div :id="`${idx}-description`" tabindex="-1" class="table-col xl"
           @click="toggleEditable(`${idx}-description`, income.id, income.description)">
-          <EditableInputCell v-model="income.description" @keyup.enter.native="onBlur(income.description)"
-            :is-editable="isEditable(`${idx}-description`)" @blur="onBlur(income.description)" />
+          <EditableInputCell v-model="income.description"
+            @keyup.enter.native="onBlur(income.description, 'description', $event)"
+            @keyup.esc.native="onBlur(income.description, 'description', $event)"
+            :is-editable="isEditable(`${idx}-description`)" @blur="onBlur(income.description, 'description', $event)" />
         </div>
         <div :id="`${idx}-depend`" tabindex="-1" class="table-col sm"
           @click="toggleEditable(`${idx}-depend`, income.id, income.depend)">
           <EditableInputCell v-model="income.depend" @keyup.enter.native="onBlur(income.depend)"
-            :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur(income.depend)" />
+            @keyup.esc.native="onBlur(income.depend, 'depend', $event)" :is-editable="isEditable(`${idx}-depend`)"
+            @blur="onBlur(income.depend)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
@@ -183,6 +188,10 @@
         <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
           <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteIncome" />
         </Modal>
+        <YearSelectionModal :showing="showYearSelectionModal"
+          :selected-items="selectedIncomeIds.map(id => displayedIncomes.find(i => i.id === Number(id)))"
+          :year-options="yearNameOptions" :type="type" :title="`Select Years for ${type.toUpperCase()} Copies`"
+          :year-field="'years'" @hide="showYearSelectionModal = false" @confirm="handleYearSelections" />
       </div>
     </template>
   </Table>
@@ -246,6 +255,8 @@ export default {
       deleteIncomeId: null,
       deleteTypeLabel: 'Income',
       showClearAll: false,
+      showYearSelectionModal: false,
+      type: 'income'
 
     }
   },
@@ -663,27 +674,28 @@ export default {
 
       }
       if (this.isCopyingIncomes) {
-        this.selectedIncomeIds.forEach((incomeId, idx) => {
-          const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
-          const income = this.displayedIncomes[incomeIndex]
-          const newIncome = Object.assign({}, income)
-          newIncome.amount = 0
-          newIncome.amountUSD = 0
-          newIncome.documents = 'NEED'
-          newIncome.id = generateRandomId()
-          newIncome.createdBy = this.currentUser.username
-          newIncome.userId = this.currentUser.id
-          this.updateIncomes.push(newIncome)
-          this.$store.commit('pushNewIncome', {
-            state: this.selectedClient,
-            income: newIncome
-          });
+        this.showYearSelectionModal = true
+        // this.selectedIncomeIds.forEach((incomeId, idx) => {
+        //   const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
+        //   const income = this.displayedIncomes[incomeIndex]
+        //   const newIncome = Object.assign({}, income)
+        //   newIncome.amount = 0
+        //   newIncome.amountUSD = 0
+        //   newIncome.documents = 'NEED'
+        //   newIncome.id = generateRandomId()
+        //   newIncome.createdBy = this.currentUser.username
+        //   newIncome.userId = this.currentUser.id
+        //   this.updateIncomes.push(newIncome)
+        //   this.$store.commit('pushNewIncome', {
+        //     state: this.selectedClient,
+        //     income: newIncome
+        //   });
 
-          this.selectedItems = {}
-          this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
-          //   }
-          // })
-        })
+        //   this.selectedItems = {}
+        //   this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
+        //   //   }
+        //   // })
+        // })
       } else {
         const income = Object.assign({}, defaultValues)
         this.updateIncomes.push(income)
@@ -699,6 +711,32 @@ export default {
         this.toggleEditable(`0-${columns[0]}`, income.id)
         // })
       }
+      this.sortIncomes()
+    },
+    handleYearSelections({ yearSelections }) {
+      // Create copies with selected years
+      this.selectedIncomeIds.forEach((incomeId) => {
+        const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
+        const income = this.displayedIncomes[incomeIndex]
+        const newIncome = Object.assign({}, income, {
+          amount: 0,
+          amountUSD: 0,
+          documents: 'NEED',
+          id: generateRandomId(),
+          createdBy: this.currentUser.username,
+          userId: this.currentUser.id,
+          years: yearSelections[incomeId],
+        })
+        this.updateIncomes.push(newIncome)
+        this.$store.commit('pushNewIncome', {
+          state: this.selectedClient,
+          income: newIncome
+        })
+        this.selectedItems = {}
+        const copyIncomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(newIncome.id))
+        this.toggleEditable(`${copyIncomeIndex}-${columns[1]}`, newIncome.id)
+        this.showYearSelectionModal = false
+      })
       this.sortIncomes()
     },
     goToNextColumn() {
@@ -729,10 +767,15 @@ export default {
         this.toggleEditable(prevCell, this.editableIncomeId)
       }
     },
-    onBlur(val, field) {
-      if (this.oldValue !== val && this.oldValue !== undefined) {
+    onBlur(val, field, event = null) {
+      console.log("Event:", event); // Check if the event exists
+      if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(field)
-        this.goToNextColumn()
+        if (event?.key !== 'Escape') {
+          this.goToNextColumn()
+          return
+        }
+        this.editableId = ""
         return
       }
       this.editableId = ""

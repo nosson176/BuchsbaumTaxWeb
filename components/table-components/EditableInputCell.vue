@@ -77,8 +77,8 @@ export default {
     formatAsCurrency(amount) {
       return formatAsNumber(amount)
     },
-    onBlur() {
-      this.$emit(events.blur)
+    onBlur(event) {
+      this.$emit(events.blur, event)
     },
     emitEnter() {
       this.$emit(events.submit)

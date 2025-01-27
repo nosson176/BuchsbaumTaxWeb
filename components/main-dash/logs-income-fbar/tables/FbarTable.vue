@@ -104,8 +104,9 @@
         </div>
         <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id, fbar.amount)">
           <EditableInputCell v-model="fbar.amount" :selectAll="selectAll"
-            @keyup.enter.native="onBlur(fbar.amount, 'amount')" :is-editable="isEditable(`${idx}-amount`)" currency
-            @blur="onBlur(fbar.amount, 'amount')" />
+            @keyup.enter.native="onBlur(fbar.amount, 'amount')"
+            @keyup.esc.native="onBlur(fbar.amount, 'amount', $event)" :is-editable="isEditable(`${idx}-amount`)"
+            currency @blur="onBlur(fbar.amount, 'amount')" />
         </div>
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, fbar.id, fbar.currency)">
@@ -115,6 +116,7 @@
         <div :id="`${idx}-frequency`" class="table-col xs"
           @click="toggleEditable(`${idx}-frequency`, fbar.id, fbar.frequency)">
           <EditableInputCell v-model="fbar.frequency" @keyup.enter.native="onBlur(fbar.frequency)"
+            @keyup.esc.native="onBlur(fbar.frequency, 'frequency', $event)"
             :is-editable="isEditable(`${idx}-frequency`)" @blur="onBlur(fbar.frequency)" />
         </div>
         <div :id="`${idx}-$`" class="table-col sm" @click="toggleEditable(`${idx}-$`, fbar.id, fbar.amountUSD)">
@@ -129,11 +131,13 @@
         <div :id="`${idx}-description`" class="table-col xl"
           @click="toggleEditable(`${idx}-description`, fbar.id, fbar.description)">
           <EditableInputCell v-model="fbar.description" @keyup.enter.native="onBlur(fbar.description)"
+            @keyup.esc.native="onBlur(fbar.description, 'description', $event)"
             :is-editable="isEditable(`${idx}-description`)" @blur="onBlur(fbar.description)" />
         </div>
         <div :id="`${idx}-depend`" class="table-col sm" @click="toggleEditable(`${idx}-depend`, fbar.id, fbar.depend)">
           <EditableInputCell v-model="fbar.depend" @keyup.enter.native="onBlur(fbar.depend)"
-            :is-editable="isEditable(`${idx}-depend`)" @blur="onBlur(fbar.depend)" />
+            @keyup.esc.native="onBlur(fbar.depend, 'depend', $event)" :is-editable="isEditable(`${idx}-depend`)"
+            @blur="onBlur(fbar.depend)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
@@ -173,6 +177,10 @@
         <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
           <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteFbar" />
         </Modal>
+        <YearSelectionModal :showing="showYearSelectionModal"
+          :selected-items="selectedFbarIds.map(id => displayedFbars.find(f => f.id === Number(id)))"
+          :year-options="yearNameOptions" :type="type" :title="`Select Years for ${type.toUpperCase()} Copies`"
+          :year-field="'years'" @hide="showYearSelectionModal = false" @confirm="handleYearSelections" />
       </div>
     </template>
   </Table>
@@ -237,6 +245,8 @@ export default {
       deleteFbarId: null,
       deleteTypeLabel: 'Fbar',
       showClearAll: false,
+      showYearSelectionModal: false,
+      type: 'fbar'
     }
   },
   computed: {
@@ -484,28 +494,7 @@ export default {
     isEditable(id) {
       return this.editableId === id
     },
-    // handleUpdate(field) {
-    //   if (!this.editableFbarId) return
-    //   const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
-    //   if (field === 'amount') {
-    //     if (fbar.amount === '') {
-    //       fbar.amount = 0
-    //     } else {
-    //       fbar.amount = setAsValidNumber(fbar.amount)
-    //     }
-    //     fbar.amountUSD = fbar.amount
-    //   }
 
-    //   const index = this.updateFbars.findIndex(f => f.id === fbar.id)
-    //   if (index !== -1) {
-    //     this.updateFbars[index] = fbar
-    //   } else {
-    //     this.updateFbars.push(fbar)
-    //   }
-    //   if (field === 'include' || field === 'amount') this.$store.dispatch('updateFbarAction', { fbar });
-    //   if (field === 'years') this.sortFbars()
-    //   // this.$api.updateFbar(this.headers, { clientId: this.clientId, fbarId: this.editableFbarId }, fbar)
-    // },
     handleUpdate(field) {
       if (!this.editableFbarId) return;
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId);
@@ -647,29 +636,30 @@ export default {
 
       }
       if (this.isCopyingFbars) {
-        this.selectedFbarIds.forEach((fbarId, idx) => {
-          const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
-          const fbar = this.displayedFbars[fbarIndex]
-          const newFbar = Object.assign({}, fbar)
-          newFbar.amount = 0
-          newFbar.amountUSD = 0
-          newFbar.documents = 'NEED'
-          newFbar.taxGroup = 'FBAR YITROT'
-          newFbar.id = generateRandomId()
-          newFbar.createdBy = this.currentUser.username
-          newFbar.userId = this.currentUser.id
-          this.updateFbars.push(newFbar)
-          this.$store.commit('pushNewFbar', {
-            state: this.selectedClient,
-            fbar: newFbar
-          });
-          this.selectedItems = {}
-          const copyFbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(newFbar.id))
-          this.toggleEditable(`${copyFbarIndex}-${columns[0]}`, newFbar.id)
-          // this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
-          //     }
-          //   })
-        })
+        this.showYearSelectionModal = true
+        // this.selectedFbarIds.forEach((fbarId, idx) => {
+        //   const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
+        //   const fbar = this.displayedFbars[fbarIndex]
+        //   const newFbar = Object.assign({}, fbar)
+        //   newFbar.amount = 0
+        //   newFbar.amountUSD = 0
+        //   newFbar.documents = 'NEED'
+        //   newFbar.taxGroup = 'FBAR YITROT'
+        //   newFbar.id = generateRandomId()
+        //   newFbar.createdBy = this.currentUser.username
+        //   newFbar.userId = this.currentUser.id
+        //   this.updateFbars.push(newFbar)
+        //   this.$store.commit('pushNewFbar', {
+        //     state: this.selectedClient,
+        //     fbar: newFbar
+        //   });
+        //   this.selectedItems = {}
+        //   const copyFbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(newFbar.id))
+        //   this.toggleEditable(`${copyFbarIndex}-${columns[0]}`, newFbar.id)
+        // this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
+        //     }
+        //   })
+        // })
       }
       else {
         const fbar = Object.assign({}, defaultValues)
@@ -685,6 +675,36 @@ export default {
         })
         this.toggleEditable(`0-${columns[0]}`, fbar.id)
       }
+      this.sortFbars()
+    },
+    handleYearSelections({ yearSelections }) {
+      // Create copies with selected years
+      this.selectedFbarIds.forEach((fbarId) => {
+        const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
+        const fbar = this.displayedFbars[fbarIndex]
+        const newFbar = Object.assign({}, fbar, {
+          amount: 0,
+          amountUSD: 0,
+          documents: 'NEED',
+          taxGroup: 'FBAR YITROT',
+          id: generateRandomId(),
+          createdBy: this.currentUser.username,
+          userId: this.currentUser.id,
+          years: yearSelections[fbarId] // Use the selected year for this specific copy
+        })
+
+        this.updateFbars.push(newFbar)
+        this.$store.commit('pushNewFbar', {
+          state: this.selectedClient,
+          fbar: newFbar
+        })
+
+        const copyFbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(newFbar.id))
+        this.toggleEditable(`${copyFbarIndex}-${columns[1]}`, newFbar.id)
+      })
+
+      this.selectedItems = {}
+      this.showYearSelectionModal = false
       this.sortFbars()
     },
     goToNextColumn() {
@@ -715,10 +735,14 @@ export default {
         this.toggleEditable(prevCell, this.editableFbarId)
       }
     },
-    onBlur(val, field) {
-      if (this.oldValue !== val) {
+    onBlur(val, field, event = null) {
+      if (this.oldValue !== val && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(field)
-        this.goToNextColumn()
+        if (event?.key !== 'Escape') {
+          this.goToNextColumn()
+          return
+        }
+        this.editableId = ""
         return
       }
       this.editableId = ""

@@ -7,15 +7,17 @@
     <div v-else-if="isClientSelected" class="w-full flex items-center justify-between">
       <div class="flex items-center w-1/3">
         <div>
-          <FlagIcon class="h-9 w-9 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
+          <FlagIcon class="h-6 w-6 cursor-pointer" :color="flagColorGlobal" @click="toggleShowGlobalFlagDropdown" />
           <FlagDropdown v-if="showGlobalFlagDropdown" @input="updateGlobalFlag" @blur="toggleShowGlobalFlagDropdown" />
+        </div>
+        <div>
+          <!-- <FlagIcon class="h-4 w-4 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
+          <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" /> -->
+          <StarIcon class="h-4 w-4 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
+          <StarDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
         </div>
         <div class="font-bold text-2xl cursor-pointer px-1" @click="openEditNameDialogue">
           {{ selectedClient.lastName }}
-        </div>
-        <div>
-          <FlagIcon class="h-4 w-4 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
-          <FlagDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
         </div>
         <div class="ml-12">
           <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
@@ -47,13 +49,13 @@
           </div>
         </div>
         <div class="ml-2">
-          <!-- <EditableSelectCell :options="oewsStatusOptions" @input="selectType" :value="selectMode" class="ml-2 px-0"
+          <!-- <EditableSelectCell :options="owesStatusOptions" @input="selectType" :value="selectMode" class="ml-2 px-0"
             :showArrow="false" /> -->
           <select
             class="text-xl bg-gray-700 border-none font-bold p-0 outline-none focus:ring-0 appearance-none text-right cursor-pointer"
-            :class="selectType ? 'bg-none' : ''" @change="selectType">
+            :class="checkClass" @change="selectType">
             <!-- Generate options dynamically -->
-            <option v-for="(option, index) in oewsStatusOptions" :key="index" :value="option.value">
+            <option v-for="(option, index) in owesStatusOptions" class="text-white" :key="index" :value="option.value">
               {{ option.value }}
             </option>
           </select>
@@ -135,7 +137,7 @@ export default {
     statusOptions() {
       return this.valueTypes.status || []
     },
-    oewsStatusOptions() {
+    owesStatusOptions() {
       return this.valueTypes.owes_status || []
     },
     periodicalOptions() {
@@ -163,7 +165,7 @@ export default {
         this.selectedClient.taxYears.forEach(taxYear => {
           if (taxYear.filings) {
             taxYear.filings.forEach(filing => {
-              if (filing.currency === 'USD' || !filing.currency) { // Default to USD if no currency
+              if (filing.currency === 'USD') { // Default to USD if no currency
                 if (filing.includeInRefund) {
                   total += (filing.owes || 0);
                   total -= (filing.paid || 0);
@@ -186,7 +188,7 @@ export default {
         this.selectedClient.taxYears.forEach(taxYear => {
           if (taxYear.filings) {
             taxYear.filings.forEach(filing => {
-              if (filing.currency === 'NIS') {
+              if (filing.currency === 'NIS' || !filing.currency) {
                 if (filing.includeInRefund) {
                   total += (filing.owes || 0);
                   total -= (filing.paid || 0);
@@ -221,6 +223,17 @@ export default {
     summationShekels() {
       return !isNaN(this.totalOwedShekels) ? formatAsILCurrency(this.totalOwedShekels) : ''
     },
+    checkClass() {
+      console.log('check', this.selectMode)
+      if (!this.selectMode) return null
+      if (this.selectMode === 'OWES1' || this.selectMode === 'OWES2') return 'text-red-400 bg-none';
+      if (this.selectMode === 'PAID') return 'text-gray-400 bg-none';
+      if (this.selectMode === 'PMT') return 'text-green-400 bg-none';
+
+      // Default return value
+      return '';
+    },
+
   },
   watch: {
     showEditNameDialogue: {
@@ -257,8 +270,9 @@ export default {
 
 
   methods: {
+
     selectType(e) {
-      this.selectMode = e
+      this.selectMode = e.target.value
       return this.selectMode.length > 0
     },
     forceRerender() {
