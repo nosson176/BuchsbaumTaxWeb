@@ -28,7 +28,7 @@ export default {
   computed: {
     ...mapState([models.clientSearchValue, models.clientSearchOption, models.clients, models.selectedSmartview, models.dotStatus]),
     debounceSearch() {
-      return debounce(this.searchClients, 2000)
+      return debounce(this.searchClients, 500)
     },
     searchOptions() {
       return searchOptions

@@ -24,9 +24,8 @@
             <div class="table-col">
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" @click="toggleEditable(type.id)" />
             </div>
-            <div class="table-col w-full" @click="toggleEditable(type.id)">
-              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur"
-                @input="debounceUpdate" />
+            <div class="table-col w-full" @click="toggleEditable(type)">
+              <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur(type)" />
             </div>
             <div class="table-col xs">
               <DeleteButton @click="deleteValue(type)" />
@@ -59,6 +58,7 @@ export default {
       showDelete: false,
       deleteId: '',
       dragActive: false,
+      oldValue: null,
       dragOptions: {
         animation: 200,
         ghostClass: 'ghost',
@@ -85,8 +85,9 @@ export default {
     },
   },
   methods: {
-    toggleEditable(id) {
-      this.editableId = id
+    toggleEditable(type) {
+      this.editableId = type.id
+      this.oldValue = type.value
     },
     isEditable(id) {
       return this.editableId === id
@@ -106,14 +107,18 @@ export default {
         this.$store.commit("pushNewValueType", { value: res, tab: TABLE_TYPE })
       })
     },
-    onBlur() {
-      this.editableId = null
+    onBlur(type) {
+      if (this.oldValue !== type.value) this.handleUpdate()
+      else this.editableId = ''
     },
     handleUpdate() {
       const value = Object.values(this.sharedYearNames).find((type) => type.id === this.editableId)
-      this.$api.updateValueType(this.headers, { valueId: value.id }, value).then(res => {
-        this.$store.commit("updateValueType", { value: res, tab: TABLE_TYPE })
-      })
+      if (value) {
+        this.$api.updateValueType(this.headers, { valueId: value.id }, value).then(res => {
+          this.$store.commit("updateValueType", { value: res, tab: TABLE_TYPE })
+        })
+      }
+      this.editableId = ''
     },
     deleteItem() {
       this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then((res) => {

@@ -43,7 +43,8 @@
           {{ client.displayName }}
         </div>
         <div class="w-5">
-          <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
+          <StarIcon class="w-3 h-3" :color="client.flag || flagColor(client)" />
+          <!-- <FlagIcon class="w-3 h-3" :color="client.flag || flagColor(client)" /> -->
         </div>
         <div class="w-5" @click.stop>
           <!-- <DeleteButton v-if="!hideDeleteButton" @click="archiveClient(client)" /> -->

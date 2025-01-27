@@ -100,8 +100,8 @@ export default {
     }
   },
   methods: {
-    onBlur() {
-      this.$emit(events.blur)
+    onBlur(event) {
+      this.$emit(events.blur, event)
       this.cleanAndSave();
     },
     cleanAndSave() {

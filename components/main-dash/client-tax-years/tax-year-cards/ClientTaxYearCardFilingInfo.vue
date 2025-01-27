@@ -27,7 +27,8 @@
       <div class="col-span-2 cursor-pointer mb-1 overflow-auto"
         style="min-height: 5rem; max-height: 5rem; word-break: break-word;" @click="setEditable('memo')">
         <EditableTextAreaCell v-model="memo" :prevent-enter="false" show-overflow placeholder="Memo"
-          :is-editable="isEditable('memo')" @blur="onMemoBlur" @keyup.tab.native="onMemoBlur" class="h-max" />
+          :is-editable="isEditable('memo')" @blur="onMemoBlur($event)" @keyup.tab.native="onMemoBlur"
+          @keyup.esc.native="onMemoBlur($event)" class="h-max" />
       </div>
       <div class="flex justify-center mb-1">
         <div class="flex items-center mr-3">
@@ -40,13 +41,15 @@
               <HeaderSelectOption v-if="owes" v-model="currency" :options="currencyOptions" currency
                 @input="onBlur('currency')" />
               <EditableInput v-model="owes" placeholder="Owes" currency :is-editable="isEditable('owes')"
-                @blur="onBlur('owes')" @click="onBlur('owes')" @keyup.enter.native="onBlur('owes')" />
+                @blur="onBlur('owes')" @click="onBlur('owes')" @keyup.enter.native="onBlur('owes')"
+                @keyup.esc.native="onBlur('owes', $event)" />
             </div>
             <div class="flex items-center" @click="setEditable('paid')">
               <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency
                 @input="onBlur('currency')" />
               <EditableInput v-model="paid" placeholder="Paid" currency :is-editable="isEditable('paid')"
-                @blur="onBlur('paid')" @click="onBlur('paid')" @keyup.enter.native="onBlur('paid')" />
+                @blur="onBlur('paid')" @click="onBlur('paid')" @keyup.enter.native="onBlur('paid')"
+                @keyup.esc.native="onBlur('paid', $event)" />
             </div>
           </div>
         </div>
@@ -58,11 +61,13 @@
           <div class="flex flex-col">
             <div @click="setEditable('owesFee')">
               <EditableInput v-model="owesFee" placeholder="FC" currency :is-editable="isEditable('owesFee')"
-                @blur="onBlur('owesFee')" @keyup.enter.native="onBlur('owesFee')" />
+                @blur="onBlur('owesFee')" @keyup.enter.native="onBlur('owesFee')"
+                @keyup.esc.native="onBlur('owesFee', $event)" />
             </div>
             <div @click="setEditable('paidFee')">
               <EditableInput v-model="paidFee" placeholder="Insur" currency :is-editable="isEditable('paidFee')"
-                @blur="onBlur('paidFee')" @keyup.enter.native="onBlur('paidFee')" />
+                @blur="onBlur('paidFee')" @keyup.enter.native="onBlur('paidFee')"
+                @keyup.esc.native="onBlur('paidFee', $event)" />
             </div>
           </div>
         </div>
@@ -78,12 +83,14 @@
         <div class="mr-3 flex items-center" @click="setEditable('refund')">
           <span v-if="refund">$</span>
           <EditableInput v-model="refund" placeholder="Refund" currency :is-editable="isEditable('refund')"
-            @blur="onBlur('refund')" @click="onBlur('refund')" />
+            @blur="onBlur('refund')" @click="onBlur('refund')" @keyup.enter.native="onBlur('refund', $event)"
+            @keyup.esc.native="onBlur('refund', $event)" />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
           <span v-if="rebate">$</span>
           <EditableInput v-model="rebate" placeholder="Rebate" currency :is-editable="isEditable('rebate')"
-            @blur="onBlur('rebate')" @click="onBlur('rebate')" />
+            @blur="onBlur('rebate')" @click="onBlur('rebate')" @keyup.enter.native="onBlur('rebate', $event)"
+            @keyup.esc.native="onBlur('rebate', $event)" />
         </div>
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
@@ -395,9 +402,9 @@ export default {
       }
     },
     statusDetailOptions() {
-      const parentId = this.statusOptions.find(
-        (statusOption) => statusOption.value === this.formModel?.status
-      )?.id;
+      // const parentId = this.statusOptions.find(
+      //   (statusOption) => statusOption.value === this.formModel?.status
+      // )?.id;
 
 
       const sortOptions = (options) => {
@@ -408,7 +415,8 @@ export default {
         return sortOptions(
           this.valueTypes.fbar_status_detail.filter((status) => {
             if (this.formModel?.status) {
-              return status.show && status.parentId === parentId;
+              return status.show
+              // && status.parentId === parentId;
             } else {
               return status.show;
             }
@@ -418,7 +426,8 @@ export default {
         return sortOptions(
           this.valueTypes.state_status_detail.filter((status) => {
             if (this.formModel?.status) {
-              return status.show && status.parentId === parentId;
+              return status.show
+              // && status.parentId === parentId;
             } else {
               return status.show;
             }
@@ -428,7 +437,8 @@ export default {
         return sortOptions(
           this.valueTypes.tax_year_status_detail.filter((status) => {
             if (this.formModel?.status) {
-              return status.show && status.parentId === parentId;
+              return status.show
+              //  && status.parentId === parentId;
             } else {
               return status.show;
             }
@@ -562,7 +572,7 @@ export default {
       return this.editable === value
     },
 
-    onBlur(field) {
+    onBlur(field, event) {
       if (field === 'taxForm' || field === 'state') {
         const val = this.formModel
         this.$store.commit('updateFilingTab', { filing: val, taxYearId: this.filing.taxYearId })
@@ -598,23 +608,28 @@ export default {
       }
 
 
-      const oldValueStr = JSON.stringify(this.oldValue);
+      const oldValueStr = JSON.stringify(this.oldValue) || ''; // Fallback to empty string
       const newValueStr = field === 'status' || field === 'statusDetail'
-        ? JSON.stringify(this.formModel[field]?.value)
-        : JSON.stringify(this.formModel[field]);
+        ? JSON.stringify(this.formModel[field]?.value) || ''
+        : JSON.stringify(this.formModel[field]) || '';
 
-      // Check if the values are equal and update editability if they are
-      if (oldValueStr === newValueStr) {
+      // Updated condition to ensure proper type handling
+      if (
+        oldValueStr === newValueStr ||
+        (oldValueStr === "" && newValueStr === "") ||
+        (oldValueStr === "null" && newValueStr === "undefined" || newValueStr === "") ||
+        (oldValueStr === "undefined" && newValueStr === "null" || newValueStr === "")
+      ) {
         this.editable = '';
         return;
       }
       if (['owes', 'paid', 'owesFee', 'paidFee', 'includeInRefund', 'includeFee', 'currency'].includes(field)) {
         const filing = {
-          currency: this.currency || 'USD',
-          owes: this.owes || 0,
-          paid: this.paid || 0,
-          owesFee: this.owesFee || 0,
-          paidFee: this.paidFee || 0,
+          currency: this.currency || 'NIS',
+          owes: Number(this.owes) || 0,
+          paid: Number(this.paid) || 0,
+          owesFee: Number(this.owesFee) || 0,
+          paidFee: Number(this.paidFee) || 0,
           includeInRefund: this.includeInRefund,
           includeFee: this.includeFee
         };
@@ -638,19 +653,19 @@ export default {
             oldCurrency,
             newCurrency,
             amount: {
-              owes: this.owes || 0,
-              paid: this.paid || 0,
-              owesFee: this.owesFee || 0,
-              paidFee: this.paidFee || 0
+              owes: Number(this.owes) || 0,
+              paid: Number(this.paid) || 0,
+              owesFee: Number(this.owesFee) || 0,
+              paidFee: Number(this.paidFee) || 0
             }
           });
         }
       }
 
       // Continue to handle local update if values differ
-      this.handleLocalUpdate();
+      this.handleLocalUpdate(event);
     },
-    onMemoBlur() {
+    onMemoBlur(event = null) {
       const oldValueStr = JSON.stringify(this.oldValue);
       const newValueStr = JSON.stringify(this.formModel.memo);
 
@@ -668,10 +683,10 @@ export default {
       }
 
       // If values are different, handle the update
-      this.onBlur('memo');
+      this.onBlur('memo', event);
     },
 
-    handleLocalUpdate() {
+    handleLocalUpdate(event = null) {
 
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
@@ -682,6 +697,10 @@ export default {
         } else {
           this.$store.commit('pushFilingUpdate', updatedModel);
         }
+        if (event?.key === 'Escape') {
+          this.editable = ''
+          return
+        };
         this.goToNextItem();
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);

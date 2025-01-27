@@ -74,8 +74,9 @@ export default {
   computed: {
     ...mapState([models.valueTypes]),
     taxYearStateStatusDetails() {
-      if (!this.status) return []
-      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE])).filter((item) => item.parentId === this.status.id)
+      // if (!this.status) return []
+      // return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE])).filter((item) => item.parentId === this.status.id)
+      return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
     },
     headers() {
       return this.$api.getHeaders()

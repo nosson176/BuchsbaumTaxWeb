@@ -86,8 +86,9 @@
         </div>
         <div :id="`${idx}-note`" class="table-col xl relative" @click="toggleEditable(`${idx}-note`, log.id, log.note)"
           @mouseenter="!isEditable(`${idx}-note`) && showTooltip(idx)" @mouseleave="hideTooltip">
-          <EditableTextAreaCell v-model="log.note" :prevent-enter="true" @keyup.enter.native="onBlur(log.note, 'note')"
-            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note')" />
+          <EditableTextAreaCell v-model="log.note" :prevent-enter="true"
+            @keyup.enter.native="onBlur(log.note, 'note', $event)" @keyup.esc.native="onBlur(log.note, 'note', $event)"
+            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note', $event)" />
 
           <!-- Custom Tooltip -->
           <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-note`)"
@@ -784,19 +785,29 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
-    onBlur(val, field) {
+    onBlur(val, field, event = null) {
+      console.log("data =>> ", this.oldValue, val, field, event)
       // For new logs or alarm-related fields, always handle navigation
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
-        this.handleUpdate(val, field)
-        this.goToNextColumn()
-        return
+        if (!(this.oldValue === '' && val === '')) {
+          this.handleUpdate(val, field)
+          if (event?.key !== 'Escape') {
+            this.goToNextColumn()
+            return
+          }
+          this.editableId = ""
+          return
+        }
       }
-
       // For existing logs, only handle if value changed
-      if (this.oldValue !== val && this.oldValue !== undefined) {
+      if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(val, field)
-        this.goToNextColumn()
+        if (event.key !== 'Escape') {
+          this.goToNextColumn()
+          return
+        }
+        this.editableId = ""
         return
       }
 

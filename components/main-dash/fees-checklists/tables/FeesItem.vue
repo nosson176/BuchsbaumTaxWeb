@@ -39,14 +39,15 @@
                   @input="onBlur" />
                 <EditableInput v-model="manualAmount" placeholder="Amount" currency
                   :is-editable="isEditable('manualAmount')" @blur="onBlur('manualAmount')"
-                  @keyup.enter.native="onBlur('manualAmount')" />
+                  @keyup.enter.native="onBlur('manualAmount')" @keyup.esc.native="onBlur('manualAmount', $event)" />
                 <div v-if="isEditable('manualAmount')" />
               </div>
               <div class="flex items-center" @click="setEditable('paidAmount')">
                 <HeaderSelectOption v-if="paidAmount" v-model="currency" :options="currencyOptions" currency
                   @input="onBlur" />
                 <EditableInput v-model="paidAmount" placeholder="Paid" currency :is-editable="isEditable('paidAmount')"
-                  @blur="onBlur('paidAmount')" @keyup.enter.native="onBlur('paidAmount')" />
+                  @blur="onBlur('paidAmount')" @keyup.enter.native="onBlur('paidAmount')"
+                  @keyup.esc.native="onBlur('paidAmount', $event)" />
                 <div v-if="isEditable('paidAmount')" />
               </div>
             </div>
@@ -66,13 +67,14 @@
           <div class="w-1/3">
             <div @click="setEditable('rate')">
               <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr"
-                @blur="onBlur('rate')" @keyup.enter.native="onBlur('rate')" />
+                @blur="onBlur('rate')" @keyup.enter.native="onBlur('rate')"
+                @keyup.esc.native="onBlur('rate', $event)" />
             </div>
           </div>
         </div>
         <div @click="setEditable('notes')">
           <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur('notes')"
-            @keyup.enter.native="onBlur('notes')" />
+            @keyup.enter.native="onBlur('notes')" @keyup.esc.native="onBlur('notes', $event)" />
         </div>
       </div>
     </div>
@@ -253,12 +255,13 @@ export default {
     feeStatusDetailOptions() {
       return this.valueTypes.fee_status_detail
         .filter((feeStatusDetail) => {
-          const parentId = this.feeStatusOptions.find(
-            (statusOption) => statusOption.value === this.formModel.status
-          )?.id;
+          // const parentId = this.feeStatusOptions.find(
+          //   (statusOption) => statusOption.value === this.formModel.status
+          // )?.id;
 
           if (this.formModel.status) {
-            return feeStatusDetail.parentId === parentId;
+            return feeStatusDetail.show;
+            // return feeStatusDetail.parentId === parentId;
           } else {
             return feeStatusDetail.show;
           }
@@ -302,7 +305,7 @@ export default {
     isEditable(field) {
       return this.editable === field
     },
-    onBlur(e) {
+    onBlur(e, event = null) {
       if (this.editable === 'sum' || this.editable === 'include') {
         this.handleUpdate()
         return
@@ -311,11 +314,14 @@ export default {
         this.editable = ''
         return
       }
-      this.handleUpdate()
+      this.handleUpdate(event)
     },
-    handleUpdate() {
+    handleUpdate(event = null) {
+      if (event?.key !== 'Escape') {
+        this.goToNextItem()
+      }
       this.$emit(events.input, this.formModel)
-      this.goToNextItem()
+      this.editable = ''
     },
     onDeleteClick(feeId) {
       this.deleteFeeId = feeId
