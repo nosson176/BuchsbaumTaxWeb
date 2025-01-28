@@ -1,6 +1,6 @@
 <template>
     <Modal :showing="showing" @hide="$emit('hide')">
-        <div class="p-4">
+        <div class="p-4" ref="modalContainer" @keydown.enter="handleConfirm" tabindex="0">
             <h3 class="text-lg font-semibold mb-4">{{ title }}</h3>
 
             <div class="space-y-4 my-4">
@@ -20,10 +20,10 @@
                             <span>Current Year: {{ item[yearField] }}</span>
                         </div>
                     </div>
-                    <div class="flex-none w-40">
+                    <!-- <div class="flex-none w-40">
                         <HeaderSelectOption :value="yearSelections[item.id]" :options="yearOptions"
                             @input="handleYearChange(item.id, $event)" />
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -103,6 +103,17 @@ export default {
                     [item.id]: item[this.yearField]
                 }), {})
             }
+        },
+        showing: {
+            immediate: false,
+            handler(newValue) {
+                if (newValue) this.focusModal();
+            }
+        }
+    },
+    mounted() {
+        if (this.showing) {
+            this.focusModal();
         }
     },
 
@@ -118,6 +129,7 @@ export default {
                 ...this.yearSelections,
                 [itemId]: newYear
             }
+            this.focusModal();
         },
 
         handleBulkYearChange(year) {
@@ -127,6 +139,7 @@ export default {
                 ...acc,
                 [item.id]: year
             }), {})
+            this.focusModal();
         },
 
         handleConfirm() {
@@ -135,6 +148,12 @@ export default {
                 type: this.type
             })
             this.$emit('hide')
+        },
+        focusModal() {
+            this.$nextTick(() => {
+                const container = this.$refs.modalContainer;
+                if (container) container.focus();
+            });
         }
     }
 }

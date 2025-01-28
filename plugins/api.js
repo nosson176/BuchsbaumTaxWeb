@@ -428,6 +428,18 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .catch(() => $toast.error('Error updating client'))
   }
 
+  const updatePmtStatus = (headers, { clientId, pmtStatus }) => {
+    console.log(pmtStatus)
+    return $axios
+      .put(`/clients/pmtStatus/${clientId}`, pmtStatus, { headers })
+      .then((res) => {
+        console.log(res)
+        $toast.success('pmtStatus Client updated successfully')
+        return res
+      })
+      .catch(() => $toast.error('Error updating client'))
+  }
+
   const updateClientFlag = (headers, { clientId, clientFlag }) =>
     $axios
       .put('/users/current/client-flags', clientFlag, { headers })
@@ -743,6 +755,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateChecklist,
     updateChecklists,
     updateClient,
+    updatePmtStatus,
     updateClientFlag,
     updateContact,
     updateContacts,

@@ -53,8 +53,18 @@
             </div>
           </div>
         </div>
-        <div class="flex items-center ml-3">
-          <div @click="setEditable('includeFee')">
+        <div class="flex flex-col items-center ml-3">
+          <div @click="setEditable('maam')">
+            <EditableSelectCell v-model="maam" :options="maamOptions" :is-editable="isEditable('maam')"
+              placeholder="Maam" @blur="onBlur('maam')" @keyup.enter.native="onBlur('maam')" />
+          </div>
+          <div @click="setEditable('basicPlusPro')">
+            <EditableSelectCell v-model="basicPlusPro" :options="basicPlusProOptions"
+              :is-editable="isEditable('basicPlusPro')" placeholder="BasicPlusPro" @blur="onBlur('basicPlusPro')"
+              @keyup.enter.native="onBlur('basicPlusPro')" />
+          </div>
+        </div>
+        <!-- <div @click="setEditable('includeFee')">
             <EditableCheckBoxCell v-model="includeFee" :is-editable="isEditable('includeFee')"
               @click="onBlur('includeFee')" />
           </div>
@@ -69,8 +79,8 @@
                 @blur="onBlur('paidFee')" @keyup.enter.native="onBlur('paidFee')"
                 @keyup.esc.native="onBlur('paidFee', $event)" />
             </div>
-          </div>
-        </div>
+          </div> -->
+        <!-- </div> -->
       </div>
       <div class="mb-1" @click="setEditable('fileType')">
         <EditableSelectCell v-model="fileType" :options="fileTypeOptions" :is-editable="isEditable('fileType')"
@@ -141,8 +151,10 @@ const items = [
   'owes',
   'paid',
   // 'includeFee',
-  'owesFee',
-  'paidFee',
+  // 'owesFee',
+  // 'paidFee',
+  'maam',
+  'basicPlusPro',
   'fileType',
   'refund',
   'rebate',
@@ -170,7 +182,9 @@ export default {
       times: 0,
       tiems2: 0,
       isProcessingDate: false,
-      dateFieldsInProgress: new Set() // Track date fields currently being processed
+      dateFieldsInProgress: new Set(), // Track date fields currently being processed
+      basicPlusProEdit: false,
+      maamEdit: false
     }
   },
   computed: {
@@ -274,30 +288,47 @@ export default {
         this.formModel.paid = setAsValidNumber(newVal)
       },
     },
-    includeFee: {
+    // includeFee: {
+    //   get() {
+    //     return this.formModel?.includeFee
+    //   },
+    //   set(newVal) {
+    //     this.formModel.includeFee = newVal
+    //   },
+    // },
+    maam: {
       get() {
-        return this.formModel?.includeFee
+        console.log(this.formModel)
+        return this.formModel?.maam
       },
       set(newVal) {
-        this.formModel.includeFee = newVal
+        this.formModel.maam = newVal
       },
     },
-    owesFee: {
+    basicPlusPro: {
       get() {
-        return this.formModel?.owesFee
+        return this.formModel?.basicPlusPro
       },
       set(newVal) {
-        this.formModel.owesFee = setAsValidNumber(newVal)
+        this.formModel.basicPlusPro = newVal
       },
     },
-    paidFee: {
-      get() {
-        return this.formModel?.paidFee
-      },
-      set(newVal) {
-        this.formModel.paidFee = setAsValidNumber(newVal)
-      },
-    },
+    // owesFee: {
+    //   get() {
+    //     return this.formModel?.owesFee
+    //   },
+    //   set(newVal) {
+    //     this.formModel.owesFee = setAsValidNumber(newVal)
+    //   },
+    // },
+    // paidFee: {
+    //   get() {
+    //     return this.formModel?.paidFee
+    //   },
+    //   set(newVal) {
+    //     this.formModel.paidFee = setAsValidNumber(newVal)
+    //   },
+    // },
     fileType: {
       get() {
         return this.formModel?.fileType
@@ -449,6 +480,12 @@ export default {
     fileTypeOptions() {
       return this.valueTypes.file_type.filter((fileType) => fileType.show)
     },
+    maamOptions() {
+      return this.valueTypes.maam.filter((maam) => maam.show)
+    },
+    basicPlusProOptions() {
+      return this.valueTypes.basic_plus_pro.filter((basicPlusPro) => basicPlusPro.show)
+    },
     contactTypeOptions() {
       const options = this.valueTypes.contact_type.filter((contactType) => {
         return contactType.show && this.selectedClientContactTypes[contactType.value];
@@ -556,6 +593,9 @@ export default {
         return;
       }
 
+      if (editable === 'maam') this.maamEdit = true
+      if (editable === 'basicPlusPro') this.basicPlusProEdit = true
+
       this.dateFieldsInProgress.clear();
       this.editable = editable;
 
@@ -573,16 +613,22 @@ export default {
     },
 
     onBlur(field, event) {
+      console.log(field, this.maamEdit)
       if (field === 'taxForm' || field === 'state') {
         const val = this.formModel
         this.$store.commit('updateFilingTab', { filing: val, taxYearId: this.filing.taxYearId })
       }
+      if (field === 'maam') this.maamEdit = false
+      if (field === 'basicPlusPro') this.basicPlusProEdit = false
+      console.log(this.maamEdit)
+
       // Special handling for date fields
       if (field === 'statusDate' || field === 'dateFiled') {
         // If this field is already being processed, skip
         if (this.dateFieldsInProgress.has(field)) {
           return;
         }
+
 
         // Mark this field as being processed
         this.dateFieldsInProgress.add(field);

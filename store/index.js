@@ -448,6 +448,17 @@ const mutations = {
     }
   },
 
+  updateClientPmtStatus(state, { clientId, pmtStatus }) {
+    // Loop through the clients in the state to find the one with the matching clientId
+    // const client = Object.values(state[models.selectedClient]).find((client) => client.id === clientId)
+    state.selectedClient.pmtStatus = pmtStatus
+
+    // If the client is found, update the pmtStatus
+    // if (client) {
+    //   client.pmtStatus = pmtStatus // This will trigger reactivity in Vue
+    // }
+  },
+
   archiveClient(state, clientId) {
     const clientsArray = Object.values(state.clients)
     const index = clientsArray.findIndex((client) => client.id === clientId)

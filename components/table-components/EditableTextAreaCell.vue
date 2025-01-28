@@ -8,8 +8,8 @@
       :class="{
         'absolute top-0': position,
       }" spellcheck @click.prevent @keydown.tab.prevent="emitTab" @keydown.enter="handleEnterKey" @input="onInput" />
-    <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'"
-      v-html="formattedValue"></span>
+    <pre v-else tabindex="0" class="cursor-pointer whitespace-pre-wrap break-words text-xs font-sans m-0"
+      :class="computedValue ? '' : 'text-gray-400 italic'" v-html="formattedValue"></pre>
   </div>
 </template>
 
@@ -40,7 +40,7 @@ export default {
       type: String,
       default: ''
     },
-    preventEnter: { // New prop to control "Enter" behavior
+    preventEnter: {
       type: Boolean,
       default: false,
     },
@@ -56,7 +56,6 @@ export default {
   computed: {
     computedValue: {
       get() {
-        // return this.isEditable ? this.value.replace(/<\/?[^>]+>/gi, '') : this.value;
         return this.isEditable ? (this.value || '').replace(/<\/?[^>]+>/gi, '') : (this.value || '');
       },
       set(newVal) {
@@ -64,17 +63,25 @@ export default {
       },
     },
     formattedValue() {
-      if (!this.searchWord) {
-        return this.computedValue || this.placeholder
+      if (!this.computedValue && this.placeholder) {
+        return this.placeholder;
       }
+
+      if (!this.searchWord) {
+        // Replace newlines with <br> tags for proper HTML rendering
+        return this.computedValue.replace(/\n/g, '<br>');
+      }
+
       const regex = new RegExp(`(${this.searchWord})`, 'gi');
-      return (this.computedValue || this.placeholder).replace(regex, '<span>$1</span>');
+      return this.computedValue
+        .replace(/\n/g, '<br>')
+        .replace(regex, '<span>$1</span>');
     },
     classObj() {
       const editMode = this.isEditable;
       const readMode = !this.isEditable;
-      const overFlow = this.showOverflow && this.over !== false; // Only allow overflow-visible if position is not false
-      const hiddenOverflow = !this.position; // If position is false, apply overflow-hidden
+      const overFlow = this.showOverflow && this.over !== false;
+      const hiddenOverflow = !this.position;
       return {
         editMode,
         readMode,
@@ -86,7 +93,7 @@ export default {
   watch: {
     async isEditable(val) {
       if (val) {
-        await this.$nextTick(); // Wait for the DOM to be fully updated
+        await this.$nextTick();
         if (this.$refs.input) {
           this.$refs.input.focus();
           this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px; overflow-y:hidden;');
@@ -105,7 +112,6 @@ export default {
       this.cleanAndSave();
     },
     cleanAndSave() {
-      // Clean the computed value to remove HTML tags
       const cleanValue = this.computedValue.replace(/<\/?[^>]+>/gi, '');
       this.$emit(events.input, cleanValue);
     },
@@ -113,10 +119,6 @@ export default {
       this.$refs.input.style.height = 'auto';
       this.$refs.input.style.height = this.$refs.input.scrollHeight + 'px';
     }, 200),
-    // onInput() {
-    //   this.$refs.input.style.height = 'auto'
-    //   this.$refs.input.style.height = this.scrollHeight + 'px'
-    // },
     emitTab() {
       this.$emit(events.tab)
     },
@@ -135,18 +137,20 @@ export default {
 }
 
 .editMode {
-  @apply relative z-10 overflow-visible outline-none h-8 w-full;
+  @apply relative z-10 overflow-visible outline-none w-full;
+
+  min-height: 2rem;
 }
 
 .readMode {
-  @apply overflow-hidden overflow-ellipsis border-transparent outline-none border focus:border-indigo-500 h-5;
+  @apply overflow-hidden border-transparent outline-none border focus:border-indigo-500;
 }
 
 .overFlow {
   @apply overflow-visible h-full;
 }
 
-/* .hiddenOverflow {
-  @apply overflow-hidden;
-} */
+span {
+  @apply bg-yellow-200;
+}
 </style>

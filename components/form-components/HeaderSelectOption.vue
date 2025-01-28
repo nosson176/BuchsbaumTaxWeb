@@ -119,6 +119,7 @@ export default {
         return this.shownValue || this.value
       },
       set(value) {
+        console.log(value)
         this.filterOptionsValue = value
         this.$emit(events.input, value)
       },
@@ -128,6 +129,7 @@ export default {
         return this.filterOptionsValue
       },
       set(value) {
+        console.log(value)
         this.filterOptionsValue = value
       },
     },
@@ -161,6 +163,7 @@ export default {
   },
   watch: {
     showOptions(value) {
+      console.log(value)
       if (value) {
         this.$refs.filter?.focus()
         this.filterOptionsValue = ''
@@ -169,20 +172,25 @@ export default {
   },
   methods: {
     onInputClick() {
+      console.log("onInputClick")
       // this.toggleShowOptions()
       this.$refs.filter?.focus()
     },
     toggleShowOptions() {
+      console.log("toggleShowOptions")
       this.showOptions = !this.showOptions
+      if (this.showOptions === false) this.filterOptionsValue = ''
       this.selectedIdx = this.showOptions ? 0 : -1
     },
     setSelectOption(option) {
+      console.log("setSelectOption")
       this.filterOptionsValue = option.value
       this.computedValue = option.value
       this.showOptions = false
     },
     onBlur() {
-
+      console.log("blur")
+      this.$emit(events.blur)
       this.showOptions = false
     },
     isSelected(option) {

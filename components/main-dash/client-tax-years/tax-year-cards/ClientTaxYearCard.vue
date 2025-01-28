@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex">
-    <div class="bg-white shadow w-80 flex flex-col overflow-hidden">
+    <div class="bg-white shadow w-72 flex flex-col overflow-hidden">
       <div class="p-2 flex justify-between z-10 w-full">
         <h3 class="text-3xl leading-6 font-bold text-gray-500 w-full flex justify-center relative">
           <div class="absolute top-2 left-1 h-3 w-3 rounded-full cursor-pointer" title="IRS History"
@@ -29,15 +29,17 @@
             </draggable>
           </div>
         </div>
-        <div class="flex flex-col overflow-auto h-full w-8/12">
+        <div class="flex flex-col overflow-auto h-full w-full">
           <ClientTaxYearCardTabs :filings="filings" :active-filing-idx="activeFilingIndex" :tax-year="yearData"
             @change="updateOnClient" @click="setActiveFilingIndex" />
           <div class="mt-2" />
           <ClientTaxYearCardFilingInfo :filing="displayedFilingInfo" @input="updateOnClient" @delete="startDelete" />
           <div class="mt-2" :tax-year="yearData" />
         </div>
-        <div class="flex flex-col border border-b-0  flex-grow z-10" ref="fbarColumn"
-          :style="{ height: fbarColumnHeight }">
+        <div class="flex flex-col border border-b-0  flex-grow z-10 " ref="fbarColumn" :style="{
+          height: fbarColumnHeight,
+          minWidth: fbars.length < 1 ? '3rem' : '5rem',
+        }">
           <draggable v-model="fbars" v-bind="dragOptions" class="fbar-draggable" @start="startDrag" @end="onDrop">
             <transition-group name="fbar-list border" tag="div" class="fbar-list">
               <div v-for="(fbar, idx) in fbars" :key="fbar.id" class="fbar-item mb-4"

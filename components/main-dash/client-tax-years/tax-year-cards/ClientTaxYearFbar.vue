@@ -9,7 +9,7 @@
       <div v-else v-click-outside="onBlur">
         <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap "
           :options="fileTypeOptions" :is-editable="true" placeholder="Type"
-          @blur="onBlur(formModel.fileType, 'fileType')" />
+          @blur="onBlur(formModel.fileType, 'fileType')" :initially-open="newFlag" />
       </div>
     </div>
     <div class="fbar-i">
@@ -39,12 +39,12 @@
         :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
       <!-- </div> -->
     </div>
-    <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative "
+    <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative h-20"
       :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
       @mouseenter="!isEditable(`${idx}-memo`) && showTooltip(idx)" @mouseleave="hideTooltip"
       style="max-height: 5rem; max-width: 5rem; " @click.stop="setEditable('memo')">
       <EditableTextAreaCell v-model="formModel.memo" :prevent-enter="false" show-overflow placeholder="Memo"
-        :is-editable="isEditable('memo')" :over="false" @blur="onBlur" @keyup.tab.native="onBlur" />
+        :is-editable="isEditable('memo')" :over="false" @blur="onBlur" @keyup.tab.native="onBlur" class="h-full" />
       <!-- Custom Tooltip -->
       <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-memo`)"
         class="absolute z-50 bg-gray-800 text-white p-2 rounded-md shadow-lg max-w-md whitespace-normal break-words overflow-visible"
@@ -92,7 +92,7 @@ export default {
       tooltipTimer: null, // Timer to control tooltip delay
       isOverflow: false,
       oldValue: '',
-      newFlag: false
+      newFlag: false,
     }
   },
 
@@ -130,6 +130,7 @@ export default {
             Object.assign(this.formModel, pendingUpdate);
           } else if (newFiling.filingType === 'fbar' && newFiling.taxForm === null) {
             this.setEditable('fileType');
+            this.isEditable('fileType');
             this.newFlag = true
           }
         } else {
@@ -146,7 +147,7 @@ export default {
   },
   methods: {
     showTooltip(idx) {
-      if (this.formModel.memo.length < 1) return
+      if (this.formModel.memo?.length < 1 || this.formModel.memo === null) return
       if (this.tooltipTimer) {
         clearTimeout(this.tooltipTimer);
       }
@@ -164,7 +165,6 @@ export default {
       this.isOverflow = false
     },
     setEditable(editable) {
-      console.log(editable)
       if (!this.formModel) {
         console.warn('Attempting to edit before form model is initialized');
         return;
