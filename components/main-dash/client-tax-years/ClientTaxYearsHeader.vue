@@ -48,12 +48,14 @@
             <div class="font-bold text-2xl" :class="shekelsClassObj">{{ summationShekels }}</div>
           </div>
         </div>
-        <div class="ml-2">
-          <!-- <EditableSelectCell :options="owesStatusOptions" @input="selectType" :value="selectMode" class="ml-2 px-0"
-            :showArrow="false" /> -->
+        <div class="ml-2 mt-auto">
+          <!-- <EditableSelectCell
+            class="text-xl bg-gray-700 border-none font-bold p-0 outline-none focus:ring-0 appearance-none text-right cursor-pointer"
+            :class="checkClass" :value="selectedClient.pmtStatus" @input="updatePmtStatus" :options="owesStatusOptions"
+            :is-editable="isEditable('pmt')" @blur="hideSelectOptions" /> -->
           <select
             class="text-xl bg-gray-700 border-none font-bold p-0 outline-none focus:ring-0 appearance-none text-right cursor-pointer"
-            :class="checkClass" @change="selectType">
+            :class="checkClass" :value="selectedClient.pmtStatus" @change="updatePmtStatus">
             <!-- Generate options dynamically -->
             <option v-for="(option, index) in owesStatusOptions" class="text-white" :key="index" :value="option.value">
               {{ option.value }}
@@ -62,7 +64,6 @@
         </div>
       </div>
     </div>
-
     <!-- Modals -->
     <Modal :showing="showEditNameDialogue">
       <SubmitCard :loading="isLastNameUpdateLoading" @hide="closeEditNameDialogue" @submit="handleUpdate('lastName')">
@@ -87,6 +88,7 @@ export default {
   data() {
     return {
       editingId: '',
+      editable: '',
       showEditNameDialogue: false,
       isLastNameUpdateLoading: false,
       isLoading: false,
@@ -145,6 +147,9 @@ export default {
     },
     isArchived() {
       return this.selectedClient.archived
+    },
+    pmtStatusClient() {
+      return this.selectedClient.pmtStatus
     },
     headers() {
       return this.$api.getHeaders()
@@ -224,11 +229,10 @@ export default {
       return !isNaN(this.totalOwedShekels) ? formatAsILCurrency(this.totalOwedShekels) : ''
     },
     checkClass() {
-      console.log('check', this.selectMode)
-      if (!this.selectMode) return null
-      if (this.selectMode === 'OWES1' || this.selectMode === 'OWES2') return 'text-red-400 bg-none';
-      if (this.selectMode === 'PAID') return 'text-gray-400 bg-none';
-      if (this.selectMode === 'PMT') return 'text-green-400 bg-none';
+      const status = this.selectedClient?.pmtStatus;
+      if (status === 'OWES1' || status === 'OWES2') return 'text-red-400 bg-none';
+      if (status === 'PAID') return 'text-gray-400 bg-none';
+      if (status === 'PMT') return 'text-green-400 bg-none';
 
       // Default return value
       return '';
@@ -265,15 +269,36 @@ export default {
         });
       },
       deep: true
-    }
+    },
   },
 
 
   methods: {
 
-    selectType(e) {
-      this.selectMode = e.target.value
-      return this.selectMode.length > 0
+    // selectType(e) {
+    //   console.log(e)
+    //   this.selectMode = e.target.value
+    //   console.log(this.selectMode)
+    //   this.$api.updatePmtStatus(this.headers, {
+    //     clientId: this.selectedClient.id,
+    //     pmtStatus: this.selectMode
+    //   }).then(() => {
+    //     this.$store.commit('updateClientPmtStatus', { clientId: this.selectedClient.id, pmtStatus: this.selectMode })
+    //   });
+    //   return this.selectMode.length > 0
+    // },
+    hideSelectOptions() {
+      this.editingId = ''
+    },
+    updatePmtStatus(newPmtStatus) {
+      const d = newPmtStatus.target.value
+      this.$api.updatePmtStatus(this.headers, {
+        clientId: this.selectedClient.id,
+        pmtStatus: newPmtStatus.target.value
+      }).then(() => {
+        this.$store.commit('updateClientPmtStatus', { clientId: this.selectedClient.id, pmtStatus: d })
+      })
+      this.editingId = ''
     },
     forceRerender() {
       this.uniqueKey += 1

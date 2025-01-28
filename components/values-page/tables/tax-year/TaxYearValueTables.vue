@@ -36,10 +36,20 @@
       <span class="font-bold text-xl text-gray-500">State Status Detail</span>
       <TaxYearStateStatusDetailsTable :status="selectedTaxYearStateStatus" />
     </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Maam</span>
+      <TaxYearMaam />
+    </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Basic Plus Pro</span>
+      <TaxYearBasicPlus />
+    </div>
   </ValuesTableGrid>
 </template>
 
 <script>
+
+
 export default {
   name: 'TaxYearValueTables',
   data() {

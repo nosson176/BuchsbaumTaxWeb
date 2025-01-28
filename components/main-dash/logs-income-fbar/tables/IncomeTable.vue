@@ -207,7 +207,7 @@ const columns = [
   'years',
   'category',
   'taxGroup',
-  'exclusion',
+  // 'exclusion',
   'taxType',
   'job',
   'amount',
@@ -558,10 +558,21 @@ export default {
       this.displayedIncomes.sort((a, b) => {
         const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
 
-        // Check if 'years' is null or undefined and place those items first
-        if (a.years == null && b.years == null) return 0; // Both are null/undefined, no change
-        if (a.years == null) return -1; // a has null/undefined, place it at the top
-        if (b.years == null) return 1;  // b has null/undefined, place it at the top
+        // If one entry has no year, check if it's new
+        if (!a.years && !b.years) {
+          // If both have no years, put newer entries first
+          if (!a.createdTime && b.createdTime) return -1;
+          if (a.createdTime && !b.createdTime) return 1;
+          return 0;
+        }
+
+        // If only one entry has no year, put it first only if it's new
+        if (!a.years && !a.createdTime) return -1;
+        if (!b.years && !b.createdTime) return 1;
+
+        // Normal year-based sorting
+        if (!a.years) return 1;  // Push entries with no year to bottom
+        if (!b.years) return -1; // Push entries with no year to bottom
 
         const aYearMatch = a.years.match(yearRegex);
         const bYearMatch = b.years.match(yearRegex);
@@ -640,6 +651,7 @@ export default {
         this.updateIncomes.splice(index, 1)
 
       })
+      this.sortIncomes()
     },
 
     closeDeleteModal() {

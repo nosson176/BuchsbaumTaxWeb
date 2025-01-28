@@ -62,6 +62,10 @@ export default {
     position: {
       type: [Boolean, String],
       default: true
+    },
+    initiallyOpen: {  // Add this new prop
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -105,6 +109,7 @@ export default {
   },
   watch: {
     async isEditable(val) {
+      console.log(val)
       if (!val) {
         this.showOptions = false;
       } else {
@@ -123,6 +128,16 @@ export default {
     //   this.hoverIndex = index;
     //   // this.scrollToHoveredOption()
     // },
+  },
+  mounted() {
+    // Handle initial state
+    if (this.isEditable && this.initiallyOpen) {
+      this.$nextTick(() => {
+        this.showOptions = true;
+        this.$refs.button?.focus();
+        this.inputValue = '';
+      });
+    }
   },
   methods: {
     emitChange(value) {

@@ -2,26 +2,26 @@
   <div class="text-xs flex transform -rotate-90" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
     @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
-    <div class="mx-2" @click="setEditable('statusDate')">
-      <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
-        :is-editable="isEditable('statusDate')" @blur="onBlur" @input="handleUpdate" />
+    <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
+      <EditableSelectCell v-model="formModel.taxForm" type="taxForm" class="font-bold ml-2 whitespace-nowrap"
+        :options="taxFormOptions" :is-editable="isEditable('taxForm')" placeholder="Tax Form" />
+    </div>
+    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
+      <EditableSelectCell v-model="formModel.taxForm" ref="taxFormInput"
+        class="font-bold ml-2 whitespace-nowrap transform rotate-90" :options="taxFormOptions" is-editable
+        placeholder="Tax Form" @blur="onBlur(formModel.taxForm, 'taxForm')" :initially-open="newFlag" />
     </div>
     <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
       <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap "
-        :options="statusOptions" :is-editable="isEditable('status')" placeholder="Status" @blur="onBlur"
-        @input="handleUpdate" />
+        :options="statusOptions" :is-editable="isEditable('status')" placeholder="Status" />
     </div>
     <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
       <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap transform rotate-90"
-        :options="statusOptions" is-editable placeholder="Status" @blur="onBlur" @input="handleUpdate" />
+        :options="statusOptions" is-editable placeholder="Status" @blur="onBlur(formModel.status.value, 'status')" />
     </div>
-    <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
-      <EditableSelectCell v-model="formModel.taxForm" class="font-bold ml-2 whitespace-nowrap" :options="taxFormOptions"
-        :is-editable="isEditable('taxForm')" placeholder="Tax Form" @blur="onBlur" @input="handleUpdate" />
-    </div>
-    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-      <EditableSelectCell v-model="formModel.taxForm" class="font-bold ml-2 whitespace-nowrap transform rotate-90"
-        :options="taxFormOptions" is-editable placeholder="Tax Form" @blur="onBlur" @input="handleUpdate" />
+    <div class="mx-2" @click="setEditable('statusDate')">
+      <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
+        :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
     </div>
   </div>
 </template>
@@ -32,7 +32,7 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
-const items = ['statusDate', 'status', 'taxForm']
+const items = ['taxForm', 'status', 'statusDate']
 
 export default {
   name: 'ClientTaxYearExtension',
@@ -49,6 +49,8 @@ export default {
     return {
       editable: '',
       formModel: null,
+      newFlag: false,
+      oldValue: null
     }
   },
   computed: {
@@ -66,19 +68,19 @@ export default {
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.extension))
   },
-  updated() {
-    if (this.isEditable) {
-      this.$nextTick(() => {
-        // Open the date picker automatically
-        this.showPicker = true;
+  // updated() {
+  //   if (this.isEditable) {
+  //     this.$nextTick(() => {
+  //       // Open the date picker automatically
+  //       this.showPicker = true;
 
-        // Focus on the input if it exists
-        if (this.$refs.input) {
-          this.$refs.input.focus();
-        }
-      });
-    }
-  },
+  //       // Focus on the input if it exists
+  //       if (this.$refs.input) {
+  //         this.$refs.input.focus();
+  //       }
+  //     });
+  //   }
+  // },
 
   watch: {
     extension: {
@@ -93,7 +95,8 @@ export default {
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
           } else if (newFiling.filingType === 'ext' && newFiling.taxForm === null) {
-            this.setEditable('statusDate', true);
+            this.setEditable('taxForm', true);
+            this.newFlag = true
           }
         } else {
           // Initialize with an empty object if no filing provided
@@ -105,32 +108,39 @@ export default {
     },
   },
   methods: {
-    setEditable(editable, newExt) {
-      this.editable = editable
-      if (!newExt) return
-      this.$nextTick(() => {
-        // Try multiple selectors
-        const dateInput =
-          this.$el.querySelector('input[type="date"]') ||
-          this.$el.querySelector('.mx-input') || // typical datepicker input class
-          this.$refs.input?.$el?.querySelector('input'); // if using a component ref
+    setEditable(editable) {
+      this.editable = editable;
 
-        if (dateInput) {
-          dateInput.focus();
-
-          // For vue-datepicker, use component method instead of showPicker
-          if (this.$refs.input && typeof this.$refs.input.open === 'function') {
-            this.$refs.input.open();
-          } else {
-            this.showPicker = true;
-          }
-        }
-      });
+      if (editable === "status") {
+        this.oldValue = this.formModel[editable]?.value || null;
+      } else {
+        this.oldValue = typeof this.formModel[editable] === 'object'
+          ? JSON.stringify(this.formModel[editable])
+          : this.formModel[editable];
+      }
+      // if (editable === 'taxForm' && openDropdown) {
+      //   this.$nextTick(() => {
+      //     const taxFormInput = this.$refs.taxFormInput;
+      //     if (taxFormInput && typeof taxFormInput.open === 'function') {
+      //       taxFormInput.open(); // Programmatically open the dropdown if supported
+      //     }
+      //   });
+      // }
     },
     isEditable(value) {
       return this.editable === value
     },
-    onBlur() {
+    onBlur(val) {
+      if (this.newFlag) {
+        this.newFlag = false
+        return
+      }
+      if (typeof (val) === 'object') return this.setEditable('')
+      if (this.oldValue !== val && val !== undefined && val !== null) {
+        this.handleUpdate()
+        return
+      }
+
       this.setEditable('')
     },
     handleUpdate() {
@@ -144,7 +154,9 @@ export default {
           this.$store.commit('pushFilingUpdate', updatedModel);
         }
 
-        this.goToNextItem();
+        if (!this.newFlag) {
+          this.goToNextItem(); // Only go to the next item if `newFlag` is false
+        }
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);
       }
@@ -153,13 +165,14 @@ export default {
       this.$emit(events.delete, this.extension.id)
     },
     goToNextItem() {
-      const currentCell = this.editable
-      const itemIndex = items.findIndex((col) => {
-        return col === currentCell
-      })
+      const currentCell = this.editable;
+      const itemIndex = items.findIndex((col) => col === currentCell);
+
       if (itemIndex < items.length - 1) {
-        const nextCell = items[itemIndex + 1]
-        this.setEditable(nextCell)
+        const nextCell = items[itemIndex + 1];
+        this.setEditable(nextCell);
+      } else {
+        this.setEditable('');
       }
     },
     goToPrevItem() {
@@ -174,7 +187,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .ext-i {
   position: relative;
   transform: rotate(90deg);
@@ -186,4 +199,4 @@ export default {
   min-width: 40px;
 
 }
-</style>
+</style> -->

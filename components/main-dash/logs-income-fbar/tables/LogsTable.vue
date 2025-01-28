@@ -100,7 +100,7 @@
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
-            @blur="onBlur(log.logDate, 'logDate')" />
+            @blur="onBlur(log.logDate, 'logDate')" @keyup.enter.native="onBlur(log.logDate, 'logDate', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmDate`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
@@ -188,7 +188,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
 import { boldSearchWord, formatDateLog, formatUnixTimestampWithMoment, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'alarmComplete', 'secondsSpent', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'secondsSpent', 'delete']
 // const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
@@ -786,7 +786,7 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
     onBlur(val, field, event = null) {
-      console.log("data =>> ", this.oldValue, val, field, event)
+      console.log("data =>> ", this.oldValue, val, field)
       // For new logs or alarm-related fields, always handle navigation
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
@@ -803,7 +803,7 @@ export default {
       // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(val, field)
-        if (event.key !== 'Escape') {
+        if (event?.key !== 'Escape') {
           this.goToNextColumn()
           return
         }

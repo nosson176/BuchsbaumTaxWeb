@@ -532,6 +532,7 @@ export default {
     },
 
     sortFbars() {
+      console.log(this.displayedFbars)
       this.displayedFbars.sort((a, b) => {
 
         // Check if 'years' is null or undefined and place those items first
@@ -620,6 +621,7 @@ export default {
         const index = this.updateFbars.findIndex(fbar => fbar.id === this.deleteFbarId)
         this.updateFbars.splice(index, 1)
       })
+      this.sortFbars();
     },
     onAddRowClick() {
       if (!this.selectedClient) {
