@@ -1,7 +1,6 @@
 //update
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.tab.exact="goToNextColumn"
-    @keyup.shift.tab.exact="goToPrevColumn">
+  <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader class="border-amber-500 head">
         <div class="table-header flex items-center space-x-2">
@@ -67,9 +66,25 @@
         <div :id="`${idx}-priority`" class="table-col w-min"
           @click="toggleEditable(`${idx}-priority`, log.id, log.priority)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)"
-            @blur="onBlur(log.priority, 'priority')" @tab="goToNextColumn" />
+            @blur="onBlur(log.priority, 'priority')" @keyup.tab.native="onBlur(log.priority, 'priority', $event)" />
         </div>
         <div :id="`${idx}-years`" class="table-col xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
+          <Tooltip :disabled="!isMult(log.years) || forceCloseTooltip" trigger="hover" :delay="500"
+            :placement="isEditable(`${idx}-years`) ? 'left' : 'right'" :interactive="true" :html="true">
+            <EditableMultiSelect class="w-10 overflow-ellipsis" v-model="log.years"
+              :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
+              @blur="onBlur(log.years, 'years')" placeholder="Year"
+              @keyup.tab.native="onBlur(log.years, 'years', $event)" />
+            <template #popper>
+              <ul>
+                <li v-for="(year, index) in splitYears(log.years)" :key="index">
+                  <span v-if="isMult(log.years) && index">{{ year }}</span>
+                </li>
+              </ul>
+            </template>
+          </Tooltip>
+        </div>
+        <!-- <div :id="`${idx}-years`" class="table-col xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || isEditable(`${idx}-years`)" trigger="hover" :delay="500"
             placement="right" :interactive="true" :html="true">
             <EditableSelectCell class=" w-10 overflow-ellipsis" v-model="log.years"
@@ -83,13 +98,13 @@
               </ul>
             </template>
           </Tooltip>
-        </div>
+        </div> -->
         <div :id="`${idx}-note`" class="table-col xl relative" @click="toggleEditable(`${idx}-note`, log.id, log.note)"
           @mouseenter="!isEditable(`${idx}-note`) && showTooltip(idx)" @mouseleave="hideTooltip">
           <EditableTextAreaCell v-model="log.note" :prevent-enter="true"
             @keyup.enter.native="onBlur(log.note, 'note', $event)" @keyup.esc.native="onBlur(log.note, 'note', $event)"
             :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note', $event)" :over="false"
-            :showOverflow="true" :pre="false" />
+            :showOverflow="true" :pre="false" @keyup.tab.native="onBlur(log.note, 'note', $event)" />
 
           <!-- Custom Tooltip -->
           <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-note`)"
@@ -101,7 +116,8 @@
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
-            @blur="onBlur(log.logDate, 'logDate')" @keyup.enter.native="onBlur(log.logDate, 'logDate', $event)" />
+            @blur="onBlur(log.logDate, 'logDate')" @keyup.tab.native="onBlur(log.logDate, 'logDate', $event)"
+            @keyup.enter.native="onBlur(log.logDate, 'logDate', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmDate`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
@@ -118,7 +134,8 @@
         <div :id="`${idx}-alarmUserName`" class="table-col xs"
           @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')" />
+            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')"
+            @keyup.tab.native="onBlur(log.alarmUserName, 'alarmUserName', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmUserName`" class="table-col sm"
         @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
@@ -129,7 +146,8 @@
           @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
             @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="MM-DD-YYYY HH:mm"
-            placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')" />
+            placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')"
+            @keyup.tab.native="onBlur(log.alarmTime, 'alarmTime', $event)" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xxs" @click="toggleComplete(log)">
           <CheckIcon v-if="log.alarmTime" class="h-5 w-5 cursor-pointer"
@@ -138,7 +156,8 @@
         <div :id="`${idx}-secondsSpent`" class="table-col xxs"
           @click="toggleEditable(`${idx}-secondsSpent`, log.id, log.timeSpent)">
           <EditableInputCell v-model="log.timeSpent" :is-editable="isEditable(`${idx}-secondsSpent`)"
-            @blur="updateSecondsSpent(log, log.secondsSpent, 'secondsSpent')" />
+            @blur="updateSecondsSpent(log, log.secondsSpent, 'secondsSpent')"
+            @keyup.tab.native="updateSecondsSpent(log, log.secondsSpent, 'secondsSpent')" />
         </div>
         <div :id="`${idx}-delete`" tabindex="-1" class="table-col mr-2  xxs">
           <Tooltip :delay="500" placement="right" :interactive="true" :html="true">
@@ -225,7 +244,8 @@ export default {
       showOrHide: 'Show',
       isDataVisible: false, // flag to toggle visibility of data
       fetchedLogs: [],    // store the fetched data
-      isLoading: false
+      isLoading: false,
+      forceCloseTooltip: false, // Controls tooltip visibility
     }
   },
   computed: {
@@ -544,6 +564,7 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
+      console.log(id, logId, value)
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -553,8 +574,10 @@ export default {
         }
       } else this.oldValue = value
       if (this.editableId !== id) {
+        console.log(this.editableId)
         this.editableId = id;
         this.editableLogId = logId;
+        console.log(this.editableId)
       }
     },
 
@@ -564,7 +587,16 @@ export default {
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
       if (logIndex === -1) return;
 
+      console.log(this.displayedLogs[logIndex])
+
       const updatedLog = { ...this.displayedLogs[logIndex] };
+      if (field === 'years') {
+        console.log("field")
+        if (!val.startsWith('\n')) {
+          val = '\n' + val;
+        }
+        updatedLog.years = val
+      }
 
       // Helper function to validate and send alarm
       const validateAndSendAlarm = (updatedLog, alarmTime) => {
@@ -786,53 +818,57 @@ export default {
       this.$store.commit(mutations.setModelResponse, { model: models.promptOnClientChange, data: false })
       this.$store.commit(mutations.setModelResponse, { model: models.secondsSpentOnClient, data: 0 })
     },
+    hideToolTip() {
+      this.forceCloseTooltip = true; // Close tooltip on blur
+      setTimeout(() => {
+        this.forceCloseTooltip = false; // Re-enable tooltip after a short delay
+      }, 100);
+    },
     onBlur(val, field, event = null) {
-      console.log("data =>> ", this.oldValue, val, field)
-      // For new logs or alarm-related fields, always handle navigation
+      console.log(1, val, this.oldValue)
+      if (field === 'years' && !this.forceCloseTooltip) this.hideToolTip()// Controls tooltip visibility
+
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
         if (!(this.oldValue === '' && val === '')) {
+          console.log(2)
           this.handleUpdate(val, field)
           if (event?.key !== 'Escape') {
+            console.log(3)
             this.goToNextColumn()
             return
           }
+          console.log(4)
           this.editableId = ""
           return
         }
       }
       // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
+        console.log(5)
         this.handleUpdate(val, field)
         if (event?.key !== 'Escape') {
+          if (field === 'priority') this.editableId = '0-priority'
+          console.log(6)
+          console.log("next")
           this.goToNextColumn()
           return
         }
+        console.log(7)
         this.editableId = ""
         return
       }
-
+      if (event?.key === 'Tab' || event?.key === 'Enter') {
+        console.log(8)
+        this.goToNextColumn()
+        return
+      }
+      console.log(9)
+      console.log("theres")
       this.editableId = ""
       this.activeTooltipIndex = null
     },
-    // onBlur(val, field) {
-    //   console.log(val, field)
-    //   if (this.oldValue !== val && this.oldValue !== undefined) {
-    //     this.handleUpdate(val, field)
-    //     this.goToNextColumn()
-    //     // this.editableId = ""
-    //     return
-    //   }
-    //   if (field === 'alarmDate' || field === 'alarmUserName' || field === 'alarmTime' && this.oldValue !== val) {
-    //     this.handleUpdate(val, field)
-    //     this.goToNextColumn()
 
-    //   }
-    //   this.editableId = ""
-    //   this.activeTooltipIndex = null
-
-    //   // this.goToNextColumn()
-    // },
     isTodayOrPast(date) {
       // Parse the date using your expected format
       const parsedDate = parse(date, 'MM-dd-yyyy HH:mm', new Date());
@@ -870,31 +906,17 @@ export default {
     isSelected(logId) {
       return this.selectedItems[logId]
     },
-    // goToNextColumn() {
-    //   const currentCell = this.editableId
-    //   console.log(currentCell)
-    //   const idArr = currentCell.split('-')
-    //   const columnIndex = columns.findIndex((col) => col === idArr[1])
-    //   const currentRow = Number(idArr[0])
-    //   if (columnIndex < columns.length - 1) {
-    //     const nextCell = `${currentRow}-${columns[columnIndex + 1]}`
-    //     this.toggleEditable(nextCell, this.editableLogId)
-    //   } else if (columnIndex === columns.length - 1 && currentRow < this.displayedLogs.length - 1) {
-    //     const nextRow = currentRow + 1
-    //     const nextCell = `${nextRow}-${columns[0]}`
-    //     console.log(nextCell)
-    //     this.toggleEditable(nextCell, this.editableLogId)
-    //   }
-    //   this.activeTooltipIndex = null
-    // },
+
     goToNextColumn() {
       if (!this.editableId) {
         console.warn('No editable ID found');
         return;
       }
+      console.log(this.editableId)
 
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
+      if (idArr[1] === 'years' && !this.forceCloseTooltip) this.hideToolTip()// Controls tooltip visibility
       const columnIndex = columns.findIndex((col) => col === idArr[1])
       const currentRow = Number(idArr[0])
 
@@ -941,11 +963,13 @@ export default {
       this.filterByAlarmStatusValue = alarmStatusValues[this.filterByAlarmStatusIndex]
     },
     splitYears(years) {
-      return years?.split('\u000B')
+      return years?.split(/\r?\n/); // Split on newlines (Windows `\r\n` or Unix `\n`)
     },
+    /* eslint-disable no-control-regex */
     isMult(year) {
-      return year?.includes('\u000B')
+      return /\r|\n|\u000B/.test(year);
     },
+    /* eslint-enable no-control-regex */
     getCurrentTimeSpent() {
       const duration = intervalToDuration({ start: this.currentTimeOnLoad, end: new Date() })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours

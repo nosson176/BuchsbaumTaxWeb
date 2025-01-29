@@ -124,8 +124,8 @@ export default {
     isSelected({ value }) {
       return this.computedValue === value
     },
-    onBlur() {
-      this.$emit(events.blur)
+    onBlur(event) {
+      this.$emit(events.blur, event)
     },
     onButtonClick(event) {
       event.preventDefault()
