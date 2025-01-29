@@ -166,7 +166,6 @@ export default {
     // },
     totalOwedDollars() {
       let total = 0;
-      console.log(this.selectedClient)
       if (this.selectedClient && this.selectedClient.taxYears) {
         this.selectedClient.taxYears.forEach(taxYear => {
           if (taxYear.filings) {

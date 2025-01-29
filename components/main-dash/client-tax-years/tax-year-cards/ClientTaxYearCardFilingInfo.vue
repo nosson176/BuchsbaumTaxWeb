@@ -15,10 +15,27 @@
         <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')"
           placeholder="Status" @blur="onBlur('status')" />
       </div>
-      <div class="mb-1" @click="setEditable('statusDetail')">
+      <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('statusDetail')">
         <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions"
           :is-editable="isEditable('statusDetail')" placeholder="Detail" @blur="onBlur('statusDetail')"
           @keyup.enter.native="onBlur('statusDetail')" />
+      </div>
+      <div v-else :id="`statusDetail`" class="mb-1" @click="setEditable('statusDetail')">
+        <Tooltip :disabled="!isMult(statusDetail) || isEditable('statusDetail')" trigger="hover" :delay="500"
+          class="w-full" style="width: 100%;" :placement="isEditable('statusDetail') ? 'left' : 'right'"
+          :interactive="true" :html="true">
+          <EditableMultiSelect class=" overflow-ellipsis" v-model="statusDetail"
+            :shownValue="!isEditable('statusDetail') && isMult(statusDetail) ? 'MULTI' : statusDetail"
+            :is-editable="isEditable('statusDetail')" :options="statusDetailOptions" @blur="onBlur('statusDetail')"
+            filingType="true" placeholder="Detail" />
+          <template #popper>
+            <ul>
+              <li v-for="(status, index) in splitYears(statusDetail)" :key="index">
+                <span v-if="isMult(statusDetail) && index">{{ status }}</span>
+              </li>
+            </ul>
+          </template>
+        </Tooltip>
       </div>
       <div class="mb-1" @click="setEditable('statusDate')">
         <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')"
@@ -233,16 +250,27 @@ export default {
         return this.formModel?.statusDetail?.value;
       },
       set(newVal) {
+        let res = newVal;
+
+        if (Array.isArray(newVal)) {
+          res = newVal.join('\n'); // מחבר את המערך עם ירידת שורה
+        }
+
+        // מוסיף ירידת שורה בהתחלה אם לא קיימת אחת
+        if (!res.startsWith('\n')) {
+          res = '\n' + res;
+        }
+
         // Check if the statusDetail object is empty or undefined
         if (!this.formModel.statusDetail || Object.keys(this.formModel.statusDetail).length === 0) {
           // Initialize the statusDetail object with the given value and current timestamp if empty
           this.formModel.statusDetail = {
-            value: newVal,
+            value: res,
             date: Date.now(),
           };
         } else {
           // Otherwise, just update the existing properties
-          this.formModel.statusDetail.value = newVal;
+          this.formModel.statusDetail.value = res;
           this.formModel.statusDetail.date = Date.now();
         }
       },
@@ -298,7 +326,6 @@ export default {
     // },
     maam: {
       get() {
-        console.log(this.formModel)
         return this.formModel?.maam
       },
       set(newVal) {
@@ -613,14 +640,12 @@ export default {
     },
 
     onBlur(field, event) {
-      console.log(field, this.maamEdit)
       if (field === 'taxForm' || field === 'state') {
         const val = this.formModel
         this.$store.commit('updateFilingTab', { filing: val, taxYearId: this.filing.taxYearId })
       }
       if (field === 'maam') this.maamEdit = false
       if (field === 'basicPlusPro') this.basicPlusProEdit = false
-      console.log(this.maamEdit)
 
       // Special handling for date fields
       if (field === 'statusDate' || field === 'dateFiled') {
@@ -789,14 +814,30 @@ export default {
 
       }
     },
+    splitYears(years) {
+      if (!years) return []; // Handle null or undefined safely
+      if (Array.isArray(years)) return years; // If it's already an array, return as-is
+
+      return String(years).split(/\r?\n/); // Ensure it's a string before splitting
+    },
+    /* eslint-disable no-control-regex */
+    isMult(year) {
+      if (Array.isArray(year)) return year.length > 1; // If it's an array, check if it has multiple items
+
+      if (!year) return false; // Handle null or undefined
+
+      return /\r|\n|\u000B/.test(String(year)); // Ensure it's a string before testing
+    }
+    ,
+    /* eslint-enable no-control-regex */
   },
 }
 </script>
 
-<style scoped>
+<!-- <style scoped>
 .delete-btn {
   @apply absolute;
 
   top: -5px;
 }
-</style>
+</style> -->

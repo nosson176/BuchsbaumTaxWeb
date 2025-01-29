@@ -79,11 +79,9 @@ export default {
       }
     },
     handleUpdateFee(editedFee) {
-      console.log(editedFee)
       const feeCopy = JSON.parse(JSON.stringify(editedFee));
       const index = this.updateFees.findIndex(fee => fee.id === editedFee.id)
       if (index !== -1) {
-        console.log(feeCopy)
         this.updateFees[index] = feeCopy
       } else {
         this.updateFees.push(feeCopy)

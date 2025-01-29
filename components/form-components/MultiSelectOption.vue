@@ -44,7 +44,7 @@
           role="option" @click="setSelectOption(option)">
           <span :class="[isSelected(option) ? 'font-semibold' : 'font-normal', 'block truncate']">{{
             option.name || option.value
-            }}</span>
+          }}</span>
           <span v-if="isSelected(option)"
             class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4 hover:text-white">
             <!-- Heroicon name: solid/check -->

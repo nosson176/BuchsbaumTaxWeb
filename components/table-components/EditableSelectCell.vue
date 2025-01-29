@@ -109,7 +109,6 @@ export default {
   },
   watch: {
     async isEditable(val) {
-      console.log(val)
       if (!val) {
         this.showOptions = false;
       } else {
