@@ -37,7 +37,7 @@
               <div class="flex items-center" @click="setEditable('manualAmount')">
                 <HeaderSelectOption v-if="manualAmount" v-model="currency" :options="currencyOptions" currency
                   @input="onBlur" />
-                <EditableInput v-model="manualAmount" placeholder="Amount" currency
+                <EditableInput v-model.number="manualAmount" placeholder="Amount" currency
                   :is-editable="isEditable('manualAmount')" @blur="onBlur('manualAmount')"
                   @keyup.enter.native="onBlur('manualAmount')" @keyup.esc.native="onBlur('manualAmount', $event)" />
                 <div v-if="isEditable('manualAmount')" />
@@ -45,18 +45,18 @@
               <div class="flex items-center" @click="setEditable('paidAmount')">
                 <HeaderSelectOption v-if="paidAmount" v-model="currency" :options="currencyOptions" currency
                   @input="onBlur" />
-                <EditableInput v-model="paidAmount" placeholder="Paid" currency :is-editable="isEditable('paidAmount')"
-                  @blur="onBlur('paidAmount')" @keyup.enter.native="onBlur('paidAmount')"
-                  @keyup.esc.native="onBlur('paidAmount', $event)" />
+                <EditableInput v-model.number="paidAmount" placeholder="Paid" currency
+                  :is-editable="isEditable('paidAmount')" @blur="onBlur('paidAmount')"
+                  @keyup.enter.native="onBlur('paidAmount')" @keyup.esc.native="onBlur('paidAmount', $event)" />
                 <div v-if="isEditable('paidAmount')" />
               </div>
             </div>
           </div>
         </div>
         <div class="flex justify-between">
-          <div @click="setEditable('include')">
+          <!-- <div @click="setEditable('include')">
             <EditableCheckBoxCell v-model="include" :is-editable="isEditable('include')" @click="onBlur('include')" />
-          </div>
+          </div> -->
           <div class="flex space-x-2">
             <span class="missing">Time</span>
             <div @click="setEditable('dateFee')">
@@ -66,7 +66,7 @@
           </div>
           <div class="w-1/3">
             <div @click="setEditable('rate')">
-              <EditableInput v-model="rate" :is-editable="isEditable('rate')" placeholder="Rate/hr"
+              <EditableInput v-model="rate" class="text-center" :is-editable="isEditable('rate')" placeholder="Rate/hr"
                 @blur="onBlur('rate')" @keyup.enter.native="onBlur('rate')"
                 @keyup.esc.native="onBlur('rate', $event)" />
             </div>
@@ -184,7 +184,7 @@ export default {
         return this.formModel.manualAmount
       },
       set(newVal) {
-        this.formModel.manualAmount = newVal
+        this.formModel.manualAmount = Number(newVal)
       },
     },
     paidAmount: {
@@ -192,7 +192,8 @@ export default {
         return this.formModel.paidAmount
       },
       set(newVal) {
-        this.formModel.paidAmount = newVal
+        console.log(newVal)
+        this.formModel.paidAmount = Number(newVal)
       },
     },
     dateFee: {
