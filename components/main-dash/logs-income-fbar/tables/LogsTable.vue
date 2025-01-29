@@ -88,7 +88,8 @@
           @mouseenter="!isEditable(`${idx}-note`) && showTooltip(idx)" @mouseleave="hideTooltip">
           <EditableTextAreaCell v-model="log.note" :prevent-enter="true"
             @keyup.enter.native="onBlur(log.note, 'note', $event)" @keyup.esc.native="onBlur(log.note, 'note', $event)"
-            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note', $event)" />
+            :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note', $event)" :over="false"
+            :showOverflow="true" :pre="false" />
 
           <!-- Custom Tooltip -->
           <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-note`)"

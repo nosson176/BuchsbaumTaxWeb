@@ -8,8 +8,10 @@
       :class="{
         'absolute top-0': position,
       }" spellcheck @click.prevent @keydown.tab.prevent="emitTab" @keydown.enter="handleEnterKey" @input="onInput" />
-    <pre v-else tabindex="0" class="cursor-pointer whitespace-pre-wrap break-words text-xs font-sans m-0"
+    <pre v-else-if="pre" tabindex="0" class="cursor-pointer whitespace-pre-wrap break-words text-xs font-sans m-0"
       :class="computedValue ? '' : 'text-gray-400 italic'" v-html="formattedValue"></pre>
+    <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'"
+      v-html="formattedValue"></span>
   </div>
 </template>
 
@@ -49,6 +51,10 @@ export default {
       default: true
     },
     over: {
+      type: [Boolean, String],
+      default: true
+    },
+    pre: {
       type: [Boolean, String],
       default: true
     }
@@ -143,14 +149,10 @@ export default {
 }
 
 .readMode {
-  @apply overflow-hidden border-transparent outline-none border focus:border-indigo-500;
+  @apply overflow-hidden overflow-ellipsis border-transparent outline-none border focus:border-indigo-500;
 }
 
 .overFlow {
   @apply overflow-visible h-full;
-}
-
-span {
-  @apply bg-yellow-200;
 }
 </style>

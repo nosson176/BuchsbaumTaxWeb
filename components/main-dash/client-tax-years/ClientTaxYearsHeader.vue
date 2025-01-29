@@ -43,7 +43,7 @@
               <span v-else class="capitalize">Delete</span>
             </button>
           </div>
-          <div class="flex gap-x-3 ml-16">
+          <div class="gap-x-3 ml-12 " style="display: flex; flex-grow: 1;">
             <div class="font-bold text-2xl" :class="dollarsClassObj">{{ summationDollars }}</div>
             <div class="font-bold text-2xl" :class="shekelsClassObj">{{ summationShekels }}</div>
           </div>
@@ -166,6 +166,7 @@ export default {
     // },
     totalOwedDollars() {
       let total = 0;
+      console.log(this.selectedClient)
       if (this.selectedClient && this.selectedClient.taxYears) {
         this.selectedClient.taxYears.forEach(taxYear => {
           if (taxYear.filings) {
@@ -175,14 +176,20 @@ export default {
                   total += (filing.owes || 0);
                   total -= (filing.paid || 0);
                 }
-                if (filing.includeFee) {
-                  total += (filing.owesFee || 0);
-                  total -= (filing.paidFee || 0);
-                }
               }
             });
           }
         });
+      }
+      if (this.selectedClient && this.selectedClient.fees) {
+        this.selectedClient.fees.forEach(fee => {
+          if (fee.currency === 'USD') {
+            if (fee.sum) {
+              total += (fee.manualAmount || 0)
+              total -= (fee.paidAmount || 0)
+            }
+          }
+        })
       }
       return total;
     },
@@ -198,14 +205,20 @@ export default {
                   total += (filing.owes || 0);
                   total -= (filing.paid || 0);
                 }
-                if (filing.includeFee) {
-                  total += (filing.owesFee || 0);
-                  total -= (filing.paidFee || 0);
-                }
               }
             });
           }
         });
+        if (this.selectedClient && this.selectedClient.fees) {
+          this.selectedClient.fees.forEach(fee => {
+            if (fee.currency === 'NIS' || !fee.currency) {
+              if (fee.sum) {
+                total += (fee.manualAmount || 0)
+                total -= (fee.paidAmount || 0)
+              }
+            }
+          })
+        }
       }
       return total;
     },
