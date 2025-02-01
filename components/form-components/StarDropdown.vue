@@ -10,7 +10,8 @@
                 <li v-for="(option, idx) in options" :id="idx" :key="idx"
                     class="flex items-center justify-start cursor-pointer select-none relative py-1 px-1 hover:bg-gray-300 space-x-1"
                     role="option" @click="emitChange(option)">
-                    <StarIcon class="h-4 w-4" :color="option" />
+                    <StarIcon v-if="option !== 11" class="h-4 w-4" :color="option" />
+                    <span v-else class="font-bold text-black text-xs">None</span>
                     <div v-if="isSelected(option)" class="text-indigo-600 inset-y-0 flex items-center p-0">
                         <!-- Heroicon name: solid/check -->
                         <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -45,7 +46,7 @@ export default {
     },
     computed: {
         options() {
-            return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         },
         computedValue: {
             get() {

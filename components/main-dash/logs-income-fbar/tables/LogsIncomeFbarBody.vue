@@ -1,10 +1,22 @@
 <template>
   <div class="flex flex-col flex-grow overflow-hidden ">
-    <div class=" flex bg-blue-200 p-0.5">
-      <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
-      <SearchHeader v-model="searchInput" :active-tab="currentTab" />
-      <div
-        class="inline-flex justify-end shadow-sm px-2 py-1 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ml-auto">
+    <div class=" grid justify-items-stretch grid-cols-3 bg-blue-200 p-0.5 ">
+      <div class="flex">
+        <ViewArchivedHeader :view-active="showActive" @change="archiveToggle" />
+        <SearchHeader v-model="searchInput" :active-tab="currentTab" />
+      </div>
+      <div class="mb-auto mt-auto">
+        <div v-if="isLoading" class="cursor-pointer italic font-bold text-center ">
+          <div class="spinner-overlay">
+            <div class="spinner"></div>
+          </div>
+        </div>
+        <div v-else class="cursor-pointer italic font-bold text-center " @click="handleShowHide">
+          {{ showOrHide }}
+        </div>
+      </div>
+      <div class="inline-flex justify-end shadow-sm px-2 py-1 text-xs font-semibold text-gray-700 focus:outline-none
+        focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 ">
         <Dropdown shown-value="10" :value="selectedTime" :options="[2, 5, 10, 15, 20, 'OFF']"
           @input="chooseSecondsNeededToDisplayModal1" />
       </div>
@@ -31,6 +43,9 @@ const initialState = () => ({
   showActiveFbar: true,
   clickOnClient: false,
   selectedTime: null,
+  isLoading: false,
+  showOrHide: 'Show',
+  fetchedLogs: [],
 })
 
 export default {
@@ -45,7 +60,7 @@ export default {
     return initialState()
   },
   computed: {
-    ...mapState([models.loading, models.clientClicked, models.globalPlayTime]),
+    ...mapState([models.loading, models.clientClicked, models.globalPlayTime, models.selectedClient]),
     showLogs() {
       return this.currentTab === tabs.logs
     },
@@ -65,6 +80,9 @@ export default {
       } else {
         return true
       }
+    },
+    headers() {
+      return this.$api.getHeaders()
     },
     searchInput: {
       get() {
@@ -103,15 +121,58 @@ export default {
       this.searchInputUpdate(searchInput)
     },
     clientClicked() {
+      console.log("clicked")
+      this.showOrHide = 'Show'
       this.clickOnClient = true
     },
     isSelectedClientLoading() {
+      console.log("clicked222")
       if (!this.isSelectedClientLoading) {
         this.clickOnClient = false
       }
     },
   },
   methods: {
+    async handleShowHide() {
+      if (!this.$refs.logsTableRef) return;
+
+      if (this.showOrHide === 'Show') {
+        this.showOrHide = 'Hide';
+        await this.getRestLogs();
+      } else {
+        this.showOrHide = 'Show';
+        this.hideRestLogs();
+      }
+    },
+    async getRestLogs() {
+      if (this.fetchedLogs.length > 0) {
+        this.$store.commit('pushRestLogs', this.fetchedLogs);
+        return;
+      }
+
+      this.isLoading = true;
+      try {
+        const res = await this.$api.getRestLogsByClient(this.headers, {
+          clientId: this.$store.state.selectedClient.id
+        });
+        const data = Object.values(res);
+        if (data.length > 0) {
+          this.fetchedLogs = data;
+          this.$store.commit('pushRestLogs', data);
+        }
+      } catch (error) {
+        console.error('Error fetching logs:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    hideRestLogs() {
+      const count = this.fetchedLogs.length;
+      if (count > 0) {
+        this.$store.commit('hideRestLogs', count);
+      }
+    },
     searchInputUpdate(searchInput) {
       this.$store.commit(mutations.setModelResponse, {
         model: models.search,
@@ -154,4 +215,40 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.spinner-overlay {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  z-index: 100;
+  height: 100%;
+}
+
+/* Spinner design */
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1.5s linear infinite;
+}
+
+/* Spinner rotation animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

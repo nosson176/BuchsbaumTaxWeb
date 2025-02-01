@@ -9,15 +9,15 @@
                     <CheckBoxWithEyeIcon />
                 </div>
                 <div class="table-header w-full ml-1">Name</div>
-                <!-- <div class="table-header xs mr-1">
+                <div class="table-header xs mr-1">
                     <button class="transform hover:text-indigo-500 hover:scale-110" @click="resetOrder">A-Z</button>
-                </div> -->
+                </div>
             </TableHeader>
         </template>
         <template #body>
-            <draggable :value="filteredCurrencyValues" v-bind="dragOptions" @start="startDrag" @end="onDrop">
+            <draggable :value="clientStatus" v-bind="dragOptions" @start="startDrag" @end="onDrop">
                 <transition-group type="transition" :name="transitionName">
-                    <TableRow v-for="(type, idx) in filteredCurrencyValues" :key="type.id" class="pr-1 divide-y">
+                    <TableRow v-for="(type, idx) in clientStatus" :key="type.id" class="pr-1">
                         <div class="table-col bg-gray-200 mr-1">
                             <ClickCell>{{ idx + 1 }}</ClickCell>
                         </div>
@@ -26,13 +26,7 @@
                                 @click="toggleEditable(type.id)" />
                         </div>
                         <div class="table-col w-full" @click="toggleEditable(type.id)">
-                            <EditableInput v-model="type.year" :is-editable="isEditable(type.id)" @blur="onBlur" />
-                        </div>
-                        <div class="table-col w-full" @click="toggleEditable(type.id)">
-                            <EditableInput v-model="type.currency" :is-editable="isEditable(type.id)" @blur="onBlur" />
-                        </div>
-                        <div class="table-col w-full" @click="toggleEditable(type.id)">
-                            <EditableInput v-model="type.rate" :is-editable="isEditable(type.id)" @blur="onBlur" />
+                            <EditableInput v-model="type.value" :is-editable="isEditable(type.id)" @blur="onBlur" />
                         </div>
                         <div class="table-col xs">
                             <DeleteButton @click="deleteValue(type)" />
@@ -54,17 +48,11 @@ import draggable from 'vuedraggable'
 import { models, TRANSITION_NAME } from '~/shared/constants'
 import { valueTypeValueConstructor } from '~/shared/constructors'
 
-const TABLE_TYPE = 'currency'
+const TABLE_TYPE = 'active_status'
 
 export default {
-    name: 'IncFbarCurrenciesValuesTable',
+    name: 'ClientActiveStatusTable',
     components: { draggable },
-    props: {
-        CurrencyValue: {
-            type: String,
-            required: true
-        },
-    },
     data() {
         return {
             editableId: null,
@@ -78,13 +66,10 @@ export default {
         }
     },
     computed: {
-        ...mapState([models.valueTypes, models.exchangeRate]),
-        // incFbarCurrenciesValues() {
-        //     console.log(JSON.parse(JSON.stringify(this.exchangeRate)))
-        //     return Object.values(this.exchangeRate)
-        // },
-        filteredCurrencyValues() {
-            return Object.values(this.exchangeRate).filter(value => value.currency === this.CurrencyValue).sort((a, b) => b.year - a.year)
+        ...mapState([models.valueTypes]),
+        clientStatus() {
+            if (!this.valueTypes[TABLE_TYPE]) return
+            return JSON.parse(JSON.stringify(this.valueTypes[TABLE_TYPE]))
         },
         headers() {
             return this.$api.getHeaders()
@@ -115,7 +100,7 @@ export default {
             const value = Object.assign({}, valueTypeValueConstructor, {
                 key: TABLE_TYPE,
                 value: '',
-                sortOrder: this.valueTypes[TABLE_TYPE].length + 1,
+                sortOrder: this.valueTypes[TABLE_TYPE]?.length + 1,
             })
             this.$api.createValueType(this.headers, { value }).then(res => {
                 this.$store.commit("pushNewValueType", { value: res, tab: TABLE_TYPE })
@@ -126,7 +111,7 @@ export default {
             this.editableId = null
         },
         handleUpdate() {
-            const value = Object.values(this.filteredCurrencyValues).find((type) => type.id === this.editableId)
+            const value = Object.values(this.clientStatus).find((type) => type.id === this.editableId)
             this.$api.updateValueType(this.headers, { valueId: value.id }, value).then(res => {
                 this.$store.commit("updateValueType", { value: res, tab: TABLE_TYPE })
             })
@@ -147,7 +132,7 @@ export default {
         },
         onDrop(evt) {
             // יצירת עותק של האובייקט array והמרתו למערך
-            const list = Object.values({ ...this.filteredCurrencyValues });
+            const list = Object.values({ ...this.clientStatus });
 
             // פריט שנגרר
             const item = list[evt.oldIndex];
@@ -172,32 +157,32 @@ export default {
 
             this.dragActive = false; // סיום מצב גרירה
         },
-        // resetOrder() {
-        //     // Create a copy of the array
-        //     const list = [...this.filteredCurrencyValues];
-        //     if (list.length === 0) return
-        //     // Sort the list alphabetically by the `value` field
-        //     list.sort((a, b) => b.year - a.year);
+        resetOrder() {
+            // Create a copy of the array
+            const list = [...this.clientStatus];
+            if (list.length === 0) return
+            // Sort the list alphabetically by the `value` field
+            list.sort((a, b) => a.value?.localeCompare(b.value));
 
-        //     // Reset the sortOrder for each item
-        //     list.forEach((item, index) => {
-        //         item.sortOrder = index + 1;
-        //     });
+            // Reset the sortOrder for each item
+            list.forEach((item, index) => {
+                item.sortOrder = index + 1;
+            });
 
-        //     // Send the first item to the server with sortOrder = 0 to trigger the server reset logic
-        //     const item = this.filteredCurrencyValues[0];
-        //     item.sortOrder = 0;
+            // Send the first item to the server with sortOrder = 0 to trigger the server reset logic
+            const item = this.clientStatus[0];
+            item.sortOrder = 0;
 
-        //     this.$api.updateValueType(this.headers, { valueId: item.id }, item)
-        //         .then(() => {
-        //             // Commit the updated list to the Vuex store
-        //             this.$store.commit("updateSortOrder", { value: list, tab: TABLE_TYPE });
-        //         })
-        //         .catch((error) => {
-        //             console.error("Failed to reset order:", error);
-        //         });
-        // },
-    },
+            this.$api.updateValueType(this.headers, { valueId: item.id }, item)
+                .then(() => {
+                    // Commit the updated list to the Vuex store
+                    this.$store.commit("updateSortOrder", { value: list, tab: TABLE_TYPE });
+                })
+                .catch((error) => {
+                    console.error("Failed to reset order:", error);
+                });
+        }
+    }
 }
 </script>
 

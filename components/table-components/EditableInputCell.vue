@@ -3,9 +3,9 @@
     <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <input v-if="showEditMode" ref="input" v-model="computedValue" autofocus selectAll type="text"
+    <input v-if="showEditMode" ref="input" v-model="computedValue" autofocus type="text"
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full z-20"
-      tabindex="0" :placeholder="placeholder" @keydown.enter="emitEnter" />
+      tabindex="0" :placeholder="placeholder" @keydown.enter="emitEnter" @input="onInput" />
     <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
   </div>
 </template>
@@ -46,17 +46,23 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      hasEdited: false,  // מצב שמעקב אחרי אם ערך שונה כבר הוזן
+    }
+  },
   computed: {
     computedValue: {
       get() {
         if (this.rounded) {
-          return this.value ? formatAsNumber(Math.round(this.value)) : ''
+          return this.value ? formatAsNumber(Math.round(this.value)) : 0
         } else if (this.currency) {
-          return this.value ? formatAsNumber(this.value) : ''
+          return this.value ? formatAsNumber(this.value) : 0
         }
-        return this.value
+        return this.value || 0
       },
       set(newVal) {
+        console.log(newVal)
         this.$emit(events.input, newVal)
       },
     },
@@ -65,12 +71,12 @@ export default {
     },
   },
   updated() {
-    if (this.isEditable) {
-      if (this.readonly) {
-        this.$refs.div.focus()
-      } else if (this.selectAll) {
-        this.$refs.input.select()
-      } else this.$refs.input.focus()
+    if (this.showEditMode && !this.hasEdited && this.$refs.input) {
+      // אם לא הוזן ערך חדש, בחר את הערך במלואו
+      this.$refs.input.select()
+    } else if (this.showEditMode && this.hasEdited) {
+      // אם הוזן ערך, אל תבחר את הערך יותר
+      this.$refs.input.focus()
     }
   },
   methods: {
@@ -83,9 +89,15 @@ export default {
     emitEnter() {
       this.$emit(events.submit)
     },
+    onInput() {
+      if (!this.hasEdited) {
+        this.hasEdited = true // ברגע שמתחילים להקליד, לא נבחר יותר את הערך
+      }
+    },
   },
 }
 </script>
+
 
 <style scoped>
 .edit-mode {

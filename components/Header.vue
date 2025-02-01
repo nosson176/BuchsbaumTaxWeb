@@ -6,7 +6,7 @@
       </button>
       <div class="p-3 flex items-center gap-1">
         <span class="font-bold">{{ username }}</span>
-        <span class="ml-1 mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"> </span>
+        <!-- <span class="ml-1 mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"> </span> -->
       </div>
 
       <!-- <button type="button"

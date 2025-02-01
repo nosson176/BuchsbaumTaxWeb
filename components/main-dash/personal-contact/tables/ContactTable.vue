@@ -1,6 +1,6 @@
 \\ ימין תחתון דף ראשי חלון
 <template>
-  <Table @keydown.tab.prevent @keyup.tab.exact="goToNextColumn" @keyup.shift.tab.exact="goToPrevColumn">
+  <Table @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
         <div class="table-header">
@@ -32,13 +32,15 @@
             <div :id="`${idx}-contactType`" class="table-col-primary normal"
               @click="toggleEditable(`${idx}-contactType`, contact.id, contact.contactType)">
               <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)"
-                :options="contactTypeOptions" @blur="onBlur(contact.contactType, 'type',)" />
+                :options="contactTypeOptions" @blur="onBlur(contact.contactType, 'type', $event)"
+                @keyup.tab.native="onBlur(contact.contactType, 'type', $event)" />
             </div>
             <div :id="`${idx}-memo`" class="table-col normal"
               @click="toggleEditable(`${idx}-memo`, contact.id, contact.memo)">
-              <EditableInputCell v-model="contact.memo" @keyup.enter.native="onBlur(contact.memo)"
-                @keyup.esc.native="onBlur(contact.memo, 'memo', $event)" :is-editable="isEditable(`${idx}-memo`)"
-                @blur="onBlur(contact.memo)" />
+              <EditableInputCell v-model="contact.memo" @keyup.enter.native="onBlur(contact.memo, 'memo', $event)"
+                @keyup.esc.native="onBlur(contact.memo, 'memo', $event)"
+                @keyup.tab.native="onBlur(contact.memo, 'memo', $event)" @blur="onBlur(contact.memo, 'memo', $event)"
+                :is-editable="isEditable(`${idx}-memo`)" />
             </div>
             <div class="table-col xs">
               <button v-if="isTypeAddress(contact)" @click="setCurrentMapLocation(contact)">
@@ -48,26 +50,33 @@
             <div :id="`${idx}-mainDetail`" class="table-col lg"
               @click="toggleEditable(`${idx}-mainDetail`, contact.id, contact.mainDetail)">
               <EditableInputCell v-model="contact.mainDetail"
-                @keyup.enter.native="onBlur(contact.mainDetail, 'mainDetail')"
+                @keyup.enter.native="onBlur(contact.mainDetail, 'mainDetail', $event)"
                 @keyup.esc.native="onBlur(contact.mainDetail, 'mainDetail', $event)"
-                :is-editable="isEditable(`${idx}-mainDetail`)" @blur="onBlur(contact.mainDetail, 'mainDetail')" />
+                @keyup.tab.native="onBlur(contact.mainDetail, 'mainDetail', $event)"
+                @blur="onBlur(contact.mainDetail, 'mainDetail', $event)"
+                :is-editable="isEditable(`${idx}-mainDetail`)" />
             </div>
             <div :id="`${idx}-secondaryDetail`" class="table-col lg"
               @click="toggleEditable(`${idx}-secondaryDetail`, contact.id, contact.secondaryDetail)">
-              <EditableInputCell v-model="contact.secondaryDetail" @keyup.enter.native="onBlur(contact.secondaryDetail)"
+              <EditableInputCell v-model="contact.secondaryDetail"
+                @keyup.enter.native="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
                 @keyup.esc.native="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
-                :is-editable="isEditable(`${idx}-secondaryDetail`)" @blur="onBlur(contact.secondaryDetail)" />
+                @keyup.tab.native="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
+                @blur="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
+                :is-editable="isEditable(`${idx}-secondaryDetail`)" />
             </div>
             <div :id="`${idx}-state`" class="table-col xs"
               @click="toggleEditable(`${idx}-state`, contact.id, contact.state)">
-              <EditableInputCell v-model="contact.state" @keyup.enter.native="onBlur(contact.state)"
+              <EditableSelectCell v-model="contact.state" :options="stateOptions"
+                @keyup.tab.native="onBlur(contact.state, 'state', $event)"
                 @keyup.esc.native="onBlur(contact.state, 'state', $event)" :is-editable="isEditable(`${idx}-state`)"
-                @blur="onBlur(contact.state)" />
+                @blur="onBlur(contact.state, $event)" />
             </div>
             <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id, contact.zip)">
-              <EditableInputCell v-model="contact.zip" @keyup.enter.native="onBlur(contact.zip)"
-                @keyup.esc.native="onBlur(contact.zip, 'zip', $event)" :is-editable="isEditable(`${idx}-zip`)"
-                @blur="onBlur(contact.zip)" />
+              <EditableInputCell v-model="contact.zip" @keyup.enter.native="onBlur(contact.zip, 'zip', $event)"
+                @keyup.esc.native="onBlur(contact.zip, 'zip', $event)"
+                @keyup.tab.native="onBlur(contact.zip, 'zip', $event)" :is-editable="isEditable(`${idx}-zip`)"
+                @blur="onBlur(contact.zip, 'zip', $event)" />
             </div>
             <div :id="`${idx}-delete`" class="table-col xs">
               <DeleteButton small @click="onDeleteClick(contact)" />
@@ -170,6 +179,9 @@ export default {
     },
     selectedContactIds() {
       return Object.keys(this.selectedItems).filter((id) => this.selectedItems[id])
+    },
+    stateOptions() {
+      return this.valueTypes.state
     },
   },
   mounted() {
@@ -476,10 +488,14 @@ export default {
     onBlur(val, field, event = null) {
       if (this.oldValue !== val) {
         this.handleUpdate(field)
-        if (event.key !== 'Escape') {
+        if (event?.key !== 'Escape') {
           this.goToNextColumn()
           return
         }
+      }
+      if (event?.key === 'Tab' || event?.key === 'Enter') {
+        this.goToNextColumn()
+        return
       }
       this.editableId = ""
     },

@@ -87,7 +87,7 @@
         <div :id="`${idx}-category`" class="table-col xs"
           @click="toggleEditable(`${idx}-category`, income.id, income.category)">
           <EditableSelectCell v-model="income.category" :is-editable="isEditable(`${idx}-category`)"
-            :options="categoryOptions" @blur="onBlur(income.category)" />
+            :options="categoryOptions" @blur="onBlur(income.category, 'category')" />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col sm"
           @click="toggleEditable(`${idx}-taxGroup`, income.id, income.taxGroup)">
@@ -106,11 +106,11 @@
         </div>
         <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, income.id, income.job)">
           <EditableSelectCell v-model="income.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions"
-            @blur="onBlur(income.job)" />
+            @blur="onBlur(income.job, 'job')" />
         </div>
         <div :id="`${idx}-amount`" tabindex="-1" class="table-col sm"
           @click="toggleEditable(`${idx}-amount`, income.id, income.amount, `selectAll`)">
-          <EditableInputCell v-model.number="income.amount" :selectAll="true"
+          <EditableInputCell v-model.number="income.amount" :selectAll="true" rounded
             @keyup.enter.native="onBlur(income.amount, 'amount')"
             @keyup.esc.native="onBlur(income.amount, 'amount', $event)" :is-editable="isEditable(`${idx}-amount`)"
             currency @blur="onBlur(income.amount, 'amount')" />
@@ -263,6 +263,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.currentUser, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedIncomes() {
+      console.log("displa")
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
       return searchArrOfObjs(incomes, this.searchInput)
     },
@@ -274,7 +275,9 @@ export default {
       }
     },
     categoryOptions() {
-      return this.valueTypes.category.filter((category) => category.show)
+      return this.valueTypes.category.filter((category) => {
+        return category.show
+      })
     },
     yearNameOptions() {
       return this.valueTypes.year_name.filter((yearName) => yearName.show)
@@ -293,7 +296,9 @@ export default {
       return taxGroup?.id
     },
     jobOptions() {
-      return this.valueTypes.job.filter((job) => job.show)
+      return this.valueTypes.job.filter((job) => {
+        return job.show
+      })
     },
     currencyOptions() {
       return this.valueTypes.currency.filter((currency) => currency.show)
@@ -323,6 +328,7 @@ export default {
       return docOptions
     },
     amountTotal() {
+      console.log("amountTotal")
       return formatAsNumber(
         this.displayedIncomes
           .filter((income) => income.include)
@@ -340,7 +346,7 @@ export default {
               }
 
               const rate = this.getCurrencyRate(income.years, income.currency);
-              return rate ? acc + (income.amount * rate) : acc;
+              return rate ? acc + (income.amount / rate) : acc;
             }, 0)
         )
       )}`;
@@ -525,21 +531,24 @@ export default {
 
       // Handle amount changes
       if (field === 'amount') {
+        if (income.amount === '') income.amount = 0
+        console.log(income.amount)
         income.amount = setAsValidNumber(income.amount);
         // Recalculate amountUSD based on the new amount and current exchange rate
         const rate = this.getCurrencyRate(income.years, income.currency);
-        income.amountUSD = rate ? income.amount * rate : income.amount;
+        income.amountUSD = rate ? income.amount / rate : income.amount;
       }
 
       // Update store for specific fields that should trigger recalculation
       if (field === 'years' || field === 'currency' || field === 'amount' || field === 'include') {
         // If currency or year changes, we need to recalculate amountUSD
-        if (field === 'years' || field === 'currency') {
+        if (field === 'years' || field === 'currency' || field === 'amount') {
           const rate = this.getCurrencyRate(income.years, income.currency);
-          income.amountUSD = rate ? income.amount * rate : income.amount;
+          income.amountUSD = rate ? income.amount / rate : income.amount;
         }
 
         // Dispatch update to store
+        console.log("dispatch", income)
         this.$store.dispatch('updateIncomeAction', { income });
       }
 
@@ -552,28 +561,82 @@ export default {
       }
 
       // Sort if year changes
-      if (field === 'years') this.sortIncomes();
+      if (field === 'years' || field === 'job' || field === 'category' || field === 'currency') this.sortIncomes();
     },
-    sortIncomes() {
-      this.displayedIncomes.sort((a, b) => {
-        const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
+    // sortIncomes() {
+    //   this.displayedIncomes.sort((a, b) => {
+    //     const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
 
-        // If one entry has no year, check if it's new
+    //     // If one entry has no year, check if it's new
+    //     if (!a.years && !b.years) {
+    //       // If both have no years, put newer entries first
+    //       if (!a.createdTime && b.createdTime) return -1;
+    //       if (a.createdTime && !b.createdTime) return 1;
+    //       return 0;
+    //     }
+
+    //     // If only one entry has no year, put it first only if it's new
+    //     if (!a.years && !a.createdTime) return -1;
+    //     if (!b.years && !b.createdTime) return 1;
+
+    //     // Normal year-based sorting
+    //     if (!a.years) return 1;  // Push entries with no year to bottom
+    //     if (!b.years) return -1; // Push entries with no year to bottom
+
+    //     const aYearMatch = a.years.match(yearRegex);
+    //     const bYearMatch = b.years.match(yearRegex);
+
+    //     if (aYearMatch && bYearMatch) {
+    //       const aYear = parseInt(aYearMatch[0]);
+    //       const bYear = parseInt(bYearMatch[0]);
+
+    //       // Sort by year in descending order
+    //       if (aYear !== bYear) {
+    //         return bYear - aYear;
+    //       }
+
+    //       // Sort by remaining string after the year (e.g., X, X2)
+    //       return a.years.localeCompare(b.years);
+    //     }
+
+    //     // If one has a year and the other doesn't, place the one with the year first
+    //     if (aYearMatch) return -1;
+    //     if (bYearMatch) return 1;
+
+    //     // If neither has a year, sort alphabetically
+    //     return a.years.localeCompare(b.years);
+    //   });
+
+    //   if (this.trackedIncomeId) {
+    //     const newIndex = this.displayedIncomes.findIndex(p => p.id === this.trackedIncomeId);
+    //     if (newIndex !== -1) {
+    //       // Update editable cell ID to match the new position
+    //       this.$nextTick(() => {
+    //         const currentColumn = this.editableId.split('-')[1];
+    //         this.editableId = `${newIndex}-${currentColumn}`;
+    //       });
+    //     }
+    //   }
+    // },
+    sortIncomes() {
+      console.log('sort')
+      const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
+
+      const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };
+
+      this.displayedIncomes.sort((a, b) => {
+        // Handle missing years first
         if (!a.years && !b.years) {
-          // If both have no years, put newer entries first
           if (!a.createdTime && b.createdTime) return -1;
           if (a.createdTime && !b.createdTime) return 1;
           return 0;
         }
-
-        // If only one entry has no year, put it first only if it's new
         if (!a.years && !a.createdTime) return -1;
         if (!b.years && !b.createdTime) return 1;
+        if (!a.years) return 1;
+        if (!b.years) return -1;
 
-        // Normal year-based sorting
-        if (!a.years) return 1;  // Push entries with no year to bottom
-        if (!b.years) return -1; // Push entries with no year to bottom
-
+        // Extract years
         const aYearMatch = a.years.match(yearRegex);
         const bYearMatch = b.years.match(yearRegex);
 
@@ -582,11 +645,27 @@ export default {
           const bYear = parseInt(bYearMatch[0]);
 
           // Sort by year in descending order
-          if (aYear !== bYear) {
-            return bYear - aYear;
+          if (aYear !== bYear) return bYear - aYear;
+
+          // Sort by category (PRI > SEC > DEP)
+          const aCategory = categoryOrder[a.category] || 999;
+          const bCategory = categoryOrder[b.category] || 999;
+          if (aCategory !== bCategory) return aCategory - bCategory;
+
+          // Sort by job (JOB1 > JOB2 > ... > JOB10)
+          const jobRegex = /^JOB(\d+)$/;
+          const aJobMatch = a.job?.match(jobRegex);
+          const bJobMatch = b.job?.match(jobRegex);
+
+          if (aJobMatch && bJobMatch) {
+            return parseInt(aJobMatch[1]) - parseInt(bJobMatch[1]);
           }
 
-          // Sort by remaining string after the year (e.g., X, X2)
+          // If one has a job and the other doesn't, prioritize the one with a job
+          if (aJobMatch) return -1;
+          if (bJobMatch) return 1;
+
+          // Sort by remaining string in years (if applicable)
           return a.years.localeCompare(b.years);
         }
 
@@ -594,21 +673,21 @@ export default {
         if (aYearMatch) return -1;
         if (bYearMatch) return 1;
 
-        // If neither has a year, sort alphabetically
         return a.years.localeCompare(b.years);
       });
 
+      // Maintain trackedIncomeId if exists
       if (this.trackedIncomeId) {
         const newIndex = this.displayedIncomes.findIndex(p => p.id === this.trackedIncomeId);
         if (newIndex !== -1) {
-          // Update editable cell ID to match the new position
           this.$nextTick(() => {
             const currentColumn = this.editableId.split('-')[1];
             this.editableId = `${newIndex}-${currentColumn}`;
           });
         }
       }
-    },
+    }
+    ,
     sendIncomesToServer() {
       this.$api.updateIncomes(this.headers, this.updateIncomes)
     },
@@ -686,28 +765,31 @@ export default {
 
       }
       if (this.isCopyingIncomes) {
-        this.showYearSelectionModal = true
-        // this.selectedIncomeIds.forEach((incomeId, idx) => {
-        //   const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
-        //   const income = this.displayedIncomes[incomeIndex]
-        //   const newIncome = Object.assign({}, income)
-        //   newIncome.amount = 0
-        //   newIncome.amountUSD = 0
-        //   newIncome.documents = 'NEED'
-        //   newIncome.id = generateRandomId()
-        //   newIncome.createdBy = this.currentUser.username
-        //   newIncome.userId = this.currentUser.id
-        //   this.updateIncomes.push(newIncome)
-        //   this.$store.commit('pushNewIncome', {
-        //     state: this.selectedClient,
-        //     income: newIncome
-        //   });
+        if (this.selectedIncomeIds.length > 1) {
+          this.showYearSelectionModal = true
+        } else {
+          this.selectedIncomeIds.forEach((incomeId, idx) => {
+            const incomeIndex = this.displayedIncomes.findIndex((income) => income.id === Number(incomeId))
+            const income = this.displayedIncomes[incomeIndex]
+            const newIncome = Object.assign({}, income)
+            newIncome.amount = 0
+            newIncome.amountUSD = 0
+            newIncome.documents = 'NEED'
+            newIncome.id = generateRandomId()
+            newIncome.createdBy = this.currentUser.username
+            newIncome.userId = this.currentUser.id
+            this.updateIncomes.push(newIncome)
+            this.$store.commit('pushNewIncome', {
+              state: this.selectedClient,
+              income: newIncome
+            });
 
-        //   this.selectedItems = {}
-        //   this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
-        //   //   }
-        //   // })
-        // })
+            this.selectedItems = {}
+            this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
+            //   }
+            // })
+          })
+        }
       } else {
         const income = Object.assign({}, defaultValues)
         this.updateIncomes.push(income)
@@ -780,7 +862,6 @@ export default {
       }
     },
     onBlur(val, field, event = null) {
-      console.log("Event:", event); // Check if the event exists
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(field)
         if (event?.key !== 'Escape') {

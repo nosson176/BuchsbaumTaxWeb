@@ -135,6 +135,8 @@ export default {
     onInputKeyup(key) {
       if (key === 'Enter') {
         this.onEnterPress()
+      } else if (key === 'Escape') {
+        this.onBlur();
       }
     },
     onEnterPress() {
