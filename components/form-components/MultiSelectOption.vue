@@ -202,7 +202,8 @@ export default {
       } else if (key === 'ArrowUp') {
         this.onArrowUpPress()
       } else if (key === 'Enter') {
-        this.onEnterPress()
+        // this.onEnterPress()
+        this.onBlur();
       } else if (key === 'Escape') {
         this.onBlur();
       }

@@ -208,7 +208,8 @@ export default {
                 this.hoverIndex = (this.hoverIndex - 1 + this.filteredOptions.length) % this.filteredOptions.length;
                 this.mouseMode = false;
             } else if (key === 'Enter' && this.hoverIndex >= 0) {
-                this.toggleSelection(this.filteredOptions[this.hoverIndex]);
+                this.onBlur();
+                // this.toggleSelection(this.filteredOptions[this.hoverIndex]);
             } else if (key === 'Escape') {
                 this.onBlur();
             } else if (key.length === 1 || key === 'Backspace') {

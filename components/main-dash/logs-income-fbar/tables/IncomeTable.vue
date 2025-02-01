@@ -286,7 +286,8 @@ export default {
       return this.valueTypes.tax_type.filter(
         (taxType) => {
           if (taxType.value === '') return true
-          return taxType.show && taxType.parentId === this.editableIncomeTaxGroupId
+          return taxType.show
+          // return taxType.show && taxType.parentId === this.editableIncomeTaxGroupId
         }
       )
     },

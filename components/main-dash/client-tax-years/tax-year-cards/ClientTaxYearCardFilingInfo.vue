@@ -27,7 +27,7 @@
           <EditableMultiSelect class=" overflow-ellipsis" v-model="statusDetail"
             :shownValue="!isEditable('statusDetail') && isMult(statusDetail) ? 'MULTI' : statusDetail"
             :is-editable="isEditable('statusDetail')" :options="statusDetailOptions" @blur="onBlur('statusDetail')"
-            filingType="true" placeholder="Detail" />
+            @keyup.enter.native="onBlur('statusDetail', $event)" filingType="true" placeholder="Detail" />
           <template #popper>
             <ul>
               <li v-for="(status, index) in splitYears(statusDetail)" :key="index">
@@ -230,19 +230,18 @@ export default {
         return this.formModel?.status?.value;
       },
       set(newVal) {
-        // Check if the status object is empty or undefined
-        if (!this.formModel?.status || Object.keys(this.formModel?.status).length === 0) {
-          // Initialize the status object with the given value and current timestamp if empty
-          this.formModel.status = {
-            value: newVal,
-            date: Date.now(),
-          };
-        } else {
-          // Otherwise, just update the existing properties
-          this.formModel.status.value = newVal;
-          this.formModel.status.date = Date.now();
-        }
-      },
+        // Create a new status object to avoid direct mutation
+        const newStatus = {
+          value: newVal,
+          date: Date.now()
+        };
+
+        // Create a new formModel object with the updated status
+        this.formModel = {
+          ...this.formModel,
+          status: newStatus
+        };
+      }
     },
 
     statusDetail: {
@@ -253,28 +252,56 @@ export default {
         let res = newVal;
 
         if (Array.isArray(newVal)) {
-          res = newVal.join('\n'); // מחבר את המערך עם ירידת שורה
+          res = newVal.join('\n');
         }
 
-        // מוסיף ירידת שורה בהתחלה אם לא קיימת אחת
         if (!res.startsWith('\n')) {
           res = '\n' + res;
         }
 
-        // Check if the statusDetail object is empty or undefined
-        if (!this.formModel.statusDetail || Object.keys(this.formModel.statusDetail).length === 0) {
-          // Initialize the statusDetail object with the given value and current timestamp if empty
-          this.formModel.statusDetail = {
-            value: res,
-            date: Date.now(),
-          };
-        } else {
-          // Otherwise, just update the existing properties
-          this.formModel.statusDetail.value = res;
-          this.formModel.statusDetail.date = Date.now();
-        }
-      },
+        // Create a new statusDetail object
+        const newStatusDetail = {
+          value: res,
+          date: Date.now()
+        };
+
+        // Create a new formModel object with the updated statusDetail
+        this.formModel = {
+          ...this.formModel,
+          statusDetail: newStatusDetail
+        };
+      }
     },
+    // statusDetail: {
+    //   get() {
+    //     return this.formModel?.statusDetail?.value;
+    //   },
+    //   set(newVal) {
+    //     let res = newVal;
+
+    //     if (Array.isArray(newVal)) {
+    //       res = newVal.join('\n'); // מחבר את המערך עם ירידת שורה
+    //     }
+
+    //     // מוסיף ירידת שורה בהתחלה אם לא קיימת אחת
+    //     if (!res.startsWith('\n')) {
+    //       res = '\n' + res;
+    //     }
+
+    //     // Check if the statusDetail object is empty or undefined
+    //     if (!this.formModel.statusDetail || Object.keys(this.formModel.statusDetail).length === 0) {
+    //       // Initialize the statusDetail object with the given value and current timestamp if empty
+    //       this.formModel.statusDetail = {
+    //         value: res,
+    //         date: Date.now(),
+    //       };
+    //     } else {
+    //       // Otherwise, just update the existing properties
+    //       this.formModel.statusDetail.value = res;
+    //       this.formModel.statusDetail.date = Date.now();
+    //     }
+    //   },
+    // },
 
     statusDate: {
       get() {
@@ -560,25 +587,29 @@ export default {
     filing: {
       handler(newFiling) {
         if (newFiling) {
-          // Deep clone the filing to avoid reference issues
-          this.formModel = JSON.parse(JSON.stringify(newFiling));
+          // Create a new object instead of mutating state
+          const newModel = JSON.parse(JSON.stringify(newFiling))
 
-          // Check if there are pending updates for this filing in Vuex
-          const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id);
+          // Check for pending updates
+          const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id)
           if (pendingUpdate) {
-            // Apply pending updates to the form model
-            Object.assign(this.formModel, pendingUpdate);
+            Object.assign(newModel, pendingUpdate)
           } else {
-            if (newFiling.filingType === 'federal' && newFiling.taxForm === null) this.setEditable('taxForm')
-            if (newFiling.filingType === 'state' && newFiling.state === null) this.setEditable('state')
-
+            if (newFiling.filingType === 'federal' && newFiling.taxForm === null) {
+              this.$nextTick(() => this.setEditable('taxForm'))
+            }
+            if (newFiling.filingType === 'state' && newFiling.state === null) {
+              this.$nextTick(() => this.setEditable('state'))
+            }
           }
+
+          // Assign to formModel after all modifications
+          this.formModel = newModel
         } else {
-          // Initialize with empty object if no filing provided
-          this.formModel = {};
+          this.formModel = {}
         }
       },
-      immediate: true, // This ensures the watcher runs immediately when component is created
+      immediate: true,
       deep: true
     }
   },
@@ -641,7 +672,7 @@ export default {
 
     onBlur(field, event) {
       if (field === 'taxForm' || field === 'state') {
-        const val = this.formModel
+        const val = JSON.parse(JSON.stringify(this.formModel))
         this.$store.commit('updateFilingTab', { filing: val, taxYearId: this.filing.taxYearId })
       }
       if (field === 'maam') this.maamEdit = false
@@ -683,7 +714,8 @@ export default {
       const newValueStr = field === 'status' || field === 'statusDetail'
         ? JSON.stringify(this.formModel[field]?.value) || ''
         : JSON.stringify(this.formModel[field]) || '';
-
+      console.log(oldValueStr)
+      console.log(newValueStr)
       // Updated condition to ensure proper type handling
       if (
         oldValueStr === newValueStr ||
@@ -691,6 +723,10 @@ export default {
         (oldValueStr === "null" && newValueStr === "undefined" || newValueStr === "") ||
         (oldValueStr === "undefined" && newValueStr === "null" || newValueStr === "")
       ) {
+        if (event?.key === 'Enter') {
+          this.goToNextItem();
+          return
+        }
         this.editable = '';
         return;
       }
@@ -758,7 +794,7 @@ export default {
     },
 
     handleLocalUpdate(event = null) {
-
+      console.log('update')
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
