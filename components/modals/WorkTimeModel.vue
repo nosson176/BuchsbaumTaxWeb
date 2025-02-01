@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @keydown.enter="confirmWorkTime" tabindex="0">
         <div class="bg-white sm:rounded-lg">
             <div class="p-5">
                 <h3 class="text-lg font-medium text-gray-900">Please confirm your work time</h3>
@@ -25,6 +25,13 @@ export default {
     props: {
         userData: Object,
     },
+    mounted() {
+        // Ensure the modal can catch the Enter key press
+        this.$nextTick(() => {
+            this.$el.focus()
+        })
+    },
+
     methods: {
         confirmWorkTime() {
             this.$emit('confirm', this.userData)

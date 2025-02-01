@@ -182,15 +182,6 @@
           </Tooltip>
         </div>
       </TableRow>
-
-      <div v-if="isLoading" class="bg-gray-200 cursor-pointer italic font-bold text-center">
-        <div class="spinner-overlay">
-          <div class="spinner"></div>
-        </div>
-      </div>
-      <div v-else class="bg-gray-200 cursor-pointer italic font-bold text-center" @click="toggleShowOrHide">{{
-        showOrHide }}
-      </div>
       <div>
         <Modal :showing="showDeleteModal" @hide="closeDeleteModal">
           <DeleteType :label="deleteTypeLabel" @hide="closeDeleteModal" @delete="deleteLog" />
@@ -208,7 +199,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
 import { boldSearchWord, formatDateLog, formatUnixTimestampWithMoment, generateRandomId, searchArrOfObjs } from '~/shared/utility'
 
-const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime', 'secondsSpent', 'delete']
+const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime']
 // const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
 
 const alarmStatusValues = ['', true, false]
@@ -241,10 +232,6 @@ export default {
       deleteTypeLabel: 'log',
       activeTooltipIndex: null,
       tooltipTimer: null,
-      showOrHide: 'Show',
-      isDataVisible: false, // flag to toggle visibility of data
-      fetchedLogs: [],    // store the fetched data
-      isLoading: false,
       forceCloseTooltip: false, // Controls tooltip visibility
     }
   },
@@ -417,38 +404,6 @@ export default {
     }
   },
   methods: {
-    toggleShowOrHide() {
-      if (this.showOrHide === 'Show') {
-        this.showOrHide = 'Hide'
-        this.getRestLogs()
-      } else {
-        this.showOrHide = 'Show'
-        this.hideRestLogs()
-      }
-    },
-    getRestLogs() {
-      if (this.fetchedLogs.length > 0) {
-        this.isDataVisible = true
-        this.$store.commit('pushRestLogs', this.fetchedLogs)
-        return
-      }
-      this.isLoading = true
-      this.$api.getRestLogsByClient(this.headers, { clientId: this.selectedClient.id }).then(res => {
-        const data = Object.values(res)
-        if (data.length > 0) {
-          this.isDataVisible = true // flag to toggle visibility of data
-          this.fetchedLogs = data
-          this.$store.commit('pushRestLogs', Object.values(data))
-        }
-      })
-      this.isLoading = false
-    },
-
-    hideRestLogs() {
-      const count = this.fetchedLogs.length
-      this.isDataVisible = false
-      if (count > 0) this.$store.commit('hideRestLogs', count)
-    },
     showTooltip(idx) {
       if (this.tooltipTimer) {
         clearTimeout(this.tooltipTimer);
@@ -564,7 +519,6 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
-      console.log(id, logId, value)
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -574,10 +528,8 @@ export default {
         }
       } else this.oldValue = value
       if (this.editableId !== id) {
-        console.log(this.editableId)
         this.editableId = id;
         this.editableLogId = logId;
-        console.log(this.editableId)
       }
     },
 
@@ -587,11 +539,9 @@ export default {
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
       if (logIndex === -1) return;
 
-      console.log(this.displayedLogs[logIndex])
 
       const updatedLog = { ...this.displayedLogs[logIndex] };
       if (field === 'years') {
-        console.log("field")
         if (!val.startsWith('\n')) {
           val = '\n' + val;
         }
@@ -825,46 +775,35 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
-      console.log(1, val, this.oldValue)
       if (field === 'years' && !this.forceCloseTooltip) this.hideToolTip()// Controls tooltip visibility
 
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
         if (!(this.oldValue === '' && val === '')) {
-          console.log(2)
           this.handleUpdate(val, field)
           if (event?.key !== 'Escape') {
-            console.log(3)
             this.goToNextColumn()
             return
           }
-          console.log(4)
           this.editableId = ""
           return
         }
       }
       // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
-        console.log(5)
         this.handleUpdate(val, field)
         if (event?.key !== 'Escape') {
           if (field === 'priority') this.editableId = '0-priority'
-          console.log(6)
-          console.log("next")
           this.goToNextColumn()
           return
         }
-        console.log(7)
         this.editableId = ""
         return
       }
       if (event?.key === 'Tab' || event?.key === 'Enter') {
-        console.log(8)
         this.goToNextColumn()
         return
       }
-      console.log(9)
-      console.log("theres")
       this.editableId = ""
       this.activeTooltipIndex = null
     },
@@ -912,7 +851,6 @@ export default {
         console.warn('No editable ID found');
         return;
       }
-      console.log(this.editableId)
 
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
@@ -940,7 +878,7 @@ export default {
         this.$nextTick(() => {
           this.toggleEditable(nextCell, this.editableLogId)
         })
-      }
+      } else this.editableId = ''
       this.activeTooltipIndex = null
     },
     goToPrevColumn() {

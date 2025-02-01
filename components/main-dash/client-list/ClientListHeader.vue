@@ -3,11 +3,14 @@
     <div></div>
     <!-- <ViewArchivedHeader :view-active="showActive" @change="emitChange" /> -->
     <!-- <div class="mr-2 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"></div> -->
-    <div class="flex items-center justify-between space-x-1">
-      <SearchHeader v-model="searchInput" active-tab="Clients" @input="debounceSearch" @click="clearSearch" />
-      <span v-if="clientCount" class="text-xs mt-1 p-1 font-semibold text-indigo-600 bg-blue-100 rounded">{{
+    <div class="flex items-center justify-between ">
+      <SearchHeader class="w-8/12" v-model="searchInput" active-tab="Clients" @input="debounceSearch"
+        @click="clearSearch" />
+      <span v-if="clientCount" class="text-xs mt-1 mr-4 p-1 font-semibold text-indigo-600 bg-blue-100 rounded-full">{{
         clientCount
       }}</span>
+      <span class="ml-1 mr-1 status-dot" :class="statusCheck ? 'on' : 'off'" @click="toggleStatus"> </span>
+
     </div>
     <HeaderSelectOption v-model="searchOptionValue" :options="searchOptions" @input="debounceSearch" />
   </div>
@@ -26,7 +29,7 @@ export default {
     }
   },
   computed: {
-    ...mapState([models.clientSearchValue, models.clientSearchOption, models.clients, models.selectedSmartview, models.dotStatus]),
+    ...mapState([models.clientSearchValue, models.clientSearchOption, models.clients, models.selectedSmartview, models.dotStatus, models.spinner]),
     debounceSearch() {
       return debounce(this.searchClients, 500)
     },
@@ -60,9 +63,12 @@ export default {
     hasSelectedSmartview() {
       return !Array.isArray(this.selectedSmartview) || this.selectedSmartview.length
     },
-    // statusCheck() {
-    //   return this.dotStatus
-    // },
+    headers() {
+      return this.$api.getHeaders()
+    },
+    statusCheck() {
+      return this.dotStatus
+    },
   },
   methods: {
     emitChange(value) {
@@ -78,8 +84,35 @@ export default {
       this.searchInput = ''
       this.searchClients()
     },
+    toggleStatus() {
+      this.$store.commit('changeDotStatus')
+      this.$store.commit("showSpinner", true)
+      this.$api.getClientList(this.headers)
+        .finally(() => {
+          this.$store.commit("showSpinner", false)
+        })
+    },
   },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.status-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.status-dot.on {
+  background-color: #2ecc71;
+  box-shadow: 0 0 10px #2ecc71;
+}
+
+.status-dot.off {
+  background-color: #e74c3c;
+  box-shadow: 0 0 10px #e74c3c;
+}
+</style>

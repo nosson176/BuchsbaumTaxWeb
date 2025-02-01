@@ -1,5 +1,5 @@
 <template>
-  <Table @keydown.tab.prevent @keyup.tab.exact="goToNextColumn" @keyup.shift.tab.exact="goToPrevColumn">
+  <Table @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader>
         <div class="table-header">
@@ -31,7 +31,8 @@
         <div :id="`${idx}-category`" class="sm table-col-primary"
           @click="toggleEditable(`${idx}-category`, personal.id, personal.category)">
           <EditableSelectCell v-model="personal.category" :is-editable="isEditable(`${idx}-category`)"
-            :options="categoryOptions" @blur="onBlur(personal.category)" />
+            :options="categoryOptions" @blur="onBlur(personal.category, $event)"
+            @keyup.tab.native="onBlur(personal.category, $event)" />
         </div>
         <div class="table-col xs">
           <button v-if="isPriSec(personal)" @click="irsPopup">
@@ -40,48 +41,54 @@
         </div>
         <div :id="`${idx}-firstName`" class="normal table-col"
           @click="toggleEditable(`${idx}-firstName`, personal.id, personal.firstName)">
-          <EditableInputCell v-model="personal.firstName" @keyup.enter.native="onBlur(personal.firstName)"
-            @keyup.esc.native="onBlur(personal.firstName, $event)" :is-editable="isEditable(`${idx}-firstName`)"
-            @blur="onBlur(personal.firstName)" />
+          <EditableInputCell v-model="personal.firstName" @keyup.enter.native="onBlur(personal.firstName, $event)"
+            @keyup.esc.native="onBlur(personal.firstName, $event)"
+            @keyup.tab.native="onBlur(personal.firstName, $event)" :is-editable="isEditable(`${idx}-firstName`)"
+            @blur="onBlur(personal.firstName, $event)" />
         </div>
         <div :id="`${idx}-middleInitial`" class="xs table-col"
           @click="toggleEditable(`${idx}-middleInitial`, personal.id, personal.middleInitial)">
-          <EditableInputCell v-model="personal.middleInitial" @keyup.enter.native="onBlur(personal.middleInitial)"
-            @keyup.esc.native="onBlur(personal.middleInitial, $event)" :is-editable="isEditable(`${idx}-middleInitial`)"
-            @blur="onBlur(personal.middleInitial)" />
+          <EditableInputCell v-model="personal.middleInitial"
+            @keyup.enter.native="onBlur(personal.middleInitial, $event)"
+            @keyup.esc.native="onBlur(personal.middleInitial, $event)"
+            @keyup.tab.native="onBlur(personal.middleInitial, $event)" :is-editable="isEditable(`${idx}-middleInitial`)"
+            @blur="onBlur(personal.middleInitial, $event)" />
         </div>
         <div :id="`${idx}-lastName`" class="normal table-col"
           @click="toggleEditable(`${idx}-lastName`, personal.id, personal.lastName)">
-          <EditableInputCell v-model="personal.lastName" @keyup.enter.native="onBlur(personal.lastName)"
-            @keyup.esc.native="onBlur(personal.lastName, $event)" :is-editable="isEditable(`${idx}-lastName`)"
-            @blur="onBlur(personal.lastName)" />
+          <EditableInputCell v-model="personal.lastName" @keyup.enter.native="onBlur(personal.lastName, $event)"
+            @keyup.esc.native="onBlur(personal.lastName, $event)" @keyup.tab.native="onBlur(personal.lastName, $event)"
+            :is-editable="isEditable(`${idx}-lastName`)" @blur="onBlur(personal.lastName, $event)" />
         </div>
         <div :id="`${idx}-dateOfBirth`" class="table-col sm"
           @click="toggleEditable(`${idx}-dateOfBirth`, personal.id, personal.dateOfBirth)">
           <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)"
-            @blur="onBlur(personal.dateOfBirth)" />
+            @blur="onBlur(personal.dateOfBirth, $event)" @keyup.tab.native="onBlur(personal.dateOfBirth, $event)" />
         </div>
         <div :id="`${idx}-ssn`" class="normal table-col"
           @click="toggleEditable(`${idx}-ssn`, personal.id, personal.ssn)">
-          <EditableInputCell v-model="personal.ssn" @keyup.enter.native="onBlur(personal.ssn)"
-            @keyup.esc.native="onBlur(personal.ssn, $event)" :class="ssnClassObj(personal.ssn, personal.include)"
-            :is-editable="isEditable(`${idx}-ssn`)" @blur="onBlur(personal.ssn)" />
+          <EditableInputCell v-model="personal.ssn" @keyup.enter.native="onBlur(personal.ssn, $event)"
+            @keyup.esc.native="onBlur(personal.ssn, $event)" @keyup.tab.native="onBlur(personal.ssn, $event)"
+            :class="ssnClassObj(personal.ssn, personal.include)" :is-editable="isEditable(`${idx}-ssn`)"
+            @blur="onBlur(personal.ssn, $event)" />
         </div>
         <div :id="`${idx}-informal`" class="sm table-col"
           @click="toggleEditable(`${idx}-informal`, personal.id, personal.informal)">
-          <EditableInputCell v-model="personal.informal" @keyup.enter.native="onBlur(personal.informal)"
-            @keyup.esc.native="onBlur(personal.informal, $event)" :is-editable="isEditable(`${idx}-informal`)"
-            @blur="onBlur(personal.informal)" />
+          <EditableInputCell v-model="personal.informal" @keyup.enter.native="onBlur(personal.informal, $event)"
+            @keyup.esc.native="onBlur(personal.informal, $event)" @keyup.tab.native="onBlur(personal.informal, $event)"
+            :is-editable="isEditable(`${idx}-informal`)" @blur="onBlur(personal.informal, $event)" />
         </div>
         <div :id="`${idx}-relation`" class="sm table-col"
           @click="toggleEditable(`${idx}-relation`, personal.id, personal.relation)">
           <EditableSelectCell v-model="personal.relation" :is-editable="isEditable(`${idx}-relation`)"
-            :options="relationOptions" @blur="onBlur(personal.relation)" />
+            :options="relationOptions" @blur="onBlur(personal.relation, $event)"
+            @keyup.tab.native="onBlur(personal.relation, $event)" />
         </div>
         <div :id="`${idx}-language`" class="sm table-col"
           @click="toggleEditable(`${idx}-language`, personal.id, personal.language)">
           <EditableSelectCell v-model="personal.language" :is-editable="isEditable(`${idx}-language`)"
-            :options="languageOptions" @blur="onBlur(personal.language)" />
+            :options="languageOptions" @blur="onBlur(personal.language, $event)"
+            @keyup.tab.native="onBlur(personal.language, $event)" />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(personal.id)" />
@@ -420,10 +427,15 @@ export default {
     onBlur(val, event = null) {
       if (this.oldValue !== val) {
         this.handleUpdate()
-        if (event.key !== 'Escape') {
+        if (event?.key !== 'Escape') {
           this.goToNextColumn()
           return
         }
+      }
+      if (event?.key === 'Tab' || event?.key === 'Enter') {
+        console.log(8)
+        this.goToNextColumn()
+        return
       }
       this.editableId = ""
     },

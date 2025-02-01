@@ -4,7 +4,7 @@
       <div class="h-full" @click="onBlur" />
     </div>
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
-      <input ref="button" v-model="inputValue" type="text" tabindex="0"
+      <input ref="button" v-model="filterOptionsValue" type="text" tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick" @keyup="onInputKeyup($event.key)" />
       <ul v-if="showOptions && isEditable" ref="select" @mouseleave="resetHover"
@@ -80,6 +80,7 @@ export default {
   computed: {
     computedValue: {
       get() {
+
         if (this.value === null || this.value === '') return [];
         return Array.isArray(this.value) ? this.value : [this.value];
       },
@@ -89,7 +90,7 @@ export default {
     },
     inputValue: {
       get() {
-        return this.showOptions ? this.shownValue : this.shownValue;
+        return this.showOptions ? this.shownValue : this.value;
       },
       set(value) {
         this.filterOptionsValue = value;
@@ -104,6 +105,7 @@ export default {
       // const index = this.options.findIndex((option) =>
       //   option?.value?.toLowerCase().startsWith(this.filterOptionsValue.toLowerCase())
       // );
+      // this.hoverIndex = index
       return this.options
     },
   },
@@ -115,7 +117,7 @@ export default {
         this.showOptions = true;
         await this.$nextTick(() => {
           this.$refs.button.focus();
-          this.inputValue = '';
+          this.inputValue = this.value;
         });
       }
     },
@@ -170,23 +172,25 @@ export default {
     },
     onInputKeyup(key) {
       if (key === 'ArrowDown') {
-        this.hoverIndex = (this.hoverIndex + 1) % this.filteredOptions.length;
+        this.hoverIndex = (this.hoverIndex + 1) % this.options.length;
       } else if (key === 'ArrowUp') {
-        this.hoverIndex = (this.hoverIndex - 1 + this.filteredOptions.length) % this.filteredOptions.length;
+        this.hoverIndex = (this.hoverIndex - 1 + this.options.length) % this.options.length;
       } else if (key === 'Enter' && this.hoverIndex >= 0) {
-        this.emitChange(this.filteredOptions[this.hoverIndex].value);
-      }
-      else if (key.length === 1) {
-        // Search by first letter
-        const matchingOptionIndex = this.options.findIndex(option => {
-          return option.value?.toLowerCase().startsWith(key.toLowerCase())
-        });
+        this.emitChange(this.options[this.hoverIndex].value);
+      } else if (key === 'Escape') {
+        this.onBlur();
+      } else {
+        // Find first matching option
+        const matchingOptionIndex = this.options.findIndex(option =>
+          option.value?.toLowerCase().startsWith(this.filterOptionsValue?.toLowerCase())
+        );
         if (matchingOptionIndex !== -1) {
           this.hoverIndex = matchingOptionIndex;
-        }
+        } else this.hoverIndex = -1
       }
       this.scrollToHoveredOption();
     },
+
     isSelectOrHover(option, idx) {
       return this.isSelected(option) || this.hoverIndex === idx ? 'text-white bg-indigo-600' : 'text-gray-900'
 

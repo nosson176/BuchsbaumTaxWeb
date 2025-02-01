@@ -98,12 +98,12 @@
           <EditableSelectCell v-model="fbar.taxType" :is-editable="isEditable(`${idx}-taxType`)"
             :options="taxTypeOptions" @blur="onBlur(fbar.taxType)" />
         </div>
-        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id, fbar.job)">
-          <EditableSelectCell v-model="fbar.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions"
-            @blur="onBlur(fbar.job)" />
+        <div :id="`${idx}-job`" class="table-col sm" @click="toggleEditable(`${idx}-job`, fbar.id, fbar.part)">
+          <EditableSelectCell v-model="fbar.part" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions"
+            @blur="onBlur(fbar.part, 'job')" />
         </div>
         <div :id="`${idx}-amount`" class="sm table-col" @click="toggleEditable(`${idx}-amount`, fbar.id, fbar.amount)">
-          <EditableInputCell v-model="fbar.amount" :selectAll="selectAll"
+          <EditableInputCell v-model.number="fbar.amount" :selectAll="selectAll"
             @keyup.enter.native="onBlur(fbar.amount, 'amount')"
             @keyup.esc.native="onBlur(fbar.amount, 'amount', $event)" :is-editable="isEditable(`${idx}-amount`)"
             currency @blur="onBlur(fbar.amount, 'amount')" />
@@ -252,6 +252,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.currentUser, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedFbars() {
+      console.log(this.shownFbars)
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar));
       return searchArrOfObjs(fbars, this.searchInput);
     },
@@ -269,10 +270,13 @@ export default {
       return this.valueTypes.year_name.filter((yearName) => yearName.show)
     },
     taxTypeOptions() {
-      return this.valueTypes.tax_type.filter(
-        (taxType) => taxType.show && taxType.parentId === this.editableFbarTaxGroupId
-      )
+      return this.valueTypes.tax_type.filter((taxType) => taxType.show)
     },
+    // taxTypeOptions() {
+    //   return this.valueTypes.tax_type.filter(
+    //     (taxType) => taxType.show && taxType.parentId === this.editableFbarTaxGroupId
+    //   )
+    // },
     editableFbarTaxGroupId() {
       const fbar = this.displayedFbars.find((fbar) => fbar.id === this.editableFbarId)
       const taxGroup = this.taxGroupOptions.find((taxGroup) => taxGroup.value === fbar?.taxGroup)
@@ -326,7 +330,7 @@ export default {
                 return acc
               }
               const rate = this.getCurrencyRate(fbar.years, fbar.currency);
-              return rate ? acc + (fbar.amount * rate) : acc;
+              return rate ? acc + (fbar.amount / rate) : acc;
             }, 0)
         )
       )}`
@@ -504,7 +508,8 @@ export default {
         fbar.amount = setAsValidNumber(fbar.amount);
         // Recalculate amountUSD based on the new amount and current exchange rate
         const rate = this.getCurrencyRate(fbar.years, fbar.currency);
-        fbar.amountUSD = rate ? fbar.amount * rate : fbar.amount;
+        fbar.amountUSD = rate ? fbar.amount / rate : fbar.amount;
+        console.log(fbar.amountUSD)
       }
 
       // Update store for specific fields that should trigger recalculation
@@ -512,10 +517,11 @@ export default {
         // If currency or year changes, we need to recalculate amountUSD
         if (field === 'years' || field === 'currency') {
           const rate = this.getCurrencyRate(fbar.years, fbar.currency);
-          fbar.amountUSD = rate ? fbar.amount * rate : fbar.amount;
+          fbar.amountUSD = rate ? fbar.amount / rate : fbar.amount;
         }
 
         // Dispatch update to store
+        console.log(fbar)
         this.$store.dispatch('updateFbarAction', { fbar });
       }
 
@@ -528,17 +534,18 @@ export default {
       }
 
       // Sort if year changes
-      if (field === 'years') this.sortFbars();
+      if (field === 'years' || field === 'job' || field === 'category' || field === 'currency' || field === 'amount') this.sortFbars();
     },
 
     sortFbars() {
-      console.log(this.displayedFbars)
-      this.displayedFbars.sort((a, b) => {
+      console.log(this.displayedFbars);
 
+      this.displayedFbars.sort((a, b) => {
+        console.log(a)
         // Check if 'years' is null or undefined and place those items first
-        if (a.years == null && b.years == null) return 0; // Both are null/undefined, no change
-        if (a.years == null) return -1; // a has null/undefined, place it at the top
-        if (b.years == null) return 1;  // b has null/undefined, place it at the top
+        if (a.years == null && b.years == null) return 0;
+        if (a.years == null) return -1;
+        if (b.years == null) return 1;
 
         const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
         const aYearMatch = a.years?.match(yearRegex);
@@ -553,7 +560,20 @@ export default {
             return bYear - aYear;
           }
 
-          // Sort by remaining string after the year (e.g., X, X2)
+          // Sort by job (JOB1 > JOB2 > ... > JOB10)
+          const jobRegex = /^JOB(\d+)$/;
+          const aJobMatch = a.part?.match(jobRegex);
+          const bJobMatch = b.part?.match(jobRegex);
+
+          if (aJobMatch && bJobMatch) {
+            return parseInt(aJobMatch[1]) - parseInt(bJobMatch[1]);
+          }
+
+          // If one has a job and the other doesn't, prioritize the one with a job
+          if (aJobMatch) return -1;
+          if (bJobMatch) return 1;
+
+          // Sort by remaining string after the year (if applicable)
           return a.years.localeCompare(b.years);
         }
 
@@ -568,7 +588,6 @@ export default {
       if (this.trackedFbarId) {
         const newIndex = this.displayedFbars.findIndex(p => p.id === this.trackedFbarId);
         if (newIndex !== -1) {
-          // Update editable cell ID to match the new position
           this.$nextTick(() => {
             const currentColumn = this.editableId.split('-')[1];
             this.editableId = `${newIndex}-${currentColumn}`;
@@ -576,6 +595,7 @@ export default {
         }
       }
     },
+
     sendFbarsToServer() {
       this.$api.updateFbars(this.headers, this.updateFbars)
     },
@@ -755,7 +775,7 @@ export default {
       returnValue = this.filterByCategory ? fbar.category === this.categoryFilterValue && returnValue : returnValue
       returnValue = this.filterByGroup ? fbar.taxGroup === this.groupFilterValue && returnValue : returnValue
       returnValue = this.filterByType ? fbar.taxType === this.typeFilterValue && returnValue : returnValue
-      returnValue = this.filterByJob ? fbar.job === this.jobFilterValue && returnValue : returnValue
+      returnValue = this.filterByJob ? fbar.part === this.jobFilterValue && returnValue : returnValue
       returnValue = this.filterByCurrency ? fbar.currency === this.currencyFilterValue && returnValue : returnValue
       returnValue = this.filterByDescription
         ? fbar.description === this.descriptionFilterValue && returnValue

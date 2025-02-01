@@ -203,6 +203,8 @@ export default {
         this.onArrowUpPress()
       } else if (key === 'Enter') {
         this.onEnterPress()
+      } else if (key === 'Escape') {
+        this.onBlur();
       }
     },
     selectedItem(idx) {

@@ -175,7 +175,7 @@ const items = [
   'fileType',
   'refund',
   'rebate',
-  'completed',
+  // 'completed',
   'deliveryContact',
   'secondDeliveryContact',
   'dateFiled',

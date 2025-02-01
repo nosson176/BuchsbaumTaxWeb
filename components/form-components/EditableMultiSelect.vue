@@ -4,7 +4,7 @@
             <div class="h-full" @click="onBlur" />
         </div>
         <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
-            <input ref="button" v-model="inputValue" type="text" tabindex="0"
+            <input ref="button" v-model="filterOptionsValue" type="text" tabindex="0"
                 class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
                 @click="onButtonClick" @keyup="onInputKeyup($event.key)"
                 :placeholder="selectedValues.length ? undefined : placeholder" />
@@ -110,10 +110,11 @@ export default {
             return this.selectedValues.join('\n');
         },
         filteredOptions() {
-            if (!this.filterOptionsValue) return this.options;
-            return this.options.filter(option =>
-                option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
-            );
+            // if (!this.filterOptionsValue) return this.options;
+            // return this.options.filter(option =>
+            //     option.value.toLowerCase().includes(this.filterOptionsValue.toLowerCase())
+            // );
+            return this.options
         },
     },
     watch: {
@@ -136,7 +137,7 @@ export default {
                 this.showOptions = true;
                 await this.$nextTick(() => {
                     this.$refs.button?.focus();
-                    this.filterOptionsValue = '';
+                    this.filterOptionsValue = this.value;
                 });
             }
         },
@@ -210,12 +211,15 @@ export default {
                 this.toggleSelection(this.filteredOptions[this.hoverIndex]);
             } else if (key === 'Escape') {
                 this.onBlur();
-            } else if (key.length === 1) {
+            } else if (key.length === 1 || key === 'Backspace') {
                 const matchingOptionIndex = this.options.findIndex(option =>
-                    option.value?.toLowerCase().startsWith(key.toLowerCase())
+                    option.value?.toLowerCase().startsWith(this.filterOptionsValue.toLowerCase())
                 );
+
                 if (matchingOptionIndex !== -1) {
                     this.hoverIndex = matchingOptionIndex;
+                } else {
+                    this.hoverIndex = -1
                 }
             }
             this.scrollToHoveredOption();

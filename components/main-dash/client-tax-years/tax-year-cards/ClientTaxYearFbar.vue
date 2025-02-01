@@ -246,7 +246,9 @@ export default {
 .fbar {
   @apply text-xs flex flex-col items-center p-2;
 
-  justify-content: space-between;
+  /* justify-content: space-between; */
+
+  gap: 1rem;
   min-height: 280px;
   width: 100%;
   margin-bottom: 10px;

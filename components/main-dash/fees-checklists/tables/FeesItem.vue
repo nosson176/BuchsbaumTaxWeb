@@ -2,7 +2,7 @@
   <div>
     <div
       class="px-3 py-1 text-xs tracking-tighter my-auto h-32 border border-gray-300 border-opacity-0 hover:border-opacity-100"
-      :class="classObj" @keydown.tab.prevent @keyup.tab.exact="goToNextItem" @keyup.shift.tab.exact="goToPrevItem">
+      :class="classObj" @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevItem">
       <div class="flex h-full flex-col space-y-1.5 justify-center">
         <div class="flex justify-end pt-1">
           <DeleteButton small @click="onDeleteClick(fee.id)" />
@@ -11,11 +11,12 @@
           <div class="flex flex-col w-1/3">
             <div @click="setEditable('feeType')">
               <EditableSelectCell v-model="feeType" placeholder="Type" :is-editable="isEditable('feeType')"
-                :options="feeTypeOptions" @blur="onBlur('feeType')" />
+                :options="feeTypeOptions" @blur="onBlur('feeType')" @keyup.tab.native="onBlur('feeType', $event)" />
             </div>
             <div @click="setEditable('year')">
               <EditableSelectCell v-model="year" :class="isRedBG ? 'text-red-500' : ''" placeholder="Year"
-                :is-editable="isEditable('year')" :options="yearOptions" @blur="onBlur('year')" />
+                :is-editable="isEditable('year')" :options="yearOptions" @blur="onBlur('year', $event)"
+                @keyup.tab.native="onBlur('year', $event)" />
             </div>
           </div>
           <div class="flex flex-col w-1/3">
@@ -25,7 +26,8 @@
             </div>
             <div @click="setEditable('statusDetail')">
               <EditableSelectCell v-model="statusDetail" placeholder="Detail" :is-editable="isEditable('statusDetail')"
-                :options="feeStatusDetailOptions" @blur="onBlur('statusDetail')" />
+                :options="feeStatusDetailOptions" @blur="onBlur('statusDetail', $event)"
+                @keyup.tab.native="onBlur('statusDetail', $event)" />
             </div>
           </div>
           <div class="flex items-center w-1/3 space-x-1">
@@ -39,7 +41,8 @@
                   @input="onBlur" />
                 <EditableInput v-model.number="manualAmount" placeholder="Amount" currency
                   :is-editable="isEditable('manualAmount')" @blur="onBlur('manualAmount')"
-                  @keyup.enter.native="onBlur('manualAmount')" @keyup.esc.native="onBlur('manualAmount', $event)" />
+                  @keyup.enter.native="onBlur('manualAmount')" @keyup.esc.native="onBlur('manualAmount', $event)"
+                  @keyup.tab.native="onBlur('manualAmount', $event)" />
                 <div v-if="isEditable('manualAmount')" />
               </div>
               <div class="flex items-center" @click="setEditable('paidAmount')">
@@ -47,7 +50,8 @@
                   @input="onBlur" />
                 <EditableInput v-model.number="paidAmount" placeholder="Paid" currency
                   :is-editable="isEditable('paidAmount')" @blur="onBlur('paidAmount')"
-                  @keyup.enter.native="onBlur('paidAmount')" @keyup.esc.native="onBlur('paidAmount', $event)" />
+                  @keyup.enter.native="onBlur('paidAmount', $event)" @keyup.tab.native="onBlur('paidAmount', $event)"
+                  @keyup.esc.native="onBlur('paidAmount', $event)" />
                 <div v-if="isEditable('paidAmount')" />
               </div>
             </div>
@@ -61,20 +65,21 @@
             <span class="missing">Time</span>
             <div @click="setEditable('dateFee')">
               <EditableDate v-model="dateFee" placeholder="Date" type="date" :is-editable="isEditable('dateFee')"
-                @blur="onBlur('dateFee')" />
+                @blur="onBlur('dateFee', $event)" @keyup.tab.native="onBlur('dateFee', $event)" />
             </div>
           </div>
           <div class="w-1/3">
             <div @click="setEditable('rate')">
               <EditableInput v-model="rate" class="text-center" :is-editable="isEditable('rate')" placeholder="Rate/hr"
-                @blur="onBlur('rate')" @keyup.enter.native="onBlur('rate')"
-                @keyup.esc.native="onBlur('rate', $event)" />
+                @blur="onBlur('rate')" @keyup.enter.native="onBlur('rate')" @keyup.esc.native="onBlur('rate', $event)"
+                @keyup.tab.native="onBlur('rate', $event)" />
             </div>
           </div>
         </div>
         <div @click="setEditable('notes')">
           <EditableInput v-model="notes" placeholder="Notes" :is-editable="isEditable('notes')" @blur="onBlur('notes')"
-            @keyup.enter.native="onBlur('notes')" @keyup.esc.native="onBlur('notes', $event)" />
+            @keyup.enter.native="onBlur('notes')" @keyup.esc.native="onBlur('notes', $event)"
+            @keyup.tab.native="onBlur('notes', $event)" />
         </div>
       </div>
     </div>
@@ -95,10 +100,9 @@ const items = [
   'year',
   'status',
   'statusDetail',
-  'sum',
+  // 'sum',
   'manualAmount',
   'paidAmount',
-  'include',
   'dateFee',
   'rate',
   'notes',
@@ -192,7 +196,6 @@ export default {
         return this.formModel.paidAmount
       },
       set(newVal) {
-        console.log(newVal)
         this.formModel.paidAmount = Number(newVal)
       },
     },
@@ -311,18 +314,29 @@ export default {
         this.handleUpdate()
         return
       }
-      if (this.oldValue === this.formModel[e]) {
-        this.editable = ''
+      // if (this.oldValue === this.formModel[e]) {
+      //   this.editable = ''
+      //   return
+      // }
+      if (this.oldValue !== this.formModel[e]) {
+        this.handleUpdate(event)
         return
       }
-      this.handleUpdate(event)
+      if (event?.key === 'Tab' || event?.key === 'Enter') {
+        this.goToNextItem()
+        return
+
+      }
+      this.editable = ""
     },
     handleUpdate(event = null) {
       if (event?.key !== 'Escape') {
         this.goToNextItem()
+      } else {
+        this.editable = ''
       }
       this.$emit(events.input, this.formModel)
-      this.editable = ''
+      // this.editable = ''
     },
     onDeleteClick(feeId) {
       this.deleteFeeId = feeId
