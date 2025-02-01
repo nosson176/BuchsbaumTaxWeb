@@ -74,7 +74,8 @@
             <EditableMultiSelect class="w-10 overflow-ellipsis" v-model="log.years"
               :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
               @blur="onBlur(log.years, 'years')" placeholder="Year"
-              @keyup.tab.native="onBlur(log.years, 'years', $event)" />
+              @keyup.tab.native="onBlur(log.years, 'years', $event)"
+              @keyup.enter.native="onBlur(log.years, 'years', $event)" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
