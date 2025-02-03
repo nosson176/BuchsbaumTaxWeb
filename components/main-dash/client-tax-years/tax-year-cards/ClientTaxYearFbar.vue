@@ -57,7 +57,10 @@
       <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
         @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
         style="min-height: 5rem;" />
-
+    </div>
+    <div class="fbar-i" @click.stop="setEditable('dateFiled')">
+      <EditableDate v-model="formModel.dateFiled" placeholder="Date Filed" type="date"
+        :is-editable="isEditable('dateFiled')" @blur="onBlur(formModel.dateFiled, 'dateFiled')" />
     </div>
   </div>
 </template>
@@ -67,7 +70,7 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
-const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'memo']
+const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'memo', 'dateFiled']
 
 export default {
   name: 'ClientTaxYearFbar',
@@ -185,6 +188,7 @@ export default {
       return this.editable === value
     },
     onBlur(val, field, event = null) {
+      console.log(val, field)
       if (field === 'memo') this.activeTooltipIndex = null;
       if (this.newFlag) {
         this.newFlag = false
@@ -200,6 +204,7 @@ export default {
     //   this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
     // },
     handleUpdate(field, event = null) {
+      console.log(field)
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -248,7 +253,7 @@ export default {
 
   /* justify-content: space-between; */
 
-  gap: 1rem;
+  gap: 0.5rem;
   min-height: 280px;
   width: 100%;
   margin-bottom: 10px;

@@ -108,6 +108,16 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       return res
     })
   }
+  const getRestIncomesByClient = (headers, { clientId }) => {
+    return $axios.get(`incomes/restIncomes/${clientId}`, { headers }).then((res) => {
+      return res
+    })
+  }
+  const getRestFbarByClient = (headers, { clientId }) => {
+    return $axios.get(`fbars/restFbars/${clientId}`, { headers }).then((res) => {
+      return res
+    })
+  }
 
   const getClientsWithLogs = (headers, clientId) => {
     // Construct URL based on whether clientId is provided
@@ -730,6 +740,8 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     getAllUsers,
     getClientData,
     getRestLogsByClient,
+    getRestIncomesByClient,
+    getRestFbarByClient,
     getClientList,
     getClientsHistory,
     getHeaders,

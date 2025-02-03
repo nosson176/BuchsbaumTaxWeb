@@ -16,8 +16,12 @@
           <StarIcon class="h-4 w-4 cursor-pointer" :color="flagColor" @click="toggleShowFlagDropdown" />
           <StarDropdown v-if="showFlagDropdown" @input="handleFlag" @blur="toggleShowFlagDropdown" />
         </div>
-        <div class="font-bold text-2xl cursor-pointer px-1" @click="openEditNameDialogue">
+        <div class="flex font-bold text-2xl cursor-pointer px-1" @click.stop="openEditNameDialogue">
           {{ selectedClient.lastName }}
+          <div class="ml-2 flex items-start" @click.stop="overwriteActiveMode"> <button
+              class="rounded-full h-2 w-2 focus:outline-none"
+              :class="{ 'bg-green-500 shadow-green-800/50 ': isClientActive, 'bg-red-500 shadow-red-500/50': !isClientActive }"></button>
+          </div>
         </div>
         <div class="ml-12">
           <ClientTaxYearsHeaderPersonal :personal="primaryPersonal" />
@@ -73,6 +77,21 @@
     <Modal :showing="showDelete" @hide="closeDeleteModal">
       <DeleteType @hide="closeDeleteModal" @delete="handleDelete" />
     </Modal>
+    <Modal :showing="showOverrideConfirmModal" @hide="closeOverrideConfirmModal">
+      <div class="bg-white p-6  shadow-xl text-black " style="border-radius: 5rem;">
+        <h2 class="text-xl font-bold mb-4">Confirm Override</h2>
+        <p class="mb-6">Are you sure you want to override the client active status?</p>
+        <div class="flex justify-end space-x-4">
+          <button @click="closeOverrideConfirmModal"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+            Cancel
+          </button>
+          <button @click="confirmOverrideActiveMode" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -98,16 +117,23 @@ export default {
       editedLastName: '',
       globalFlag: null,
       uniqueKey: 0,
-      selectMode: null
+      selectMode: null,
+      isOverWriteActive: this.isInOverrideState,
+      showOverrideConfirmModal: false,
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser, models.clientClicked, models.loading]),
     isClientSelected() {
+      console.log(this.selectedClient)
       return this.selectedClient && Object.keys(this.selectedClient).length > 0
     },
     isSelectedClientLoading() {
       return this.loading.selectedClient
+    },
+    isClientActive() {
+      console.log("active", this.selectedClient?.active)
+      return this.selectedClient?.active;
     },
     showLoadingSpinner() {
       return this.isSelectedClientLoading && this.clientClicked > 0
@@ -249,7 +275,15 @@ export default {
       // Default return value
       return '';
     },
+    isInOverrideState() {
+      const values = this.valueTypes.active_status || []
+      const standardActiveStatuses = values.map(status => status.value)
 
+      return this.isClientActive !==
+        !standardActiveStatuses.some(status =>
+          this.selectedClient.status.startsWith(status)
+        )
+    },
   },
   watch: {
     showEditNameDialogue: {
@@ -282,23 +316,43 @@ export default {
       },
       deep: true
     },
+    watch: {
+      isClientActive(newVal) {
+        this.overwriteMode = newVal;
+      }
+    }
   },
 
 
   methods: {
+    overwriteActiveMode() {
+      // Show confirmation modal instead of directly changing the status
+      this.showOverrideConfirmModal = true
+    },
 
-    // selectType(e) {
-    //   console.log(e)
-    //   this.selectMode = e.target.value
-    //   console.log(this.selectMode)
-    //   this.$api.updatePmtStatus(this.headers, {
-    //     clientId: this.selectedClient.id,
-    //     pmtStatus: this.selectMode
-    //   }).then(() => {
-    //     this.$store.commit('updateClientPmtStatus', { clientId: this.selectedClient.id, pmtStatus: this.selectMode })
-    //   });
-    //   return this.selectMode.length > 0
+    closeOverrideConfirmModal() {
+      this.showOverrideConfirmModal = false
+    },
+    // async overwriteActiveMode() {
+    //   console.log("overwirite", this.overwriteMode)
+    //   this.isOverWriteActive = !this.isOverWriteActive
+    //   // this.overwriteMode = !this.overwriteMode
+    //   await this.updateStatusDate(this.selectedClient.status)
+    //   this.onBlur()
     // },
+    async confirmOverrideActiveMode() {
+      // Close the modal
+      this.showOverrideConfirmModal = false
+
+      // Toggle the override active state
+      this.isOverWriteActive = !this.isOverWriteActive
+
+      // Update the status date
+      await this.updateStatusDate(this.selectedClient.status, 'overwrite')
+
+      // Trigger onBlur method
+      this.onBlur()
+    },
     hideSelectOptions() {
       this.editingId = ''
     },
@@ -319,6 +373,7 @@ export default {
       updateSelectedClient: mutations.setModelResponse
     }),
     updateClient1(oldClient) {
+      console.log("oldclient =>", oldClient)
       if (oldClient.needUpdate === true) {
         const updatedClient = {
           id: oldClient.id,
@@ -342,14 +397,24 @@ export default {
     isEditable(editingId) {
       return this.editingId === editingId
     },
-    checkActiveStatus(val) {
+    checkActiveStatus(val, overwirite) {
+      if (this.isOverWriteActive) {
+        if (overwirite === 'overwrite') {
+          return !this.isClientActive
+        } else {
+          return this.isClientActive
+        }
+      }
+      console.log(val)
       const values = this.valueTypes.active_status
       console.log(values)
       // const values = ['INTERNAL', 'ITIN PENDING', 'MISSING', 'W/ SHUMA', 'WAITING', 'READY', 'FBAR', '-'];
       return values.some(status => val.startsWith(status.value));
     },
-    async updateStatusDate(newVal) {
-      const active = await this.checkActiveStatus(newVal)
+    async updateStatusDate(newVal, overwirite) {
+      console.log(newVal)
+      const active = await this.checkActiveStatus(newVal, overwirite)
+      console.log(active)
       this.updateSelectedClient({
         model: models.selectedClient,
         data: { ...this.selectedClient, status: newVal, statusChangeDate: Date.now(), active }
