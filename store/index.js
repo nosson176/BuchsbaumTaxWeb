@@ -69,6 +69,8 @@ const mutations = {
     state[models.currentUser] = {}
     state[models.smartviews] = {}
     state[models.clients] = {}
+    state[models.clientSearchValue] = {}
+    state[models.clientSearchOption] = {}
   },
   // Set data from API responses. `model` is 'lists', 'campaigns' etc.
   setModelResponse(state, { model, data }) {

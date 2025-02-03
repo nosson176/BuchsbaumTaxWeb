@@ -167,7 +167,7 @@
               <div class="tooltip-content p-2 max-w-md">
                 <ul v-if="log.historyLogJson && log.historyLogJson.length > 0 || log.createdBy" class="list-disc pl-4">
                   <span class="font-semibold mb-2 block"><strong>Created by</strong> {{ log.createdBy }} => {{
-                    formatDateLog(log.logDate)
+                    formatDateLog(log.createdTime)
                   }}</span>
                   <div class="div"></div>
                   <li v-for="(change, changeIdx) in log.historyLogJson" :key="changeIdx" class="mb-1">
@@ -251,6 +251,7 @@ export default {
       models.copyLogs,
     ]),
     displayedLogs() {
+      console.log(this.shownLogs)
       const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
       if (!logs || logs.length === 0) return []
       const mappedLogs = logs?.map((log) => {

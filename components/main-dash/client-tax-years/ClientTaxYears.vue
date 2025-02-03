@@ -56,6 +56,6 @@ export default {
 .tax-year-grid {
   @apply grid grid-rows-1 w-full;
 
-  grid-template-columns: 232px repeat(6, minmax(0, 1fr));
+  grid-template-columns: 200px repeat(6, minmax(0, 1fr));
 }
 </style>
