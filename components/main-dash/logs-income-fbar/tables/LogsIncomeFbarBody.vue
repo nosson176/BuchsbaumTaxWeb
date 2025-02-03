@@ -11,8 +11,15 @@
             <div class="spinner"></div>
           </div>
         </div>
-        <div v-else class="cursor-pointer italic font-bold text-center " @click="handleShowHide">
-          {{ showOrHide }}
+        <div v-else-if="showLogs" class="cursor-pointer italic font-bold text-center " @click="handleShowHide('logs')">
+          {{ showOrHideLogs }}
+        </div>
+        <div v-else-if="showIncome" class="cursor-pointer italic font-bold text-center "
+          @click="handleShowHide('incomes')">
+          {{ showOrHideIncomes }}
+        </div>
+        <div v-else-if="showFbar" class="cursor-pointer italic font-bold text-center " @click="handleShowHide('fbars')">
+          {{ showOrHideFbars }}
         </div>
       </div>
       <div class="inline-flex justify-end shadow-sm px-2 py-1 text-xs font-semibold text-gray-700 focus:outline-none
@@ -44,8 +51,12 @@ const initialState = () => ({
   clickOnClient: false,
   selectedTime: null,
   isLoading: false,
-  showOrHide: 'Show',
+  showOrHideLogs: 'Show',
+  showOrHideIncomes: 'Show',
+  showOrHideFbars: 'Show',
   fetchedLogs: [],
+  fetchedIncome: [],
+  fetchedFbar: [],
 })
 
 export default {
@@ -121,36 +132,78 @@ export default {
       this.searchInputUpdate(searchInput)
     },
     clientClicked() {
-      console.log("clicked")
-      this.showOrHide = 'Show'
+      this.showOrHideLogs = 'Show'
+      this.showOrHideIncomes = 'Show'
+      this.showOrHideFbars = 'Show'
+      this.fetchedLogs = []
+      this.fetchedIncome = []
+      this.fetchedFbar = []
       this.clickOnClient = true
     },
     isSelectedClientLoading() {
-      console.log("clicked222")
       if (!this.isSelectedClientLoading) {
         this.clickOnClient = false
       }
     },
   },
   methods: {
-    async handleShowHide() {
-      if (!this.$refs.logsTableRef) return;
-
-      if (this.showOrHide === 'Show') {
-        this.showOrHide = 'Hide';
-        await this.getRestLogs();
-      } else {
-        this.showOrHide = 'Show';
-        this.hideRestLogs();
+    async handleShowHide(tab) {
+      if (tab === 'logs') {
+        if (this.showOrHideLogs === 'Show') {
+          this.showOrHideLogs = 'Hide'
+          await this.getRestData()
+        } else {
+          this.showOrHideLogs = 'Show'
+          this.hideRestData()
+        }
+        return
+      }
+      if (tab === 'incomes') {
+        if (this.showOrHideIncomes === 'Show') {
+          this.showOrHideIncomes = 'Hide'
+          await this.getRestData()
+        } else {
+          this.showOrHideIncomes = 'Show'
+          this.hideRestData()
+        }
+        return
+      }
+      if (tab === 'fbars') {
+        if (this.showOrHideFbars === 'Show') {
+          this.showOrHideFbars = 'Hide'
+          await this.getRestData()
+        } else {
+          this.showOrHideFbars = 'Show'
+          this.hideRestData()
+        }
       }
     },
+    // async handleShowHide() {
+    //   if (!this.$refs.logsTableRef) return;
+
+    //   if (this.showOrHide === 'Show') {
+    //     this.showOrHide = 'Hide';
+    //     await this.getRestLogs();
+    //   } else {
+    //     this.showOrHide = 'Show';
+    //     this.hideRestLogs();
+    //   }
+    // },
+    getRestData() {
+      if (this.showLogs) this.getRestLogs()
+      if (this.showIncome) this.getRestIncomes()
+      if (this.showFbar) this.getRestFbars()
+
+      this.isLoading = true;
+    },
+
     async getRestLogs() {
       if (this.fetchedLogs.length > 0) {
         this.$store.commit('pushRestLogs', this.fetchedLogs);
+        this.isLoading = false;
         return;
       }
 
-      this.isLoading = true;
       try {
         const res = await this.$api.getRestLogsByClient(this.headers, {
           clientId: this.$store.state.selectedClient.id
@@ -159,6 +212,8 @@ export default {
         if (data.length > 0) {
           this.fetchedLogs = data;
           this.$store.commit('pushRestLogs', data);
+        } else {
+          this.$toast.info('There are no more items to load.')
         }
       } catch (error) {
         console.error('Error fetching logs:', error);
@@ -166,11 +221,73 @@ export default {
         this.isLoading = false;
       }
     },
+    async getRestIncomes() {
+      if (this.fetchedIncome.length > 0) {
+        this.$store.commit('pushRestIncomes', this.fetchedIncome);
+        this.isLoading = false;
+        return;
+      }
 
-    hideRestLogs() {
-      const count = this.fetchedLogs.length;
-      if (count > 0) {
-        this.$store.commit('hideRestLogs', count);
+      try {
+        const res = await this.$api.getRestIncomesByClient(this.headers, {
+          clientId: this.$store.state.selectedClient.id
+        });
+        const data = Object.values(res);
+        if (data.length > 0) {
+          this.fetchedIncome = data;
+          this.$store.commit('pushRestIncomes', data);
+        } else {
+          this.$toast.info('There are no more items to load.')
+        }
+      } catch (error) {
+        console.error('Error fetching Incomes:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async getRestFbars() {
+      if (this.fetchedFbar.length > 0) {
+        this.$store.commit('pushRestFbars', this.fetchedFbar);
+        this.isLoading = false;
+        return;
+      }
+
+      try {
+        const res = await this.$api.getRestFbarByClient(this.headers, {
+          clientId: this.$store.state.selectedClient.id
+        });
+        const data = Object.values(res);
+        if (data.length > 0) {
+          this.fetchedFbar = data;
+          this.$store.commit('pushRestFbars', data);
+        } else {
+          this.$toast.info('There are no more items to load.')
+        }
+      } catch (error) {
+        console.error('Error fetching fbar:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    hideRestData() {
+      if (this.showLogs) {
+        const count = this.fetchedLogs.length;
+        if (count > 0) {
+          this.$store.commit('hideRestLogs', count);
+        }
+      }
+      if (this.showIncome) {
+        const count = this.fetchedIncome.length;
+        if (count > 0) {
+          this.$store.commit('hideRestIncomes', count);
+        }
+      }
+      if (this.showFbar) {
+        const count = this.fetchedFbar.length;
+        if (count > 0) {
+          this.$store.commit('hideRestFbars', count);
+        }
       }
     },
     searchInputUpdate(searchInput) {

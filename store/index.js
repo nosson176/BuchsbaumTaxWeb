@@ -190,11 +190,27 @@ const mutations = {
   pushRestLogs(state, logs) {
     state[models.selectedClient].logs.push(...logs)
   },
+  pushRestIncomes(state, incomes) {
+    state[models.selectedClient].incomeBreakdowns.push(...incomes)
+  },
+  pushRestFbars(state, fbars) {
+    state[models.selectedClient].fbarBreakdowns.push(...fbars)
+  },
 
   hideRestLogs(state, count) {
     // Remove 'count' number of logs from the end of the array
     const updatedLogs = state[models.selectedClient].logs.slice(0, -count) // Create a new array with the remaining logs
     state[models.selectedClient].logs = updatedLogs // Reassign the array to trigger reactivity
+  },
+  hideRestIncomes(state, count) {
+    // Remove 'count' number of logs from the end of the array
+    const updatedIncomes = state[models.selectedClient].incomeBreakdowns.slice(0, -count) // Create a new array with the remaining logs
+    state[models.selectedClient].incomeBreakdowns = updatedIncomes // Reassign the array to trigger reactivity
+  },
+  hideRestFbars(state, count) {
+    // Remove 'count' number of logs from the end of the array
+    const updatedFbars = state[models.selectedClient].fbarBreakdowns.slice(0, -count) // Create a new array with the remaining fbarBreakdowns
+    state[models.selectedClient].fbarBreakdowns = updatedFbars // Reassign the array to trigger reactivity
   },
 
   pushNewIncome(state, income) {

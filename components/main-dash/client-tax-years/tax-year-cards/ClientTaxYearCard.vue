@@ -40,6 +40,9 @@
           height: fbarColumnHeight,
           minWidth: fbars.length < 1 ? '3rem' : '5rem',
         }">
+          <div class="text-center p-1 px-2 text-sm font-medium text-gray-600 border-b border-gray-200">
+            Fbar
+          </div>
           <draggable v-model="fbars" v-bind="dragOptions" class="fbar-draggable" @start="startDrag" @end="onDrop">
             <transition-group name="fbar-list border" tag="div" class="fbar-list">
               <div v-for="(fbar, idx) in fbars" :key="fbar.id" class="fbar-item mb-4"
