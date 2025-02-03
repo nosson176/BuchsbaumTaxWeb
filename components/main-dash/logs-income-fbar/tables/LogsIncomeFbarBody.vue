@@ -148,6 +148,7 @@ export default {
   },
   methods: {
     async handleShowHide(tab) {
+      if (this.isLoading) return;
       if (tab === 'logs') {
         if (this.showOrHideLogs === 'Show') {
           this.showOrHideLogs = 'Hide'
@@ -190,11 +191,11 @@ export default {
     //   }
     // },
     getRestData() {
+      this.isLoading = true;
       if (this.showLogs) this.getRestLogs()
       if (this.showIncome) this.getRestIncomes()
       if (this.showFbar) this.getRestFbars()
 
-      this.isLoading = true;
     },
 
     async getRestLogs() {

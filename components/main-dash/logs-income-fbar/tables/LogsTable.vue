@@ -251,7 +251,6 @@ export default {
       models.copyLogs,
     ]),
     displayedLogs() {
-      console.log(this.shownLogs)
       const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
       if (!logs || logs.length === 0) return []
       const mappedLogs = logs?.map((log) => {
@@ -260,7 +259,6 @@ export default {
         }
 
         log.timeSpent = this.getTimeSpentOnClient(log)
-        // console.log(log)
         return log
       })
       if (
