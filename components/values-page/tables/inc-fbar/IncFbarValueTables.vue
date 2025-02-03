@@ -8,6 +8,10 @@
       <span class="font-bold text-xl text-gray-500">Part</span>
       <IncFbarPartsTable />
     </div>
+    <div class="flex-col">
+      <span class="font-bold text-xl text-gray-500">Tax Type</span>
+      <IncFbarTaxTypeTable />
+    </div>
     <div class="col-span-3">
       <!-- This empty div forces a new row -->
     </div>

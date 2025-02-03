@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex h-20 pl-1 py-1 pr-3 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
+    <div class="flex  pl-1 py-1 pr-3 border border-gray-300 border-opacity-0 hover:border-opacity-100 space-x-1"
       :class="classObj" @click="toggleSelectTaxYear">
       <div class="text-xs tracking-tighter cursor-pointer w-full">
         <div class="flex flex-col">
@@ -14,7 +14,7 @@
             <span>{{ statusDetail }}</span>
             <span class="ml-auto">{{ paid }}</span>
           </div>
-          <div class="flex justify-between pt-6 pr-2 text-xs text-gray-600">
+          <div class="flex justify-between pt-1 pr-2 text-xs text-gray-600">
             <span v-if="amountFederalFilings">{{ amountFederalFilings }} Federal</span>
             <span v-if="amountStateFilings">{{ amountStateFilings }} State</span>
             <span v-if="amountFbarFilings">{{ amountFbarFilings }} Fbar</span>
@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="flex flex-col items-center w-3 space-y-3.5 pl-2 pr-1" @click.stop>
-        <CheckBoxWithEyeIcon v-model="showing" />
+        <!-- <CheckBoxWithEyeIcon v-model="showing" /> -->
         <DeleteButton small @click="onDeleteClick()" />
       </div>
     </div>
@@ -88,7 +88,10 @@ export default {
       return this.federalFilingInfo?.taxForm
     },
     statusDetail() {
-      return this.federalFilingInfo?.statusDetail?.value
+      console.log(this.federalFilingInfo?.statusDetail?.value)
+      if ((this.federalFilingInfo?.statusDetail?.value?.match(/\n/g) || []).length >= 2) {
+        return 'MULTI';
+      } return this.federalFilingInfo?.statusDetail?.value
     },
     paid() {
       return this.federalFilingInfo?.paid ? this.currencySymbol + formatAsNumber(this.federalFilingInfo.paid) : ''
