@@ -47,7 +47,7 @@
             <transition-group name="fbar-list border" tag="div" class="fbar-list">
               <div v-for="(fbar, idx) in fbars" :key="fbar.id" class="fbar-item mb-4"
                 :style="idx !== 0 ? { 'border-left': '1px solid rgba(229, 231, 235, var(--tw-border-opacity))' } : {}">
-                <ClientTaxYearFbar :fbar="fbar" :idx="idx" @delete="startDelete($event, 'fbar')" />
+                <ClientTaxYearFbar :fbar="fbar" :idx="idx" :tax-year="yearData" @delete="startDelete($event, 'fbar')" />
               </div>
             </transition-group>
           </draggable>
@@ -142,10 +142,12 @@ export default {
       return { name: routes.shekelator }
     },
     filingOptions() {
+      console.log(this.fbars, filingTypes)
       const types = [{ value: '', name: '' }]
       for (const type in filingTypes) {
+        console.log(type)
         const hideExtension = type === filingTypes.ext && this.extensions.length > 2
-        const hideFbar = type === filingTypes.fbar && this.fbars.length > 1
+        const hideFbar = type === filingTypes.fbar && this.fbars.length === 1
         if (hideExtension || hideFbar) {
           continue
         }

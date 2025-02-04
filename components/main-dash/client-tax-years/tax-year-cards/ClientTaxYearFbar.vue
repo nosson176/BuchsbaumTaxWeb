@@ -33,12 +33,36 @@
           @blur="onBlur(formModel.statusDetail.value, 'statusDetail')" />
       </div>
     </div>
-    <!-- <div class="mt-85"> -->
     <div class="fbar-i" @click.stop="setEditable('statusDate')">
       <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
         :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
       <!-- </div> -->
     </div>
+    <div class="flex items-center gap-2">
+      <div @click="setEditable('includeInRefund')">
+        <EditableCheckBoxCell v-model="formModel.includeInRefund" :is-editable="isEditable('includeInRefund')"
+          @click="onBlur(formModel.includeInRefund, 'includeInRefund')" />
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-baseline" @click="setEditable('owes')">
+          <HeaderSelectOption v-if="formModel.owes" v-model="formModel.currency" :options="currencyOptions" currency
+            @input="onBlur(formModel.currency, 'currency', $event)" style="margin: -5px;" />
+          <EditableInput v-model="formModel.owes" placeholder="Owes" currency :is-editable="isEditable('owes')"
+            @blur="onBlur(formModel.owes, 'owes', $event)" @click="onBlur(formModel.owes, 'owes', $event)"
+            @keyup.enter.native="onBlur(formModel.owes, 'owes', $event)"
+            @keyup.esc.native="onBlur(formModel.owes, 'owes', $event)" />
+        </div>
+        <div class="flex items-baseline " @click="setEditable('paid')">
+          <HeaderSelectOption style="margin: -5px; margin-top: 0;" v-if="formModel.paid" v-model="formModel.currency"
+            :options="currencyOptions" currency @input="onBlur(formModel.currency, 'currency', $event)" />
+          <EditableInput v-model="formModel.paid" placeholder="Paid" currency :is-editable="isEditable('paid')"
+            @blur="onBlur(formModel, 'paid', $event)" @click="onBlur(formModel, 'paid', $event)"
+            @keyup.enter.native="onBlur(formModel, 'paid', $event)"
+            @keyup.esc.native="onBlur(formModel, 'paid', $event)" />
+        </div>
+      </div>
+    </div>
+    <!-- <div class="mt-85"> -->
     <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative h-20"
       :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
       @mouseenter="!isEditable(`${idx}-memo`) && showTooltip(idx)" @mouseleave="hideTooltip"
@@ -58,7 +82,7 @@
         @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
         style="min-height: 5rem;" />
     </div>
-    <div class="fbar-i" @click.stop="setEditable('dateFiled')">
+    <div class="fbar-i mt-16" @click.stop="setEditable('dateFiled')">
       <EditableDate v-model="formModel.dateFiled" placeholder="Date Filed" type="date"
         :is-editable="isEditable('dateFiled')" @blur="onBlur(formModel.dateFiled, 'dateFiled')" />
     </div>
@@ -68,9 +92,9 @@
 <script>
 import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
-import { events, models } from '~/shared/constants'
+import { currencies, events, models } from '~/shared/constants'
 
-const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'memo', 'dateFiled']
+const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'owes', 'paid', 'memo', 'dateFiled']
 
 export default {
   name: 'ClientTaxYearFbar',
@@ -117,6 +141,9 @@ export default {
     },
     fileTypeOptions() {
       return this.valueTypes.fbar_filing.filter((fileType) => fileType.show)
+    },
+    currencyOptions() {
+      return [{ value: currencies.USD.type }, { value: currencies.NIS.type }]
     },
   },
   watch: {
@@ -188,7 +215,8 @@ export default {
       return this.editable === value
     },
     onBlur(val, field, event = null) {
-      console.log(val, field)
+      console.log(field)
+
       if (field === 'memo') this.activeTooltipIndex = null;
       if (this.newFlag) {
         this.newFlag = false
@@ -204,7 +232,38 @@ export default {
     //   this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
     // },
     handleUpdate(field, event = null) {
-      console.log(field)
+      if (['owes', 'paid', 'includeInRefund', 'currency'].includes(field)) {
+        const filing = {
+          currency: this.formModel.currency || 'NIS',
+          owes: Number(this.formModel.owes) || 0,
+          paid: Number(this.formModel.paid) || 0,
+          includeInRefund: this.formModel.includeInRefund,
+        };
+
+        this.$store.commit('updateFiling', {
+          filingId: this.formModel.id,
+          taxYearId: this.fbar.taxYearId,
+          data: filing
+        });
+      }
+
+      if (field === 'currency') {
+        // Handle currency change
+        const oldCurrency = this.oldValue;
+        const newCurrency = this.formModel.currency;
+
+        if (oldCurrency !== newCurrency) {
+          this.$store.commit('updateFilingCurrency', {
+            filingId: this.formModel.id,
+            oldCurrency,
+            newCurrency,
+            amount: {
+              owes: Number(this.formModel.owes) || 0,
+              paid: Number(this.formModel.paid) || 0,
+            }
+          });
+        }
+      }
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -219,6 +278,8 @@ export default {
           this.setEditable('')
           return
         }
+        if (field === 'includeInRefund') return this.setEditable('')
+
         this.goToNextItem();
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);

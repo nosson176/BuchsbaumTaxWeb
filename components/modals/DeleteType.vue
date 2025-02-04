@@ -61,7 +61,6 @@ export default {
       }
     },
     handleDelete() {
-      console.log('delete')
       this.$emit(events.delete)
     },
     emitHide() {

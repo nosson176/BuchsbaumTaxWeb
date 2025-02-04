@@ -439,11 +439,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   }
 
   const updatePmtStatus = (headers, { clientId, pmtStatus }) => {
-    console.log(pmtStatus)
     return $axios
       .put(`/clients/pmtStatus/${clientId}`, pmtStatus, { headers })
       .then((res) => {
-        console.log(res)
         $toast.success('pmtStatus Client updated successfully')
         return res
       })

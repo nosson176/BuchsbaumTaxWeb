@@ -125,14 +125,12 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.clients, models.currentUser, models.clientClicked, models.loading]),
     isClientSelected() {
-      console.log(this.selectedClient)
       return this.selectedClient && Object.keys(this.selectedClient).length > 0
     },
     isSelectedClientLoading() {
       return this.loading.selectedClient
     },
     isClientActive() {
-      console.log("active", this.selectedClient?.active)
       return this.selectedClient?.active;
     },
     showLoadingSpinner() {
@@ -333,13 +331,7 @@ export default {
     closeOverrideConfirmModal() {
       this.showOverrideConfirmModal = false
     },
-    // async overwriteActiveMode() {
-    //   console.log("overwirite", this.overwriteMode)
-    //   this.isOverWriteActive = !this.isOverWriteActive
-    //   // this.overwriteMode = !this.overwriteMode
-    //   await this.updateStatusDate(this.selectedClient.status)
-    //   this.onBlur()
-    // },
+
     async confirmOverrideActiveMode() {
       // Close the modal
       this.showOverrideConfirmModal = false
@@ -373,7 +365,6 @@ export default {
       updateSelectedClient: mutations.setModelResponse
     }),
     updateClient1(oldClient) {
-      console.log("oldclient =>", oldClient)
       if (oldClient.needUpdate === true) {
         const updatedClient = {
           id: oldClient.id,
@@ -405,16 +396,12 @@ export default {
           return this.isClientActive
         }
       }
-      console.log(val)
       const values = this.valueTypes.active_status
-      console.log(values)
       // const values = ['INTERNAL', 'ITIN PENDING', 'MISSING', 'W/ SHUMA', 'WAITING', 'READY', 'FBAR', '-'];
       return values.some(status => val.startsWith(status.value));
     },
     async updateStatusDate(newVal, overwirite) {
-      console.log(newVal)
       const active = await this.checkActiveStatus(newVal, overwirite)
-      console.log(active)
       this.updateSelectedClient({
         model: models.selectedClient,
         data: { ...this.selectedClient, status: newVal, statusChangeDate: Date.now(), active }

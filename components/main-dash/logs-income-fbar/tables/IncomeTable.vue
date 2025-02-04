@@ -263,7 +263,6 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.currentUser, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedIncomes() {
-      console.log("displa")
       const incomes = this.shownIncomes.filter((income) => this.filterIncomes(income))
       return searchArrOfObjs(incomes, this.searchInput)
     },
@@ -329,7 +328,6 @@ export default {
       return docOptions
     },
     amountTotal() {
-      console.log("amountTotal")
       return formatAsNumber(
         this.displayedIncomes
           .filter((income) => income.include)
@@ -533,7 +531,6 @@ export default {
       // Handle amount changes
       if (field === 'amount') {
         if (income.amount === '') income.amount = 0
-        console.log(income.amount)
         income.amount = setAsValidNumber(income.amount);
         // Recalculate amountUSD based on the new amount and current exchange rate
         const rate = this.getCurrencyRate(income.years, income.currency);
@@ -549,7 +546,6 @@ export default {
         }
 
         // Dispatch update to store
-        console.log("dispatch", income)
         this.$store.dispatch('updateIncomeAction', { income });
       }
 
@@ -620,7 +616,6 @@ export default {
     //   }
     // },
     sortIncomes() {
-      console.log('sort')
       const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
 
       const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };
@@ -762,6 +757,7 @@ export default {
         description: '',
         depend: '',
         delete: null,
+        created_time: Date.now()
 
 
       }
@@ -776,6 +772,7 @@ export default {
             newIncome.amount = 0
             newIncome.amountUSD = 0
             newIncome.documents = 'NEED'
+            newIncome.created_time = Date.now()
             newIncome.id = generateRandomId()
             newIncome.createdBy = this.currentUser.username
             newIncome.userId = this.currentUser.id

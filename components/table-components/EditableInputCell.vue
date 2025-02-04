@@ -62,7 +62,6 @@ export default {
         return this.value || 0
       },
       set(newVal) {
-        console.log(newVal)
         this.$emit(events.input, newVal)
       },
     },

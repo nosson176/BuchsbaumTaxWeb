@@ -88,7 +88,6 @@ export default {
       return this.federalFilingInfo?.taxForm
     },
     statusDetail() {
-      console.log(this.federalFilingInfo?.statusDetail?.value)
       if ((this.federalFilingInfo?.statusDetail?.value?.match(/\n/g) || []).length >= 2) {
         return 'MULTI';
       } return this.federalFilingInfo?.statusDetail?.value

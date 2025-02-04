@@ -219,7 +219,6 @@ const mutations = {
 
   updateIncome(state, income) {
     const index = state[models.selectedClient].incomeBreakdowns.findIndex((l) => l.id === income.income.id)
-    console.log(index)
     if (index !== -1) {
       // state[models.selectedClient].incomeBreakdowns.splice(index, 1, income.income)
       // state[models.selectedClient].incomeBreakdowns[index] = income.income
