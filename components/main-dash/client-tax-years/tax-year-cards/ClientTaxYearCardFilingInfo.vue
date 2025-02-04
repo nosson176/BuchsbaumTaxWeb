@@ -20,7 +20,8 @@
           :is-editable="isEditable('statusDetail')" placeholder="Detail" @blur="onBlur('statusDetail')"
           @keyup.enter.native="onBlur('statusDetail')" />
       </div>
-      <div v-else :id="`statusDetail`" class="mb-1" @click="setEditable('statusDetail')">
+      <div v-else :id="`statusDetail`" class="mb-1" :class="!isEditable('statusDetail') ? 'w-min ml-auto mr-auto' : ''"
+        @click="setEditable('statusDetail')">
         <Tooltip :disabled="!isMult(statusDetail) || isEditable('statusDetail')" trigger="hover" :delay="500"
           class="w-full" style="width: 100%;" :placement="isEditable('statusDetail') ? 'left' : 'right'"
           :interactive="true" :html="true">
@@ -459,7 +460,6 @@ export default {
       },
     },
     currency: {
-
       get() {
         return this.formModel?.currency
       },
@@ -714,8 +714,6 @@ export default {
       const newValueStr = field === 'status' || field === 'statusDetail'
         ? JSON.stringify(this.formModel[field]?.value) || ''
         : JSON.stringify(this.formModel[field]) || '';
-      console.log(oldValueStr)
-      console.log(newValueStr)
       // Updated condition to ensure proper type handling
       if (
         oldValueStr === newValueStr ||
@@ -730,15 +728,12 @@ export default {
         this.editable = '';
         return;
       }
-      if (['owes', 'paid', 'owesFee', 'paidFee', 'includeInRefund', 'includeFee', 'currency'].includes(field)) {
+      if (['owes', 'paid', 'includeInRefund', 'currency'].includes(field)) {
         const filing = {
           currency: this.currency || 'NIS',
           owes: Number(this.owes) || 0,
           paid: Number(this.paid) || 0,
-          owesFee: Number(this.owesFee) || 0,
-          paidFee: Number(this.paidFee) || 0,
           includeInRefund: this.includeInRefund,
-          includeFee: this.includeFee
         };
 
         this.$store.commit('updateFiling', {
@@ -762,8 +757,6 @@ export default {
             amount: {
               owes: Number(this.owes) || 0,
               paid: Number(this.paid) || 0,
-              owesFee: Number(this.owesFee) || 0,
-              paidFee: Number(this.paidFee) || 0
             }
           });
         }
@@ -794,7 +787,6 @@ export default {
     },
 
     handleLocalUpdate(event = null) {
-      console.log('update')
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);

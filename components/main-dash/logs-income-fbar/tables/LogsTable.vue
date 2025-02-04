@@ -275,9 +275,9 @@ export default {
     shownLogs() {
       if (this.logs) {
         // מסנן את הלוגים לפי הערך של showArchived
-        const filteredLogs = this.logs?.filter(log => this.showArchived === log.archived);
+        // const filteredLogs = this.logs?.filter(log => this.showArchived === log.archived);
         // ממיר את ה-historyLogJson מ-JSON string לאובייקט JSON
-        const updatedLogs = filteredLogs.map(log => {
+        const updatedLogs = this.logs.map(log => {
           if (log.historyLogJson && typeof log.historyLogJson === 'string') {
             try {
               log.historyLogJson = this.parseHistoryLogJson(log.historyLogJson)
@@ -656,30 +656,10 @@ export default {
         console.error('Error saving logs:', error);
       }
     },
-    // formatUnixTimestamp(unixTimeMillis) {
-    //   if (unixTimeMillis === null) return
-    //   return moment(unixTimeMillis)
-    //     .tz('Asia/Jerusalem')
-    //     .format('YYYY-MM-DD'); // No timezone offset
-    // },
 
     onDeleteClick(logId) {
       this.deleteLogId = logId
       this.showDeleteModal = true
-      // const log = this.displayedLogs.find((log) => log.id === logId)
-      // this.$api.deleteLog(this.headers, logId).then(res => {
-      //   console.log(res)
-      //   if (res.success === 'Success') {
-      //     this.$store.commit('deleteLog', logId)
-      //   }
-      // })
-      // if (this.showArchived) {
-      //   log.archived = false
-      // } else {
-      //   log.archived = true
-      // }
-      // this.$store.dispatch('updateLogAction', { log });
-      // this.updateUpdatAndNewLogs(log, log.archived, 'archived');
     },
 
     closeDeleteModal() {
@@ -716,7 +696,8 @@ export default {
         alarmCreateChange: null,
         alarmUserId: null,
         alarmTime: null,
-        alarmDate: null
+        alarmDate: null,
+        created_time: Date.now()
       }
       if (addSecondsSpent) {
         defaultValues.secondsSpent = this.secondsSpentOnClient
@@ -738,7 +719,8 @@ export default {
             alarmUserId: null,
             alarmDate: null,
             alarmTime: null,
-            alarmUserName: null
+            alarmUserName: null,
+            created_time: Date.now()
           };
 
           this.updatAndNewLogs.push(newLog)
@@ -927,7 +909,7 @@ export default {
       return totalSeconds
     },
     getTimeSpentOnClient(log) {
-      if (log.secondsSpent < 59) return ''
+      if (log.secondsSpent && log.secondsSpent < 59) return ''
       const seconds = log.secondsSpent || 0
       const duration = intervalToDuration({ start: 0, end: seconds * 1000 })
       const hh = duration.hours < 10 ? '0' + duration.hours : duration.hours

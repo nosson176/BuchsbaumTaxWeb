@@ -252,7 +252,6 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.currentUser, models.valueTypes, models.valueTaxGroups, models.search, models.cmdPressed, models.exchangeRate]),
     displayedFbars() {
-      console.log(this.shownFbars)
       const fbars = this.shownFbars.filter((fbar) => this.filterFbars(fbar));
       return searchArrOfObjs(fbars, this.searchInput);
     },
@@ -509,7 +508,6 @@ export default {
         // Recalculate amountUSD based on the new amount and current exchange rate
         const rate = this.getCurrencyRate(fbar.years, fbar.currency);
         fbar.amountUSD = rate ? fbar.amount / rate : fbar.amount;
-        console.log(fbar.amountUSD)
       }
 
       // Update store for specific fields that should trigger recalculation
@@ -521,7 +519,6 @@ export default {
         }
 
         // Dispatch update to store
-        console.log(fbar)
         this.$store.dispatch('updateFbarAction', { fbar });
       }
 
@@ -538,10 +535,8 @@ export default {
     },
 
     sortFbars() {
-      console.log(this.displayedFbars);
 
       this.displayedFbars.sort((a, b) => {
-        console.log(a)
         // Check if 'years' is null or undefined and place those items first
         if (a.years == null && b.years == null) return 0;
         if (a.years == null) return -1;
@@ -654,7 +649,8 @@ export default {
         id: generateRandomId(),
         createdBy: this.currentUser.username,
         userId: this.currentUser.id,
-        taxGroup: 'FBAR YITROT'
+        taxGroup: 'FBAR YITROT',
+        created_time: Date.now()
 
       }
       if (this.isCopyingFbars) {
@@ -709,6 +705,7 @@ export default {
           amountUSD: 0,
           documents: 'NEED',
           taxGroup: 'FBAR YITROT',
+          created_time: Date.now(),
           id: generateRandomId(),
           createdBy: this.currentUser.username,
           userId: this.currentUser.id,

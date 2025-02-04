@@ -148,6 +148,19 @@ const formatUnixTimestampWithMoment = (unixTimeMillis) => {
 // }
 
 const formatUnixTimestamp = (timestamp) => {
+  // console.log('timestamp run',timestamp)
+  // // Ensure the timestamp is a valid number
+  // if (isNaN(timestamp) || timestamp <= 0) {
+  //   console.error('Timestamp is not a valid number:', typeof timestamp, timestamp)
+  //   return
+  // }
+
+  // // Create Date object from the timestamp
+  const date = new Date(timestamp)
+  // if (isNaN(date.getTime())) {
+  //   console.error('Date is invalid for timestamp:', typeof timestamp, timestamp)
+  //   return
+  // }
   // Check if the timestamp is already in the 'YYYY-MM-DD' format
   const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/
 
@@ -192,18 +205,18 @@ const formatUnixTimestamp = (timestamp) => {
     timestamp = Number(timestamp)
   }
 
-  // Ensure the timestamp is a valid number
-  if (isNaN(timestamp) || timestamp <= 0) {
-    console.error('Timestamp is not a valid number:', typeof timestamp, timestamp)
-    return
-  }
+  // // Ensure the timestamp is a valid number
+  // if (isNaN(timestamp) || timestamp <= 0) {
+  //   console.error('Timestamp is not a valid number:', typeof timestamp, timestamp)
+  //   return
+  // }
 
-  // Create Date object from the timestamp
-  const date = new Date(timestamp)
-  if (isNaN(date.getTime())) {
-    console.error('Date is invalid for timestamp:', typeof timestamp, timestamp)
-    return
-  }
+  // // Create Date object from the timestamp
+  // const date = new Date(timestamp)
+  // if (isNaN(date.getTime())) {
+  //   console.error('Date is invalid for timestamp:', typeof timestamp, timestamp)
+  //   return
+  // }
 
   // Format the date as DD/MM/YYYY
   const day = String(date.getDate()).padStart(2, '0')

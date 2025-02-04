@@ -433,7 +433,6 @@ export default {
         }
       }
       if (event?.key === 'Tab' || event?.key === 'Enter') {
-        console.log(8)
         this.goToNextColumn()
         return
       }
