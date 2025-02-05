@@ -26,8 +26,8 @@
               <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate" @click="toggleEditable(type.id)" />
             </div>
             <div class="table-col w-full">
-              <EditableInput v-model="type.value" @click="toggleEditable(type.id)" :is-editable="isEditable(type.id)"
-                @blur="onBlur" class="w-1/4" />
+              <EditableInput v-model="type.value" @click.stop="toggleEditable(type.id)"
+                :is-editable="isEditable(type.id)" @blur="onBlur" class="w-1/4" />
             </div>
             <div class="table-col xs">
               <DeleteButton @click="deleteValue(type)" />
@@ -92,9 +92,11 @@ export default {
       this.$emit('currency-selected', value.value)
     },
     toggleEditable(id) {
+      console.log("currency", id)
       this.editableId = id
     },
     isEditable(id) {
+      console.log(id, this.editableId)
       return this.editableId === id
     },
     deleteValue(value) {

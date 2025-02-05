@@ -522,8 +522,8 @@ export default {
         }
 
         // Dispatch update to store
-        this.$store.dispatch('updateFbarAction', { fbar });
       }
+      this.$store.dispatch('updateFbarAction', { fbar });
 
       // Handle updates array for API
       const index = this.updateFbars.findIndex(fb => fb.id === fbar.id);

@@ -25,14 +25,17 @@
                             <EditableCheckBoxCell v-model="type.show" @input="debounceUpdate"
                                 @click="toggleEditable(type.id)" />
                         </div>
-                        <div class="table-col w-full" @click="toggleEditable(type.id)">
-                            <EditableInput v-model="type.year" :is-editable="isEditable(type.id)" @blur="onBlur" />
+                        <div class="table-col w-full" @click.stop="toggleEditable(`${idx}-year`, type.id)">
+                            <EditableInputCell v-model="type.year" :is-editable="isEditable(`${idx}-year`)"
+                                @blur="onBlur" @keyup.enter.native="onBlur" />
                         </div>
-                        <div class="table-col w-full" @click="toggleEditable(type.id)">
-                            <EditableInput v-model="type.currency" :is-editable="isEditable(type.id)" @blur="onBlur" />
+                        <div class="table-col w-full">
+                            <EditableInputCell v-model="type.currency" :is-editable="isEditable(`${idx}-currency`)"
+                                readonly />
                         </div>
-                        <div class="table-col w-full" @click="toggleEditable(type.id)">
-                            <EditableInput v-model="type.rate" :is-editable="isEditable(type.id)" @blur="onBlur" />
+                        <div class="table-col w-full" @click="toggleEditable(`${idx}-rate`, type.id)">
+                            <EditableInputCell v-model="type.rate" :is-editable="isEditable(`${idx}-rate`)"
+                                @blur="onBlur" @keyup.enter.native="onBlur" />
                         </div>
                         <div class="table-col xs">
                             <DeleteButton @click="deleteValue(type)" />
@@ -52,9 +55,9 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import draggable from 'vuedraggable'
 import { models, TRANSITION_NAME } from '~/shared/constants'
-import { valueTypeValueConstructor } from '~/shared/constructors'
+import { exchangeRate } from '~/shared/constructors'
 
-const TABLE_TYPE = 'currency'
+const TABLE_TYPE = 'currency_values'
 
 export default {
     name: 'IncFbarCurrenciesValuesTable',
@@ -68,6 +71,7 @@ export default {
     data() {
         return {
             editableId: null,
+            editable: '',
             showDelete: false,
             deleteId: '',
             dragActive: false,
@@ -84,12 +88,16 @@ export default {
         //     return Object.values(this.exchangeRate)
         // },
         filteredCurrencyValues() {
-            return Object.values(this.exchangeRate).filter(value => value.currency === this.CurrencyValue).sort((a, b) => b.year - a.year)
+            const values = JSON.parse(JSON.stringify(this.exchangeRate));
+            return Object.values(values)
+                .filter(value => value.currency === this.CurrencyValue)
+                .sort((a, b) => b.year - a.year);
         },
         headers() {
             return this.$api.getHeaders()
         },
         debounceUpdate() {
+
             return debounce(this.handleUpdate, 500)
         },
         transitionName() {
@@ -100,11 +108,16 @@ export default {
         },
     },
     methods: {
-        toggleEditable(id) {
-            this.editableId = id
+        toggleEditable(textId, id) {
+            if (this.editable === textId) {
+                this.editable = '';
+            } else {
+                this.editable = textId;
+                this.editableId = id
+            }
         },
         isEditable(id) {
-            return this.editableId === id
+            return this.editable === id;
         },
         deleteValue(value) {
             this.deleteId = value.id
@@ -112,28 +125,42 @@ export default {
             this.showDelete = true
         },
         onAddRowClick() {
-            const value = Object.assign({}, valueTypeValueConstructor, {
-                key: TABLE_TYPE,
-                value: '',
-                sortOrder: this.valueTypes[TABLE_TYPE].length + 1,
+            const value = Object.assign({}, exchangeRate, {
+                currency: this.CurrencyValue,
+                year: '',
+                show: true,
             })
-            this.$api.createValueType(this.headers, { value }).then(res => {
-                this.$store.commit("pushNewValueType", { value: res, tab: TABLE_TYPE })
+            this.$api.createExchangeRate(this.headers, { value }).then(res => {
+                console.log(res)
+                this.$store.commit("pushNewExchangeRate", { value: res })
             })
         },
         onBlur() {
             this.handleUpdate()
-            this.editableId = null
+            this.editable = null
         },
         handleUpdate() {
-            const value = Object.values(this.filteredCurrencyValues).find((type) => type.id === this.editableId)
-            this.$api.updateValueType(this.headers, { valueId: value.id }, value).then(res => {
-                this.$store.commit("updateValueType", { value: res, tab: TABLE_TYPE })
-            })
+            if (!this.editable) return; // Ensure there's an editable ID set
+            const value = this.filteredCurrencyValues.find((type) => type.id === this.editableId);
+
+            if (!value) {
+                console.warn("handleUpdate: No matching value found for ID", this.editableId);
+                return;
+            }
+
+            this.$api.updateExchangeRate(this.headers, { valueId: value.id }, value)
+                .then(res => {
+                    console.log(res)
+                    this.$store.commit("updateExchangeRate", { value });
+                })
+                .catch(err => {
+                    console.error("Failed to update exchange rate:", err);
+                });
         },
         deleteItem() {
-            this.$api.deleteValueType(this.headers, { valueId: this.deleteId }).then((res) => {
-                if (res.success === "Success") this.$store.commit("deleteValueType", { valueId: this.deleteItemSelect.id, tab: TABLE_TYPE })
+            this.$api.deleteExchangeRate(this.headers, { valueId: this.deleteId }).then((res) => {
+                console.log(res, this.deleteItemSelect.id)
+                if (res.status === 204) this.$store.commit("deleteExchangeRate", { valueId: this.deleteItemSelect.id })
                 this.showDelete = false
                 this.deleteId = ''
             })

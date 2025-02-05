@@ -546,8 +546,8 @@ export default {
         }
 
         // Dispatch update to store
-        this.$store.dispatch('updateIncomeAction', { income });
       }
+      this.$store.dispatch('updateIncomeAction', { income });
 
       // Handle updates array for API
       const index = this.updateIncomes.findIndex(inc => inc.id === income.id);
