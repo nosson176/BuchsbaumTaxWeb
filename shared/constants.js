@@ -206,6 +206,7 @@ export const searchOptions = Object.freeze([
   { name: 'INCOME_BREAKDOWN::description', value: 'income_breakdowns::description' },
   { name: 'LOG::employee_alarm', value: 'logs::alarm_user_name' },
   { name: 'LOG::alarm_date', value: 'logs::alarm_date' },
+  { name: 'LOG::alarm_time', value: 'logs::alarm_time' },
   { name: 'LOG::date_of_log', value: 'logs::log_date' },
   { name: 'LOG::note', value: 'logs::note' },
   { name: 'LOG::year_name', value: 'logs::years' },
@@ -245,7 +246,8 @@ export const smartviewOptions = Object.freeze([
   { name: 'INCOME_BREAKDOWN::tax_type', value: 'INCOME_BREAKDOWN::tax_type' },
   { name: 'INCOME_BREAKDOWN::year_name', value: 'INCOME_BREAKDOWN::year_name' },
 
-  { name: 'LOG::alarm_date', value: 'LOG::alarm_date' },
+  // { name: 'LOG::alarm_date', value: 'LOG::alarm_date' },
+  { name: 'LOG::alarm_time', value: 'LOG::alarm_time' },
   { name: 'LOG::alarm_complete', value: 'LOG::alarm_complete' },
   { name: 'LOG::date_of_log', value: 'LOG::date_of_log' },
   { name: 'LOG::employee_alarm', value: 'LOG::employee_alarm' },

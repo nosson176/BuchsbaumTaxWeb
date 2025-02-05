@@ -286,6 +286,7 @@ export default {
       }
 
       if (field === 'type' && this.oldValue) {
+        console.log("in")
         oldVal = this.oldValue
         const res = await this.$api.updateFilingDelivary(this.headers, {
           clientId: this.clientId,
@@ -294,6 +295,7 @@ export default {
         });
 
         if (res.status === 'success') {
+          console.log("in2")
           this.$store.commit('UPDATE_FILINGS_CONTACT', {
             oldValue: oldVal,
             newValue: contact.contactType
@@ -471,6 +473,23 @@ export default {
         this.toggleEditable(nextCell, this.editableContactId)
       }
     },
+    // goToPrevColumn() {
+    //   console.log("goprev", this.editableId)
+    //   const currentCell = this.editableId
+    //   const idArr = currentCell.split('-')
+    //   const columnIndex = columns.findIndex((col) => col === idArr[1])
+    //   const currentRow = Number(idArr[0])
+    //   if (columnIndex === 0 && currentRow > 0) {
+    //     const prevRow = currentRow - 1
+    //     const prevCell = `${prevRow}-${columns[columns.length - 1]}`
+    //     console.log(prevCell)
+    //     this.toggleEditable(prevCell, this.editableContactId)
+    //   } else if (columnIndex > 0) {
+    //     const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
+    //     console.log(prevCell)
+    //     this.toggleEditable(prevCell, this.editableContactId)
+    //   }
+    // },
     goToPrevColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
@@ -479,13 +498,14 @@ export default {
       if (columnIndex === 0 && currentRow > 0) {
         const prevRow = currentRow - 1
         const prevCell = `${prevRow}-${columns[columns.length - 1]}`
-        this.toggleEditable(prevCell, this.editableLogId)
+        this.toggleEditable(prevCell, this.editableContactId)
       } else if (columnIndex > 0) {
-        const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
-        this.toggleEditable(prevCell, this.editableLogId)
+        const prevCell = `${idArr[0]}-${columns[columnIndex - 1]}`
+        this.toggleEditable(prevCell, this.editableContactId)
       }
     },
     onBlur(val, field, event = null) {
+      if (event && event.shiftKey && event.key === "Tab") return;
       if (this.oldValue !== val) {
         this.handleUpdate(field)
         if (event?.key !== 'Escape') {

@@ -66,7 +66,8 @@
         <div :id="`${idx}-priority`" class="table-col w-min"
           @click="toggleEditable(`${idx}-priority`, log.id, log.priority)">
           <EditablePrioritySelectCell v-model="log.priority" :is-editable="isEditable(`${idx}-priority`)"
-            @blur="onBlur(log.priority, 'priority')" @keyup.tab.native="onBlur(log.priority, 'priority', $event)" />
+            @blur="onBlur(log.priority, 'priority')" @keyup.tab.native="onBlur(log.priority, 'priority', $event)"
+            @keyup.esc.native="onBlur(log.priority, 'priority', $event)" />
         </div>
         <div :id="`${idx}-years`" class="table-col xxs" @click="toggleEditable(`${idx}-years`, log.id, log.years)">
           <Tooltip :disabled="!isMult(log.years) || forceCloseTooltip" trigger="hover" :delay="500"
@@ -75,7 +76,8 @@
               :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
               @blur="onBlur(log.years, 'years')" placeholder="Year"
               @keyup.tab.native="onBlur(log.years, 'years', $event)"
-              @keyup.enter.native="onBlur(log.years, 'years', $event)" />
+              @keyup.enter.native="onBlur(log.years, 'years', $event)"
+              @keyup.esc.native="onBlur(log.years, 'years', $event)" />
             <template #popper>
               <ul>
                 <li v-for="(year, index) in splitYears(log.years)" :key="index">
@@ -118,7 +120,8 @@
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
             @blur="onBlur(log.logDate, 'logDate')" @keyup.tab.native="onBlur(log.logDate, 'logDate', $event)"
-            @keyup.enter.native="onBlur(log.logDate, 'logDate', $event)" />
+            @keyup.enter.native="onBlur(log.logDate, 'logDate', $event)"
+            @keyup.esc.native="onBlur(log.logDate, 'logDate', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmDate`" class="table-col sm"
           @click="toggleEditable(`${idx}-alarmDate`, log.id, log.alarmDate)">
@@ -136,7 +139,8 @@
           @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
             :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')"
-            @keyup.tab.native="onBlur(log.alarmUserName, 'alarmUserName', $event)" />
+            @keyup.tab.native="onBlur(log.alarmUserName, 'alarmUserName', $event)"
+            @keyup.esc.native="onBlur(log.alarmUserName, 'alarmUserName', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmUserName`" class="table-col sm"
         @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
@@ -148,7 +152,8 @@
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
             @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="MM-DD-YYYY HH:mm"
             placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')"
-            @keyup.tab.native="onBlur(log.alarmTime, 'alarmTime', $event)" />
+            @keyup.tab.native="onBlur(log.alarmTime, 'alarmTime', $event)"
+            @keyup.esc.native="onBlur(log.alarmTime, 'alarmTime', $event)" />
         </div>
         <div :id="`${idx}-alarmComplete`" class="table-col xxs" @click="toggleComplete(log)">
           <CheckIcon v-if="log.alarmTime" class="h-5 w-5 cursor-pointer"
@@ -730,7 +735,9 @@ export default {
           });
           this.selectedItems = {}
           const copyLogIndex = this.displayedLogs.findIndex((log) => log.id === Number(newLog.id))
-          this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLog.id)
+          this.$nextTick(() => {
+            this.toggleEditable(`${copyLogIndex}-${columns[1]}`, newLog.id)
+          })
         })
       } else {
         const log = Object.assign({}, defaultValues)
@@ -757,6 +764,8 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
+      if (event && event.shiftKey && event.key === "Tab") return;
+
       if (field === 'years' && !this.forceCloseTooltip) this.hideToolTip()// Controls tooltip visibility
 
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
@@ -854,7 +863,8 @@ export default {
         this.$nextTick(() => {
           this.toggleEditable(nextCell, this.editableLogId)
         })
-      } else if (columnIndex === columns.length - 1 && currentRow < this.displayedLogs.length - 1) {
+      }
+      else if (columnIndex === columns.length - 1 && currentRow < this.displayedLogs.length - 1) {
         const nextRow = currentRow + 1
         const nextCell = `${nextRow}-${columns[0]}`
         this.$nextTick(() => {
@@ -863,6 +873,7 @@ export default {
       } else this.editableId = ''
       this.activeTooltipIndex = null
     },
+
     goToPrevColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
@@ -872,11 +883,13 @@ export default {
         const prevRow = currentRow - 1
         const prevCell = `${prevRow}-${columns[columns.length - 1]}`
         this.toggleEditable(prevCell, this.editableLogId)
-      } else if (columnIndex > 0) {
-        const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
+      } else if (columnIndex === 0 && currentRow === 0) {
+        this.editableId = ''
+      }
+      else if (columnIndex > 0) {
+        const prevCell = `${idArr[0]}-${columns[columnIndex - 1]}`
         this.toggleEditable(prevCell, this.editableLogId)
       }
-      this.activeTooltipIndex = null
     },
     setAlarmFilter() {
       this.filterByAlarmStatusIndex = (this.filterByAlarmStatusIndex + 1) % 3

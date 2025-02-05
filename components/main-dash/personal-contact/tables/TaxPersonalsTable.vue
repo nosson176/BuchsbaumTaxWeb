@@ -410,6 +410,20 @@ export default {
         this.toggleEditable(nextCell, this.editablePersonalId)
       }
     },
+    // goToPrevColumn() {
+    //   const currentCell = this.editableId
+    //   const idArr = currentCell.split('-')
+    //   const columnIndex = columns.findIndex((col) => col === idArr[1])
+    //   const currentRow = Number(idArr[0])
+    //   if (columnIndex === 0 && currentRow > 0) {
+    //     const prevRow = currentRow - 1
+    //     const prevCell = `${prevRow}-${columns[columns.length - 1]}`
+    //     this.toggleEditable(prevCell, this.editablePersonalId)
+    //   } else if (columnIndex > 0) {
+    //     const prevCell = `${idArr}-${columns[columnIndex - 1]}`
+    //     this.toggleEditable(prevCell, this.editablePersonalId)
+    //   }
+    // },
     goToPrevColumn() {
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
@@ -418,13 +432,14 @@ export default {
       if (columnIndex === 0 && currentRow > 0) {
         const prevRow = currentRow - 1
         const prevCell = `${prevRow}-${columns[columns.length - 1]}`
-        this.toggleEditable(prevCell, this.editableLogId)
+        this.toggleEditable(prevCell, this.editablePersonalId)
       } else if (columnIndex > 0) {
-        const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
-        this.toggleEditable(prevCell, this.editableLogId)
+        const prevCell = `${idArr[0]}-${columns[columnIndex - 1]}`
+        this.toggleEditable(prevCell, this.editablePersonalId)
       }
     },
     onBlur(val, event = null) {
+      if (event && event.shiftKey && event.key === "Tab") return;
       if (this.oldValue !== val) {
         this.handleUpdate()
         if (event?.key !== 'Escape') {

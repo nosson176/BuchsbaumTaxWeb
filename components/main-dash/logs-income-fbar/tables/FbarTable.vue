@@ -282,7 +282,9 @@ export default {
       return taxGroup?.id
     },
     jobOptions() {
-      return this.valueTypes.part.filter((job) => job.show)
+      return this.valueTypes.part.filter((job) => {
+        return job.show
+      })
     },
     currencyOptions() {
       return this.valueTypes.currency.filter((currency) => currency.show)
@@ -363,8 +365,9 @@ export default {
       return options
     },
     filteredJobOptions() {
-      const options = this.jobOptions.filter((job) => this.shownFbars.find((fbar) => fbar.job === job.value))
-
+      const options = this.jobOptions.filter((job) => this.shownFbars.find((fbar) => {
+        return fbar.job === job.value
+      }))
       return options
     },
     filteredCurrencyOptions() {
@@ -535,6 +538,9 @@ export default {
     },
 
     sortFbars() {
+      const partOrder = this.valueTypes.part
+        .filter((job) => job.show)  // Filter to keep only the jobs where 'show' is true
+        .map((job) => job.value);   // Extract just the 'value' of each job
 
       this.displayedFbars.sort((a, b) => {
         // Check if 'years' is null or undefined and place those items first
@@ -555,31 +561,54 @@ export default {
             return bYear - aYear;
           }
 
-          // Sort by job (JOB1 > JOB2 > ... > JOB10)
-          const jobRegex = /^JOB(\d+)$/;
-          const aJobMatch = a.part?.match(jobRegex);
-          const bJobMatch = b.part?.match(jobRegex);
+          // Sort by part (PART I > PART II > ... > PART V)
 
-          if (aJobMatch && bJobMatch) {
-            return parseInt(aJobMatch[1]) - parseInt(bJobMatch[1]);
+          //  const partOrder = ['PART I', 'PART II', 'PART III', 'PART IV', 'PART V']; // Order of parts
+          // const partOrder = ["PART II",
+          //   "PART II .2",
+          //   "PART II .3",
+          //   "PART II .4",
+          //   "PART II .5",
+          //   "PART II .6",
+          //   "PART II .7",
+          //   "PART II .8",
+          //   "PART II .9",
+          //   "PART II .10",
+          //   "PART III ",
+          //   "PART III .2",
+          //   "PART III .3",
+          //   "PART III .4",
+          //   "PART III .5",
+          //   "PART III .6",
+          //   "PART III .7",
+          //   "PART III .8",
+          //   "PART III .9",
+          //   "PART IV",
+          //   "PART IV .2",
+          //   "PART IV .3",
+          //   "PART IV .4",
+          //   "PART IV .5",
+          //   "PART IV .6",
+          //   "PART IV .7",
+          //   "PART IV .8",
+          //   "PART V"]; // Order of parts
+          const aPartIndex = partOrder.indexOf(a.part);
+          const bPartIndex = partOrder.indexOf(b.part);
+
+          if (aPartIndex !== bPartIndex) {
+            return aPartIndex - bPartIndex;
           }
-
-          // If one has a job and the other doesn't, prioritize the one with a job
-          if (aJobMatch) return -1;
-          if (bJobMatch) return 1;
-
-          // Sort by remaining string after the year (if applicable)
-          return a.years.localeCompare(b.years);
         }
 
         // If one has a year and the other doesn't, place the one with the year first
         if (aYearMatch) return -1;
         if (bYearMatch) return 1;
 
-        // If neither has a year, sort alphabetically
+        // If neither has a year, sort alphabetically by years
         return a.years.localeCompare(b.years);
       });
 
+      // Handling the trackedFbarId
       if (this.trackedFbarId) {
         const newIndex = this.displayedFbars.findIndex(p => p.id === this.trackedFbarId);
         if (newIndex !== -1) {
@@ -607,20 +636,6 @@ export default {
       }
     },
     onDeleteClick(fbarId) {
-      // const fbar = this.displayedFbars.find((fbar) => fbar.id === fbarId)
-      // if (this.showArchived) {
-      //   fbar.archived = false
-      // } else {
-      //   fbar.archived = true
-      // }
-      // const index = this.updateFbars.findIndex(f => f.id === fbar.id)
-      // if (index !== -1) {
-      //   this.updateFbars[index] = fbar
-      // } else {
-      //   this.updateFbars.push(fbar)
-      // }
-
-      // this.$store.dispatch('updateFbarAction', { fbar });
       this.deleteFbarId = fbarId
       this.showDeleteModal = true
     },
@@ -654,30 +669,34 @@ export default {
 
       }
       if (this.isCopyingFbars) {
-        this.showYearSelectionModal = true
-        // this.selectedFbarIds.forEach((fbarId, idx) => {
-        //   const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
-        //   const fbar = this.displayedFbars[fbarIndex]
-        //   const newFbar = Object.assign({}, fbar)
-        //   newFbar.amount = 0
-        //   newFbar.amountUSD = 0
-        //   newFbar.documents = 'NEED'
-        //   newFbar.taxGroup = 'FBAR YITROT'
-        //   newFbar.id = generateRandomId()
-        //   newFbar.createdBy = this.currentUser.username
-        //   newFbar.userId = this.currentUser.id
-        //   this.updateFbars.push(newFbar)
-        //   this.$store.commit('pushNewFbar', {
-        //     state: this.selectedClient,
-        //     fbar: newFbar
-        //   });
-        //   this.selectedItems = {}
-        //   const copyFbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(newFbar.id))
-        //   this.toggleEditable(`${copyFbarIndex}-${columns[0]}`, newFbar.id)
-        // this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
-        //     }
-        //   })
-        // })
+        if (this.selectedFbarIds.length > 1) {
+          this.showYearSelectionModal = true
+        } else {
+          this.selectedFbarIds.forEach((fbarId, idx) => {
+            const fbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(fbarId))
+            const fbar = this.displayedFbars[fbarIndex]
+            const newFbar = Object.assign({}, fbar)
+            newFbar.amount = 0
+            newFbar.amountUSD = 0
+            newFbar.documents = 'NEED'
+            newFbar.taxGroup = 'FBAR YITROT'
+            newFbar.id = generateRandomId()
+            newFbar.createdBy = this.currentUser.username
+            newFbar.userId = this.currentUser.id
+            this.updateFbars.push(newFbar)
+            this.$store.commit('pushNewFbar', {
+              state: this.selectedClient,
+              fbar: newFbar
+            });
+            this.selectedItems = {}
+            const copyFbarIndex = this.displayedFbars.findIndex((fbar) => fbar.id === Number(newFbar.id))
+            this.$nextTick(() => {
+
+              this.toggleEditable(`${copyFbarIndex}-${columns[1]}`, newFbar.id)
+            })
+            // this.toggleEditable(`${fbarIndex}-${columns[0]}`, newFbar.id)
+          })
+        }
       }
       else {
         const fbar = Object.assign({}, defaultValues)

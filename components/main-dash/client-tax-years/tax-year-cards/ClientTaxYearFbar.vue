@@ -215,8 +215,6 @@ export default {
       return this.editable === value
     },
     onBlur(val, field, event = null) {
-      console.log(field)
-
       if (field === 'memo') this.activeTooltipIndex = null;
       if (this.newFlag) {
         this.newFlag = false

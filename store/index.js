@@ -418,14 +418,31 @@ const mutations = {
     }
   },
 
+  // UPDATE_FILINGS_CONTACT(state, { oldValue, newValue }) {
+  //   state.selectedClient.taxYears.forEach((taxYear) => {
+  //     taxYear.filings.forEach((filing) => {
+  //       if (filing.deliveryContact === oldValue) {
+  //         console.log('inside')
+  //         filing.deliveryContact = newValue
+  //       }
+  //       if (filing.secondDeliveryContact === oldValue) {
+  //         console.log('inside2')
+  //         filing.secondDeliveryContact = newValue
+  //       }
+  //     })
+  //   })
+  // },
+
   UPDATE_FILINGS_CONTACT(state, { oldValue, newValue }) {
     state.selectedClient.taxYears.forEach((taxYear) => {
       taxYear.filings.forEach((filing) => {
         if (filing.deliveryContact === oldValue) {
-          filing.deliveryContact = newValue
+          console.log('inside')
+          Vue.set(filing, 'deliveryContact', newValue) // שינוי ריאקטיבי
         }
         if (filing.secondDeliveryContact === oldValue) {
-          filing.secondDeliveryContact = newValue
+          console.log('inside2')
+          Vue.set(filing, 'secondDeliveryContact', newValue) // שינוי ריאקטיבי
         }
       })
     })

@@ -22,7 +22,7 @@
           <div class="flex flex-col w-1/3">
             <div @click="setEditable('status')">
               <EditableSelectCell v-model="status" placeholder="Status" :is-editable="isEditable('status')"
-                :options="feeStatusOptions" @blur="onBlur('status')" />
+                :options="feeStatusOptions" @blur="onBlur('status')" @keyup.tab.native="onBlur('status', $event)" />
             </div>
             <div @click="setEditable('statusDetail')">
               <EditableSelectCell v-model="statusDetail" placeholder="Detail" :is-editable="isEditable('statusDetail')"
@@ -241,7 +241,7 @@ export default {
     },
     currency: {
       get() {
-        return this.formModel.currency
+        return this.formModel.currency || 'NIS'
       },
       set(newVal) {
         this.formModel.currency = newVal
@@ -310,6 +310,8 @@ export default {
       return this.editable === field
     },
     onBlur(e, event = null) {
+      console.log("tab")
+      if (event && event.shiftKey && event.key === "Tab") return;
       if (this.editable === 'sum' || this.editable === 'include') {
         this.handleUpdate()
         return
@@ -373,7 +375,7 @@ export default {
       if (itemIndex > 0) {
         const prevCell = items[itemIndex - 1]
         this.setEditable(prevCell)
-      }
+      } else this.editable = ''
     },
   },
 }

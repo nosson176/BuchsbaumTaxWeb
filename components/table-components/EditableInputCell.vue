@@ -3,10 +3,10 @@
     <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <input v-if="showEditMode" ref="input" v-model="computedValue" autofocus type="text"
+    <input v-if="showEditMode" ref="input" v-model="editModeValue" autofocus type="text"
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full z-20"
       tabindex="0" :placeholder="placeholder" @keydown.enter="emitEnter" @input="onInput" />
-    <span v-else class="cursor-pointer">{{ computedValue || '' }}</span>
+    <span v-else class="cursor-pointer">{{ readModeValue || '' }}</span>
   </div>
 </template>
 
@@ -48,22 +48,34 @@ export default {
   },
   data() {
     return {
-      hasEdited: false,  // מצב שמעקב אחרי אם ערך שונה כבר הוזן
+      hasEdited: false,
     }
   },
   computed: {
-    computedValue: {
+    editModeValue: {
       get() {
-        if (this.rounded) {
-          return this.value ? formatAsNumber(Math.round(this.value)) : 0
-        } else if (this.currency) {
-          return this.value ? formatAsNumber(this.value) : 0
-        }
-        return this.value || 0
+        // In edit mode, show the original precise value
+        return this.value
       },
       set(newVal) {
-        this.$emit(events.input, newVal)
+        if (this.currency || this.rounded) {
+          // Ensure numbers are always parsed correctly
+          const parsedValue = parseFloat(String(newVal).replace(/,/g, '')) || 0
+          this.$emit(events.input, parsedValue)
+        } else {
+          // Allow text input without formatting
+          this.$emit(events.input, newVal)
+        }
       },
+    },
+    readModeValue() {
+      // In read mode, apply rounding if specified
+      if (this.currency || this.rounded) {
+        const value = parseFloat(this.value) || 0
+        return formatAsNumber(Math.round(value))
+      }
+      // If not a number, return the raw value (text input case)
+      return this.value ?? ''
     },
     showEditMode() {
       return this.isEditable && !this.readonly
@@ -71,17 +83,14 @@ export default {
   },
   updated() {
     if (this.showEditMode && !this.hasEdited && this.$refs.input) {
-      // אם לא הוזן ערך חדש, בחר את הערך במלואו
+      // If no value has been edited, select the entire input
       this.$refs.input.select()
     } else if (this.showEditMode && this.hasEdited) {
-      // אם הוזן ערך, אל תבחר את הערך יותר
+      // If value has been edited, just focus without selecting
       this.$refs.input.focus()
     }
   },
   methods: {
-    formatAsCurrency(amount) {
-      return formatAsNumber(amount)
-    },
     onBlur(event) {
       this.$emit(events.blur, event)
     },
@@ -90,13 +99,12 @@ export default {
     },
     onInput() {
       if (!this.hasEdited) {
-        this.hasEdited = true // ברגע שמתחילים להקליד, לא נבחר יותר את הערך
+        this.hasEdited = true // Once typing starts, don't select all
       }
     },
   },
 }
 </script>
-
 
 <style scoped>
 .edit-mode {
