@@ -61,10 +61,12 @@ export default {
       if (this.readonly) {
         this.$refs.div.focus()
       } else {
+        console.log("show222")
         this.$refs.input.focus()
       }
     }
   },
+
   methods: {
     onBlur(event) {
       this.$emit(events.blur, event)

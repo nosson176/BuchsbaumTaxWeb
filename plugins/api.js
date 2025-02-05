@@ -293,6 +293,9 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const createClient = (headers, { client }) =>
     $axios.post('/clients', client, { headers }).catch(() => $toast.error('Error creating client'))
 
+  const createExchangeRate = (headers, { value }) =>
+    $axios.post('/exchangeRate', value, { headers }).catch(() => $toast.error('Error creating exchange Rate'))
+
   const createSmartview = async (headers, { smartview }, sendToUserId) => {
     try {
       const url = sendToUserId ? `/smartviews?clientId=${sendToUserId}` : `/smartviews`
@@ -571,6 +574,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       })
       .catch(() => $toast.error('Error updating value type'))
 
+  const updateExchangeRate = (headers, { valueId }, value) =>
+    $axios
+      .put(`/exchangeRate/${valueId}`, value, { headers })
+      .then((res) => {
+        return res
+      })
+      .catch(() => $toast.error('Error updating exchange rate'))
+
   const updateUser = (headers, { userId }, user) =>
     $axios
       .put(`/users/${userId}`, user, { headers })
@@ -629,6 +640,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         return res
       })
       .catch(() => $toast.error('Error deleting message'))
+
+  const deleteExchangeRate = (headers, { valueId }) =>
+    $axios
+      .delete(`/exchangeRate/${valueId}`, { headers })
+      .then((res) => {
+        return res
+      })
+      .catch(() => $toast.error('Error deleting exchange rate'))
 
   const deleteTaxYear = (headers, { taxYearId }) => {
     return $axios
@@ -717,6 +736,7 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
   const api = {
     createChecklist,
     createClient,
+    createExchangeRate,
     createContact,
     createFbar,
     createFee,
@@ -786,11 +806,13 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     updateTaxPersonals,
     updateTaxYear,
     updateValueType,
+    updateExchangeRate,
     updateUser,
     updatePassword,
     updateMessage,
     updateWorkTimeByWorkTimeId,
     deleteMessage,
+    deleteExchangeRate,
     deleteTaxYear,
     deleteLog,
     deleteTaxPersonal,

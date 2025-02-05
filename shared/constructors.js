@@ -44,6 +44,15 @@ const valueTypeValueConstructor = () => {
   }
 }
 
+const exchangeRate = () => {
+  return {
+    currency: '',
+    year: '',
+    show: true,
+    rate: 0,
+  }
+}
+
 const valueTypeValueWithParentConstructor = () => {
   return {
     key: '',
@@ -61,4 +70,5 @@ export {
   errorNotificationConstructor,
   valueTypeValueConstructor,
   valueTypeValueWithParentConstructor,
+  exchangeRate,
 }

@@ -645,6 +645,13 @@ const mutations = {
     }
   },
 
+  pushNewExchangeRate(state, { value }) {
+    const newKey = Object.keys(state.exchangeRate).length // Use next index as key
+    state.exchangeRate = {
+      ...state.exchangeRate,
+      [newKey]: value,
+    }
+  },
   updateValueType(state, { value, tab }) {
     if (value && tab) {
       // Find the index of the item to be updated
@@ -658,6 +665,48 @@ const mutations = {
       }
     }
   },
+
+  updateExchangeRate(state, { value }) {
+    if (!state.exchangeRate || typeof state.exchangeRate !== 'object') {
+      console.error('exchangeRate is not an object')
+      return
+    }
+
+    const exchangeRate = Object.values(state.exchangeRate).find((item) => item.id === value.id)
+
+    if (exchangeRate) {
+      // Assuming 'value' is the new object or key-value pair to update
+      Object.assign(exchangeRate, value) // Merge new values
+    } else {
+      console.warn(`Exchange rate with id ${value.id} not found`)
+    }
+  },
+
+  deleteExchangeRate(state, { valueId }) {
+    console.log(valueId)
+
+    if (!state.exchangeRate || typeof state.exchangeRate !== 'object') {
+      console.error('exchangeRate is not an object')
+      return
+    }
+
+    // Find the key for the item with the given id
+    const keyToDelete = Object.keys(state.exchangeRate).find((key) => state.exchangeRate[key].id === valueId)
+
+    console.log(keyToDelete)
+
+    if (keyToDelete) {
+      // Create a new object excluding the item with the given id
+      const { [keyToDelete]: _, ...newExchangeRate } = state.exchangeRate
+      // Update the state with the new object
+      state.exchangeRate = newExchangeRate
+
+      console.log(`Exchange rate with id ${valueId} deleted`)
+    } else {
+      console.warn(`Exchange rate with id ${valueId} not found`)
+    }
+  },
+
   updateSortOrder(state, { value, tab }) {
     state.valueTypes[tab] = value
   },
