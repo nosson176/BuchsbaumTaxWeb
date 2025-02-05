@@ -29,13 +29,13 @@ export default {
       return this.activeTab === tabs.fbar
     },
     logsCount() {
-      return this.selectedClient?.logs?.filter((log) => !log.archived).length
+      return this.selectedClient?.logs?.length
     },
     incomeCount() {
-      return this.selectedClient?.incomeBreakdowns?.filter((income) => !income.archived).length
+      return this.selectedClient?.incomeBreakdowns?.length
     },
     fbarCount() {
-      return this.selectedClient?.fbarBreakdowns?.filter((fbar) => !fbar.archived).length
+      return this.selectedClient?.fbarBreakdowns?.length
     },
   },
   methods: {

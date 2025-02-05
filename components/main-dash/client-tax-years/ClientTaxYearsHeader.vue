@@ -18,7 +18,7 @@
         </div>
         <div class="flex font-bold text-2xl cursor-pointer px-1" @click.stop="openEditNameDialogue">
           {{ selectedClient.lastName }}
-          <div class="ml-2 flex items-start" @click.stop="overwriteActiveMode"> <button
+          <div class="ml-2 flex items-center" @click.stop="overwriteActiveMode"> <button
               class="rounded-full h-2 w-2 focus:outline-none"
               :class="{ 'bg-green-500 shadow-green-800/50 ': isClientActive, 'bg-red-500 shadow-red-500/50': !isClientActive }"></button>
           </div>

@@ -142,10 +142,8 @@ export default {
       return { name: routes.shekelator }
     },
     filingOptions() {
-      console.log(this.fbars, filingTypes)
       const types = [{ value: '', name: '' }]
       for (const type in filingTypes) {
-        console.log(type)
         const hideExtension = type === filingTypes.ext && this.extensions.length > 2
         const hideFbar = type === filingTypes.fbar && this.fbars.length === 1
         if (hideExtension || hideFbar) {
@@ -290,7 +288,7 @@ export default {
         statusDetail: { date: null, value: null },
         clientId: this.selectedClient.id,
         completed: false,
-        currency: 'USD', // Set a default currency
+        currency: 'NIS', // Set a default currency
         dateFiled: null,
         deliveryContact: null,
         fileType: null,

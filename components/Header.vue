@@ -71,7 +71,7 @@
       <SendMessage :response-id="responseId" :thread-id="threadId" @hide="closeMessageModal" />
     </Modal>
     <Modal :showing="ShowLogoutConfirmationModel" @hide="closeLogoutConfirmationModel">
-      <LogoutConfirmationModal @confirm-logout="clockOutWorkTime" @hide="closeLogoutConfirmationModel" />
+      <LogoutConfirmationModal @confirm-logout="logOut" @hide="closeLogoutConfirmationModel" />
     </Modal>
   </div>
 </template>
@@ -323,13 +323,17 @@ export default {
     openLogoutModal() {
       this.ShowLogoutConfirmationModel = true
     },
-    async closeLogoutConfirmationModel() {
+    closeLogoutConfirmationModel() {
       this.ShowLogoutConfirmationModel = false
+    },
+    async logOut() {
+      await this.clockOutWorkTime()
       await this.$api.signout()
       this.$store.commit('resetState');
       localStorage.clear();
       sessionStorage.clear();
       localStorage.removeItem('timer')
+
     },
     async loadInbox() {
       await this.$api.getInbox(this.headers)

@@ -148,6 +148,7 @@ export default {
                 type: this.type
             })
             this.$emit('hide')
+            this.bulkYear = ''
         },
         focusModal() {
             this.$nextTick(() => {

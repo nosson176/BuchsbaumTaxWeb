@@ -17,8 +17,11 @@ const formatAsILCurrency = (s) => {
   }).format(s)
 }
 
-const formatAsNumber = (s) => {
-  return s.toLocaleString('en-US')
+// const formatAsNumber = (s) => {
+//   return s.toLocaleString('en-US')
+// }
+const formatAsNumber = (n) => {
+  return Number(n).toLocaleString('en-US')
 }
 
 const setAsValidNumber = (input) => {

@@ -461,9 +461,10 @@ export default {
     },
     currency: {
       get() {
-        return this.formModel?.currency
+        return this.formModel.currency || 'NIS'
       },
       set(newVal) {
+        console.log(newVal)
         this.oldCurrencyType = this.formModel.currency
         this.formModel.currency = newVal
       },
@@ -766,6 +767,7 @@ export default {
       this.handleLocalUpdate(event);
     },
     onMemoBlur(event = null) {
+      if (event && event.shiftKey && event.key === "Tab") return;
       const oldValueStr = JSON.stringify(this.oldValue);
       const newValueStr = JSON.stringify(this.formModel.memo);
 

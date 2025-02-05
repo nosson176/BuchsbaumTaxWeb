@@ -783,7 +783,10 @@ export default {
             });
 
             this.selectedItems = {}
-            this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
+            this.$nextTick(() => {
+
+              this.toggleEditable(`${incomeIndex}-${columns[1]}`, newIncome.id)
+            })
             //   }
             // })
           })
