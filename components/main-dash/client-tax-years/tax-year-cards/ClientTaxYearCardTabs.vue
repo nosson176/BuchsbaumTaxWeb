@@ -102,15 +102,15 @@ export default {
 
       // הוצאת האלמנט מהמיקום הישן ושמירתו
       console.log(this.localFilings)
-      // const movedItem = this.localFilings.splice(evt.oldIndex, 1)[0];
-      // console.log(movedItem)
-      // // הכנסת האלמנט למיקום החדש
-      // this.localFilings.splice(evt.newIndex, 0, movedItem);
-      // console.log(this.localFilings)
-      // // עדכון sortOrder לפי הסדר החדש
-      // this.localFilings.forEach((filing, index) => {
-      //   filing.sortOrder = index + 1;
-      // });
+      const movedItem = this.localFilings.splice(evt.oldIndex, 1)[0];
+      console.log(movedItem)
+      // הכנסת האלמנט למיקום החדש
+      this.localFilings.splice(evt.newIndex, 0, movedItem);
+      console.log(this.localFilings)
+      // עדכון sortOrder לפי הסדר החדש
+      this.localFilings.forEach((filing, index) => {
+        filing.sortOrder = index + 1;
+      });
 
       // console.log('After move:', this.localFilings.map(f => f.sortOrder));
 
