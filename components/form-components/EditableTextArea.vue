@@ -1,18 +1,9 @@
 <template>
   <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <textarea
-      v-if="isEditable"
-      ref="input"
-      v-model="computedValue"
+    <textarea v-if="isEditable" ref="input" v-model="computedValue"
       class="text-xs shadow-sm block w-full m-0 border-transparent outline-none border p-0 focus:border-indigo-500 min-h-full"
-      tabindex="0"
-      :placeholder="placeholder"
-      :class="resize ? '' : 'resize-none'"
-      :rows="rows"
-      spellcheck
-      @blur="onBlur"
-      @keydown.tab.prevent
-    />
+      tabindex="0" :placeholder="placeholder" :class="resize ? '' : 'resize-none'" :rows="rows" spellcheck
+      @blur="onBlur" @keydown.tab.prevent />
     <span v-else tabindex="0" class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
       {{ computedValue || placeholder }}
     </span>

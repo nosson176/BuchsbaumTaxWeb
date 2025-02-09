@@ -31,8 +31,8 @@
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
     <KeepAlive v-else>
       <LogsTable v-if="showLogs" ref="logsTableRef" :show-archived="!showActiveLogs" />
-      <IncomeTable class="h-full" v-else-if="showIncome" :show-archived="!showActiveIncome" />
-      <FbarTable v-else-if="showFbar" :show-archived="!showActiveFbar" />
+      <IncomeTable class="h-full" ref="incomeTableRef" v-else-if="showIncome" :show-archived="!showActiveIncome" />
+      <FbarTable v-else-if="showFbar" ref="fbarTableRef" :show-archived="!showActiveFbar" />
     </KeepAlive>
   </div>
 </template>
@@ -222,9 +222,35 @@ export default {
         this.isLoading = false;
       }
     },
+    // async getRestIncomes() {
+    //   if (this.fetchedIncome.length > 0) {
+    //     this.$store.commit('pushRestIncomes', this.fetchedIncome);
+    //     this.isLoading = false;
+    //     return;
+    //   }
+
+    //   try {
+    //     const res = await this.$api.getRestIncomesByClient(this.headers, {
+    //       clientId: this.$store.state.selectedClient.id
+    //     });
+    //     const data = Object.values(res);
+    //     if (data.length > 0) {
+    //       this.fetchedIncome = data;
+    //       this.$store.commit('pushRestIncomes', data);
+    //     } else {
+    //       this.$toast.info('There are no more items to load.')
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching Incomes:', error);
+    //   } finally {
+    //     this.isLoading = false;
+    //   }
+    // },
     async getRestIncomes() {
       if (this.fetchedIncome.length > 0) {
         this.$store.commit('pushRestIncomes', this.fetchedIncome);
+        // קרא לsortIncomes דרך הרפרנס לקומפוננטת IncomeTable
+        this.$refs.incomeTableRef?.sortIncomes();
         this.isLoading = false;
         return;
       }
@@ -237,6 +263,8 @@ export default {
         if (data.length > 0) {
           this.fetchedIncome = data;
           this.$store.commit('pushRestIncomes', data);
+          // קרא לsortIncomes דרך הרפרנס לקומפוננטת IncomeTable
+          this.$refs.incomeTableRef?.sortIncomes();
         } else {
           this.$toast.info('There are no more items to load.')
         }
@@ -249,6 +277,7 @@ export default {
     async getRestFbars() {
       if (this.fetchedFbar.length > 0) {
         this.$store.commit('pushRestFbars', this.fetchedFbar);
+        this.$refs.fbarTableRef?.sortFbars();
         this.isLoading = false;
         return;
       }
@@ -261,6 +290,7 @@ export default {
         if (data.length > 0) {
           this.fetchedFbar = data;
           this.$store.commit('pushRestFbars', data);
+          this.$refs.fbarTableRef?.sortFbars();
         } else {
           this.$toast.info('There are no more items to load.')
         }

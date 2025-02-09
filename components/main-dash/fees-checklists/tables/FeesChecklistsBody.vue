@@ -15,7 +15,7 @@
       </table>
     </div>
     <LoadingIndicator v-if="showLoadingSpinner" class="h-8 w-8 text-black mx-auto my-auto" />
-    <div v-else class="flex flex-col overflow-auto">
+    <div v-else class="flex flex-col overflow-auto h-full">
       <FeesTable v-if="showFees" :show-archived="!showFeesActive" />
       <ChecklistsTable v-else-if="showChecklists" :show-archived="!showChecklistsActive" />
     </div>

@@ -1,8 +1,8 @@
 <template>
-  <div :class="classObj">
-    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+  <div ref="el" :class="classObj">
+    <!-- <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
-    </div>
+    </div> -->
     <textarea v-if="isEditable" ref="input" v-model="computedValue" tabindex="0"
       class="overflow-visible resize-none text-xs shadow-sm block w-full m-0 border-transparent outline-none border focus:border-indigo-500 min-h-full z-20"
       :class="{
@@ -59,6 +59,11 @@ export default {
       default: true
     }
   },
+  data() {
+    return {
+      init: false
+    }
+  },
   computed: {
     computedValue: {
       get() {
@@ -104,6 +109,11 @@ export default {
           this.$refs.input.focus();
           this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px; overflow-y:hidden;');
         }
+        // Prevent immediate "outside click" detection
+        this.init = false;
+        setTimeout(() => {
+          this.init = true;
+        }, 100); // Small delay to prevent immediate blur
       }
     },
   },
@@ -111,8 +121,25 @@ export default {
     if (this.isEditable) {
       this.$refs.input.setAttribute('style', 'height:' + this.$refs.input.scrollHeight + 'px;overflow-y:hidden;')
     }
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeDestroy() {
+    console.log("des")
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
+    handleClickOutside(event) {
+      if (!this.isEditable) return
+      if (this.init === false) {
+        this.init = true
+        return
+      }
+      if (!this.$refs.el.contains(event.target)) {
+        this.init = false
+        this.$emit(events.blur, false)
+        this.cleanAndSave();
+      }
+    },
     onBlur(event) {
       this.$emit(events.blur, event)
       this.cleanAndSave();

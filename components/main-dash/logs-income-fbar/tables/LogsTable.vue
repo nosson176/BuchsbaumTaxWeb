@@ -1,6 +1,6 @@
 //update
 <template>
-  <Table v-if="isClientSelected" @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevColumn">
+  <Table v-if="isClientSelected" @wheel.prevent @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
       <TableHeader class="border-amber-500 head">
         <div class="table-header flex items-center space-x-2">
@@ -74,7 +74,7 @@
             :placement="isEditable(`${idx}-years`) ? 'left' : 'right'" :interactive="true" :html="true">
             <EditableMultiSelect class="w-10 overflow-ellipsis" v-model="log.years"
               :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
-              @blur="onBlur(log.years, 'years')" placeholder="Year"
+              @blur="onBlur(log.years, 'years', $event)" placeholder="Year"
               @keyup.tab.native="onBlur(log.years, 'years', $event)"
               @keyup.enter.native="onBlur(log.years, 'years', $event)"
               @keyup.esc.native="onBlur(log.years, 'years', $event)" />
@@ -107,7 +107,8 @@
           <EditableTextAreaCell v-model="log.note" :prevent-enter="true"
             @keyup.enter.native="onBlur(log.note, 'note', $event)" @keyup.esc.native="onBlur(log.note, 'note', $event)"
             :is-editable="isEditable(`${idx}-note`)" @blur="onBlur(log.note, 'note', $event)" :over="false"
-            :showOverflow="true" :pre="false" @keyup.tab.native="onBlur(log.note, 'note', $event)" />
+            :showOverflow="true" :pre="false" @keyup.tab.native="onBlur(log.note, 'note', $event)"
+            @focus.native.prevent="handleFocus" />
 
           <!-- Custom Tooltip -->
           <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-note`)"
@@ -119,8 +120,7 @@
         </div>
         <div :id="`${idx}-logDate`" class="table-col xs" @click="toggleEditable(`${idx}-logDate`, log.id, log.logDate)">
           <EditableDateCell v-model="log.logDate" :is-editable="isEditable(`${idx}-logDate`)"
-            @blur="onBlur(log.logDate, 'logDate')" @keyup.tab.native="onBlur(log.logDate, 'logDate', $event)"
-            @keyup.enter.native="onBlur(log.logDate, 'logDate', $event)"
+            @blur="onBlur(log.logDate, 'logDate', $event)" @keyup.tab.native="onBlur(log.logDate, 'logDate', $event)"
             @keyup.esc.native="onBlur(log.logDate, 'logDate', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmDate`" class="table-col sm"
@@ -138,9 +138,10 @@
         <div :id="`${idx}-alarmUserName`" class="table-col xs"
           @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
           <EditableSelectCell v-model="log.alarmUserName" :is-editable="isEditable(`${idx}-alarmUserName`)"
-            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName')"
+            :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName', $event)"
             @keyup.tab.native="onBlur(log.alarmUserName, 'alarmUserName', $event)"
-            @keyup.esc.native="onBlur(log.alarmUserName, 'alarmUserName', $event)" />
+            @keyup.esc.native="onBlur(log.alarmUserName, 'alarmUserName', $event)"
+            @click="onBlur(log.alarmUserName, 'alarmUserName', $event)" />
         </div>
         <!-- <div :id="`${idx}-alarmUserName`" class="table-col sm"
         @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">
@@ -150,8 +151,8 @@
         <div :id="`${idx}-alarmTime`" class="table-col xs"
           @click="toggleEditable(`${idx}-alarmTime`, log.id, log.alarmTime)">
           <EditableDateCell2 v-model="log.alarmTime" :is-editable="isEditable(`${idx}-alarmTime`)"
-            @blur="onBlur(log.alarmTime, 'alarmTime')" value-type="format" type="datetime" format="MM-DD-YYYY HH:mm"
-            placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')"
+            @blur="onBlur(log.alarmTime, 'alarmTime', $event)" value-type="format" type="datetime"
+            format="MM-DD-YYYY HH:mm" placeholder="Select date and time" @focusout="onBlur(log.alarmTime, 'alarmTime')"
             @keyup.tab.native="onBlur(log.alarmTime, 'alarmTime', $event)"
             @keyup.esc.native="onBlur(log.alarmTime, 'alarmTime', $event)" />
         </div>
@@ -195,6 +196,8 @@
       </div>
     </template>
   </Table>
+
+
 </template>
 
 <script>
@@ -409,6 +412,9 @@ export default {
     }
   },
   methods: {
+    handleFocus(event) {
+      event.preventDefault();
+    },
     showTooltip(idx) {
       if (this.tooltipTimer) {
         clearTimeout(this.tooltipTimer);
@@ -524,16 +530,19 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
+      // console.log("toggle")
+      // console.log(id, logId, value)
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
         if (log) {
           this.oldValue = log[val]
-          this.isEditable(`${0}-priority`)
+          this.isEditable(id)
         }
       } else this.oldValue = value
       if (this.editableId !== id) {
         this.editableId = id;
+        // console.log(this.editableId)
         this.editableLogId = logId;
       }
     },
@@ -764,28 +773,44 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
-      if (event && event.shiftKey && event.key === "Tab") return;
+      console.log(val, field, event)
+      console.log(this.editableId)
+      // console.log(field, event, event?.type !== 'mousedown')
+      // if (event && event?.type !== 'mousedown') {
+      if (event?.shiftKey && event?.key === "Tab") return;
+      // }
 
-      if (field === 'years' && !this.forceCloseTooltip) this.hideToolTip()// Controls tooltip visibility
+      if (field === 'years' && !this.forceCloseTooltip) {
+        this.hideToolTip(); // Controls tooltip visibility
+      }
+      if (event === false) {
+        this.handleUpdate(val, field);
+        this.editableId = "";
+        return
+      }
 
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
         if (!(this.oldValue === '' && val === '')) {
-          this.handleUpdate(val, field)
+          // console.log(val);
+          this.handleUpdate(val, field);
           if (event?.key !== 'Escape') {
-            this.goToNextColumn()
-            return
+            // console.log("escape");
+            this.goToNextColumn();
+            return;
           }
-          this.editableId = ""
-          return
+          // console.log("finish");
+          this.editableId = "";
+          return;
         }
       }
+      // console.log("more")
       // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(val, field)
-        if (event?.key !== 'Escape') {
-          if (field === 'priority') this.editableId = '0-priority'
-          this.goToNextColumn()
+        if (event?.key !== 'Escape' && event?.type !== 'blur') {
+          console.log("escape2222")
+          this.goToNextColumn(field)
           return
         }
         this.editableId = ""
@@ -837,7 +862,8 @@ export default {
       return this.selectedItems[logId]
     },
 
-    goToNextColumn() {
+    goToNextColumn(field) {
+      console.log(this.oldValue)
       if (!this.editableId) {
         console.warn('No editable ID found');
         return;

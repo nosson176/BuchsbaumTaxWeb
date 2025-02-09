@@ -418,6 +418,51 @@ const mutations = {
     }
   },
 
+  updateFilingsOrder(state, { evt, taxYearId }) {
+    const taxYear = state.selectedClient.taxYears.find((ty) => ty.id === taxYearId)
+    if (taxYear) {
+      console.log('Tax Year Found')
+
+      // בודקים שהאינדקסים תקינים
+      if (
+        evt.oldIndex < 0 ||
+        evt.oldIndex >= taxYear.filings.length ||
+        evt.newIndex < 0 ||
+        evt.newIndex >= taxYear.filings.length
+      ) {
+        console.warn('Invalid index')
+        return
+      }
+
+      // יצירת עותק של המערך המקורי
+      const newFilings = [...taxYear.filings]
+      console.log(newFilings)
+
+      // שמירת האלמנט שמוזז
+      const movedFiling = newFilings.splice(evt.oldIndex, 1)[0]
+
+      // הכנסת האלמנט למיקום החדש
+      newFilings.splice(evt.newIndex, 0, movedFiling)
+
+      // עדכון סדר לכל הפריטים במערך
+      newFilings.forEach((filing, idx) => {
+        filing.sortOrder = idx + 1
+      })
+
+      // עדכון המערך בstate
+      taxYear.filings = newFilings
+
+      // יצירת עותק חדש של מערך taxYears
+      state.selectedClient.taxYears = state.selectedClient.taxYears.map((ty) =>
+        ty.id === taxYearId ? { ...ty, filings: [...newFilings] } : ty
+      )
+
+      console.log(
+        'Updated Filings Order:',
+        newFilings.map((f) => f.sortOrder)
+      )
+    }
+  },
   // UPDATE_FILINGS_CONTACT(state, { oldValue, newValue }) {
   //   state.selectedClient.taxYears.forEach((taxYear) => {
   //     taxYear.filings.forEach((filing) => {
@@ -641,15 +686,15 @@ const mutations = {
 
   pushNewValueType(state, { value, tab }) {
     if (value && tab) {
-      state.valueTypes[tab].push(value)
+      state.valueTypes[tab].unshift(value)
     }
   },
 
   pushNewExchangeRate(state, { value }) {
     const newKey = Object.keys(state.exchangeRate).length // Use next index as key
     state.exchangeRate = {
-      ...state.exchangeRate,
       [newKey]: value,
+      ...state.exchangeRate,
     }
   },
   updateValueType(state, { value, tab }) {

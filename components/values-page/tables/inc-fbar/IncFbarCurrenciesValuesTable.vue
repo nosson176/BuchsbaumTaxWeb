@@ -88,10 +88,21 @@ export default {
         //     return Object.values(this.exchangeRate)
         // },
         filteredCurrencyValues() {
+            console.log("run")
             const values = JSON.parse(JSON.stringify(this.exchangeRate));
             return Object.values(values)
                 .filter(value => value.currency === this.CurrencyValue)
-                .sort((a, b) => b.year - a.year);
+                .sort((a, b) => {
+                    const yearA = a?.year ?? '';
+                    const yearB = b?.year ?? '';
+
+                    if (yearA === '' && yearB !== '') return -1; // a comes first
+                    if (yearB === '' && yearA !== '') return 1;  // b comes first
+                    if (yearA === '') return 1; // If both are "", keep the order (b comes first)
+                    if (yearB === '') return -1; // If both are "", keep the order (a comes first)
+
+                    return yearB - yearA; // Sort descending (newest first)
+                });
         },
         headers() {
             return this.$api.getHeaders()
@@ -193,8 +204,8 @@ export default {
             this.$store.commit("updateSortOrder", { value: list, tab: TABLE_TYPE });
             this.$api
                 .updateValueType(this.headers, { valueId: item.id }, item)
-                .catch(err => {
-                    console.error("Error updating value type:", err);
+                .catch(() => {
+                    this.$toast.error("Exchange rate dosen't support drag drop")
                 });
 
             this.dragActive = false; // סיום מצב גרירה

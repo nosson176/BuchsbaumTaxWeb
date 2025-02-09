@@ -726,6 +726,7 @@ export default {
           this.goToNextItem();
           return
         }
+        console.log("ther")
         this.editable = '';
         return;
       }
@@ -762,7 +763,6 @@ export default {
           });
         }
       }
-
       // Continue to handle local update if values differ
       this.handleLocalUpdate(event);
     },
@@ -820,7 +820,6 @@ export default {
     goToNextItem() {
       // Store current cell before any editable changes
       const currentCell = this.editable
-
       // Find index of current cell
       const itemIndex = items.findIndex((col) => col === currentCell)
 

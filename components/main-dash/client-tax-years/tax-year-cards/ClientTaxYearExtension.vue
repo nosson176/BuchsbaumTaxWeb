@@ -1,5 +1,5 @@
 <template>
-  <div class="text-xs flex transform -rotate-90" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
+  <div class="text-xs flex gap-2 transform -rotate-90" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
     @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
@@ -19,6 +19,15 @@
       <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap transform rotate-90"
         :options="statusOptions" is-editable placeholder="Status" @blur="onBlur(formModel.status.value, 'status')" />
     </div>
+    <div @click.stop="setEditable('includeTax')">
+      <EditableCheckBoxCell v-model="formModel.includeTax" :is-editable="isEditable('includeTax')"
+        @click="handleUpdate('includeTax')" />
+    </div>
+    <div @click.stop="setEditable('tax')">
+      <EditableInput v-model="formModel.taxEstimated" placeholder="tax" :is-editable="isEditable('tax')"
+        @blur="onBlur(formModel.taxEstimated, 'tax')" @click="onBlur(formModel.taxEstimated, 'tax')"
+        @keyup.enter.native="onBlur('tax')" @keyup.esc.native="onBlur(formModel.taxEstimated, 'tax', $event)" />
+    </div>
     <div class="mx-2" @click="setEditable('statusDate')">
       <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
         :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
@@ -32,7 +41,7 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 
-const items = ['taxForm', 'status', 'statusDate']
+const items = ['taxForm', 'status', 'tax', 'statusDate']
 
 export default {
   name: 'ClientTaxYearExtension',
@@ -67,6 +76,7 @@ export default {
   },
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.extension))
+    console.log(this.formModel)
   },
   // updated() {
   //   if (this.isEditable) {
@@ -143,7 +153,7 @@ export default {
 
       this.setEditable('')
     },
-    handleUpdate() {
+    handleUpdate(field) {
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -153,8 +163,9 @@ export default {
         } else {
           this.$store.commit('pushFilingUpdate', updatedModel);
         }
-
-        if (!this.newFlag) {
+        console.log(field)
+        if (!this.newFlag || field !== 'includeTax') {
+          console.log("next")
           this.goToNextItem(); // Only go to the next item if `newFlag` is false
         }
       } catch (error) {

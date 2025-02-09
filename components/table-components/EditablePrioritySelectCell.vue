@@ -5,9 +5,9 @@
         class="p-0 text-xs w-3 relative h-5 bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @mousedown.stop="onButtonClick" @keyup.prevent="onInputKeyup($event.key)" /></input>
       <ul v-if="showOptions" ref="select"
-        class="absolute z-10 bg-white max-h-32 text-base w-10 shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
+        class="absolute z-10 bg-white max-h-80 text-base w-10 shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="showOptions ? 'opacity-100' : 'opacity-0'" tabindex="-1" role="listbox" aria-labelledby="listbox-label"
-        aria-activedescendant="listbox-option-3" @click.stop @blur="onBlur">
+        aria-activedescendant="listbox-option-3" @click.stop>
         <li v-for="(option, idx) in priorityOptions" :id="idx" :key="idx" ref="option"
           class="flex items-center justify-start cursor-pointer select-none relative py-1 px-1 hover:bg-gray-300 space-x-1"
           role="option" @click="emitChange(option.value)">
@@ -39,14 +39,15 @@ export default {
     'click-outside': {
       bind(el, binding, vnode) {
         el.clickOutsideEvent = function (event) {
+          event.stopPropagation(); // Add this
           if (!(el === event.target || el.contains(event.target))) {
-            vnode.context[binding.expression](event)
+            vnode.context[binding.expression](event);
           }
         }
-        document.addEventListener('mousedown', el.clickOutsideEvent)
+        document.addEventListener('mousedown', el.clickOutsideEvent, true); // Use capture phase
       },
       unbind(el) {
-        document.removeEventListener('mousedown', el.clickOutsideEvent)
+        document.removeEventListener('mousedown', el.clickOutsideEvent, true)
       },
     },
   },

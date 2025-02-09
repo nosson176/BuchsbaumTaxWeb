@@ -1,13 +1,10 @@
 <template>
-    <div tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
-        <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
-            <div class="h-full" @click="onBlur" />
-        </div>
+    <div ref="el" tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
         <date-picker v-if="isEditable" ref="input" v-model="internalValue" tabindex="0" :value-type="valueType"
             :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus" @select="handleSelect"
             @change="handleChange">
             <template #header="{ emit }">
-                <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="setToday(emit)">
+                <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click.stop="setToday(emit)">
                     Today
                 </button>
             </template>
@@ -37,13 +34,14 @@ export default {
         },
         format: {
             type: String,
-            default: 'MM/DD/YYYY HH:mm', // Default to 'dd/mm/yyyy'
+            default: 'MM/DD/YYYY HH:mm',
         },
     },
     data() {
         return {
             showPicker: false,
             shouldEmitBlur: false,
+            init: false,
             internalValue: null,
             selectedDate: null
         }
@@ -53,13 +51,25 @@ export default {
             immediate: true,
             handler(newVal) {
                 this.internalValue = newVal;
+                this.init = false;
+                setTimeout(() => {
+                    this.init = true;
+                }, 100);
+            },
+        },
+        isEditable(newVal) {
+            if (newVal) {
+                this.$nextTick(() => {
+                    this.$refs.el?.addEventListener('keydown', this.handleKeydown);
+                    document.addEventListener('mousedown', this.handleClickOutside);
+                });
+            } else {
+                document.addEventListener("mousedown", this.handleClickOutside);
+                this.$refs.el.removeEventListener('keydown', this.handleKeydown);
             }
         }
     },
     computed: {
-        // format() {
-        //     return this.isTypeDate ? 'MM-DD-YYYY HH:mm' : 'HH:mm:ss'
-        // },
         valueType() {
             return this.isTypeDate ? 'MM-DD-YYYY HH:mm' : 'HH:mm:ss'
         },
@@ -75,20 +85,62 @@ export default {
             this.$refs.input?.focus()
         }
     },
+    mounted() {
+        if (this.isEditable) {
+            document.addEventListener("mousedown", this.handleClickOutside);
+            this.$refs.el.addEventListener('keydown', this.handleKeydown);
+        }
+    },
+    beforeDestroy() {
+        document.removeEventListener("mousedown", this.handleClickOutside);
+        this.$refs.el.removeEventListener('keydown', this.handleKeydown);
+    },
     methods: {
+        handleKeydown(event) {
+            if (event.key === 'Enter') {
+                if (this.shouldEmitBlur) return; // Prevent double blur
+
+                this.setToday((date) => {
+                    this.$emit('input', date);
+                    this.shouldEmitBlur = true;
+                    // this.$emit(events.blur);
+
+                    setTimeout(() => {
+                        this.shouldEmitBlur = false;
+                    }, 100);
+                });
+            }
+        },
+        handleClickOutside(event) {
+            // if (this.init === false) {
+            //     this.init = true
+            //     return
+            // }
+            if (!this.isEditable) return
+            const el = this.$refs.el;
+            const datePicker = this.$refs.input?.$el;
+            const isDatePickerElement = event.target.closest(".mx-datepicker-body");
+            const isTodayButton = event.target.closest(".mx-btn-text");
+
+            if (el?.contains(event.target) || datePicker?.contains(event.target) || isDatePickerElement || isTodayButton) {
+                return;
+            }
+
+            if (!this.$refs.el.contains(event.target)) {
+                this.$emit(events.blur, false)
+                this.init = false
+            }
+        },
         handleSelect(value) {
-            // Store the selected date when user picks from calendar
             if (!this.selectedDate) {
                 this.selectedDate = value;
             }
         },
         handleChange(value) {
-            // Combine the previously selected date with the new time
             if (this.selectedDate && value) {
-                const dateStr = this.selectedDate.split(' ')[0]; // Get just the date part
-                const timeStr = value.split(' ')[1]; // Get just the time part
+                const dateStr = this.selectedDate.split(' ')[0];
+                const timeStr = value.split(' ')[1];
                 if (timeStr) {
-                    // Only combine if we have both parts
                     this.internalValue = `${dateStr} ${timeStr}`;
                     this.$emit('input', this.internalValue);
                     if (this.shouldEmitBlur) {
@@ -96,29 +148,34 @@ export default {
                     }
                 }
             } else {
-                // Handle case where only date is selected
                 this.internalValue = value;
                 this.$emit('input', value);
                 if (this.shouldEmitBlur) {
                     this.$emit(events.blur);
                 }
             }
+            this.shouldEmitBlur = false;
         },
         onFocus() {
             this.showPicker = true;
-            this.selectedDate = null; // Reset selected date when focusing
+            this.selectedDate = null;
         },
         onBlur() {
             this.$emit(events.blur);
-            this.selectedDate = null; // Reset selected date when blurring
+            this.selectedDate = null;
         },
         setToday(emit) {
-            this.shouldEmitBlur = true;
             const now = new Date();
             const today = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
             this.internalValue = today;
             emit(now);
-            this.shouldEmitBlur = false
+
+            // Use setTimeout to ensure the value is set before emitting blur
+            setTimeout(() => {
+                this.$emit('input', today);
+                this.$emit(events.blur);
+            }, 0);
         },
     },
 }

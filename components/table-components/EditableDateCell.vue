@@ -1,12 +1,9 @@
 <template>
-  <div tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
-      <div class="h-full" @click="onBlur" />
-    </div>
+  <div ref="datePickerWrapper" tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
     <date-picker v-if="isEditable" ref="input" v-model="computedValue" tabindex="0" :value-type="valueType"
       :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus">
       <template #header="{ emit }">
-        <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click="emit(new Date())">
+        <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click.stop="handleTodayClick(emit)">
           Today
         </button>
       </template>
@@ -17,7 +14,6 @@
 
 <script>
 import { events } from '~/shared/constants'
-// import { formatDateForClient } from '~/shared/domain-utilities'
 import { formatUnixTimestamp } from '~/shared/utility';
 
 export default {
@@ -37,28 +33,31 @@ export default {
     },
     format: {
       type: String,
-      default: 'MM/DD/YYYY', // Default to 'dd/mm/yyyy'
+      default: 'MM/DD/YYYY',
     },
   },
+
   data() {
     return {
       showPicker: false,
+      isSettingToday: false
     }
   },
+
   computed: {
     computedValue: {
       get() {
-        return this.value ? new Date(this.value) : null; // Ensure it's a Date object for the date-picker
+        return this.value ? new Date(this.value) : null;
       },
       set(newVal) {
-        const unixTimestamp = newVal ? newVal.getTime() : null; // Convert Date to Unix timestamp
-        this.$emit('input', unixTimestamp); // Emit updated value
-        this.$emit(events.blur);
+        const unixTimestamp = newVal ? newVal.getTime() : null;
+        this.$emit('input', unixTimestamp);
+        if (!this.isSettingToday) {
+          this.$emit(events.blur);
+        }
+        this.isSettingToday = false;
       },
     },
-    // format() {
-    //   return this.isTypeDate ? 'D/M/YYYY' : 'HH:mm:ss'
-    // },
     valueType() {
       return this.isTypeDate ? 'date' : 'time';
     },
@@ -71,17 +70,80 @@ export default {
         : this.value;
     },
   },
-  updated() {
+
+  mounted() {
     if (this.isEditable) {
-      this.$refs.input.focus()
+      document.addEventListener('mousedown', this.handleClickOutside);
+      this.$refs.datePickerWrapper?.addEventListener('keydown', this.handleKeydown);
     }
   },
+
+  beforeDestroy() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+    this.$refs.datePickerWrapper.removeEventListener('keydown', this.handleKeydown);
+  },
+
+  updated() {
+    if (this.isEditable) {
+      this.$refs.input.focus();
+    }
+  },
+  watch: {
+    isEditable(newVal) {
+      if (newVal) {
+        this.$nextTick(() => {
+          this.$refs.datePickerWrapper?.addEventListener('keydown', this.handleKeydown);
+          document.addEventListener('mousedown', this.handleClickOutside);
+        });
+      } else {
+        this.$refs.datePickerWrapper?.removeEventListener('keydown', this.handleKeydown);
+        this.$refs.datePickerWrapper.removeEventListener('keydown', this.handleClickOutside);
+      }
+    }
+  },
+
+
   methods: {
-    onFocus() {
-      this.showPicker = true
+    handleClickOutside(event) {
+      if (!this.isEditable) return;
+      const isDatePickerElement = event.target.closest(".mx-datepicker-body");
+      const isTodayButton = event.target.closest(".mx-btn-text");
+
+      if (!isDatePickerElement && !isTodayButton) {
+        this.onBlur();
+      }
     },
+    handleKeydown(event) {
+      if (event.key === 'Enter') {
+        if (this.isSettingToday) return; // Prevent double blur
+
+        this.handleTodayClick((date) => {
+          this.$emit('input', date);
+          this.isSettingToday = true;
+          // this.$emit(events.blur);
+
+          setTimeout(() => {
+            this.isSettingToday = false;
+          }, 100);
+        });
+      }
+    },
+
+    handleTodayClick(emit) {
+      this.isSettingToday = true;
+      emit(new Date());
+      // Small delay to allow the value to be set before closing
+      setTimeout(() => {
+        this.onBlur();
+      }, 100);
+    },
+
+    onFocus() {
+      this.showPicker = true;
+    },
+
     onBlur() {
-      this.$emit(events.blur)
+      this.$emit(events.blur);
     },
   },
 }

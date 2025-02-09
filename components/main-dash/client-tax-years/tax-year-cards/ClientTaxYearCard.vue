@@ -12,7 +12,7 @@
       </div>
       <div class="flex flex-grow h-3/4 w-full border overflow-auto">
         <div class="flex flex-col border border-b-0  w-8 z-10"
-          :class="extensions.length > 1 ? 'space-y-48' : 'space-y-48'" :style="extensionColumnHeight">
+          :class="extensions.length > 1 ? 'space-y-96' : 'space-y-96'" :style="extensionColumnHeight">
           <div class="mx-auto">
             <HeaderSelectOption ref="filingTypeMenu" v-model="selectedFileType" class="relative mt-2" title="Add filing"
               add-icon :options="filingOptions" @input="addFilingType" />
@@ -20,7 +20,8 @@
           <div class="flex flex-col  w-8 z-10" ref="extensionColumn" :style="{ height: extensionColumnHeight }">
             <draggable v-model="extensions" v-bind="dragOptions" class="extension-draggable" @start="startDrag"
               @end="onDropExtension">
-              <transition-group name="extension-list h-full" tag="div" class="extension-list">
+              <transition-group name="extension-list h-full" tag="div" class="extension-list"
+                :class="extensions.length > 1 ? 'gap-28' : ''">
                 <div v-for="(extension, idx) in extensions" :key="extension.id" class="extension-item mb-4"
                   :style="idx !== 0 ? { 'border-left': '1px solid rgba(229, 231, 235, var(--tw-border-opacity))' } : {}">
                   <ClientTaxYearExtension :extension="extension" @delete="startDelete($event, 'extension')" />
@@ -309,17 +310,20 @@ export default {
       };
 
       const filing = Object.assign({}, defaultValues);
+      this.$api.createFiling(this.headers, { filing }).then(res => {
+        console.log(res)
+        this.$store.commit('pushNewFiling', res);
 
+        // Ensure the new filing is immediately selected
+        this.$nextTick(() => {
+          const index = this.filings.findIndex(f => f.id === res.id);
+          if (index !== -1) {
+            this.setActiveFilingIndex(index);
+          }
+        });
+
+      })
       // Add the filing to Vuex store
-      this.$store.commit('pushNewFiling', filing);
-
-      // Ensure the new filing is immediately selected
-      this.$nextTick(() => {
-        const index = this.filings.findIndex(f => f.id === filing.id);
-        if (index !== -1) {
-          this.setActiveFilingIndex(index);
-        }
-      });
     },
     updateIrsHistory() {
       this.yearCopy.irsHistory = !this.yearCopy.irsHistory
@@ -361,7 +365,7 @@ export default {
 
     updateExtansionColumnHeight() {
       this.$nextTick(() => {
-        const column = this.$refs.fbarColumn;
+        const column = this.$refs.extensionColumn;
         if (column && column.parentElement) {
           const parentHeight = column.parentElement.clientHeight;
           this.extensionColumnHeight = `${parentHeight}px`;
