@@ -316,10 +316,11 @@ export default {
     },
     amountTotal() {
       return formatAsNumber(
-        this.displayedFbars
-          .filter((fbar) => fbar.include)
-          .reduce((acc, fbar) => (fbar.frequency ? acc + Number(fbar.amount) * fbar.frequency : acc + Number(fbar.amount)), 0)
-      )
+        Math.round(
+          this.displayedFbars
+            .filter((fbar) => fbar.include)
+            .reduce((acc, fbar) => (fbar.frequency ? acc + Number(fbar.amount) * fbar.frequency : acc + Number(fbar.amount)), 0)
+        ))
     },
     amountUSDTotal() {
       return `$${formatAsNumber(

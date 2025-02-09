@@ -231,6 +231,7 @@ export const smartviewOptions = Object.freeze([
   { name: 'CLIENT::id', value: 'CLIENT::id' },
   { name: 'CLIENT::owes_status', value: 'CLIENT::owes_status' },
   { name: 'CLIENT::periodical', value: 'CLIENT::periodical' },
+  { name: 'CLIENT::pmt_status', value: 'CLIENT::pmt_status' },
 
   { name: 'CONTACT::address_or_number', value: 'CONTACT::address_or_number' },
   { name: 'CONTACT::city_or_account', value: 'CONTACT::city_or_account' },

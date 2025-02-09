@@ -1,15 +1,15 @@
 <template>
-    <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-        <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+    <div ref="el" :class="isEditable ? 'edit-mode' : 'read-mode'">
+        <!-- <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
             <div class="h-full" @click="onBlur" />
-        </div>
+        </div> -->
         <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
             <input ref="button" v-model="filterOptionsValue" type="text" tabindex="0"
                 class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
                 @click="onButtonClick" @keyup="onInputKeyup($event.key)"
                 :placeholder="selectedValues.length ? undefined : placeholder" />
             <ul v-if="showOptions && isEditable" ref="select" @mouseleave="resetHover"
-                class="absolute z-10  bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
+                class="absolute z-10  bg-white max-h-80 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
                 :class="{
                     'opacity-100': showOptions && isEditable,
                     'opacity-0': !(showOptions && isEditable),
@@ -86,6 +86,7 @@ export default {
             mouseMode: false,
             filterOptionsValue: '',
             selectedValues: [],
+            init: false
         };
     },
     computed: {
@@ -133,13 +134,16 @@ export default {
         async isEditable(val) {
             if (!val) {
                 this.showOptions = false;
+                document.removeEventListener("mousedown", this.handleClickOutside);
             } else {
                 this.showOptions = true;
                 await this.$nextTick(() => {
                     this.$refs.button?.focus();
                     this.filterOptionsValue = this.value;
+                    document.addEventListener("mousedown", this.handleClickOutside);
                 });
             }
+
         },
     },
     mounted() {
@@ -150,8 +154,28 @@ export default {
                 this.filterOptionsValue = '';
             });
         }
+        if (this.isEditable) {
+            document.addEventListener("mousedown", this.handleClickOutside);
+        }
+
+    },
+    beforeDestroy() {
+        document.removeEventListener("mousedown", this.handleClickOutside);
     },
     methods: {
+        handleClickOutside(event) {
+            // if (this.init === false) {
+            //     this.init = true
+            //     return
+            // }
+            if (!this.isEditable) return
+            if (!this.$refs.el.contains(event.target)) {
+                this.showOptions = false;
+                this.init = false
+                this.filterOptionsValue = '';
+                this.$emit('blur', false);
+            }
+        },
         shouldShowCheckmark(option, idx) {
             return this.isSelected(option) || (!this.mouseMode && this.hoverIndex === idx)
             // (this.mouseMode && this.hoverIndex === idx); // Added hover condition

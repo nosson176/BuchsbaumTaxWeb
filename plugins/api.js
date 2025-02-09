@@ -572,7 +572,14 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
       .then((res) => {
         return res
       })
-      .catch(() => $toast.error('Error updating value type'))
+      .catch((err) => {
+        if (!value.rate) {
+          $toast.error('Error updating value type')
+          return
+        }
+
+        return Promise.reject(err)
+      })
 
   const updateExchangeRate = (headers, { valueId }, value) =>
     $axios

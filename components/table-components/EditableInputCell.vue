@@ -1,8 +1,8 @@
 <template>
   <div ref="div" :class="showEditMode ? 'edit-mode' : 'read-mode'">
-    <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+    <!-- <div v-if="isEditable" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
-    </div>
+    </div> -->
     <input v-if="showEditMode" ref="input" v-model="editModeValue" autofocus type="text"
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full z-20"
       tabindex="0" :placeholder="placeholder" @keydown.enter="emitEnter" @input="onInput" />
@@ -49,6 +49,7 @@ export default {
   data() {
     return {
       hasEdited: false,
+      init: false,
     }
   },
   computed: {
@@ -90,7 +91,38 @@ export default {
       this.$refs.input.focus()
     }
   },
+  mounted() {
+    if (this.isEditable) {
+      document.addEventListener("mousedown", this.handleClickOutside);
+    }
+
+  },
+  beforeDestroy() {
+    console.log("beforeDestroy")
+    document.removeEventListener("mousedown", this.handleClickOutside);
+  },
+
+  watch: {
+    isEditable(newVal) {
+      if (newVal) document.addEventListener("mousedown", this.handleClickOutside);
+      else document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  },
   methods: {
+    handleClickOutside(event) {
+      // if (this.init === false) {
+      //   this.init = true
+      //   return
+      // }
+      if (!this.isEditable) return
+      if (!this.$refs.div.contains(event.target)) {
+        console.log("נלחץ מחוץ לקומפוננטה");
+        this.init = false
+        this.$emit('blur', false);
+      } else {
+        console.log("נלחץ בתוך הקומפוננטה");
+      }
+    },
     onBlur(event) {
       this.$emit(events.blur, event)
     },

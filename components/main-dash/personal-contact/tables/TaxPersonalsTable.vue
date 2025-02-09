@@ -20,7 +20,10 @@
     </template>
     <template #body>
       <TableRow v-for="(personal, idx) in displayedPersonals" :key="personal.id" :idx="idx"
-        :selected="isSelected(personal.id)" :class="{ disabled: !personal.include }">
+        :selected="isSelected(personal.id)" :class="{
+          'disabled': !personal.include,
+          'bg-gray-200': personal.isOverSixteen
+        }">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(personal)">{{ idx + 1 }}</ClickCell>
         </div>
@@ -147,6 +150,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedPersonals() {
+      console.log("up")
       const personals = this.filteredPersonals;
       if (!personals) return [];
 
@@ -175,8 +179,42 @@ export default {
         return 0; // Keep original order for non-DEP categories
       });
 
+      // Check DOB and add a flag for graying out rows
+      // const currentYear = new Date().getFullYear();
+      // const sixteenYearsAgo = currentYear - 16;
+
+      const processedPersonals = sortedPersonals.map(personal => {
+        let isOverSixteen = false;
+        if (personal.dateOfBirth) {
+          let dobDate;
+
+          // Handle Unix timestamp (assuming it's in milliseconds)
+          if (typeof personal.dateOfBirth === 'number') {
+            // Check if the timestamp looks like a Unix timestamp
+            if (personal.dateOfBirth > 315532800000 && personal.dateOfBirth < Date.now()) {
+              dobDate = new Date(personal.dateOfBirth);
+            }
+          } else if (typeof personal.dateOfBirth === 'string') {
+            // Try parsing string formats
+            dobDate = new Date(personal.dateOfBirth);
+          }
+
+          // Check if dobDate is a valid date and compute age
+          if (dobDate && !isNaN(dobDate.getFullYear())) {
+            const currentYear = new Date().getFullYear();
+            const seventeenYearsAgo = currentYear - 17;
+            isOverSixteen = dobDate.getFullYear() < seventeenYearsAgo;
+          }
+        }
+
+        return {
+          ...personal,
+          isOverSixteen
+        };
+      });
+
       if (this.trackedPersonalId) {
-        const newIndex = sortedPersonals.findIndex(p => p.id === this.trackedPersonalId);
+        const newIndex = processedPersonals.findIndex(p => p.id === this.trackedPersonalId);
         if (newIndex !== -1) {
           // Update editable cell ID to match new position
           this.$nextTick(() => {
@@ -187,7 +225,7 @@ export default {
       }
 
       // Apply search filter
-      return searchArrOfObjs(sortedPersonals, this.searchInput);
+      return searchArrOfObjs(processedPersonals, this.searchInput);
     },
 
     filteredPersonals() {

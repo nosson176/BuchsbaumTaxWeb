@@ -329,9 +329,11 @@ export default {
     },
     amountTotal() {
       return formatAsNumber(
-        this.displayedIncomes
-          .filter((income) => income.include)
-          .reduce((acc, income) => (income.frequency ? acc + income.amount * income.frequency : acc + income.amount), 0)
+        Math.round(
+          this.displayedIncomes
+            .filter((income) => income.include)
+            .reduce((acc, income) => (income.frequency ? acc + income.amount * income.frequency : acc + income.amount), 0)
+        )
       )
     },
     amountUSDTotal() {
@@ -343,7 +345,6 @@ export default {
               if (!income.amount || !income.years || !income.currency) {
                 return acc;
               }
-
               const rate = this.getCurrencyRate(income.years, income.currency);
               return rate ? acc + (income.amount / rate) : acc;
             }, 0)
@@ -616,6 +617,7 @@ export default {
     //   }
     // },
     sortIncomes() {
+      console.log("run")
       const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
 
       const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };

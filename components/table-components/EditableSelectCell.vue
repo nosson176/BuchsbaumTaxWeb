@@ -1,14 +1,14 @@
 <template>
-  <div :class="isEditable ? 'edit-mode' : 'read-mode'">
-    <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
+  <div ref="el" :class="isEditable ? 'edit-mode' : 'read-mode'">
+    <!-- <div v-if="showOptions" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
-    </div>
+    </div> -->
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
       <input ref="button" v-model="filterOptionsValue" type="text" tabindex="0"
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
         @click="onButtonClick" @keyup="onInputKeyup($event.key)" />
       <ul v-if="showOptions && isEditable" ref="select" @mouseleave="resetHover"
-        class="absolute z-10 w-auto bg-white max-h-32 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
+        class="absolute z-10 w-auto bg-white max-h-80 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="{
           'opacity-100': showOptions && isEditable,
           'opacity-0': !(showOptions && isEditable),
@@ -39,6 +39,7 @@
 
 <script>
 import { events } from '~/shared/constants';
+
 
 export default {
   name: 'EditableSelectCell',
@@ -71,6 +72,7 @@ export default {
   data() {
     return {
       showOptions: false,
+      init: false,
       shiftActive: false,
       hoverIndex: -1,
       mouseMode: false,
@@ -139,8 +141,28 @@ export default {
         this.inputValue = '';
       });
     }
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeDestroy() {
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
+    handleClickOutside(event) {
+      if (!this.isEditable) return
+      if (this.init === false) {
+        this.init = true
+        return
+      }
+
+      if (!this.$refs.el.contains(event.target)) {
+        console.log("נלחץ מחוץ לקומפוננטה");
+        this.showOptions = false;
+        this.$emit(events.blur, false);
+        this.init = false
+      } else {
+        console.log("נלחץ בתוך הקומפוננטה");
+      }
+    },
     emitChange(value) {
       this.computedValue = value;
       this.$emit('change');

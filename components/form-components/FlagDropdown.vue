@@ -47,11 +47,11 @@ export default {
   },
   computed: {
     options() {
-      return [11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      return [11, 1, 2, 3, 5, 6, 7, 8, 9, 10]
     },
     computedValue: {
       get() {
-        return this.value || 4
+        return this.value || 11
       },
       set(newVal) {
         if (newVal) {
