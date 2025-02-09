@@ -38,6 +38,25 @@
         :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
       <!-- </div> -->
     </div>
+    <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative h-20"
+      :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
+      @mouseenter="!isEditable(`${idx}-memo`) && showTooltip(idx)" @mouseleave="hideTooltip"
+      style="max-height: 5rem; max-width: 5rem; " @click.stop="setEditable('memo')">
+      <EditableTextAreaCell v-model="formModel.memo" :prevent-enter="false" show-overflow placeholder="Memo"
+        :is-editable="isEditable('memo')" :over="false" @blur="onBlur" @keyup.tab.native="onBlur" class="h-full" />
+      <!-- Custom Tooltip -->
+      <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-memo`)"
+        class="absolute z-50 bg-gray-800 text-white p-2 rounded-md shadow-lg max-w-md whitespace-normal break-words overflow-visible"
+        style="top: calc(50% + 25%); right: 0; max-width: inherit;">
+        <div class="absolute -top-2 left-4 border-8 border-transparent border-b-gray-800"></div>
+        {{ formModel.memo }}
+      </div>
+    </div>
+    <div v-else v-click-outside="onBlur">
+      <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
+        @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
+        style="min-height: 5rem;" />
+    </div>
     <div class="flex items-center gap-2">
       <div @click="setEditable('includeInRefund')">
         <EditableCheckBoxCell v-model="formModel.includeInRefund" :is-editable="isEditable('includeInRefund')"
@@ -63,25 +82,6 @@
       </div>
     </div>
     <!-- <div class="mt-85"> -->
-    <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative h-20"
-      :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
-      @mouseenter="!isEditable(`${idx}-memo`) && showTooltip(idx)" @mouseleave="hideTooltip"
-      style="max-height: 5rem; max-width: 5rem; " @click.stop="setEditable('memo')">
-      <EditableTextAreaCell v-model="formModel.memo" :prevent-enter="false" show-overflow placeholder="Memo"
-        :is-editable="isEditable('memo')" :over="false" @blur="onBlur" @keyup.tab.native="onBlur" class="h-full" />
-      <!-- Custom Tooltip -->
-      <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-memo`)"
-        class="absolute z-50 bg-gray-800 text-white p-2 rounded-md shadow-lg max-w-md whitespace-normal break-words overflow-visible"
-        style="top: calc(50% + 25%); right: 0; max-width: inherit;">
-        <div class="absolute -top-2 left-4 border-8 border-transparent border-b-gray-800"></div>
-        {{ formModel.memo }}
-      </div>
-    </div>
-    <div v-else v-click-outside="onBlur">
-      <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
-        @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
-        style="min-height: 5rem;" />
-    </div>
     <div class="fbar-i mt-16" @click.stop="setEditable('dateFiled')">
       <EditableDate v-model="formModel.dateFiled" placeholder="Date Filed" type="date"
         :is-editable="isEditable('dateFiled')" @blur="onBlur(formModel.dateFiled, 'dateFiled')" />
