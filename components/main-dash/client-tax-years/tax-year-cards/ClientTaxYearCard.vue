@@ -124,11 +124,20 @@ export default {
       }
       return null
     },
+    // filings() {
+    //   const clonedData = this.yearData
+    //   console.log("clonedata => ", JSON.parse(JSON.stringify(clonedData)))
+    //   return clonedData.filings.filter(
+    //     (filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
+    //   )
+    // },
     filings() {
-      const clonedData = this.yearData
-      return clonedData.filings.filter(
-        (filing) => filing.filingType !== filingTypes.ext && filing.filingType !== filingTypes.fbar
-      )
+      return [...this.yearData.filings]
+        .filter(
+          (filing) =>
+            filing.filingType !== filingTypes.ext &&
+            filing.filingType !== filingTypes.fbar
+        )
     },
     displayedFilingInfo() {
       return this.filings[this.activeFilingIndex]
@@ -270,15 +279,15 @@ export default {
         return;
       }
 
-      let sortOrder = this.yearData.filings.length + 1;
-      if (filingType === filingTypes.federal) {
-        const firstOccurenceOfStateFiling = this.yearData.filings.find(
-          (filing) => filing.filingType === filingTypes.state
-        );
-        if (firstOccurenceOfStateFiling !== undefined) {
-          sortOrder = firstOccurenceOfStateFiling.sortOrder;
-        }
-      }
+      const sortOrder = this.yearData.filings.length + 1;
+      // if (filingType === filingTypes.federal) {
+      //   const firstOccurenceOfStateFiling = this.yearData.filings.find(
+      //     (filing) => filing.filingType === filingTypes.state
+      //   );
+      //   if (firstOccurenceOfStateFiling !== undefined) {
+      //     sortOrder = firstOccurenceOfStateFiling.sortOrder;
+      //   }
+      // }
 
       // Create the new filing with all required fields initialized
       const defaultValues = {
@@ -311,7 +320,6 @@ export default {
 
       const filing = Object.assign({}, defaultValues);
       this.$api.createFiling(this.headers, { filing }).then(res => {
-        console.log(res)
         this.$store.commit('pushNewFiling', res);
 
         // Ensure the new filing is immediately selected

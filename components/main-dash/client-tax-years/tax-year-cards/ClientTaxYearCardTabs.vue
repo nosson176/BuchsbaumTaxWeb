@@ -1,9 +1,9 @@
 <template>
   <div class="flex w-full border-t border-gray-300 space-x-1 shadow">
-    <draggable :value="localFilings" v-bind="dragOptions" class="flex w-full" @start="startDrag" @end="onDrop">
+    <draggable :value="filings" v-bind="dragOptions" class="flex w-full" @start="startDrag" @end="onDrop">
       <transition-group ref="group" type="transition" :name="transitionName"
         class="flex overflow-auto whitespace-nowrap" @mouseenter="mouseOver = true">
-        <div v-for="(filing, idx) in localFilings" :key="filing.id">
+        <div v-for="(filing, idx) in filings" :key="filing.id">
           <sup class="text-[10px] text-indigo-300"> {{ isOverflowing && idx === 4 ? '&raquo;' : '' }}</sup>
           <Tab :active="idx === activeFilingIdx">
             <span v-if="displayTab(filing)" class="tab-text"
@@ -67,7 +67,6 @@ export default {
   watch: {
     filings: {
       handler(newVal) {
-        console.log(newVal)
         this.localFilings = JSON.parse(JSON.stringify(newVal)); // Update local copy when prop changes
         this.checkOverflow();
       },
@@ -91,41 +90,29 @@ export default {
       this.dragActive = true
     },
     onDrop(evt) {
-      // console.log('Before move:', this.localFilings.map(f => f.sortOrder));
-      console.log(evt)
-      // בדיקת אינדקסים כדי למנוע שגיאות
       if (evt.oldIndex < 0 || evt.oldIndex >= this.localFilings.length ||
         evt.newIndex < 0 || evt.newIndex >= this.localFilings.length) {
         console.warn('Invalid index', evt);
         return;
       }
 
-      // הוצאת האלמנט מהמיקום הישן ושמירתו
-      console.log(this.localFilings)
+      const subMovedItem = this.localFilings[evt.newIndex]
       const movedItem = this.localFilings.splice(evt.oldIndex, 1)[0];
-      console.log(movedItem)
-      // הכנסת האלמנט למיקום החדש
       this.localFilings.splice(evt.newIndex, 0, movedItem);
-      console.log(this.localFilings)
-      // עדכון sortOrder לפי הסדר החדש
+
       this.localFilings.forEach((filing, index) => {
         filing.sortOrder = index + 1;
       });
 
-      // console.log('After move:', this.localFilings.map(f => f.sortOrder));
 
-      // שליחת עדכון ל־Vuex (אם צריך)
-      // this.$store.commit('updateFilingsOrder', { evt, taxYearId: movedItem.taxYearId });
+      this.$store.commit('updateFilingsOrder', { evt, movedItem, subMovedItem });
 
-      // עדכון נתונים בשרת
       this.localFilings.forEach((item) => {
         this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: item.id }, item);
       });
 
-      // שליחת עדכון להורה (אם צריך)
-      this.$emit('update:filings', [...this.localFilings]); // חשוב לשלוח עותק חדש כדי לוודא ריאקטיביות
+      this.$emit('update:filings', [...this.localFilings]);
 
-      // איפוס מצב הגרירה
       this.dragActive = false;
     },
 

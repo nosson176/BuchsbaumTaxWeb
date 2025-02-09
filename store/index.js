@@ -367,14 +367,20 @@ const mutations = {
     }
   },
 
+  // pushNewFiling(state, filing) {
+  //   const index = state[models.selectedClient].taxYears.findIndex((f) => f.id === filing.taxYearId)
+  //   if (index !== -1) {
+  //     // Use spread operator to ensure reactivity
+  //     state[models.selectedClient].taxYears[index].filings = [
+  //       ...state[models.selectedClient].taxYears[index].filings,
+  //       filing,
+  //     ]
+  //   }
+  // },
   pushNewFiling(state, filing) {
     const index = state[models.selectedClient].taxYears.findIndex((f) => f.id === filing.taxYearId)
     if (index !== -1) {
-      // Use spread operator to ensure reactivity
-      state[models.selectedClient].taxYears[index].filings = [
-        ...state[models.selectedClient].taxYears[index].filings,
-        filing,
-      ]
+      state[models.selectedClient].taxYears[index].filings.push(filing)
     }
   },
   // pushNewFiling(state, filing) {
@@ -418,65 +424,33 @@ const mutations = {
     }
   },
 
-  updateFilingsOrder(state, { evt, taxYearId }) {
-    const taxYear = state.selectedClient.taxYears.find((ty) => ty.id === taxYearId)
-    if (taxYear) {
-      console.log('Tax Year Found')
+  updateFilingsOrder(state, { evt, movedItem, subMovedItem }) {
+    const taxYear = state.selectedClient.taxYears.find((ty) => ty.id === movedItem.taxYearId)
+    if (!taxYear) return
 
-      // בודקים שהאינדקסים תקינים
-      if (
-        evt.oldIndex < 0 ||
-        evt.oldIndex >= taxYear.filings.length ||
-        evt.newIndex < 0 ||
-        evt.newIndex >= taxYear.filings.length
-      ) {
-        console.warn('Invalid index')
-        return
-      }
-
-      // יצירת עותק של המערך המקורי
-      const newFilings = [...taxYear.filings]
-      console.log(newFilings)
-
-      // שמירת האלמנט שמוזז
-      const movedFiling = newFilings.splice(evt.oldIndex, 1)[0]
-
-      // הכנסת האלמנט למיקום החדש
-      newFilings.splice(evt.newIndex, 0, movedFiling)
-
-      // עדכון סדר לכל הפריטים במערך
-      newFilings.forEach((filing, idx) => {
-        filing.sortOrder = idx + 1
-      })
-
-      // עדכון המערך בstate
-      taxYear.filings = newFilings
-
-      // יצירת עותק חדש של מערך taxYears
-      state.selectedClient.taxYears = state.selectedClient.taxYears.map((ty) =>
-        ty.id === taxYearId ? { ...ty, filings: [...newFilings] } : ty
-      )
-
-      console.log(
-        'Updated Filings Order:',
-        newFilings.map((f) => f.sortOrder)
-      )
+    // Ensure newIndex is valid
+    if (evt.newIndex < 0 || evt.newIndex >= taxYear.filings.length) {
+      console.warn('Invalid newIndex')
+      return
     }
+
+    const newFilings = [...taxYear.filings]
+
+    const index = newFilings.findIndex((f) => f.id === movedItem.id)
+    const subIndex = newFilings.findIndex((f) => f.id === subMovedItem.id)
+
+    if (index === -1 || subIndex === -1) return // If filing is not found, return early
+
+    const movedFiling = newFilings.splice(index, 1)[0]
+
+    newFilings.splice(subIndex, 0, movedFiling)
+
+    newFilings.forEach((filing, idx) => {
+      filing.sortOrder = idx + 1
+    })
+
+    taxYear.filings = [...newFilings]
   },
-  // UPDATE_FILINGS_CONTACT(state, { oldValue, newValue }) {
-  //   state.selectedClient.taxYears.forEach((taxYear) => {
-  //     taxYear.filings.forEach((filing) => {
-  //       if (filing.deliveryContact === oldValue) {
-  //         console.log('inside')
-  //         filing.deliveryContact = newValue
-  //       }
-  //       if (filing.secondDeliveryContact === oldValue) {
-  //         console.log('inside2')
-  //         filing.secondDeliveryContact = newValue
-  //       }
-  //     })
-  //   })
-  // },
 
   UPDATE_FILINGS_CONTACT(state, { oldValue, newValue }) {
     state.selectedClient.taxYears.forEach((taxYear) => {
