@@ -28,8 +28,17 @@
         @blur="onBlur(formModel.taxEstimated, 'tax')" @click="onBlur(formModel.taxEstimated, 'tax')"
         @keyup.enter.native="onBlur('tax')" @keyup.esc.native="onBlur(formModel.taxEstimated, 'tax', $event)" />
     </div>
+    <div class="col-span-2 flex gap-2  px-2 items-center mb-1 " style="min-width: 80px;" :class="sumClassObj">
+      <div>
+        <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
+      </div>
+      <div @click="setEditable('completed')">
+        <EditableCheckBoxCell v-model="formModel.completed" :is-editable="isEditable('completed')"
+          @click="handleUpdate('completed')" />
+      </div>
+    </div>
     <div class="mx-2" @click="setEditable('statusDate')">
-      <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
+      <EditableDate v-model="formModel.statusDate" ref="statusDateInput" placeholder="Date" type="date"
         :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
     </div>
   </div>
@@ -40,6 +49,7 @@
 import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
+import { formatAsNumber } from '~/shared/utility';
 
 const items = ['taxForm', 'status', 'tax', 'statusDate']
 
@@ -73,10 +83,32 @@ export default {
     statusOptions() {
       return this.valueTypes.tax_year_status.filter((status) => status.show)
     },
+    sum() {
+      return this.formModel.taxEstimated || 0
+    },
+    formattedSum() {
+      if (this.sum) {
+        return formatAsNumber(this.sum)
+      } else {
+        return 0
+      }
+    },
+    sumClassObj() {
+      return {
+        'bg-gray-400': this.sum === 0,
+        'bg-yellow-400': this.sum > 0 && !this.completed,
+        'bg-green-400': this.sum > 0 && this.completed,
+        'bg-blue-400': this.sum < 0 && !this.completed,
+        'bg-red-400': this.sum < 0 && this.completed,
+      }
+    },
   },
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.extension))
-    console.log(this.formModel)
+    this.$nextTick(async () => {
+      const num = await this.countFilledFields()
+      this.$emit('checkSpace', num);
+    })
   },
   // updated() {
   //   if (this.isEditable) {
@@ -118,6 +150,9 @@ export default {
     },
   },
   methods: {
+    getStatusDateRef() {
+      return this.$refs.statusDateInput;
+    },
     setEditable(editable) {
       this.editable = editable;
 
@@ -153,7 +188,7 @@ export default {
 
       this.setEditable('')
     },
-    handleUpdate(field) {
+    async handleUpdate(field) {
       try {
         const updatedModel = JSON.parse(JSON.stringify(this.formModel));
         const existingIndex = this.filingsUpdate.findIndex(change => change.id === updatedModel.id);
@@ -163,15 +198,33 @@ export default {
         } else {
           this.$store.commit('pushFilingUpdate', updatedModel);
         }
-        console.log(field)
-        if (!this.newFlag || field !== 'includeTax') {
-          console.log("next")
+        if (!this.newFlag && field !== 'includeTax' && field !== 'completed') {
+          let num = await this.countFilledFields()
+          if (!num) { num = 0 }
+          this.$emit('checkSpace', num);
           this.goToNextItem(); // Only go to the next item if `newFlag` is false
         }
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);
       }
     },
+    countFilledFields() {
+      const fields = ['taxForm', 'status', 'statusDate'];
+      return fields.reduce((count, field) => {
+        const value = this.formModel[field];
+        console.log(field, value.value)
+        console.log(field, count)
+        if (field === 'status' && value?.value !== undefined) {
+          console.log('inside')
+          return count + 1;
+        }
+        if (field === 'status') return count
+        if (field === 'statusDate' && value === 0) return count
+        console.log(field, value ? count + 1 : count)
+        return value ? count + 1 : count;
+      }, 0);
+    },
+
     emitDelete() {
       this.$emit(events.delete, this.extension.id)
     },
@@ -194,6 +247,9 @@ export default {
         this.setEditable(prevCell)
       }
     },
+    callParent() {
+      this.$emit('checkSpace');
+    }
   },
 }
 </script>

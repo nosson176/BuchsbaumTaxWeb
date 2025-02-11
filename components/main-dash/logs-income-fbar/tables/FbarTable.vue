@@ -469,9 +469,11 @@ export default {
         if (!notifiedErrors.has(errorKey)) {
           notifiedErrors.add(errorKey);
           console.warn("No matching exchange rate found for:", { year: numericYear, currency });
-          this.$nextTick(() => {
-            this.$toast.error(`No exchange rate found for ${currency} in ${numericYear}`);
-          });
+          if (currency !== 'USD') {
+            this.$nextTick(() => {
+              this.$toast.error(`No exchange rate found for ${currency} in ${numericYear}`);
+            });
+          }
         }
         return null;
       }
@@ -562,37 +564,7 @@ export default {
             return bYear - aYear;
           }
 
-          // Sort by part (PART I > PART II > ... > PART V)
 
-          //  const partOrder = ['PART I', 'PART II', 'PART III', 'PART IV', 'PART V']; // Order of parts
-          // const partOrder = ["PART II",
-          //   "PART II .2",
-          //   "PART II .3",
-          //   "PART II .4",
-          //   "PART II .5",
-          //   "PART II .6",
-          //   "PART II .7",
-          //   "PART II .8",
-          //   "PART II .9",
-          //   "PART II .10",
-          //   "PART III ",
-          //   "PART III .2",
-          //   "PART III .3",
-          //   "PART III .4",
-          //   "PART III .5",
-          //   "PART III .6",
-          //   "PART III .7",
-          //   "PART III .8",
-          //   "PART III .9",
-          //   "PART IV",
-          //   "PART IV .2",
-          //   "PART IV .3",
-          //   "PART IV .4",
-          //   "PART IV .5",
-          //   "PART IV .6",
-          //   "PART IV .7",
-          //   "PART IV .8",
-          //   "PART V"]; // Order of parts
           const aPartIndex = partOrder.indexOf(a.part);
           const bPartIndex = partOrder.indexOf(b.part);
 

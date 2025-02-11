@@ -406,6 +406,7 @@ export default {
         model: models.selectedClient,
         data: { ...this.selectedClient, status: newVal, statusChangeDate: Date.now(), active }
       })
+      this.$store.commit('updateClientStatusDate', this.selectedClient.id)
     },
     updatePeriodical(newPeriodical) {
       this.updateSelectedClient({

@@ -150,7 +150,7 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedPersonals() {
-      console.log("up")
+      console.log("up");
       const personals = this.filteredPersonals;
       if (!personals) return [];
 
@@ -168,38 +168,33 @@ export default {
           return (categoryOrder[categoryA] || 4) - (categoryOrder[categoryB] || 4);
         }
 
-        // If both are DEP category, sort by date of birth
-        if (categoryA === 'DEP') {
-          // Convert dates to timestamps for comparison
-          const dateA = a.dateOfBirth ? new Date(a.dateOfBirth).getTime() : 0;
-          const dateB = b.dateOfBirth ? new Date(b.dateOfBirth).getTime() : 0;
-          return dateA - dateB; // Changed to descending order (oldest on top)
+        // If both are DEP category, sort by date of birth (oldest on top)
+        if (categoryA === "DEP") {
+          const dateA = a.dateOfBirth ? new Date(a.dateOfBirth).getTime() : Infinity;
+          const dateB = b.dateOfBirth ? new Date(b.dateOfBirth).getTime() : Infinity;
+          return dateA - dateB; // Sort DEP by DOB (falsy DOBs go to bottom)
         }
 
         return 0; // Keep original order for non-DEP categories
       });
 
-      // Check DOB and add a flag for graying out rows
-      // const currentYear = new Date().getFullYear();
-      // const sixteenYearsAgo = currentYear - 16;
-
       const processedPersonals = sortedPersonals.map(personal => {
+        console.log(personal.category);
+        if (personal.category !== "DEP.") return personal;
+
         let isOverSixteen = false;
         if (personal.dateOfBirth) {
           let dobDate;
 
           // Handle Unix timestamp (assuming it's in milliseconds)
-          if (typeof personal.dateOfBirth === 'number') {
-            // Check if the timestamp looks like a Unix timestamp
+          if (typeof personal.dateOfBirth === "number") {
             if (personal.dateOfBirth > 315532800000 && personal.dateOfBirth < Date.now()) {
               dobDate = new Date(personal.dateOfBirth);
             }
-          } else if (typeof personal.dateOfBirth === 'string') {
-            // Try parsing string formats
+          } else if (typeof personal.dateOfBirth === "string") {
             dobDate = new Date(personal.dateOfBirth);
           }
 
-          // Check if dobDate is a valid date and compute age
           if (dobDate && !isNaN(dobDate.getFullYear())) {
             const currentYear = new Date().getFullYear();
             const seventeenYearsAgo = currentYear - 17;
@@ -216,17 +211,16 @@ export default {
       if (this.trackedPersonalId) {
         const newIndex = processedPersonals.findIndex(p => p.id === this.trackedPersonalId);
         if (newIndex !== -1) {
-          // Update editable cell ID to match new position
           this.$nextTick(() => {
-            const currentColumn = this.editableId.split('-')[1];
+            const currentColumn = this.editableId.split("-")[1];
             this.editableId = `${newIndex}-${currentColumn}`;
           });
         }
       }
 
-      // Apply search filter
       return searchArrOfObjs(processedPersonals, this.searchInput);
     },
+
 
     filteredPersonals() {
       if (this.taxPersonals) {

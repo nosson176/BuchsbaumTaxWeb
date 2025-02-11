@@ -1,3 +1,11 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+
 .table-header {
   @apply px-px py-1 text-left text-xs font-medium text-gray-500 uppercase;
 }

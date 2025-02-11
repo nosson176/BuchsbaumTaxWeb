@@ -14,6 +14,7 @@
           <option value="fbar status detail">Fbar Status Detail</option>
           <option value="status overall">Status Overall</option>
           <option value="alarm">Alarm</option>
+          <option value="note">Note</option>
         </select>
         <select v-if="sortBy !== 'A-Z'" name="upDown" v-model="upDown" class="form-select px-2 py-0 rounded">
           <option value="new">New</option>
@@ -105,7 +106,7 @@ export default {
     },
     sortedClients() {
       const clients = Object.values(this.filteredClients)
-
+      console.log("sortBy", clients)
       switch (this.sortBy) {
         case 'A-Z':
           return this.sortByLastName(clients)
@@ -119,6 +120,8 @@ export default {
           return this.sortByStatusOverall(clients)
         case 'alarm':
           return this.sortByAlarm(clients)
+        case 'note':
+          return this.sortByNote(clients)
         default:
           return clients
       }
@@ -185,10 +188,28 @@ export default {
         }
       })
     },
+
     sortByStatusOverall(clients) {
       return clients.sort((a, b) => {
-        const dateA = a.statusChangeDate || 0
-        const dateB = b.statusChangeDate || 0
+        const dateA = a.statusChangeDate || 0;
+        const dateB = b.statusChangeDate || 0;
+
+        if (dateA === dateB) {
+          return (a.name || '').localeCompare(b.name || ''); // Sort alphabetically as a fallback
+        }
+
+        return this.upDown === 'new' ? dateB - dateA : dateA - dateB;
+      });
+    },
+
+    sortByAlarm(clients) {
+      return clients.sort((a, b) => {
+        const dateA = this.getLatestAlarmDate(a)
+        const dateB = this.getLatestAlarmDate(b)
+
+        if (dateA === null && dateB === null) return 0
+        if (dateA === null) return this.upDown === 'new' ? 1 : -1
+        if (dateB === null) return this.upDown === 'new' ? -1 : 1
 
         if (this.upDown === 'new') {
           return dateB - dateA
@@ -198,10 +219,11 @@ export default {
       })
     },
 
-    sortByAlarm(clients) {
+    sortByNote(clients) {
+      console.log('sotrnotr', clients)
       return clients.sort((a, b) => {
-        const dateA = this.getLatestAlarmDate(a)
-        const dateB = this.getLatestAlarmDate(b)
+        const dateA = this.getLatestNoteDate(a)
+        const dateB = this.getLatestNoteDate(b)
 
         if (dateA === null && dateB === null) return 0
         if (dateA === null) return this.upDown === 'new' ? 1 : -1
@@ -226,6 +248,7 @@ export default {
         });
       return dates.length ? Math.max(...dates) : 0;
     },
+
     getLatestAlarmDate(client) {
       const alarmDates = (client.logs || [])
         .map(log => {
@@ -238,6 +261,20 @@ export default {
         .filter(date => date !== null)
 
       return alarmDates.length ? Math.max(...alarmDates) : null
+    },
+
+    getLatestNoteDate(client) {
+      const noteDates = (client.logs || [])
+        .map(log => {
+          if (log.noteDate) {
+            const date = new Date(log.noteDate)
+            return isNaN(date.getTime()) ? null : date.getTime()
+          }
+          return null
+        })
+        .filter(date => date !== null)
+
+      return noteDates.length ? Math.max(...noteDates) : null
     },
 
     async exportToExcel() {
@@ -286,20 +323,6 @@ export default {
         }
       }
     },
-    // archiveClient(client) {
-    //   if (this.showArchived) {
-    //     const clientCopy = Object.assign({}, client)
-    //     clientCopy.archived = false
-    //     this.$api
-    //       .updateClient(this.headers, { clientId: client.id, client: clientCopy })
-    //       .then(() => this.$api.getClientList(this.headers))
-    //   } else {
-    //     this.$store.commit(mutations.setModelResponse, {
-    //       model: models.modals,
-    //       data: { delete: { showing: true, data: { id: client.id, type: tabs.clients, label: client.lastName } } },
-    //     })
-    //   }
-    // },
 
     onDeleteClick(client) {
       this.deleteClientId = client.id
@@ -363,7 +386,8 @@ export default {
         alarmUserId: null,
         alarmTime: null,
         alarmDate: null,
-        secondsSpent: this.$store.getters[models.secondsSpentOnClient]
+        secondsSpent: this.$store.getters[models.secondsSpentOnClient],
+        noteDate: null
       }
       const log = Object.assign({}, defaultValues)
       this.$api.createLog(this.headers, { log }).then(() => {
