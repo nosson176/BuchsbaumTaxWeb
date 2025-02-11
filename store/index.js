@@ -234,7 +234,6 @@ const mutations = {
   },
 
   updateClientStatusDate(state, clientId) {
-    console.log(clientId)
     const index = Object.values(state.clients).findIndex((c) => c.id === clientId)
     if (index !== -1) {
       state.clients[index].statusChangeDate = Date.now()
@@ -464,11 +463,9 @@ const mutations = {
     state.selectedClient.taxYears.forEach((taxYear) => {
       taxYear.filings.forEach((filing) => {
         if (filing.deliveryContact === oldValue) {
-          console.log('inside')
           Vue.set(filing, 'deliveryContact', newValue) // שינוי ריאקטיבי
         }
         if (filing.secondDeliveryContact === oldValue) {
-          console.log('inside2')
           Vue.set(filing, 'secondDeliveryContact', newValue) // שינוי ריאקטיבי
         }
       })
@@ -710,8 +707,6 @@ const mutations = {
   },
 
   deleteExchangeRate(state, { valueId }) {
-    console.log(valueId)
-
     if (!state.exchangeRate || typeof state.exchangeRate !== 'object') {
       console.error('exchangeRate is not an object')
       return
@@ -720,15 +715,11 @@ const mutations = {
     // Find the key for the item with the given id
     const keyToDelete = Object.keys(state.exchangeRate).find((key) => state.exchangeRate[key].id === valueId)
 
-    console.log(keyToDelete)
-
     if (keyToDelete) {
       // Create a new object excluding the item with the given id
       const { [keyToDelete]: _, ...newExchangeRate } = state.exchangeRate
       // Update the state with the new object
       state.exchangeRate = newExchangeRate
-
-      console.log(`Exchange rate with id ${valueId} deleted`)
     } else {
       console.warn(`Exchange rate with id ${valueId} not found`)
     }

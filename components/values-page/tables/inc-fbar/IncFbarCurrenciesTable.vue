@@ -92,11 +92,9 @@ export default {
       this.$emit('currency-selected', value.value)
     },
     toggleEditable(id) {
-      console.log("currency", id)
       this.editableId = id
     },
     isEditable(id) {
-      console.log(id, this.editableId)
       return this.editableId === id
     },
     deleteValue(value) {

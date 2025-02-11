@@ -1,45 +1,49 @@
 <template>
-  <div class="text-xs flex gap-2 transform -rotate-90" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
+  <div class="text-xs flex gap-2 transform rotate-90" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
     @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
-    <div v-if="!isEditable('taxForm')" @click.stop="setEditable('taxForm')">
-      <EditableSelectCell v-model="formModel.taxForm" type="taxForm" class="font-bold ml-2 whitespace-nowrap"
-        :options="taxFormOptions" :is-editable="isEditable('taxForm')" placeholder="Tax Form" />
+
+    <div @click.stop="setEditable('taxForm')" class="relative">
+      <EditableSelectCell v-model="formModel.taxForm" type="taxForm" class="font-bold ml-2 whitespace-nowrap transform"
+        :class="rotationClass('taxForm')" :options="taxFormOptions" :is-editable="isEditable('taxForm')"
+        placeholder="Tax Form" ref="taxFormInput" @blur="onBlur(formModel.taxForm, 'taxForm')" />
     </div>
-    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-      <EditableSelectCell v-model="formModel.taxForm" ref="taxFormInput"
-        class="font-bold ml-2 whitespace-nowrap transform rotate-90" :options="taxFormOptions" is-editable
-        placeholder="Tax Form" @blur="onBlur(formModel.taxForm, 'taxForm')" :initially-open="newFlag" />
+
+    <div @click.stop="setEditable('status')" class="relative">
+      <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap transform"
+        :options="statusOptions" :is-editable="isEditable('status')" placeholder="Status"
+        @blur="onBlur(formModel.status.value, 'status')" :class="rotationClass('status')" />
     </div>
-    <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
-      <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap "
-        :options="statusOptions" :is-editable="isEditable('status')" placeholder="Status" />
-    </div>
-    <div v-else v-click-outside="onBlur" class="absolute top-0 h-48 w-40">
-      <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap transform rotate-90"
-        :options="statusOptions" is-editable placeholder="Status" @blur="onBlur(formModel.status.value, 'status')" />
-    </div>
+
     <div @click.stop="setEditable('includeTax')">
-      <EditableCheckBoxCell v-model="formModel.includeTax" :is-editable="isEditable('includeTax')"
-        @click="handleUpdate('includeTax')" />
+      <EditableCheckBoxCell class="transform" v-model="formModel.includeTax" :is-editable="isEditable('includeTax')"
+        @click="handleUpdate('includeTax')" :class="rotationClass('includeTax')" />
     </div>
-    <div @click.stop="setEditable('tax')">
-      <EditableInput v-model="formModel.taxEstimated" placeholder="tax" :is-editable="isEditable('tax')"
-        @blur="onBlur(formModel.taxEstimated, 'tax')" @click="onBlur(formModel.taxEstimated, 'tax')"
-        @keyup.enter.native="onBlur('tax')" @keyup.esc.native="onBlur(formModel.taxEstimated, 'tax', $event)" />
+
+    <div @click.stop="setEditable('tax')" class="relative">
+      <EditableInput class="transform" style="min-width: 35px;" v-model="formModel.taxEstimated" placeholder="tax"
+        :is-editable="isEditable('tax')" @blur="onBlur(formModel.taxEstimated, 'tax')"
+        @keyup.enter.native="onBlur('tax')" @keyup.esc.native="onBlur(formModel.taxEstimated, 'tax', $event)"
+        :class="rotationClass('tax')" />
     </div>
-    <div class="col-span-2 flex gap-2  px-2 items-center mb-1 " style="min-width: 80px;" :class="sumClassObj">
-      <div>
-        <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
+
+    <div class="col-span-2 flex gap-2 px-2 items-center mb-1 transform" style="min-width: 80px;"
+      :class="[sumClassObj, rotationClass('sum')]">
+      <div @click.stop="setEditable('refund')">
+        <EditableInput v-model="formModel.refund" placeholder="Refund" currency :is-editable="isEditable('refund')"
+          @blur="onBlur(formModel.refund, 'refund')" @keyup.enter.native="onBlur(formModel.refund, 'refund', $event)"
+          @keyup.esc.native="onBlur(formModel.refund, 'refund', $event)" />
       </div>
       <div @click="setEditable('completed')">
-        <EditableCheckBoxCell v-model="formModel.completed" :is-editable="isEditable('completed')"
-          @click="handleUpdate('completed')" />
+        <EditableCheckBoxCell class="transform" v-model="formModel.completed" :is-editable="isEditable('completed')"
+          @click="handleUpdate('completed')" :class="rotationClass('completed')" />
       </div>
     </div>
-    <div class="mx-2" @click="setEditable('statusDate')">
-      <EditableDate v-model="formModel.statusDate" ref="statusDateInput" placeholder="Date" type="date"
-        :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
+
+    <div @click.stop="setEditable('statusDate')" class="relative mx-2">
+      <EditableDate class="transform" v-model="formModel.statusDate" ref="statusDateInput" placeholder="Date"
+        type="date" :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')"
+        :class="rotationClass('statusDate')" />
     </div>
   </div>
 </template>
@@ -51,7 +55,7 @@ import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 import { formatAsNumber } from '~/shared/utility';
 
-const items = ['taxForm', 'status', 'tax', 'statusDate']
+const items = ['taxForm', 'status', 'tax', 'refund', 'statusDate']
 
 export default {
   name: 'ClientTaxYearExtension',
@@ -86,6 +90,9 @@ export default {
     sum() {
       return this.formModel.taxEstimated || 0
     },
+    refund() {
+      return this.formModel.refund || 0
+    },
     formattedSum() {
       if (this.sum) {
         return formatAsNumber(this.sum)
@@ -95,13 +102,39 @@ export default {
     },
     sumClassObj() {
       return {
-        'bg-gray-400': this.sum === 0,
-        'bg-yellow-400': this.sum > 0 && !this.completed,
-        'bg-green-400': this.sum > 0 && this.completed,
-        'bg-blue-400': this.sum < 0 && !this.completed,
-        'bg-red-400': this.sum < 0 && this.completed,
+        'bg-gray-400': this.refund === 0,
+        'bg-yellow-400': this.refund > 0 && !this.formModel.completed,
+        'bg-green-400': this.refund > 0 && this.formModel.completed,
+        'bg-blue-400': this.refund < 0 && !this.formModel.completed,
+        'bg-red-400': this.refund < 0 && this.formModel.completed,
       }
     },
+    rotationClass() {
+      return (field) => {
+        // Base rotation when not editing
+        const baseRotation = '-rotate-180';
+
+        // If not being edited, return base rotation
+        if (!this.isEditable(field)) {
+          return baseRotation;
+        }
+
+        // Special rotation for editable state
+        switch (field) {
+          case 'taxForm':
+          case 'status':
+          case 'completed':
+          case 'sum':
+          case 'tax':
+          case 'includeTax':
+            return '-rotate-90'; // For dropdowns, rotate to make them appear correctly
+          case 'statusDate':
+            return 'rotate-0'; // For date picker, no rotation when active
+          default:
+            return baseRotation;
+        }
+      };
+    }
   },
   created() {
     this.formModel = JSON.parse(JSON.stringify(this.extension))
@@ -212,15 +245,11 @@ export default {
       const fields = ['taxForm', 'status', 'statusDate'];
       return fields.reduce((count, field) => {
         const value = this.formModel[field];
-        console.log(field, value.value)
-        console.log(field, count)
         if (field === 'status' && value?.value !== undefined) {
-          console.log('inside')
           return count + 1;
         }
         if (field === 'status') return count
         if (field === 'statusDate' && value === 0) return count
-        console.log(field, value ? count + 1 : count)
         return value ? count + 1 : count;
       }, 0);
     },

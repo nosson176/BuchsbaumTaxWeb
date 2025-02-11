@@ -261,8 +261,7 @@ export default {
           contact.mainDetail = tel
         }
       }
-
-      if (contact.include) {
+      if (contact.enabled) {
         // Get only enabled contacts
         const enabledContacts = this.displayedContacts.filter(c => c.enabled);
 
@@ -291,7 +290,6 @@ export default {
       }
 
       if (field === 'type' && this.oldValue) {
-        console.log("in")
         oldVal = this.oldValue
         const res = await this.$api.updateFilingDelivary(this.headers, {
           clientId: this.clientId,
@@ -300,7 +298,6 @@ export default {
         });
 
         if (res.status === 'success') {
-          console.log("in2")
           this.$store.commit('UPDATE_FILINGS_CONTACT', {
             oldValue: oldVal,
             newValue: contact.contactType
@@ -442,7 +439,6 @@ export default {
       const clientId = this.selectedClient.id
       const defaultValues = {
         clientId,
-        include: true,
         sortOrder: this.isDefaultOrder ? 0 : 1,
         archived: false,
         id: generateRandomId(),

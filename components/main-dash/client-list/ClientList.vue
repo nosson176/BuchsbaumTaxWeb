@@ -39,7 +39,7 @@
         <div class="w-5">
           <FlagIcon class="w-4 h-4" :color="client.gFlag" />
         </div>
-        <div class="w-full">
+        <div class="w-full overflow-hidden " style="text-wrap: nowrap; text-overflow: ellipsis;">
           <span class="font-medium text-gray-900 group-hover:text-white">{{ client.lastName }}</span>
           {{ client.displayName }}
         </div>
@@ -106,7 +106,6 @@ export default {
     },
     sortedClients() {
       const clients = Object.values(this.filteredClients)
-      console.log("sortBy", clients)
       switch (this.sortBy) {
         case 'A-Z':
           return this.sortByLastName(clients)
@@ -220,7 +219,6 @@ export default {
     },
 
     sortByNote(clients) {
-      console.log('sotrnotr', clients)
       return clients.sort((a, b) => {
         const dateA = this.getLatestNoteDate(a)
         const dateB = this.getLatestNoteDate(b)
@@ -266,29 +264,44 @@ export default {
     getLatestNoteDate(client) {
       const noteDates = (client.logs || [])
         .map(log => {
-          if (log.noteDate) {
-            const date = new Date(log.noteDate)
+          if (log.createdTime) {
+            const date = new Date(log.createdTime)
             return isNaN(date.getTime()) ? null : date.getTime()
           }
           return null
         })
         .filter(date => date !== null)
-
       return noteDates.length ? Math.max(...noteDates) : null
     },
 
     async exportToExcel() {
-      const clients = this.displayedClients
+      const clients = this.displayedClients;
       const clientsArray = Array.isArray(clients) ? clients : Object.values(clients);
-      const res = await this.$api.getClientsToExport(this.headers, clientsArray)
-      const dataArray = Array.isArray(res) ? res : Object.values(res);
-      const worksheet = XLSX.utils.json_to_sheet(dataArray);
 
+      // Fetch the data from the API
+      const res = await this.$api.getClientsToExport(this.headers, clientsArray);
+      const dataArray = Array.isArray(res) ? res : Object.values(res);
+
+      // Filter out unnecessary fields (id, memo, enabled) from each entry in the array
+      const filteredDataArray = dataArray.map(client => {
+        return {
+          name: client.name,              // Include name
+          contactType: client.contactType, // Include contactType
+          mainDetail: client.mainDetail    // Include only mainDetail (email in this case)
+        };
+      });
+
+      // Convert the filtered data to an Excel worksheet
+      const worksheet = XLSX.utils.json_to_sheet(filteredDataArray);
+
+      // Create a new workbook and append the worksheet
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Customers");
 
+      // Write the workbook to a buffer
       const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
 
+      // Create a blob and download the Excel file
       const data = new Blob([excelBuffer], { type: "application/octet-stream" });
       const url = window.URL.createObjectURL(data);
       const link = document.createElement("a");
@@ -298,6 +311,7 @@ export default {
       link.click();
       document.body.removeChild(link);
     },
+
     async selectClient(client) {
       console.log(client)
       this.$store.commit(mutations.setModelResponse, {

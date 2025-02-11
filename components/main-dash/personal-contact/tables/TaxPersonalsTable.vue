@@ -22,8 +22,7 @@
       <TableRow v-for="(personal, idx) in displayedPersonals" :key="personal.id" :idx="idx"
         :selected="isSelected(personal.id)" :class="{
           'disabled': !personal.include,
-          'bg-gray-200': personal.isOverSixteen
-        }">
+        }" :style="{ backgroundColor: personal.isOverSixteen ? 'rgba(229, 231, 235, 0.34)' : '' }">
         <div class="table-col bg-gray-200 mr-1">
           <ClickCell @click="toggleSelected(personal)">{{ idx + 1 }}</ClickCell>
         </div>
@@ -150,7 +149,6 @@ export default {
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedPersonals() {
-      console.log("up");
       const personals = this.filteredPersonals;
       if (!personals) return [];
 
@@ -179,7 +177,6 @@ export default {
       });
 
       const processedPersonals = sortedPersonals.map(personal => {
-        console.log(personal.category);
         if (personal.category !== "DEP.") return personal;
 
         let isOverSixteen = false;

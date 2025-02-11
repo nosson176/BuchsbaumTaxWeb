@@ -98,7 +98,6 @@ export default {
 
   },
   beforeDestroy() {
-    console.log("beforeDestroy")
     document.removeEventListener("mousedown", this.handleClickOutside);
   },
 
@@ -116,11 +115,8 @@ export default {
       // }
       if (!this.isEditable) return
       if (!this.$refs.div.contains(event.target)) {
-        console.log("נלחץ מחוץ לקומפוננטה");
         this.init = false
         this.$emit('blur', false);
-      } else {
-        console.log("נלחץ בתוך הקומפוננטה");
       }
     },
     onBlur(event) {
@@ -145,6 +141,10 @@ export default {
 
 .read-mode {
   @apply overflow-hidden overflow-ellipsis border-transparent outline-none border-2 focus:border-blue-600;
+
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
 input::placeholder {

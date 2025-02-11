@@ -13,7 +13,6 @@
       <div class="flex flex-grow h-3/4 w-full border overflow-auto">
         <div class="flex flex-col border border-b-0  w-8 z-10" :style="{
           height: extensionColumnHeight,
-          gap: `${extItemWidth}px`
         }">
           <div class="mx-auto">
             <HeaderSelectOption ref="filingTypeMenu" v-model="selectedFileType" class="relative mt-2" title="Add filing"
@@ -203,9 +202,7 @@ export default {
   },
   methods: {
     updateWidth(num) {
-      console.log(num)
       if (this.$refs.extItem) {
-        console.log(this.$refs.extItem)
         if (!num) this.extItemWidth = 300;
         if (num === 1) this.extItemWidth = 350
         if (num === 2) this.extItemWidth = 400

@@ -619,7 +619,6 @@ export default {
     //   }
     // },
     sortIncomes() {
-      console.log("run")
       const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
 
       const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };

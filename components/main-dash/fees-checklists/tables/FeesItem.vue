@@ -310,7 +310,6 @@ export default {
       return this.editable === field
     },
     onBlur(e, event = null) {
-      console.log("tab")
       if (event && event.shiftKey && event.key === "Tab") return;
       if (this.editable === 'sum' || this.editable === 'include') {
         this.handleUpdate()
