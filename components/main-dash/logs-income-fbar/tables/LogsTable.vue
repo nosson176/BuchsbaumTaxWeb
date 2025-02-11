@@ -599,6 +599,8 @@ export default {
         validateAndSendAlarm(updatedLog, alarmTime);
       }
 
+      if (field === 'note') updatedLog.noteDate = Date.now()
+
       // Dispatch update action
       this.$store.dispatch('updateLogAction', { log: updatedLog });
 

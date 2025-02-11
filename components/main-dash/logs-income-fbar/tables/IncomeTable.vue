@@ -477,9 +477,11 @@ export default {
         if (!notifiedErrors.has(errorKey)) {
           notifiedErrors.add(errorKey);
           console.warn("No matching exchange rate found for:", { year: numericYear, currency });
-          this.$nextTick(() => {
-            this.$toast.error(`No exchange rate found for ${currency} in ${numericYear}`);
-          });
+          if (currency !== 'USD') {
+            this.$nextTick(() => {
+              this.$toast.error(`No exchange rate found for ${currency} in ${numericYear}`);
+            });
+          }
         }
         return null;
       }

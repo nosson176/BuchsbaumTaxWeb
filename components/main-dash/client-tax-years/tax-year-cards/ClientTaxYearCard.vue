@@ -11,8 +11,10 @@
         </h3>
       </div>
       <div class="flex flex-grow h-3/4 w-full border overflow-auto">
-        <div class="flex flex-col border border-b-0  w-8 z-10"
-          :class="extensions.length > 1 ? 'space-y-96' : 'space-y-96'" :style="extensionColumnHeight">
+        <div class="flex flex-col border border-b-0  w-8 z-10" :style="{
+          height: extensionColumnHeight,
+          gap: `${extItemWidth}px`
+        }">
           <div class="mx-auto">
             <HeaderSelectOption ref="filingTypeMenu" v-model="selectedFileType" class="relative mt-2" title="Add filing"
               add-icon :options="filingOptions" @input="addFilingType" />
@@ -24,7 +26,8 @@
                 :class="extensions.length > 1 ? 'gap-28' : ''">
                 <div v-for="(extension, idx) in extensions" :key="extension.id" class="extension-item mb-4"
                   :style="idx !== 0 ? { 'border-left': '1px solid rgba(229, 231, 235, var(--tw-border-opacity))' } : {}">
-                  <ClientTaxYearExtension :extension="extension" @delete="startDelete($event, 'extension')" />
+                  <ClientTaxYearExtension ref="extItem" @checkSpace="updateWidth" :extension="extension"
+                    @delete="startDelete($event, 'extension')" />
                 </div>
               </transition-group>
             </draggable>
@@ -101,6 +104,7 @@ export default {
       },
       fbarColumnHeight: '100%',
       extensionColumnHeight: '100%',
+      extItemWidth: 300,
       fbars: [], // Initialize as an empty array
       extensions: [], // Initialize as an empty array
     }
@@ -154,7 +158,7 @@ export default {
     filingOptions() {
       const types = [{ value: '', name: '' }]
       for (const type in filingTypes) {
-        const hideExtension = type === filingTypes.ext && this.extensions.length > 2
+        const hideExtension = type === filingTypes.ext && this.extensions.length === 1
         const hideFbar = type === filingTypes.fbar && this.fbars.length === 1
         if (hideExtension || hideFbar) {
           continue
@@ -187,12 +191,27 @@ export default {
     this.updateExtansionColumnHeight()
     window.addEventListener('resize', this.updateFbarColumnHeight)
     window.addEventListener('resize', this.updateExtansionColumnHeight)
+    this.$nextTick(() => {
+      this.updateWidth();
+    });
+    window.addEventListener("resize", this.updateWidth);
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.updateFbarColumnHeight)
     window.removeEventListener('resize', this.updateExtansionColumnHeight)
+    window.removeEventListener("resize", this.updateWidth);
   },
   methods: {
+    updateWidth(num) {
+      console.log(num)
+      if (this.$refs.extItem) {
+        console.log(this.$refs.extItem)
+        if (!num) this.extItemWidth = 300;
+        if (num === 1) this.extItemWidth = 350
+        if (num === 2) this.extItemWidth = 400
+        if (num === 3) this.extItemWidth = 500
+      }
+    },
     startDrag() {
       this.dragActive = true
     },

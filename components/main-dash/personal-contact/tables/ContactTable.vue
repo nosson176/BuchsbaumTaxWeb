@@ -123,16 +123,19 @@ export default {
       updateData: [],
       selectedItems: {},
       contactToModify: null,
+      trackedContactId: null,
     }
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     displayedContacts() {
-      const contacts = this.filteredContacts
-      contacts?.map((contact) => {
-        return { enabled: !contact.disabled, ...contact }
-      })
+      const contacts = this.filteredContacts?.map(contact => ({
+        enabled: !contact.disabled,
+        ...contact,
+      })) || [];
+
       return searchArrOfObjs(contacts, this.searchInput)
+
     },
     filteredContacts() {
       if (this.contacts) {
@@ -210,6 +213,7 @@ export default {
         this.oldValue = contact[val]
       } else this.oldValue = value
       this.editableContactId = contactId
+      this.trackedContactId = contactId
       if (!(this.editableId === id)) {
         this.editableId = id
       }
@@ -276,6 +280,7 @@ export default {
 
           this.editableId = "";
           // return;
+
         }
       }
       const index = this.updateData.findIndex(con => con.id === contact.id)
@@ -303,8 +308,45 @@ export default {
         }
       }
       this.$store.dispatch('updateContactAction', { contact });
+      this.sortContactsByType()
       // this.editableId = ""
     },
+
+    sortContactsByType() {
+      const sortedContacts = [...this.displayedContacts].sort((a, b) => {
+        if (a.contactType == null && b.contactType == null) return 0;
+        if (a.contactType == null) return -1;
+        if (b.contactType == null) return 1;
+
+        const contactTypeOrder = this.contactTypeOptions
+          .filter(type => type.show)
+          .map(type => type.value);
+
+        const aIndex = contactTypeOrder.indexOf(a.contactType);
+        const bIndex = contactTypeOrder.indexOf(b.contactType);
+
+        if (aIndex === -1 && bIndex === -1) return 0;
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+
+        return aIndex - bIndex;
+      });
+
+      // Directly mutate the array to trigger reactivity
+      this.displayedContacts.splice(0, this.displayedContacts.length, ...sortedContacts);
+
+
+      if (this.trackedContactId) {
+        const newIndex = this.displayedContacts.findIndex(c => c.id === this.trackedContactId);
+        if (newIndex !== -1) {
+          this.$nextTick(() => {
+            const currentColumn = this.editableId.split('-')[1];
+            this.editableId = `${newIndex}-${currentColumn}`;
+          });
+        }
+      }
+    },
+
 
     sendUpdateContect() {
       this.$api.updateContacts(this.headers, this.updateData)

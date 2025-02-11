@@ -233,6 +233,14 @@ const mutations = {
     }
   },
 
+  updateClientStatusDate(state, clientId) {
+    console.log(clientId)
+    const index = Object.values(state.clients).findIndex((c) => c.id === clientId)
+    if (index !== -1) {
+      state.clients[index].statusChangeDate = Date.now()
+    }
+  },
+
   pushNewFbar(state, fbar) {
     state[models.selectedClient].fbarBreakdowns.unshift(fbar.fbar)
   },
