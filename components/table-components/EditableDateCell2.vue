@@ -192,5 +192,9 @@ input {
 
 .read-mode {
     @apply overflow-hidden overflow-ellipsis;
+
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
 }
 </style>

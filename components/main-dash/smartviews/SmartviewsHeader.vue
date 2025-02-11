@@ -64,20 +64,20 @@ export default {
     },
     copySmartView() {
       if (!this.selectedSmView) return
-
       const smartviewCopy = {
         ...this.selectedSmView,
         name: `${this.selectedSmView.name} (copy)`,
-        id: Date.now(), // Temporary ID for the copy
+        id: Math.floor(Math.random() * 100) + 1, // Temporary ID for the copy
         sortNumber: this.selectedSmView.sortNumber + 1
       }
 
       this.$api.createSmartview(this.headers, { smartview: smartviewCopy })
         .then((res) => {
-          this.$store.commit(mutations.setModelResponse, {
-            model: models.modals,
-            data: { smartview: { showing: true, data: res } },
-          })
+          // this.$store.commit(mutations.setModelResponse, {
+          //   model: models.modals,
+          //   data: { smartview: { showing: true, data: res } },
+          // })
+          this.$store.commit('pushNewSmartview', res)
         })
         .catch((error) => {
           console.error('Error copying smartview:', error)

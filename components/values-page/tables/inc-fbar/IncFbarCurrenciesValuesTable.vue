@@ -88,7 +88,6 @@ export default {
         //     return Object.values(this.exchangeRate)
         // },
         filteredCurrencyValues() {
-            console.log("run")
             const values = JSON.parse(JSON.stringify(this.exchangeRate));
             return Object.values(values)
                 .filter(value => value.currency === this.CurrencyValue)
@@ -142,7 +141,6 @@ export default {
                 show: true,
             })
             this.$api.createExchangeRate(this.headers, { value }).then(res => {
-                console.log(res)
                 this.$store.commit("pushNewExchangeRate", { value: res })
             })
         },
@@ -161,7 +159,6 @@ export default {
 
             this.$api.updateExchangeRate(this.headers, { valueId: value.id }, value)
                 .then(res => {
-                    console.log(res)
                     this.$store.commit("updateExchangeRate", { value });
                 })
                 .catch(err => {
@@ -170,7 +167,6 @@ export default {
         },
         deleteItem() {
             this.$api.deleteExchangeRate(this.headers, { valueId: this.deleteId }).then((res) => {
-                console.log(res, this.deleteItemSelect.id)
                 if (res.status === 204) this.$store.commit("deleteExchangeRate", { valueId: this.deleteItemSelect.id })
                 this.showDelete = false
                 this.deleteId = ''

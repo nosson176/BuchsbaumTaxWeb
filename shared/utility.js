@@ -21,6 +21,9 @@ const formatAsILCurrency = (s) => {
 //   return s.toLocaleString('en-US')
 // }
 const formatAsNumber = (n) => {
+  if (n === '' || n === null || n === undefined) return '' // Allow empty input
+  if (isNaN(n)) return n // Return raw input if it's not a valid number
+
   return Number(n).toLocaleString('en-US')
 }
 

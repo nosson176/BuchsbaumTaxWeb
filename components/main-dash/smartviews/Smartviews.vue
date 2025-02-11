@@ -93,9 +93,16 @@ export default {
   methods: {
     async selectSmartview(smartview) {
       this.$store.commit("showSpinner", true)
-      await this.$api.getFilterClients(this.headers, { smartview }).then(() => {
+      await this.$api.getFilterClients(this.headers, { smartview }).then((res) => {
+        console.log(res)
         this.$store.commit("showSpinner", false)
       })
+      this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })
+      if (this.selectedSmartviewId === smartview.id) {
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: [] })
+      } else {
+        this.$store.commit(mutations.setModelResponse, { model: models.selectedSmartview, data: smartview })
+      }
     },
 
     showEdit(smartview) {

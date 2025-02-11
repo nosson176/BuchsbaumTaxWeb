@@ -166,6 +166,10 @@ export default {
 
 .read-mode {
   @apply overflow-hidden overflow-ellipsis m-px outline-none;
+
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pink {

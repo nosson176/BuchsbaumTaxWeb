@@ -49,7 +49,10 @@ export default {
         return this.value
       },
       set(newVal) {
-        this.$emit(events.input, newVal)
+        if (/^-?\d*\.?\d*$/.test(newVal)) {
+          this.$emit(events.input, newVal)
+        }
+        // this.$emit(events.input, newVal)
       },
     },
     showEditMode() {
@@ -61,7 +64,6 @@ export default {
       if (this.readonly) {
         this.$refs.div.focus()
       } else {
-        console.log("show222")
         this.$refs.input.focus()
       }
     }
@@ -88,6 +90,10 @@ export default {
 
 .read-mode {
   @apply overflow-hidden overflow-ellipsis border-transparent outline-none border-2 focus:border-blue-600;
+
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 
 input::placeholder {

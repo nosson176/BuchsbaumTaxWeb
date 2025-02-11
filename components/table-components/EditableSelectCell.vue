@@ -155,12 +155,9 @@ export default {
       }
 
       if (!this.$refs.el.contains(event.target)) {
-        console.log("נלחץ מחוץ לקומפוננטה");
         this.showOptions = false;
         this.$emit(events.blur, false);
         this.init = false
-      } else {
-        console.log("נלחץ בתוך הקומפוננטה");
       }
     },
     emitChange(value) {
@@ -233,5 +230,9 @@ export default {
 
 .read-mode {
   @apply overflow-hidden overflow-ellipsis m-px outline-none;
+
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

@@ -124,7 +124,6 @@ export default {
     document.addEventListener("click", this.handleClickOutside);
   },
   beforeDestroy() {
-    console.log("des")
     document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {

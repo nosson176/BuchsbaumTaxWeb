@@ -775,8 +775,6 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
-      console.log(val, field, event)
-      console.log(this.editableId)
       // console.log(field, event, event?.type !== 'mousedown')
       // if (event && event?.type !== 'mousedown') {
       if (event?.shiftKey && event?.key === "Tab") return;
@@ -794,7 +792,6 @@ export default {
       if (this.displayedLogs.find(log => log.id === this.editableLogId)?.new ||
         ['alarmDate', 'alarmUserName', 'alarmTime'].includes(field)) {
         if (!(this.oldValue === '' && val === '')) {
-          // console.log(val);
           this.handleUpdate(val, field);
           if (event?.key !== 'Escape') {
             // console.log("escape");
@@ -811,7 +808,6 @@ export default {
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(val, field)
         if (event?.key !== 'Escape' && event?.type !== 'blur') {
-          console.log("escape2222")
           this.goToNextColumn(field)
           return
         }
@@ -865,7 +861,6 @@ export default {
     },
 
     goToNextColumn(field) {
-      console.log(this.oldValue)
       if (!this.editableId) {
         console.warn('No editable ID found');
         return;

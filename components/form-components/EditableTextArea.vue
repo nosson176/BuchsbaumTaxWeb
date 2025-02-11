@@ -67,5 +67,9 @@ export default {
 
 .read-mode {
   @apply overflow-hidden overflow-ellipsis border-transparent outline-none border focus:border-indigo-500;
+
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

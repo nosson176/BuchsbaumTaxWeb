@@ -20,7 +20,7 @@
           :is-editable="isEditable('statusDetail')" placeholder="Detail" @blur="onBlur('statusDetail')"
           @keyup.enter.native="onBlur('statusDetail')" />
       </div>
-      <div v-else :id="`statusDetail`" class="mb-1" :class="!isEditable('statusDetail') ? 'w-min ml-auto mr-auto' : ''"
+      <div v-else :id="`statusDetail`" class="mb-1" :class="!isEditable('statusDetail') ? 'w-max ml-auto mr-auto' : ''"
         @click="setEditable('statusDetail')">
         <Tooltip :disabled="!isMult(statusDetail) || isEditable('statusDetail')" trigger="hover" :delay="500"
           class="w-full" style="width: 100%;" :placement="isEditable('statusDetail') ? 'left' : 'right'"
@@ -464,7 +464,6 @@ export default {
         return this.formModel.currency || 'NIS'
       },
       set(newVal) {
-        console.log(newVal)
         this.oldCurrencyType = this.formModel.currency
         this.formModel.currency = newVal
       },
@@ -726,7 +725,6 @@ export default {
           this.goToNextItem();
           return
         }
-        console.log("ther")
         this.editable = '';
         return;
       }
