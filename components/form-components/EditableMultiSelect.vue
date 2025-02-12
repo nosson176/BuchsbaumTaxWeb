@@ -4,9 +4,9 @@
             <div class="h-full" @click="onBlur" />
         </div> -->
         <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
-            <input ref="button" v-model="filterOptionsValue" type="text" tabindex="0"
+            <input ref="button" :value="value || ''" type="text" tabindex="0" readonly
                 class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
-                @click="onButtonClick" @keyup="onInputKeyup($event.key)"
+                @click="onButtonClick" @keyup="onInputKeyup($event)" @keydown="onKeyDown"
                 :placeholder="selectedValues.length ? undefined : placeholder" />
             <ul v-if="showOptions && isEditable" ref="select" @mouseleave="resetHover"
                 class="absolute z-10  bg-white max-h-80 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
@@ -20,7 +20,7 @@
                 <li v-for="(option, idx) in filteredOptions" :id="idx" :key="idx" ref="option"
                     class="text-xs cursor-pointer select-none relative py-0 pl-0 pr-1"
                     :class="isSelectOrHover(option, idx)" role="option" @mouseover="onMouseOver(idx)"
-                    @click.stop="toggleSelection(option)">
+                    @click.stop="toggleSelection(option, $event)">
                     <span class="block truncate" :class="[
                         isSelected(option) ? 'font-semibold' : 'font-normal',
                         filingType ? 'ml-0' : 'ml-4'
@@ -86,7 +86,8 @@ export default {
             mouseMode: false,
             filterOptionsValue: '',
             selectedValues: [],
-            init: false
+            init: false,
+            searchString: '',
         };
     },
     computed: {
@@ -143,8 +144,25 @@ export default {
                     document.addEventListener("mousedown", this.handleClickOutside);
                 });
             }
-
         },
+        searchString(newVal) {
+
+            if (newVal === '') { // Check for empty string FIRST
+                this.hoverIndex = -1;
+                return;
+            }
+
+            if (newVal) { // THEN check if newVal has ANY value
+                const matchingOptionIndex = this.options.findIndex(option =>
+                    option.value?.toLowerCase().startsWith(newVal.toLowerCase())
+                );
+
+                if (matchingOptionIndex !== -1) {
+                    this.hoverIndex = matchingOptionIndex;
+                    this.scrollToHoveredOption();
+                }
+            }
+        }
     },
     mounted() {
         if (this.isEditable && this.initiallyOpen) {
@@ -185,10 +203,12 @@ export default {
                 ? 'text-white'
                 : 'text-indigo-600';
         },
-        toggleSelection(option) {
+        toggleSelection(option, event) {
             const index = this.selectedValues.indexOf(option.value);
             if (index === -1) {
-                this.selectedValues.push(option.value);
+                if (event?.ctrlKey) {
+                    this.selectedValues = [option.value]
+                } else this.selectedValues.push(option.value);
             } else {
                 this.selectedValues.splice(index, 1);
             }
@@ -197,6 +217,13 @@ export default {
                 : this.selectedValues;
             this.$emit(events.input, emitValue);
             this.filterOptionsValue = '';
+            if (event?.ctrlKey) {
+                // this.onBlur()
+                return
+            }
+            this.mouseMode = false;
+            this.hoverIndex = index
+            this.$refs.button?.focus();
         },
         scrollToHoveredOption() {
             if (this.$refs.option?.[this.hoverIndex]) {
@@ -210,6 +237,7 @@ export default {
             return this.selectedValues.includes(option.value);
         },
         onBlur() {
+            console.log("blur")
             this.showOptions = false;
             this.filterOptionsValue = '';
             this.$emit(events.blur);
@@ -224,30 +252,45 @@ export default {
             this.hoverIndex = idx;
             this.mouseMode = true;
         },
-        onInputKeyup(key) {
-            if (key === 'ArrowDown') {
+        onInputKeyup(event) {
+            if (event.key === 'ArrowDown') {
                 this.hoverIndex = (this.hoverIndex + 1) % this.filteredOptions.length;
                 this.mouseMode = false;
-            } else if (key === 'ArrowUp') {
+            } else if (event.key === 'ArrowUp') {
                 this.hoverIndex = (this.hoverIndex - 1 + this.filteredOptions.length) % this.filteredOptions.length;
                 this.mouseMode = false;
-            } else if (key === 'Enter' && this.hoverIndex >= 0) {
+            } else if (event.key === 'Enter' && this.hoverIndex >= 0) {
+                this.toggleSelection(this.filteredOptions[this.hoverIndex], event);
+                // this.onBlur();
+                this.hoverIndex = -1
+            } else if (event.key === 'Escape') {
                 this.onBlur();
-                // this.toggleSelection(this.filteredOptions[this.hoverIndex]);
-            } else if (key === 'Escape') {
-                this.onBlur();
-            } else if (key.length === 1 || key === 'Backspace') {
-                const matchingOptionIndex = this.options.findIndex(option =>
-                    option.value?.toLowerCase().startsWith(this.filterOptionsValue.toLowerCase())
-                );
-
-                if (matchingOptionIndex !== -1) {
-                    this.hoverIndex = matchingOptionIndex;
-                } else {
-                    this.hoverIndex = -1
-                }
+                this.hoverIndex = -1
             }
+            // else if (key.length === 1 || key === 'Backspace') {
+            //     const matchingOptionIndex = this.options.findIndex(option =>
+            //         option.value?.toLowerCase().startsWith(this.filterOptionsValue.toLowerCase())
+            //     );
+
+            //     if (matchingOptionIndex !== -1) {
+            //         this.hoverIndex = matchingOptionIndex;
+            //     } else {
+            //         this.hoverIndex = -1
+            //     }
+            // }
             this.scrollToHoveredOption();
+        },
+
+        onKeyDown(event) {
+            if (event.key === 'Enter' || event.key === 'Escape') {
+                this.onInputKeyup(event);
+            } else if (event.key === 'Backspace' || event.key === 'Delete') {
+                this.searchString = this.searchString.slice(0, -1)
+            }
+            else if (event.key.length === 1) {
+                // Reset search string after 1.5 seconds of no typing
+                this.searchString += event.key;
+            }
         },
         isSelectOrHover(option, idx) {
             return this.isSelected(option) || this.hoverIndex === idx

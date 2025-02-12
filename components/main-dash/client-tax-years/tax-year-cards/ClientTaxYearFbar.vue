@@ -94,7 +94,7 @@ import { mapState } from 'vuex'
 import ClickOutside from 'vue-click-outside'
 import { currencies, events, models } from '~/shared/constants'
 
-const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'owes', 'paid', 'memo', 'dateFiled']
+const items = ['fileType', 'status', 'statusDetail', 'statusDate', 'memo', 'owes', 'paid', 'dateFiled']
 
 export default {
   name: 'ClientTaxYearFbar',
