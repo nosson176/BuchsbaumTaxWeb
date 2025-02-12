@@ -13,7 +13,7 @@
       </div>
       <div class="mb-1" @click="setEditable('status')">
         <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')"
-          placeholder="Status" @blur="onBlur('status')" />
+          placeholder="Status" @blur="onBlur('status', $event)" />
       </div>
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('statusDetail')">
         <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions"
@@ -59,7 +59,7 @@
               <HeaderSelectOption v-if="owes" v-model="currency" :options="currencyOptions" currency
                 @input="onBlur('currency')" />
               <EditableInput v-model="owes" placeholder="Owes" currency :is-editable="isEditable('owes')"
-                @blur="onBlur('owes')" @click="onBlur('owes')" @keyup.enter.native="onBlur('owes')"
+                @blur="onBlur('owes')" @click="onBlur('owes')" @keyup.enter.native="onBlur('owes', $event)"
                 @keyup.esc.native="onBlur('owes', $event)" />
             </div>
             <div class="flex items-center" @click="setEditable('paid')">
@@ -250,28 +250,25 @@ export default {
         return this.formModel?.statusDetail?.value;
       },
       set(newVal) {
-        let res = newVal;
+        let valueToSet = newVal;
 
-        if (Array.isArray(newVal)) {
-          res = newVal.join('\n');
+        if (this.formModel?.filingType === 'federal') {
+          if (Array.isArray(newVal)) {
+            valueToSet = newVal.join('\n');
+          }
+          if (!valueToSet.startsWith('\n')) {
+            valueToSet = '\n' + valueToSet;
+          }
         }
 
-        if (!res.startsWith('\n')) {
-          res = '\n' + res;
-        }
-
-        // Create a new statusDetail object
-        const newStatusDetail = {
-          value: res,
-          date: Date.now()
-        };
-
-        // Create a new formModel object with the updated statusDetail
         this.formModel = {
           ...this.formModel,
-          statusDetail: newStatusDetail
+          statusDetail: {
+            value: valueToSet,
+            date: Date.now(),
+          },
         };
-      }
+      },
     },
     // statusDetail: {
     //   get() {
@@ -671,8 +668,14 @@ export default {
     },
 
     onBlur(field, event) {
+      console.log(field, event)
+      if (event?.key === 'Enter' && this.editableId === '') {
+        return;
+      }
+      console.log(field, event)
       if (field === 'taxForm' || field === 'state') {
         const val = JSON.parse(JSON.stringify(this.formModel))
+        console.log(val)
         this.$store.commit('updateFilingTab', { filing: val, taxYearId: this.filing.taxYearId })
       }
       if (field === 'maam') this.maamEdit = false
@@ -714,6 +717,8 @@ export default {
       const newValueStr = field === 'status' || field === 'statusDetail'
         ? JSON.stringify(this.formModel[field]?.value) || ''
         : JSON.stringify(this.formModel[field]) || '';
+      console.log(oldValueStr)
+      console.log(newValueStr)
       // Updated condition to ensure proper type handling
       if (
         oldValueStr === newValueStr ||
@@ -722,13 +727,16 @@ export default {
         (oldValueStr === "undefined" && newValueStr === "null" || newValueStr === "")
       ) {
         if (event?.key === 'Enter') {
+          console.log("inside")
           this.goToNextItem();
           return
         }
         this.editable = '';
         return;
       }
+      console.log("in1111")
       if (['owes', 'paid', 'includeInRefund', 'currency'].includes(field)) {
+        console.log("in")
         const filing = {
           currency: this.currency || 'NIS',
           owes: Number(this.owes) || 0,
@@ -816,6 +824,7 @@ export default {
     },
 
     goToNextItem() {
+      console.log("goto")
       // Store current cell before any editable changes
       const currentCell = this.editable
       // Find index of current cell

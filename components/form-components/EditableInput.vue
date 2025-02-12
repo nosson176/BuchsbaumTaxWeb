@@ -49,10 +49,13 @@ export default {
         return this.value
       },
       set(newVal) {
+        console.log(newVal)
         if (/^-?\d*\.?\d*$/.test(newVal)) {
+          console.log(newVal)
+          this.$emit(events.input, newVal)
+        } else {
           this.$emit(events.input, newVal)
         }
-        // this.$emit(events.input, newVal)
       },
     },
     showEditMode() {

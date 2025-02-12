@@ -76,7 +76,6 @@
               :auto-focus="isEditable(`${idx}-years`)" :is-editable="isEditable(`${idx}-years`)" :options="yearOptions"
               @blur="onBlur(log.years, 'years', $event)" placeholder="Year"
               @keyup.tab.native="onBlur(log.years, 'years', $event)"
-              @keyup.enter.native="onBlur(log.years, 'years', $event)"
               @keyup.esc.native="onBlur(log.years, 'years', $event)" />
             <template #popper>
               <ul>
@@ -531,7 +530,7 @@ export default {
     },
     toggleEditable(id, logId, value) {
       // console.log("toggle")
-      // console.log(id, logId, value)
+      console.log(id, logId, value)
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -775,6 +774,7 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
+
       // console.log(field, event, event?.type !== 'mousedown')
       // if (event && event?.type !== 'mousedown') {
       if (event?.shiftKey && event?.key === "Tab") return;
