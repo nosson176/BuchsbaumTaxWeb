@@ -3,7 +3,7 @@
     <div v-if="isEditable" ref="selectDiv" class="relative m-0 p-0 z-20">
       <input ref="button" :value="value || ''" type="text" tabindex="0" readonly
         class="p-0 text-xs relative h-5 w-full bg-white text-gray-900 text-left cursor-pointer outline-none border-blue-600 border-2"
-        @mousedown.stop="onButtonClick" @keydown="onKeyDown" />
+        @click.stop="onButtonClick" @keydown="onKeyDown" />
       <ul v-if="showOptions && isEditable" ref="select" @mouseleave="resetHover"
         class="absolute z-10 w-auto bg-white max-h-80 text-base shadow-md overflow-auto transition ease-in duration-100 focus:outline-none m-0 p-0"
         :class="{
@@ -13,7 +13,7 @@
         }" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
         <li v-for="(option, idx) in options" :id="idx" :key="idx" ref="option"
           class="text-xs cursor-default select-none relative py-0 pl-0 pr-1" :class="isSelectOrHover(option, idx)"
-          role="option" @mouseover="onMouseOver(idx)" @mousedown.stop="emitChange(option.value)">
+          role="option" @mouseover="onMouseOver(idx)" @click.stop="emitChange(option.value)">
           <span class="ml-4 block truncate" :class="isSelected(option) ? 'font-semibold' : 'font-normal'">
             {{ option.value || '\u00A0' }}
           </span>
@@ -61,18 +61,20 @@ export default {
       default: true
     },
     initiallyOpen: {
-      type: Boolean,
+      type: [Boolean, String],
       default: false
     }
   },
   data() {
     return {
       showOptions: false,
+      init: false,
       shiftActive: false,
       hoverIndex: -1,
       mouseMode: false,
       searchString: '',
-      searchTimeout: null
+      searchTimeout: null,
+      isInitiallyOpen: this.initiallyOpen,  // הגדרת משתנה חדש במקומו של ה-prop
     };
   },
   computed: {
@@ -94,22 +96,23 @@ export default {
     async isEditable(val) {
       if (!val) {
         this.showOptions = false;
-        document.removeEventListener("mousedown", this.handleClickOutside);
+        document.removeEventListener("click", this.handleClickOutside);
+        this.isInitiallyOpen = true
       } else {
-        document.addEventListener("mousedown", this.handleClickOutside);
+        document.addEventListener("click", this.handleClickOutside);
         this.showOptions = true;
         await this.$nextTick(() => {
-          this.$refs.button?.focus();
+          this.$refs.button.focus();
         });
       }
     },
     searchString(newVal) {
-      if (newVal === '') {
+      if (newVal === '') { // Check for empty string FIRST
         this.hoverIndex = -1;
         return;
       }
 
-      if (newVal) {
+      if (newVal) { // THEN check if newVal has ANY value
         const matchingOptionIndex = this.options.findIndex(option =>
           option.value?.toLowerCase().startsWith(newVal.toLowerCase())
         );
@@ -128,18 +131,26 @@ export default {
         this.$refs.button?.focus();
       });
     }
-    document.addEventListener("mousedown", this.handleClickOutside);
+    if (this.isEditable) document.addEventListener("click", this.handleClickOutside);
   },
   beforeDestroy() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
     handleClickOutside(event) {
-      if (!this.isEditable || !this.showOptions) return;
-
-      if (!this.$refs.el?.contains(event.target)) {
+      // if (!this.isEditable || !this.showOptions) return; // Exit early if not editable or menu is closed
+      // if (this.init === false) {
+      //   this.init = true;
+      //   return;
+      // }
+      if (this.isInitiallyOpen) {
+        this.isInitiallyOpen = false;  // עדכון משתנה חדש במקום ה-prop
+        return;
+      }
+      if (!this.$refs.el.contains(event.target)) {
         this.showOptions = false;
         this.$emit(events.blur, false);
+        this.init = false;
       }
     },
     onKeyDown(event) {
@@ -153,9 +164,11 @@ export default {
         this.searchString += event.key;
       }
     },
-    emitChange(value) {
+    emitChange(value, event) {
+      if (event) event.stopPropagation()
       this.computedValue = value;
       this.$emit('change');
+      // this.showOptions = false;
       this.$emit(events.blur);
     },
     scrollToHoveredOption() {
@@ -182,7 +195,7 @@ export default {
       this.showOptions = !this.showOptions;
       if (this.showOptions) {
         this.$nextTick(() => {
-          this.$refs.button?.focus()
+          this.$refs.button.focus()
         })
       }
     },
@@ -195,6 +208,7 @@ export default {
       } else if (event.key === 'ArrowUp') {
         this.hoverIndex = (this.hoverIndex - 1 + this.options.length) % this.options.length;
       } else if (event.key === 'Enter' && this.hoverIndex >= 0) {
+        event.stopPropagation()
         this.emitChange(this.options[this.hoverIndex].value, event);
         return
       } else if (event.key === 'Escape') {

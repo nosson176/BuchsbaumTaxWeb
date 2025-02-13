@@ -82,17 +82,17 @@
         <div :id="`${idx}-years`" class="table-col-primary xs"
           @click="toggleEditable(`${idx}-years`, income.id, income.years)">
           <EditableSelectCell v-model="income.years" :is-editable="isEditable(`${idx}-years`)"
-            :options="yearNameOptions" @blur="onBlur(income.years, 'years')" />
+            :options="yearNameOptions" @blur="onBlur(income.years, 'years')" initiallyOpen=true />
         </div>
         <div :id="`${idx}-category`" class="table-col xs"
           @click="toggleEditable(`${idx}-category`, income.id, income.category)">
           <EditableSelectCell v-model="income.category" :is-editable="isEditable(`${idx}-category`)"
-            :options="categoryOptions" @blur="onBlur(income.category, 'category')" />
+            :options="categoryOptions" @blur="onBlur(income.category, 'category')" initiallyOpen=true />
         </div>
         <div :id="`${idx}-taxGroup`" class="table-col sm"
           @click="toggleEditable(`${idx}-taxGroup`, income.id, income.taxGroup)">
           <EditableSelectCell v-model="income.taxGroup" :is-editable="isEditable(`${idx}-taxGroup`)"
-            :options="taxGroupOptions" @blur="onBlur(income.taxGroup)" />
+            :options="taxGroupOptions" @blur="onBlur(income.taxGroup)" initiallyOpen=true />
         </div>
         <div :id="`${idx}-exclusion`" class="table-col xs"
           @click="toggleEditable(`${idx}-exclusion`, income.id, income.exclusion)">
@@ -102,11 +102,11 @@
         <div :id="`${idx}-taxType`" class="table-col sm"
           @click="toggleEditable(`${idx}-taxType`, income.id, income.taxType)">
           <EditableSelectCell v-model="income.taxType" :is-editable="isEditable(`${idx}-taxType`)"
-            :options="taxTypeOptions" @blur="onBlur(income.taxType)" />
+            :options="taxTypeOptions" @blur="onBlur(income.taxType)" initiallyOpen=true />
         </div>
         <div :id="`${idx}-job`" class="table-col xs" @click="toggleEditable(`${idx}-job`, income.id, income.job)">
           <EditableSelectCell v-model="income.job" :is-editable="isEditable(`${idx}-job`)" :options="jobOptions"
-            @blur="onBlur(income.job, 'job')" />
+            @blur="onBlur(income.job, 'job')" initiallyOpen=true />
         </div>
         <div :id="`${idx}-amount`" tabindex="-1" class="table-col sm"
           @click="toggleEditable(`${idx}-amount`, income.id, income.amount, `selectAll`)">
@@ -118,7 +118,7 @@
         <div :id="`${idx}-currency`" class="table-col xs"
           @click="toggleEditable(`${idx}-currency`, income.id, income.currency)">
           <EditableSelectCell v-model="income.currency" :is-editable="isEditable(`${idx}-currency`)"
-            :options="currencyOptions" @blur="onBlur(income.currency, 'currency')" />
+            :options="currencyOptions" @blur="onBlur(income.currency, 'currency')" initiallyOpen=true />
         </div>
         <div :id="`${idx}-frequency`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-frequency`, income.id, income.frequency)">
@@ -134,7 +134,7 @@
         <div :id="`${idx}-documents`" class="table-col xs" tabindex="-1"
           @click="toggleEditable(`${idx}-documents`, income.id, income.documents)">
           <EditableSelectCell v-model="income.documents" :is-editable="isEditable(`${idx}-documents`)"
-            :options="docOptions" @blur="onBlur(income.documents)" />
+            :options="docOptions" @blur="onBlur(income.documents)" initiallyOpen=true />
         </div>
         <div :id="`${idx}-description`" tabindex="-1" class="table-col xl"
           @click="toggleEditable(`${idx}-description`, income.id, income.description)">

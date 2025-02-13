@@ -7,7 +7,7 @@
             :class="yearData.irsHistory ? 'bg-blue-600' : 'border border-blue-200'" @click="updateIrsHistory" />
           <EditableSelectCell v-model="year" :class="{ 'tracking-widest': !isEditable('year') }" :options="yearOptions"
             placeholder="Year" :is-editable="isEditable('year')" @click.native="toggleEditable('year', yearData.id)"
-            @blur="onBlur" />
+            @blur="onBlur" initiallyOpen=true />
         </h3>
       </div>
       <div class="flex flex-grow h-3/4 w-full border overflow-auto">

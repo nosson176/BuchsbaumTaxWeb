@@ -4,7 +4,7 @@
     <div class="fbar-i">
       <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
         <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 " :options="fileTypeOptions"
-          :is-editable="false" placeholder="Type" />
+          :is-editable="false" placeholder="Type" initiallyOpen=true />
       </div>
       <div v-else v-click-outside="onBlur">
         <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap "
@@ -15,22 +15,23 @@
     <div class="fbar-i">
       <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
-          :is-editable="false" placeholder="Status" />
+          :is-editable="false" placeholder="Status" initiallyOpen=true />
       </div>
       <div v-else v-click-outside="onBlur">
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap "
-          :is-editable="true" placeholder="Status" @blur="onBlur(formModel.status.value, 'status')" />
+          :is-editable="true" placeholder="Status" @blur="onBlur(formModel.status.value, 'status')"
+          initiallyOpen=true />
       </div>
     </div>
     <div class="fbar-i">
       <div v-if="!isEditable('statusDetail')" @click.stop="setEditable('statusDetail')">
         <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
-          class="whitespace-nowrap" :is-editable="false" placeholder="Detail" />
+          class="whitespace-nowrap" :is-editable="false" placeholder="Detail" initiallyOpen=true />
       </div>
       <div v-else v-click-outside="onBlur">
         <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap "
           :options="statusDetailOptions" :is-editable="true" placeholder="Detail"
-          @blur="onBlur(formModel.statusDetail.value, 'statusDetail')" />
+          @blur="onBlur(formModel.statusDetail.value, 'statusDetail')" initiallyOpen=true />
       </div>
     </div>
     <div class="fbar-i" @click.stop="setEditable('statusDate')">
@@ -150,15 +151,17 @@ export default {
     fbar: {
       handler(newFiling) {
         if (newFiling) {
+          console.log(newFiling)
           // Deep clone the filing to avoid reference issues
           this.formModel = JSON.parse(JSON.stringify(newFiling));
 
           // Check if there are pending updates for this filing in Vuex
           const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id);
           if (pendingUpdate) {
+            console.log(pendingUpdate)
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
-          } else if (newFiling.filingType === 'fbar' && newFiling.taxForm === null) {
+          } else if (newFiling.filingType === 'fbar' && !newFiling.taxForm) {
             this.setEditable('fileType');
             this.isEditable('fileType');
             this.newFlag = true

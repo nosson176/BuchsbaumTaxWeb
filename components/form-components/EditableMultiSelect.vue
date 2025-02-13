@@ -205,26 +205,35 @@ export default {
         },
         toggleSelection(option, event) {
             const index = this.selectedValues.indexOf(option.value);
+
             if (index === -1) {
                 if (event?.ctrlKey) {
-                    this.selectedValues = [option.value]
-                } else this.selectedValues.push(option.value);
+                    this.selectedValues = [option.value];
+                } else {
+                    this.selectedValues.push(option.value);
+                }
             } else {
                 this.selectedValues.splice(index, 1);
             }
+
             const emitValue = typeof this.value === 'string'
                 ? this.selectedValues.join('\n')
                 : this.selectedValues;
             this.$emit(events.input, emitValue);
             this.filterOptionsValue = '';
-            if (event?.ctrlKey) {
-                // this.onBlur()
-                return
-            }
+
             this.mouseMode = false;
-            this.hoverIndex = index
+            this.hoverIndex = index;
             this.$refs.button?.focus();
-        },
+
+            // סגור רק אם הקונטרול היה לחוץ
+            if (event?.ctrlKey) {
+                this.showOptions = false;
+                event.stopPropagation()
+                this.$emit(events.blur);
+            }
+        }
+        ,
         scrollToHoveredOption() {
             if (this.$refs.option?.[this.hoverIndex]) {
                 this.$refs.option[this.hoverIndex].scrollIntoView({

@@ -9,16 +9,16 @@
       </div>
       <div v-else class="mb-1" @click="setEditable('taxForm')">
         <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')"
-          placeholder="Tax Form" @blur="onBlur('taxForm')" />
+          placeholder="Tax Form" @blur="onBlur('taxForm')" initiallyOpen=true />
       </div>
       <div class="mb-1" @click="setEditable('status')">
         <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')"
-          placeholder="Status" @blur="onBlur('status', $event)" />
+          placeholder="Status" @blur="onBlur('status', $event)" initiallyOpen=true />
       </div>
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('statusDetail')">
         <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions"
           :is-editable="isEditable('statusDetail')" placeholder="Detail" @blur="onBlur('statusDetail')"
-          @keyup.enter.native="onBlur('statusDetail')" />
+          @keyup.enter.native="onBlur('statusDetail')" initiallyOpen=true />
       </div>
       <div v-else :id="`statusDetail`" class="mb-1" :class="!isEditable('statusDetail') ? 'w-max ml-auto mr-auto' : ''"
         @click="setEditable('statusDetail')">
@@ -28,7 +28,7 @@
           <EditableMultiSelect class=" overflow-ellipsis" v-model="statusDetail"
             :shownValue="!isEditable('statusDetail') && isMult(statusDetail) ? 'MULTI' : statusDetail"
             :is-editable="isEditable('statusDetail')" :options="statusDetailOptions" @blur="onBlur('statusDetail')"
-            @keyup.enter.native="onBlur('statusDetail', $event)" filingType="true" placeholder="Detail" />
+            filingType="true" placeholder="Detail" />
           <template #popper>
             <ul>
               <li v-for="(status, index) in splitYears(statusDetail)" :key="index">
@@ -74,12 +74,12 @@
         <div class="flex flex-col items-center ml-3">
           <div @click="setEditable('maam')">
             <EditableSelectCell v-model="maam" :options="maamOptions" :is-editable="isEditable('maam')"
-              placeholder="Maam" @blur="onBlur('maam')" @keyup.enter.native="onBlur('maam')" />
+              placeholder="Maam" @blur="onBlur('maam')" initiallyOpen=true />
           </div>
           <div @click="setEditable('basicPlusPro')">
             <EditableSelectCell v-model="basicPlusPro" :options="basicPlusProOptions"
               :is-editable="isEditable('basicPlusPro')" placeholder="BasicPlusPro" @blur="onBlur('basicPlusPro')"
-              @keyup.enter.native="onBlur('basicPlusPro')" />
+              initiallyOpen=true />
           </div>
         </div>
         <!-- <div @click="setEditable('includeFee')">
@@ -102,7 +102,7 @@
       </div>
       <div class="mb-1" @click="setEditable('fileType')">
         <EditableSelectCell v-model="fileType" :options="fileTypeOptions" :is-editable="isEditable('fileType')"
-          placeholder="File Type" @blur="onBlur('fileType')" />
+          placeholder="File Type" @blur="onBlur('fileType')" initiallyOpen=true />
       </div>
       <!-- spacing -->
       <div />
@@ -111,14 +111,12 @@
         <div class="mr-3 flex items-center" @click="setEditable('refund')">
           <span v-if="refund">$</span>
           <EditableInput v-model="refund" placeholder="Refund" currency :is-editable="isEditable('refund')"
-            @blur="onBlur('refund')" @click="onBlur('refund')" @keyup.enter.native="onBlur('refund', $event)"
-            @keyup.esc.native="onBlur('refund', $event)" />
+            @blur="onBlur('refund')" @click="onBlur('refund')" @keyup.esc.native="onBlur('refund', $event)" />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
           <span v-if="rebate">$</span>
           <EditableInput v-model="rebate" placeholder="Rebate" currency :is-editable="isEditable('rebate')"
-            @blur="onBlur('rebate')" @click="onBlur('rebate')" @keyup.enter.native="onBlur('rebate', $event)"
-            @keyup.esc.native="onBlur('rebate', $event)" />
+            @blur="onBlur('rebate')" @click="onBlur('rebate')" @keyup.esc.native="onBlur('rebate', $event)" />
         </div>
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
@@ -132,17 +130,18 @@
       </div>
       <div @click="setEditable('deliveryContact')">
         <EditableSelectCell v-model="deliveryContact" :options="contactTypeOptions"
-          :is-editable="isEditable('deliveryContact')" placeholder="Delivery1" @blur="onBlur('deliveryContact')" />
+          :is-editable="isEditable('deliveryContact')" placeholder="Delivery1" @blur="onBlur('deliveryContact')"
+          initiallyOpen=true />
       </div>
       <div class="flex space-x-6 justify-center">
         <div @click="setEditable('secondDeliveryContact')">
           <EditableSelectCell v-model="secondDeliveryContact" :options="contactTypeOptions"
-            :is-editable="isEditable('secondDeliveryContact')" placeholder="Delivery2"
+            :is-editable="isEditable('secondDeliveryContact')" placeholder="Delivery2" initiallyOpen=true
             @blur="onBlur('secondDeliveryContact')" />
         </div>
-        <button @click="setSecondDeliveryContact('CHECK')">
+        <!-- <button @click="setSecondDeliveryContact('CHECK')">
           <font-awesome-icon icon="fa-light fa-money-check" />
-        </button>
+        </button> -->
       </div>
       <div @click="setEditable('dateFiled')">
         <EditableDate v-model="dateFiled" placeholder="Date Filed" type="date" :is-editable="isEditable('dateFiled')"
@@ -592,10 +591,10 @@ export default {
           if (pendingUpdate) {
             Object.assign(newModel, pendingUpdate)
           } else {
-            if (newFiling.filingType === 'federal' && newFiling.taxForm === null) {
+            if (newFiling.filingType === 'federal' && !newFiling.taxForm) {
               this.$nextTick(() => this.setEditable('taxForm'))
             }
-            if (newFiling.filingType === 'state' && newFiling.state === null) {
+            if (newFiling.filingType === 'state' && !newFiling.state) {
               this.$nextTick(() => this.setEditable('state'))
             }
           }
@@ -668,14 +667,11 @@ export default {
     },
 
     onBlur(field, event) {
-      console.log(field, event)
       if (event?.key === 'Enter' && this.editableId === '') {
         return;
       }
-      console.log(field, event)
       if (field === 'taxForm' || field === 'state') {
         const val = JSON.parse(JSON.stringify(this.formModel))
-        console.log(val)
         this.$store.commit('updateFilingTab', { filing: val, taxYearId: this.filing.taxYearId })
       }
       if (field === 'maam') this.maamEdit = false
@@ -717,8 +713,6 @@ export default {
       const newValueStr = field === 'status' || field === 'statusDetail'
         ? JSON.stringify(this.formModel[field]?.value) || ''
         : JSON.stringify(this.formModel[field]) || '';
-      console.log(oldValueStr)
-      console.log(newValueStr)
       // Updated condition to ensure proper type handling
       if (
         oldValueStr === newValueStr ||
@@ -727,16 +721,13 @@ export default {
         (oldValueStr === "undefined" && newValueStr === "null" || newValueStr === "")
       ) {
         if (event?.key === 'Enter') {
-          console.log("inside")
           this.goToNextItem();
           return
         }
         this.editable = '';
         return;
       }
-      console.log("in1111")
       if (['owes', 'paid', 'includeInRefund', 'currency'].includes(field)) {
-        console.log("in")
         const filing = {
           currency: this.currency || 'NIS',
           owes: Number(this.owes) || 0,
@@ -824,12 +815,10 @@ export default {
     },
 
     goToNextItem() {
-      console.log("goto")
       // Store current cell before any editable changes
       const currentCell = this.editable
       // Find index of current cell
       const itemIndex = items.findIndex((col) => col === currentCell)
-
       // If we have a valid index
       if (itemIndex > -1 && itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]

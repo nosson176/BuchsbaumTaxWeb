@@ -49,9 +49,7 @@ export default {
         return this.value
       },
       set(newVal) {
-        console.log(newVal)
         if (/^-?\d*\.?\d*$/.test(newVal)) {
-          console.log(newVal)
           this.$emit(events.input, newVal)
         } else {
           this.$emit(events.input, newVal)
@@ -72,12 +70,31 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.isEditable) document.addEventListener('keydown', this.handleKey)
+  },
+
+  watch: {
+    isEditable(newVal) {
+      if (newVal) {
+        document.addEventListener('keydown', this.handleKey);
+      } else {
+        document.removeEventListener('keydown', this.handleKey);
+      }
+    }
+  },
+
   methods: {
     onBlur(event) {
       this.$emit(events.blur, event)
     },
     onClick() {
       this.$emit(events.blur)
+    },
+    handleKey(event) {
+      if (event.key === 'Enter') {
+        this.onBlur(event);
+      }
     },
     onEnter() {
       this.$emit('enter') // Custom event for Enter key

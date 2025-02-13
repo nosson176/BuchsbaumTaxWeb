@@ -140,7 +140,7 @@
             :options="userOptions" @blur="onBlur(log.alarmUserName, 'alarmUserName', $event)"
             @keyup.tab.native="onBlur(log.alarmUserName, 'alarmUserName', $event)"
             @keyup.esc.native="onBlur(log.alarmUserName, 'alarmUserName', $event)"
-            @click="onBlur(log.alarmUserName, 'alarmUserName', $event)" />
+            @click="onBlur(log.alarmUserName, 'alarmUserName', $event)" initiallyOpen=true />
         </div>
         <!-- <div :id="`${idx}-alarmUserName`" class="table-col sm"
         @click="toggleEditable(`${idx}-alarmUserName`, log.id, log.alarmUserName)">

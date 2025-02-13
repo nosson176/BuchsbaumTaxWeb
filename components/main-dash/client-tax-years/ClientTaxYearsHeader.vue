@@ -30,13 +30,13 @@
       </div>
       <div class="font-bold text-white flex justify-center text-2xl mr-10" @click="setEditable('status')">
         <EditableSelectCell :value="selectedClient.status" :options="statusOptions" :is-editable="isEditable('status')"
-          @input="updateStatusDate" @blur="onBlur('status')" />
+          @input="updateStatusDate" @blur="onBlur('status')" initiallyOpen=true />
       </div>
       <div class="flex justify-end items-center w-1/3">
         <div class="flex gap-x-10 items-center">
           <div class="text-gray-100 flex text-sm justify-center" @click="setEditable('periodical')">
             <EditableSelectCell :value="selectedClient.periodical" :options="periodicalOptions"
-              :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" />
+              :is-editable="isEditable('periodical')" @input="updatePeriodical" @blur="onBlur" initiallyOpen=true />
           </div>
           <div class="text-sm">{{ formattedCreatedDate }}</div>
           <div v-if="isArchived" class="place-self-end">
