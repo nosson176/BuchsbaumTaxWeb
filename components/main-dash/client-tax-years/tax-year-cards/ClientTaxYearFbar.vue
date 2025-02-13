@@ -6,10 +6,10 @@
         <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 " :options="fileTypeOptions"
           :is-editable="false" placeholder="Type" initiallyOpen=true />
       </div>
-      <div v-else v-click-outside="onBlur">
+      <div v-else>
         <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap "
           :options="fileTypeOptions" :is-editable="true" placeholder="Type"
-          @blur="onBlur(formModel.fileType, 'fileType')" :initially-open="newFlag" />
+          @blur="onBlur(formModel.fileType, 'fileType')" initiallyOpen=true />
       </div>
     </div>
     <div class="fbar-i">
@@ -17,9 +17,9 @@
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
           :is-editable="false" placeholder="Status" initiallyOpen=true />
       </div>
-      <div v-else v-click-outside="onBlur">
+      <div v-else>
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap "
-          :is-editable="true" placeholder="Status" @blur="onBlur(formModel.status.value, 'status')"
+          :is-editable="true" placeholder="Status" @blur="onBlur(formModel.status.value, 'status', $event)"
           initiallyOpen=true />
       </div>
     </div>
@@ -28,7 +28,7 @@
         <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
           class="whitespace-nowrap" :is-editable="false" placeholder="Detail" initiallyOpen=true />
       </div>
-      <div v-else v-click-outside="onBlur">
+      <div v-else>
         <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap "
           :options="statusDetailOptions" :is-editable="true" placeholder="Detail"
           @blur="onBlur(formModel.statusDetail.value, 'statusDetail')" initiallyOpen=true />
@@ -53,7 +53,7 @@
         {{ formModel.memo }}
       </div>
     </div>
-    <div v-else v-click-outside="onBlur">
+    <div v-else>
       <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
         @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
         style="min-height: 5rem;" />
@@ -120,7 +120,7 @@ export default {
       tooltipTimer: null, // Timer to control tooltip delay
       isOverflow: false,
       oldValue: '',
-      newFlag: false,
+      newFlag: true,
     }
   },
 
@@ -162,9 +162,12 @@ export default {
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
           } else if (newFiling.filingType === 'fbar' && !newFiling.taxForm) {
+            if (!newFiling.newFbar) {
+              return
+            }
             this.setEditable('fileType');
             this.isEditable('fileType');
-            this.newFlag = true
+            delete newFiling.newFbar
           }
         } else {
           // Initialize with an empty object if no filing provided
@@ -218,12 +221,15 @@ export default {
       return this.editable === value
     },
     onBlur(val, field, event = null) {
+      console.log(event)
       if (field === 'memo') this.activeTooltipIndex = null;
-      if (this.newFlag) {
-        this.newFlag = false
-        return
-      }
-      if (this.oldValue !== val && this.oldValue !== undefined) {
+      console.log(event !== false)
+      // if (this.newFlag) {
+      //   this.newFlag = false
+      //   return
+      // }
+      if (this.oldValue !== val && event !== false) {
+        console.log("in")
         this.handleUpdate(field, event)
         return
       }

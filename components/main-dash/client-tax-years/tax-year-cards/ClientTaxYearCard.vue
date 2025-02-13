@@ -336,6 +336,7 @@ export default {
 
       const filing = Object.assign({}, defaultValues);
       this.$api.createFiling(this.headers, { filing }).then(res => {
+        if (res.filingType === 'fbar') res.newFbar = true
         this.$store.commit('pushNewFiling', res);
 
         // Ensure the new filing is immediately selected
