@@ -6,13 +6,13 @@
     <div @click.stop="setEditable('taxForm')" class="relative">
       <EditableSelectCell v-model="formModel.taxForm" type="taxForm" class="font-bold ml-2 whitespace-nowrap transform"
         :class="rotationClass('taxForm')" :options="taxFormOptions" :is-editable="isEditable('taxForm')"
-        placeholder="Tax Form" ref="taxFormInput" @blur="onBlur(formModel.taxForm, 'taxForm')" />
+        placeholder="Tax Form" ref="taxFormInput" @blur="onBlur(formModel.taxForm, 'taxForm')" initiallyOpen=true />
     </div>
 
     <div @click.stop="setEditable('status')" class="relative">
       <EditableSelectCell v-model="formModel.status.value" class="font-bold ml-2 whitespace-nowrap transform"
         :options="statusOptions" :is-editable="isEditable('status')" placeholder="Status"
-        @blur="onBlur(formModel.status.value, 'status')" :class="rotationClass('status')" />
+        @blur="onBlur(formModel.status.value, 'status')" :class="rotationClass('status')" initiallyOpen=true />
     </div>
 
     <div @click.stop="setEditable('includeTax')">
@@ -169,7 +169,7 @@ export default {
           if (pendingUpdate) {
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
-          } else if (newFiling.filingType === 'ext' && newFiling.taxForm === null) {
+          } else if (newFiling.filingType === 'ext' && !newFiling.taxForm) {
             this.setEditable('taxForm', true);
             this.newFlag = true
           }

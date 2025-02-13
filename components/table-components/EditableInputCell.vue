@@ -5,7 +5,7 @@
     </div> -->
     <input v-if="showEditMode" ref="input" v-model="editModeValue" autofocus type="text"
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 absolute top-0 pl-px min-h-full z-20"
-      tabindex="0" :placeholder="placeholder" @keydown.enter="emitEnter" @input="onInput" />
+      tabindex="0" :placeholder="placeholder" @input="onInput" />
     <span v-else class="cursor-pointer">{{ readModeValue || '' }}</span>
   </div>
 </template>
@@ -94,17 +94,25 @@ export default {
   mounted() {
     if (this.isEditable) {
       document.addEventListener("mousedown", this.handleClickOutside);
+      document.addEventListener('keydown', this.handleKey);
     }
 
   },
   beforeDestroy() {
     document.removeEventListener("mousedown", this.handleClickOutside);
+    document.removeEventListener('keydown', this.handleKey)
   },
 
   watch: {
     isEditable(newVal) {
-      if (newVal) document.addEventListener("mousedown", this.handleClickOutside);
-      else document.removeEventListener("mousedown", this.handleClickOutside);
+      if (newVal) {
+        document.addEventListener("mousedown", this.handleClickOutside)
+        document.addEventListener('keydown', this.handleKey);
+      }
+      else {
+        document.removeEventListener("mousedown", this.handleClickOutside)
+        document.removeEventListener('keydown', this.handleKey)
+      }
     }
   },
   methods: {
@@ -122,8 +130,11 @@ export default {
     onBlur(event) {
       this.$emit(events.blur, event)
     },
-    emitEnter() {
-      this.$emit(events.submit)
+    handleKey(event) {
+      if (event.key === 'Enter') {
+        event.stopPropagation()
+        this.onBlur(event);
+      }
     },
     onInput() {
       if (!this.hasEdited) {

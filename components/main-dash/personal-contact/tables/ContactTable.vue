@@ -1,4 +1,3 @@
-\\ ימין תחתון דף ראשי חלון
 <template>
   <Table @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevColumn">
     <template #header>
@@ -33,12 +32,11 @@
               @click="toggleEditable(`${idx}-contactType`, contact.id, contact.contactType)">
               <EditableSelectCell v-model="contact.contactType" :is-editable="isEditable(`${idx}-contactType`)"
                 :options="contactTypeOptions" @blur="onBlur(contact.contactType, 'type', $event)"
-                @keyup.tab.native="onBlur(contact.contactType, 'type', $event)" />
+                @keyup.tab.native="onBlur(contact.contactType, 'type', $event)" initiallyOpen=true />
             </div>
             <div :id="`${idx}-memo`" class="table-col normal"
               @click="toggleEditable(`${idx}-memo`, contact.id, contact.memo)">
-              <EditableInputCell v-model="contact.memo" @keyup.enter.native="onBlur(contact.memo, 'memo', $event)"
-                @keyup.esc.native="onBlur(contact.memo, 'memo', $event)"
+              <EditableInputCell v-model="contact.memo" @keyup.esc.native="onBlur(contact.memo, 'memo', $event)"
                 @keyup.tab.native="onBlur(contact.memo, 'memo', $event)" @blur="onBlur(contact.memo, 'memo', $event)"
                 :is-editable="isEditable(`${idx}-memo`)" />
             </div>
@@ -50,7 +48,6 @@
             <div :id="`${idx}-mainDetail`" class="table-col lg"
               @click="toggleEditable(`${idx}-mainDetail`, contact.id, contact.mainDetail)">
               <EditableInputCell v-model="contact.mainDetail"
-                @keyup.enter.native="onBlur(contact.mainDetail, 'mainDetail', $event)"
                 @keyup.esc.native="onBlur(contact.mainDetail, 'mainDetail', $event)"
                 @keyup.tab.native="onBlur(contact.mainDetail, 'mainDetail', $event)"
                 @blur="onBlur(contact.mainDetail, 'mainDetail', $event)"
@@ -59,7 +56,6 @@
             <div :id="`${idx}-secondaryDetail`" class="table-col lg"
               @click="toggleEditable(`${idx}-secondaryDetail`, contact.id, contact.secondaryDetail)">
               <EditableInputCell v-model="contact.secondaryDetail"
-                @keyup.enter.native="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
                 @keyup.esc.native="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
                 @keyup.tab.native="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
                 @blur="onBlur(contact.secondaryDetail, 'secondaryDetail', $event)"
@@ -70,11 +66,10 @@
               <EditableSelectCell v-model="contact.state" :options="stateOptions"
                 @keyup.tab.native="onBlur(contact.state, 'state', $event)"
                 @keyup.esc.native="onBlur(contact.state, 'state', $event)" :is-editable="isEditable(`${idx}-state`)"
-                @blur="onBlur(contact.state, $event)" />
+                @blur="onBlur(contact.state, $event)" initiallyOpen=true />
             </div>
             <div :id="`${idx}-zip`" class="table-col sm" @click="toggleEditable(`${idx}-zip`, contact.id, contact.zip)">
-              <EditableInputCell v-model="contact.zip" @keyup.enter.native="onBlur(contact.zip, 'zip', $event)"
-                @keyup.esc.native="onBlur(contact.zip, 'zip', $event)"
+              <EditableInputCell v-model="contact.zip" @keyup.esc.native="onBlur(contact.zip, 'zip', $event)"
                 @keyup.tab.native="onBlur(contact.zip, 'zip', $event)" :is-editable="isEditable(`${idx}-zip`)"
                 @blur="onBlur(contact.zip, 'zip', $event)" />
             </div>
@@ -305,7 +300,7 @@ export default {
         }
       }
       this.$store.dispatch('updateContactAction', { contact });
-      this.sortContactsByType()
+      if (field === 'type') this.sortContactsByType()
       // this.editableId = ""
     },
 

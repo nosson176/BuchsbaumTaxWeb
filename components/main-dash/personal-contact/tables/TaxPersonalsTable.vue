@@ -34,7 +34,7 @@
           @click="toggleEditable(`${idx}-category`, personal.id, personal.category)">
           <EditableSelectCell v-model="personal.category" :is-editable="isEditable(`${idx}-category`)"
             :options="categoryOptions" @blur="onBlur(personal.category, $event)"
-            @keyup.tab.native="onBlur(personal.category, $event)" />
+            @keyup.tab.native="onBlur(personal.category, $event)" initiallyOpen=true />
         </div>
         <div class="table-col xs">
           <button v-if="isPriSec(personal)" @click="irsPopup">
@@ -84,13 +84,13 @@
           @click="toggleEditable(`${idx}-relation`, personal.id, personal.relation)">
           <EditableSelectCell v-model="personal.relation" :is-editable="isEditable(`${idx}-relation`)"
             :options="relationOptions" @blur="onBlur(personal.relation, $event)"
-            @keyup.tab.native="onBlur(personal.relation, $event)" />
+            @keyup.tab.native="onBlur(personal.relation, $event)" initiallyOpen=true />
         </div>
         <div :id="`${idx}-language`" class="sm table-col"
           @click="toggleEditable(`${idx}-language`, personal.id, personal.language)">
           <EditableSelectCell v-model="personal.language" :is-editable="isEditable(`${idx}-language`)"
             :options="languageOptions" @blur="onBlur(personal.language, $event)"
-            @keyup.tab.native="onBlur(personal.language, $event)" />
+            @keyup.tab.native="onBlur(personal.language, $event)" initiallyOpen=true />
         </div>
         <div :id="`${idx}-delete`" class="table-col xs">
           <DeleteButton small @click="onDeleteClick(personal.id)" />

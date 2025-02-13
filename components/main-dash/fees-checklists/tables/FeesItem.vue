@@ -11,23 +11,25 @@
           <div class="flex flex-col w-1/3">
             <div @click="setEditable('feeType')">
               <EditableSelectCell v-model="feeType" placeholder="Type" :is-editable="isEditable('feeType')"
-                :options="feeTypeOptions" @blur="onBlur('feeType')" @keyup.tab.native="onBlur('feeType', $event)" />
+                :options="feeTypeOptions" @blur="onBlur('feeType')" @keyup.tab.native="onBlur('feeType', $event)"
+                initiallyOpen=true />
             </div>
             <div @click="setEditable('year')">
               <EditableSelectCell v-model="year" :class="isRedBG ? 'text-red-500' : ''" placeholder="Year"
                 :is-editable="isEditable('year')" :options="yearOptions" @blur="onBlur('year', $event)"
-                @keyup.tab.native="onBlur('year', $event)" />
+                @keyup.tab.native="onBlur('year', $event)" initiallyOpen=true />
             </div>
           </div>
           <div class="flex flex-col w-1/3">
             <div @click="setEditable('status')">
               <EditableSelectCell v-model="status" placeholder="Status" :is-editable="isEditable('status')"
-                :options="feeStatusOptions" @blur="onBlur('status')" @keyup.tab.native="onBlur('status', $event)" />
+                :options="feeStatusOptions" @blur="onBlur('status')" @keyup.tab.native="onBlur('status', $event)"
+                initiallyOpen=true />
             </div>
             <div @click="setEditable('statusDetail')">
               <EditableSelectCell v-model="statusDetail" placeholder="Detail" :is-editable="isEditable('statusDetail')"
                 :options="feeStatusDetailOptions" @blur="onBlur('statusDetail', $event)"
-                @keyup.tab.native="onBlur('statusDetail', $event)" />
+                @keyup.tab.native="onBlur('statusDetail', $event)" initiallyOpen=true />
             </div>
           </div>
           <div class="flex items-center w-1/3 space-x-1">
