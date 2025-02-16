@@ -667,7 +667,6 @@ export default {
     },
 
     onBlur(field, event) {
-      console.log(field)
       if (event?.key === 'Enter' && this.editableId === '') {
         return;
       }

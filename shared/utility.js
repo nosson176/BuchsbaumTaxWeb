@@ -232,6 +232,35 @@ const formatUnixTimestamp = (timestamp) => {
   return `${month}/${day}/${year}`
 }
 
+// Helper function to convert 'MM-DD-YYYY HH:mm' format to Unix timestamp in milliseconds
+const convertToUnixTimestamp = (dateString) => {
+  console.log(dateString, typeof dateString === 'number')
+  if (!dateString || typeof dateString === 'number') return
+  // Split the date and time from the string
+  const [date, time] = dateString.split(' ')
+
+  // Split the date into month, day, and year
+  const [month, day, year] = date.split('-').map((num) => parseInt(num, 10))
+
+  // Split the time into hours and minutes
+  const [hours, minutes] = time.split(':').map((num) => parseInt(num, 10))
+
+  // Create a new Date object using the values (note that month is 0-indexed in JavaScript)
+  const dateObj = new Date(year, month - 1, day, hours, minutes)
+
+  // Return the Unix timestamp in milliseconds
+  return dateObj.getTime()
+}
+
+const getStartDayInUnixTime = () => {
+  const startOfDay = new Date() // Creates a Date object with the current time
+  startOfDay.setHours(0, 0, 0, 0) // Sets hours, minutes, seconds, and milliseconds to 0
+
+  const logDate = startOfDay.getTime() // Gets the timestamp (milliseconds since epoch) for the start of the day
+  console.log(logDate) // Output the timestamp
+  return logDate
+}
+
 export {
   formatAsUSCurrency,
   formatAsILCurrency,
@@ -249,4 +278,6 @@ export {
   formatUnixTimestamp,
   // formatUnixTimestampFee,
   formatUnixTimestampWithMoment,
+  convertToUnixTimestamp,
+  getStartDayInUnixTime,
 }

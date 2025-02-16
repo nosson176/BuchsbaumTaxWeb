@@ -3,7 +3,8 @@
     <date-picker v-if="isEditable" ref="input" v-model="computedValue" tabindex="0" :value-type="valueType"
       :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus">
       <template #header="{ emit }">
-        <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click.stop="handleTodayClick(emit)">
+        <button class="w-full flex items-center justify-center mx-btn mx-btn-text"
+          @click.stop="(event) => handleTodayClick(emit, event)">
           Today
         </button>
       </template>
@@ -14,7 +15,7 @@
 
 <script>
 import { events } from '~/shared/constants'
-import { formatUnixTimestamp } from '~/shared/utility';
+import { formatUnixTimestamp, getStartDayInUnixTime } from '~/shared/utility';
 
 export default {
   name: 'EditableDateCell',
@@ -114,10 +115,12 @@ export default {
       }
     },
     handleKeydown(event) {
+      console.log(event)
       if (event.key === 'Enter') {
         if (this.isSettingToday) return; // Prevent double blur
 
         this.handleTodayClick((date) => {
+          console.log(date)
           this.$emit('input', date);
           this.isSettingToday = true;
           // this.$emit(events.blur);
@@ -129,12 +132,14 @@ export default {
       }
     },
 
-    handleTodayClick(emit) {
+    handleTodayClick(emit, event) {  // Add event parameter
       this.isSettingToday = true;
-      emit(new Date());
-      // Small delay to allow the value to be set before closing
+      this.$emit('input', getStartDayInUnixTime());
+      event.stopPropagation(); // Stop the blur event from bubbling up
+
       setTimeout(() => {
-        this.onBlur();
+        this.onBlur(); // Keep the internal blur logic if needed
+        this.isSettingToday = false;
       }, 100);
     },
 

@@ -151,14 +151,12 @@ export default {
     fbar: {
       handler(newFiling) {
         if (newFiling) {
-          console.log(newFiling)
           // Deep clone the filing to avoid reference issues
           this.formModel = JSON.parse(JSON.stringify(newFiling));
 
           // Check if there are pending updates for this filing in Vuex
           const pendingUpdate = this.filingsUpdate.find(f => f.id === newFiling.id);
           if (pendingUpdate) {
-            console.log(pendingUpdate)
             // Apply pending updates to the form model
             Object.assign(this.formModel, pendingUpdate);
           } else if (newFiling.filingType === 'fbar' && !newFiling.taxForm) {
@@ -221,15 +219,12 @@ export default {
       return this.editable === value
     },
     onBlur(val, field, event = null) {
-      console.log(event)
       if (field === 'memo') this.activeTooltipIndex = null;
-      console.log(event !== false)
       // if (this.newFlag) {
       //   this.newFlag = false
       //   return
       // }
       if (this.oldValue !== val && event !== false) {
-        console.log("in")
         this.handleUpdate(field, event)
         return
       }

@@ -65,7 +65,8 @@
         <div :id="`${idx}-dateOfBirth`" class="table-col sm"
           @click="toggleEditable(`${idx}-dateOfBirth`, personal.id, personal.dateOfBirth)">
           <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)"
-            @blur="onBlur(personal.dateOfBirth, $event)" @keyup.tab.native="onBlur(personal.dateOfBirth, $event)" />
+            @blur="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)"
+            @keyup.tab.native="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)" />
         </div>
         <div :id="`${idx}-ssn`" class="normal table-col"
           @click="toggleEditable(`${idx}-ssn`, personal.id, personal.ssn)">
@@ -310,12 +311,15 @@ export default {
     isSelected(personalId) {
       return this.selectedItems[personalId]
     },
-    handleUpdate() {
+    handleUpdate(field) {
       if (!this.editablePersonalId) return
       const personal = this.displayedPersonals.find((personal) => personal.id === this.editablePersonalId)
       if (/^([0-9]{9})$/.test(personal.ssn)) {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
+      // if (field === 'dateOfBirth') {
+      //   personal.dateOfBirth
+      // }
       const index = this.updateTaxPersonal.findIndex(per => per.id === personal.id)
       if (index !== -1) {
         this.updateTaxPersonal[index] = personal
@@ -325,16 +329,7 @@ export default {
       this.$store.dispatch('updateTaxPersonalAction', { personal });
     },
     sendUpdateTaxPersonal() {
-      const data = this.updateTaxPersonal.map(personal => {
-        const updatedPersonal = { ...personal }; // Shallow copy each object
-        if (typeof updatedPersonal.dateOfBirth === 'number') {
-          // Convert Unix timestamp to ISO date string
-          updatedPersonal.dateOfBirth = new Date(updatedPersonal.dateOfBirth).toISOString().split('T')[0];
-        }
-        return updatedPersonal;
-      });
-      // Use the processed data for the API request
-      this.$api.updateTaxPersonals(this.headers, data)
+      this.$api.updateTaxPersonals(this.headers, this.updateTaxPersonal)
         .catch(() => this.$toast.error('Error updating contact'));
     },
 
@@ -467,10 +462,11 @@ export default {
         this.toggleEditable(prevCell, this.editablePersonalId)
       }
     },
-    onBlur(val, event = null) {
+    onBlur(val, field, event = null) {
+      console.log(val)
       if (event && event.shiftKey && event.key === "Tab") return;
       if (this.oldValue !== val) {
-        this.handleUpdate()
+        this.handleUpdate(field)
         if (event?.key !== 'Escape') {
           this.goToNextColumn()
           return
