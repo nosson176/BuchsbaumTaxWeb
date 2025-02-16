@@ -246,7 +246,6 @@ export default {
             return this.selectedValues.includes(option.value);
         },
         onBlur() {
-            console.log("blur")
             this.showOptions = false;
             this.filterOptionsValue = '';
             this.$emit(events.blur);

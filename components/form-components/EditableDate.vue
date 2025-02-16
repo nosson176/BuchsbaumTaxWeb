@@ -20,7 +20,7 @@
 
 <script>
 import { events } from '~/shared/constants';
-import { formatUnixTimestamp } from '~/shared/utility';
+import { formatUnixTimestamp, getStartDayInUnixTime } from '~/shared/utility';
 
 export default {
   name: 'EditableDate',
@@ -58,7 +58,9 @@ export default {
       },
       set(newVal) {
         if (newVal) {
-          this.$emit('input', newVal.getTime());
+          if (typeof newVal === 'number') {
+            this.$emit('input', newVal);
+          } else this.$emit('input', newVal.getTime());
           this.$emit(events.blur);
         } else {
           this.$emit('input', null);
@@ -114,7 +116,8 @@ export default {
       }
     },
     setToday() {
-      const today = new Date();
+      // const today = new Date();
+      const today = getStartDayInUnixTime();
       this.computedValue = today;
       // this.showPicker = false;
     },

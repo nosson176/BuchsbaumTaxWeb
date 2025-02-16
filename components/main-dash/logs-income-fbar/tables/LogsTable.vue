@@ -205,7 +205,7 @@ import { isToday, isPast, intervalToDuration, parse, startOfDay } from 'date-fns
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
-import { boldSearchWord, formatDateLog, formatUnixTimestampWithMoment, generateRandomId, searchArrOfObjs } from '~/shared/utility'
+import { boldSearchWord, convertToUnixTimestamp, formatDateLog, generateRandomId, getStartDayInUnixTime, searchArrOfObjs } from '~/shared/utility'
 
 const columns = ['priority', 'years', 'note', 'logDate', 'alarmUserName', 'alarmTime']
 // const columns = ['priority', 'years', 'note', 'logDate', 'alarmDate', 'alarmTime', 'alarmUserName', 'secondsSpent', 'delete']
@@ -430,6 +430,7 @@ export default {
       this.activeTooltipIndex = null;
     },
     formatDateLog,
+
     handleBeforeUnload(event) {
       clearInterval(this.intervalId);
       this.saveUpdatAndNewLogs();
@@ -490,7 +491,7 @@ export default {
       // Commit a mutation to update each log's clientId and logDate
       this.$store.commit('updateCopyLogs', {
         clientId: this.selectedClient.id,
-        logDate: Date.now()
+        logDate: getStartDayInUnixTime()
       });
       let newLogC
       // Loop through the copyLogs and push to updatAndNewLogs locally in the component
@@ -529,8 +530,6 @@ export default {
       this.playTime = false
     },
     toggleEditable(id, logId, value) {
-      // console.log("toggle")
-      console.log(id, logId, value)
       if (!value) {
         const val = id.split("-")[1]
         const log = this.displayedLogs.find((log) => log.id === logId)
@@ -541,7 +540,6 @@ export default {
       } else this.oldValue = value
       if (this.editableId !== id) {
         this.editableId = id;
-        // console.log(this.editableId)
         this.editableLogId = logId;
       }
     },
@@ -588,6 +586,7 @@ export default {
             validateAndSendAlarm(updatedLog, alarmTime);
           }
         }
+
       }
       if (field === 'alarmUserName') {
         // אם הערך ריק, נאפס גם את ה-ID
@@ -647,7 +646,6 @@ export default {
           ? [...updatedLog.historyLogJson]
           : [];
         newHistoryLogJson.push(historyEntry);
-
         // Push the new log object
         this.updatAndNewLogs.push({
           ...updatedLog,
@@ -658,14 +656,15 @@ export default {
 
 
     async saveUpdatAndNewLogs() {
+      console.log(this.updatAndNewLogs)
       if (this.updatAndNewLogs.length === 0) return
       try {
         const logsToSave = this.updatAndNewLogs.map(log => ({
           ...log,
-          logDate: formatUnixTimestampWithMoment(log.logDate),
-          alarmDate: formatUnixTimestampWithMoment(log.alarmDate),
+          alarmTime: convertToUnixTimestamp(log.alarmTime),
           historyLogJson: JSON.stringify(log.historyLogJson)
         }));
+        console.log(logsToSave)
         await this.$api.updateLogs(this.headers, logsToSave);
       } catch (error) {
         console.error('Error saving logs:', error);
@@ -695,7 +694,7 @@ export default {
       }
       const defaultValues = {
         clientId: this.selectedClient.id,
-        logDate: Date.now(),
+        logDate: getStartDayInUnixTime(),
         id: generateRandomId(),
         archived: false,
         years: '',
@@ -726,7 +725,7 @@ export default {
           const newLog = {
             ...log,
             id: generateRandomId(),
-            logDate: Date.now(),
+            logDate: getStartDayInUnixTime(),
             new: true,
             historyLogJson: [],
             createdBy: this.currentUser.username,
@@ -774,9 +773,7 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
-
-      // console.log(field, event, event?.type !== 'mousedown')
-      // if (event && event?.type !== 'mousedown') {
+      console.log(val)
       if (event?.shiftKey && event?.key === "Tab") return;
       // }
 
@@ -794,16 +791,13 @@ export default {
         if (!(this.oldValue === '' && val === '')) {
           this.handleUpdate(val, field);
           if (event?.key !== 'Escape') {
-            // console.log("escape");
             this.goToNextColumn();
             return;
           }
-          // console.log("finish");
           this.editableId = "";
           return;
         }
       }
-      // console.log("more")
       // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(val, field)

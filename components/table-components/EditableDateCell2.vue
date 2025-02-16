@@ -166,17 +166,23 @@ export default {
         },
         setToday(emit) {
             const now = new Date();
+
+            // Format the date as MM-DD-YYYY HH:mm
             const today = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
+            // Store the formatted date in internalValue
             this.internalValue = today;
-            emit(now);
+
+            // Emit the Unix timestamp in milliseconds
+            const unixTimestampMillis = now.getTime();
+            emit(unixTimestampMillis);
 
             // Use setTimeout to ensure the value is set before emitting blur
             setTimeout(() => {
-                this.$emit('input', today);
-                this.$emit(events.blur);
+                this.$emit('input', today); // Emit the formatted date string
+                this.$emit(events.blur); // Trigger the blur event
             }, 0);
-        },
+        }
     },
 }
 </script>
