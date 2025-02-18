@@ -207,7 +207,7 @@ export default {
             const index = this.selectedValues.indexOf(option.value);
 
             if (index === -1) {
-                if (event?.ctrlKey) {
+                if (event?.ctrlKey || event?.metaKey) {
                     this.selectedValues = [option.value];
                 } else {
                     this.selectedValues.push(option.value);
@@ -227,7 +227,7 @@ export default {
             this.$refs.button?.focus();
 
             // סגור רק אם הקונטרול היה לחוץ
-            if (event?.ctrlKey) {
+            if (event?.ctrlKey || event?.metaKey) {
                 this.showOptions = false;
                 event.stopPropagation()
                 this.$emit(events.blur);
