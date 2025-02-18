@@ -98,14 +98,14 @@ export default {
   computed: {
     ...mapState([models.clients, models.loading, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1, models.spinner]),
     displayedClients() {
+      console.log('displayedClients')
       // Explicitly use loading in the computed property to create a dependency
-      if (this.spinner) {
-        return [];
-      }
-      return this.sortedClients;
+      return this.spinner ? [] : this.sortedClients;
     },
     sortedClients() {
-      const clients = Object.values(this.filteredClients)
+      console.log('clients')
+
+      const clients = Object.values(this.clients)
       switch (this.sortBy) {
         case 'A-Z':
           return this.sortByLastName(clients)
@@ -157,6 +157,7 @@ export default {
   },
   methods: {
     sortByLastName(clients) {
+      console.log(JSON.parse(JSON.stringify(clients)))
       return clients.sort((a, b) => {
         const lastNameA = a.lastName || ''
         const lastNameB = b.lastName || ''
