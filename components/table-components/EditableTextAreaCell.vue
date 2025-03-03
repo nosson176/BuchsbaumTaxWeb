@@ -127,6 +127,11 @@ export default {
     document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
+    focus() {
+      if (this.$refs.input) {
+        this.$refs.input.focus();
+      }
+    },
     handleClickOutside(event) {
       if (!this.isEditable) return
       if (this.init === false) {

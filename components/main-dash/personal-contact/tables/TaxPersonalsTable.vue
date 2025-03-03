@@ -66,7 +66,8 @@
           @click="toggleEditable(`${idx}-dateOfBirth`, personal.id, personal.dateOfBirth)">
           <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)"
             @blur="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)"
-            @keyup.tab.native="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)" />
+            @keyup.tab.native="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)"
+            @keyup.enter.native="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)" />
         </div>
         <div :id="`${idx}-ssn`" class="normal table-col"
           @click="toggleEditable(`${idx}-ssn`, personal.id, personal.ssn)">
@@ -317,9 +318,7 @@ export default {
       if (/^([0-9]{9})$/.test(personal.ssn)) {
         personal.ssn = personal.ssn.replace(/^([0-9]{3})([0-9]{2})([0-9]{4})$/, '$1-$2-$3')
       }
-      // if (field === 'dateOfBirth') {
-      //   personal.dateOfBirth
-      // }
+
       const index = this.updateTaxPersonal.findIndex(per => per.id === personal.id)
       if (index !== -1) {
         this.updateTaxPersonal[index] = personal
@@ -463,7 +462,6 @@ export default {
       }
     },
     onBlur(val, field, event = null) {
-      console.log(val)
       if (event && event.shiftKey && event.key === "Tab") return;
       if (this.oldValue !== val) {
         this.handleUpdate(field)
@@ -471,6 +469,13 @@ export default {
           this.goToNextColumn()
           return
         }
+      }
+      console.log('blur', field, event)
+      if (field === 'dateOfBirth' && (event?.key === 'Tab' || event?.key === 'Enter')) {
+        console.log('tab', val)
+        this.handleUpdate(field)
+        this.goToNextColumn()
+        return
       }
       if (event?.key === 'Tab' || event?.key === 'Enter') {
         this.goToNextColumn()

@@ -313,10 +313,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         headers,
         loading: models.clients,
         loaded: models.clients,
-        store: models.clients,
       })
 
-      return Object.values(response) // return the created smartview or relevant data
+      // Store only the clients property in the models.clients
+      store.commit(mutations.setModelResponse, {
+        model: models.clients,
+        data: response.clients,
+      })
+
+      return Object.values(response) // return only the clients data
     } catch (error) {
       console.error('Error creating smartview:', error)
       $toast.error('Error creating smartview')

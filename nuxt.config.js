@@ -1,12 +1,8 @@
-import qs from 'qs'
-console.log('=>: ', process.env.NODE_ENV)
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
-
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
-
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Buchsbaum-Tax',
@@ -27,10 +23,8 @@ export default {
   router: {
     middleware: ['routeGuards'],
   },
-
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: ['~/assets/css/global.css', '~/assets/css/date-picker.css'],
-
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     '@/plugins/init.js',
@@ -42,7 +36,6 @@ export default {
     '@/plugins/v-tooltip.client.js',
     { src: '~/plugins/webSocket.js', mode: 'client' },
   ],
-
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: [
     {
@@ -50,7 +43,6 @@ export default {
       pathPrefix: false,
     },
   ],
-
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     '@nuxtjs/dotenv',
@@ -63,7 +55,6 @@ export default {
     // https://github.com/nuxt-community/fontawesome-module
     '@nuxtjs/fontawesome',
   ],
-
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
@@ -71,17 +62,15 @@ export default {
     // Doc: https://github.com/Maronato/vue-toastification/tree/main
     'vue-toastification/nuxt',
   ],
-
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     withCredentials: true,
     baseURL: process.env.NODE_ENV === 'development' ? process.env.BACKEND_URL : process.env.BACKEND_URL_P,
     responseType: 'json',
-
     // Override the default serializer to switch params from becoming []id=a&[]id=b ...
     // in GET and DELETE requests to id=a&id=b.
     paramsSerializer: (params) => {
-      qs.stringify(params, { arrayFormat: 'repeat' })
+      return qs.stringify(params, { arrayFormat: 'repeat' })
     },
   },
   // vue-toastification configuration https://github.com/Maronato/vue-toastification/tree/main
@@ -97,9 +86,22 @@ export default {
       light: ['faMoneyCheck'],
     },
   },
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    postcss: {
+      // Remove any external postcss.config.js and define the config here
+      preset: {
+        // Change the postcss-preset-env settings
+        autoprefixer: {
+          grid: true,
+        },
+      },
+      plugins: {
+        'tailwindcss/nesting': {},
+        tailwindcss: {},
+        autoprefixer: {},
+      },
+    },
     terser: {
       terserOptions: {
         compress: {
