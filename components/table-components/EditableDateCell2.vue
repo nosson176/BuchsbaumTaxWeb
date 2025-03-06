@@ -98,7 +98,7 @@ export default {
     methods: {
         handleKeydown(event) {
             if (event.key === 'Enter') {
-                if (this.shouldEmitBlur) return; // Prevent double blur
+                if (this.shouldEmitBlur) return; // Prevent double blur1
 
                 this.setToday((date) => {
                     this.$emit('input', date);
