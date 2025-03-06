@@ -136,7 +136,8 @@ export default {
       oldValue: '',
       showDeleteModal: false,
       deleteFeeId: null,
-      deleteTypeLabel: 'Fee'
+      deleteTypeLabel: 'Fee',
+      dateFieldsInProgress: new Set(), // Track date fields currently being processed
     }
   },
   computed: {
@@ -321,6 +322,35 @@ export default {
       //   this.editable = ''
       //   return
       // }
+      if (e === 'dateFee') {
+        // If this field is already being processed, skip
+        if (this.dateFieldsInProgress.has(e)) {
+          return;
+        }
+
+
+        // Mark this field as being processed
+        this.dateFieldsInProgress.add(e);
+
+        // Use setTimeout to allow the date picker to complete its update
+        setTimeout(() => {
+          const oldValueStr = JSON.stringify(this.oldValue);
+
+          // Only proceed with update if values are different
+          if (oldValueStr !== this.formModel[e]) {
+            this.handleUpdate(e, event);
+            // this.goToNextItem();
+          } else {
+            // If no changes, still move to next item
+            this.goToNextItem();
+          }
+
+          // Remove field from processing set
+          this.dateFieldsInProgress.delete(e);
+        }, 100);
+
+        return;
+      }
       if (this.oldValue !== this.formModel[e]) {
         this.handleUpdate(event)
         return

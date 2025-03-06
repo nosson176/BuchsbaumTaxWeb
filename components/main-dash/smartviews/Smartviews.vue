@@ -94,7 +94,12 @@ export default {
     async selectSmartview(smartview) {
       this.$store.commit("showSpinner", true)
       await this.$api.getFilterClients(this.headers, { smartview }).then((res) => {
-        console.log("res", res)
+
+        // Update the smartview with the new clientIds from the response
+        smartview.clientIds = res[1]// Assuming res[0] contains the clientIds
+
+        // this.$store.commit('updateSmartview', { smartview })
+
         this.$store.commit("showSpinner", false)
       })
       this.$store.commit(mutations.setModelResponse, { model: models.clientSearchValue, data: [] })

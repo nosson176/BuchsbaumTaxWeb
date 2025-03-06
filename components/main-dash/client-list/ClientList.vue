@@ -103,7 +103,7 @@ export default {
       return this.spinner ? [] : this.sortedClients;
     },
     sortedClients() {
-      console.log('clients')
+      console.log(this.clients)
 
       const clients = Object.values(this.clients)
       switch (this.sortBy) {
@@ -157,7 +157,6 @@ export default {
   },
   methods: {
     sortByLastName(clients) {
-      console.log(JSON.parse(JSON.stringify(clients)))
       return clients.sort((a, b) => {
         const lastNameA = a.lastName || ''
         const lastNameB = b.lastName || ''
@@ -314,7 +313,10 @@ export default {
     },
 
     async selectClient(client) {
+      // console.log(client.filings.findIndex(filing => {
       console.log(client)
+      // return filing.id === 1004325
+      // }))
       this.$store.commit(mutations.setModelResponse, {
         model: models.clientClicked,
         data: Math.random(),

@@ -270,7 +270,13 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios.post('/personals', personal, { headers }).catch(() => $toast.error('Error creating tax personal'))
 
   const createContact = (headers, { contact }) =>
-    $axios.post('/contacts', contact, { headers }).catch(() => $toast.error('Error creating contact'))
+    $axios
+      .post('/contacts', contact, { headers })
+      .then((res) => {
+        console.log('res', res)
+        return res
+      })
+      .catch(() => $toast.error('Error creating contact'))
 
   const createIncome = (headers, { income }) =>
     $axios.post('/incomes', income, { headers }).catch(() => $toast.error('Error creating income'))
@@ -313,10 +319,15 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
         headers,
         loading: models.clients,
         loaded: models.clients,
-        store: models.clients,
       })
 
-      return Object.values(response) // return the created smartview or relevant data
+      // Store only the clients property in the models.clients
+      store.commit(mutations.setModelResponse, {
+        model: models.clients,
+        data: response.clients,
+      })
+
+      return Object.values(response) // return only the clients data
     } catch (error) {
       console.error('Error creating smartview:', error)
       $toast.error('Error creating smartview')

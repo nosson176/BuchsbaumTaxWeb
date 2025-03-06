@@ -57,14 +57,29 @@ export default {
         return this.value ? new Date(this.value) : null;
       },
       set(newVal) {
+        let eventToPass = null; // הוספת משתנה לאירוע
+        if (newVal && newVal.event) { // בדיקה אם יש אירוע
+          eventToPass = newVal.event;
+          newVal = newVal.value; // חילוץ הערך
+        }
+        console.log(newVal)
+        console.log(1)
         if (newVal) {
+          console.log(2)
           if (typeof newVal === 'number') {
+            console.log(3)
             this.$emit('input', newVal);
-          } else this.$emit('input', newVal.getTime());
-          this.$emit(events.blur);
+          } else {
+            console.log(3.11)
+            this.$emit('input', newVal.getTime())
+          }
+          console.log(4)
+          this.$emit(events.blur, eventToPass);
         } else {
+          console.log(5)
           this.$emit('input', null);
-          this.$emit(events.blur);
+          console.log(6)
+          this.$emit(events.blur, eventToPass);
         }
       },
     },
@@ -75,6 +90,7 @@ export default {
       return this.type === 'date';
     },
     displayedValue() {
+      console.log(7)
       return this.value ? formatUnixTimestamp(this.value) : '';
     },
   },
@@ -95,31 +111,85 @@ export default {
   },
 
   watch: {
+    // showPicker(val) {
+    //   console.log(val)
+    //   // If the picker is closed manually, exit edit mode
+    //   if (!val && this.isEditable) {
+    //     this.$emit(events.blur);
+    //   }
+    // },
     isEditable(val) {
-      if (val) window.addEventListener('keydown', this.handleKeyDown)
+      if (val) {
+        window.addEventListener('keydown', this.handleKeyDown)
+        // Select input value when entering edit mode
+        const innerInput = this.$refs.datePickerWrapper?.querySelector('input');
+        if (innerInput) {
+          innerInput.focus();
+          innerInput.select();
+        }
+      }
       else window.removeEventListener('keydown', this.handleKeyDown)
 
     }
   },
   methods: {
+    handleOutsideClick(event) {
+      console.log(8, event)
+      event.stopPropagation();
+      this.onBlur();
+    },
     onFocus() {
+      console.log(8)
       this.showPicker = true;
     },
     onBlur() {
+      console.log(9)
       this.$emit(events.blur);
     },
     handleKeyDown(event) {
-      // Only handle Enter key when picker is visible
+      console.log(10)
+      // Handle the Enter key
       if (event.key === 'Enter' && this.showPicker) {
+        console.log(11)
         event.preventDefault();
         this.setToday();
       }
+
+      // Handle the Tab key
+      if (event.key === 'Tab') {
+        // Prevent Tab from propagating
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log(12, event.target.value)
+        const unixtime = this.convertDateStringToUnix(event.target.value);
+        console.log(13, unixtime)
+        if (unixtime) {
+          // Send both value and original event for proper handling
+          this.computedValue = { value: unixtime, event };
+        } else {
+          console.error('Failed to convert date string to unixtime');
+          // Still emit blur to move to next field even if conversion fails
+          this.$emit(events.blur, event);
+        }
+      }
     },
     setToday() {
+      console.log(14)
       // const today = new Date();
       const today = getStartDayInUnixTime();
       this.computedValue = today;
+      console.log(15)
       // this.showPicker = false;
+    },
+    convertDateStringToUnix(dateString) {
+      // פונקציה להמרת מחרוזת תאריך ל-unixtime
+      // החלף את הלוגיקה הזו בלוגיקה שלך
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return null; // מחרוזת תאריך לא חוקית
+      }
+      return date.getTime();
     },
   },
 }

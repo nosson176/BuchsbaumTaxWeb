@@ -234,7 +234,6 @@ const formatUnixTimestamp = (timestamp) => {
 
 // Helper function to convert 'MM-DD-YYYY HH:mm' format to Unix timestamp in milliseconds
 const convertToUnixTimestamp = (dateString) => {
-  console.log(dateString, typeof dateString === 'number')
   if (!dateString || typeof dateString === 'number') return
   // Split the date and time from the string
   const [date, time] = dateString.split(' ')
@@ -257,7 +256,6 @@ const getStartDayInUnixTime = () => {
   startOfDay.setHours(0, 0, 0, 0) // Sets hours, minutes, seconds, and milliseconds to 0
 
   const logDate = startOfDay.getTime() // Gets the timestamp (milliseconds since epoch) for the start of the day
-  console.log(logDate) // Output the timestamp
   return logDate
 }
 

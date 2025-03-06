@@ -30,9 +30,9 @@
     <div class="col-span-2 flex gap-2 px-2 items-center mb-1 transform" style="min-width: 80px;"
       :class="[sumClassObj, rotationClass('sum')]">
       <div @click.stop="setEditable('refund')">
-        <EditableInput v-model="formModel.refund" placeholder="Refund" currency :is-editable="isEditable('refund')"
+        <EditableInput v-model="formModel.refund" placeholder="est tax" currency :is-editable="isEditable('refund')"
           @blur="onBlur(formModel.refund, 'refund')" @keyup.enter.native="onBlur(formModel.refund, 'refund', $event)"
-          @keyup.esc.native="onBlur(formModel.refund, 'refund', $event)" />
+          @keyup.esc.native="onBlur(formModel.refund, 'refund', $event)" :selectOnFocus="true" />
       </div>
       <div @click="setEditable('completed')">
         <EditableCheckBoxCell class="transform" v-model="formModel.completed" :is-editable="isEditable('completed')"
@@ -42,8 +42,12 @@
 
     <div @click.stop="setEditable('statusDate')" class="relative mx-2">
       <EditableDate class="transform" v-model="formModel.statusDate" ref="statusDateInput" placeholder="Date"
-        type="date" :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')"
-        :class="rotationClass('statusDate')" />
+        type="date" :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" :class="[
+          rotationClass('statusDate')
+        ]" :style="{
+          width: isEditable('statusDate') ? '150px' : 'auto',
+          minWidth: isEditable('statusDate') ? '150px' : 'auto'
+        }" />
     </div>
   </div>
 </template>
@@ -102,7 +106,7 @@ export default {
     },
     sumClassObj() {
       return {
-        'bg-gray-400': this.refund === 0,
+        // 'bg-gray-400': this.refund === 0,
         'bg-yellow-400': this.refund > 0 && !this.formModel.completed,
         'bg-green-400': this.refund > 0 && this.formModel.completed,
         'bg-blue-400': this.refund < 0 && !this.formModel.completed,
@@ -209,6 +213,7 @@ export default {
       return this.editable === value
     },
     onBlur(val) {
+      console.log('onBlur', val)
       if (this.newFlag) {
         this.newFlag = false
         return

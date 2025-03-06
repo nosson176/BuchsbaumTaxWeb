@@ -1,24 +1,26 @@
 <template>
   <div v-if="filing" class="p-2 flex flex-grow">
-    <div class="w-full text-center text-xs relative" @keydown.tab.prevent @keyup.tab.exact="goToNextItem"
-      @keyup.shift.tab.exact="goToPrevItem">
+    <div class="w-full text-center text-xs relative" @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevItem">
       <DeleteButton class="delete-btn" small @click="emitDelete(filing.id)" />
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('state')">
         <EditableSelectCell v-model="state" :options="stateOptions" :is-editable="isEditable('state')"
-          placeholder="State" @blur="onBlur('state')" />
+          placeholder="State" @blur="onBlur('state')" @keyup.tab.native="onBlur('state', $event)" />
       </div>
       <div v-else class="mb-1" @click="setEditable('taxForm')">
         <EditableSelectCell v-model="taxForm" :options="taxFormOptions" :is-editable="isEditable('taxForm')"
-          placeholder="Tax Form" @blur="onBlur('taxForm')" initiallyOpen=true />
+          placeholder="Tax Form" @blur="onBlur('taxForm')" @keyup.tab.native="onBlur('taxForm', $event)"
+          initiallyOpen=true />
       </div>
       <div class="mb-1" @click="setEditable('status')">
         <EditableSelectCell v-model="status" :options="statusOptions" :is-editable="isEditable('status')"
-          placeholder="Status" @blur="onBlur('status', $event)" initiallyOpen=true />
+          placeholder="Status" @blur="onBlur('status', $event)" @keyup.tab.native="onBlur('status', $event)"
+          initiallyOpen=true />
       </div>
       <div v-if="filingType === 'state'" class="mb-1" @click="setEditable('statusDetail')">
         <EditableSelectCell v-model="statusDetail" :options="statusDetailOptions"
           :is-editable="isEditable('statusDetail')" placeholder="Detail" @blur="onBlur('statusDetail')"
-          @keyup.enter.native="onBlur('statusDetail')" initiallyOpen=true />
+          @keyup.enter.native="onBlur('statusDetail')" @keyup.tab.native="onBlur('statusDetail', $event)"
+          initiallyOpen=true />
       </div>
       <div v-else :id="`statusDetail`" class="mb-1" :class="!isEditable('statusDetail') ? 'w-max ml-auto mr-auto' : ''"
         @click="setEditable('statusDetail')">
@@ -28,7 +30,7 @@
           <EditableMultiSelect class=" overflow-ellipsis" v-model="statusDetail"
             :shownValue="!isEditable('statusDetail') && isMult(statusDetail) ? 'MULTI' : statusDetail"
             :is-editable="isEditable('statusDetail')" :options="statusDetailOptions" @blur="onBlur('statusDetail')"
-            filingType="true" placeholder="Detail" />
+            @keyup.tab.native="onBlur('statusDetail', $event)" filingType="true" placeholder="Detail" />
           <template #popper>
             <ul>
               <li v-for="(status, index) in splitYears(statusDetail)" :key="index">
@@ -40,7 +42,7 @@
       </div>
       <div class="mb-1" @click="setEditable('statusDate')">
         <EditableDate v-model="statusDate" placeholder="Date" type="date" :is-editable="isEditable('statusDate')"
-          @blur="onBlur('statusDate')" />
+          @blur="onBlur('statusDate')" @keyup.tab.native="onBlur('statusDate', $event)" />
       </div>
       <div class="col-span-2 cursor-pointer mb-1 overflow-auto"
         style="min-height: 5rem; max-height: 5rem; word-break: break-word;" @click="setEditable('memo')">
@@ -52,7 +54,7 @@
         <div class="flex items-center mr-3">
           <div @click="setEditable('includeInRefund')">
             <EditableCheckBoxCell v-model="includeInRefund" :is-editable="isEditable('includeInRefund')"
-              @click="onBlur('includeInRefund')" />
+              @click="onBlur('includeInRefund')" @keyup.tab.native="onBlur('includeInRefund', $event)" />
           </div>
           <div class="flex flex-col">
             <div class="flex items-center" @click="setEditable('owes')">
@@ -60,26 +62,26 @@
                 @input="onBlur('currency')" />
               <EditableInput v-model="owes" placeholder="Owes" currency :is-editable="isEditable('owes')"
                 @blur="onBlur('owes')" @click="onBlur('owes')" @keyup.enter.native="onBlur('owes', $event)"
-                @keyup.esc.native="onBlur('owes', $event)" />
+                @keyup.esc.native="onBlur('owes', $event)" @keyup.tab.native="onBlur('owes', $event)" />
             </div>
             <div class="flex items-center" @click="setEditable('paid')">
               <HeaderSelectOption v-if="paid" v-model="currency" :options="currencyOptions" currency
                 @input="onBlur('currency')" />
               <EditableInput v-model="paid" placeholder="Paid" currency :is-editable="isEditable('paid')"
                 @blur="onBlur('paid')" @click="onBlur('paid')" @keyup.enter.native="onBlur('paid')"
-                @keyup.esc.native="onBlur('paid', $event)" />
+                @keyup.esc.native="onBlur('paid', $event)" @keyup.tab.native="onBlur('paid', $event)" />
             </div>
           </div>
         </div>
         <div class="flex flex-col items-center ml-3">
           <div @click="setEditable('maam')">
             <EditableSelectCell v-model="maam" :options="maamOptions" :is-editable="isEditable('maam')"
-              placeholder="Maam" @blur="onBlur('maam')" initiallyOpen=true />
+              placeholder="Maam" @blur="onBlur('maam')" @keyup.tab.native="onBlur('maam', $event)" initiallyOpen=true />
           </div>
           <div @click="setEditable('basicPlusPro')">
             <EditableSelectCell v-model="basicPlusPro" :options="basicPlusProOptions"
               :is-editable="isEditable('basicPlusPro')" placeholder="BasicPlusPro" @blur="onBlur('basicPlusPro')"
-              initiallyOpen=true />
+              @keyup.tab.native="onBlur('basicPlusPro', $event)" initiallyOpen=true />
           </div>
         </div>
         <!-- <div @click="setEditable('includeFee')">
@@ -102,7 +104,8 @@
       </div>
       <div class="mb-1" @click="setEditable('fileType')">
         <EditableSelectCell v-model="fileType" :options="fileTypeOptions" :is-editable="isEditable('fileType')"
-          placeholder="File Type" @blur="onBlur('fileType')" initiallyOpen=true />
+          placeholder="File Type" @blur="onBlur('fileType')" @keyup.tab.native="onBlur('fileType', $event)"
+          initiallyOpen=true />
       </div>
       <!-- spacing -->
       <div />
@@ -111,12 +114,14 @@
         <div class="mr-3 flex items-center" @click="setEditable('refund')">
           <span v-if="refund">$</span>
           <EditableInput v-model="refund" placeholder="Refund" currency :is-editable="isEditable('refund')"
-            @blur="onBlur('refund')" @click="onBlur('refund')" @keyup.esc.native="onBlur('refund', $event)" />
+            @blur="onBlur('refund')" @click="onBlur('refund')" @keyup.esc.native="onBlur('refund', $event)"
+            @keyup.tab.native="onBlur('refund', $event)" />
         </div>
         <div class="ml-3 flex items-center" @click="setEditable('rebate')">
           <span v-if="rebate">$</span>
           <EditableInput v-model="rebate" placeholder="Rebate" currency :is-editable="isEditable('rebate')"
-            @blur="onBlur('rebate')" @click="onBlur('rebate')" @keyup.esc.native="onBlur('rebate', $event)" />
+            @blur="onBlur('rebate')" @click="onBlur('rebate')" @keyup.esc.native="onBlur('rebate', $event)"
+            @keyup.tab.native="onBlur('rebate', $event)" />
         </div>
       </div>
       <div class="col-span-2 flex justify-evenly py-1 items-center mb-1" :class="sumClassObj">
@@ -124,20 +129,20 @@
           <span class="text-white font-semibold text-sm"> <span>$</span>{{ formattedSum }} </span>
         </div>
         <div @click="setEditable('completed')">
-          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')"
-            @click="onBlur('completed')" />
+          <EditableCheckBoxCell v-model="completed" :is-editable="isEditable('completed')" @click="onBlur('completed')"
+            @keyup.tab.native="onBlur('completed', $event)" />
         </div>
       </div>
       <div @click="setEditable('deliveryContact')">
         <EditableSelectCell v-model="deliveryContact" :options="contactTypeOptions"
           :is-editable="isEditable('deliveryContact')" placeholder="Delivery1" @blur="onBlur('deliveryContact')"
-          initiallyOpen=true />
+          @keyup.tab.native="onBlur('deliveryContact', $event)" initiallyOpen=true />
       </div>
       <div class="flex space-x-6 justify-center">
         <div @click="setEditable('secondDeliveryContact')">
           <EditableSelectCell v-model="secondDeliveryContact" :options="contactTypeOptions"
             :is-editable="isEditable('secondDeliveryContact')" placeholder="Delivery2" initiallyOpen=true
-            @blur="onBlur('secondDeliveryContact')" />
+            @blur="onBlur('secondDeliveryContact')" @keyup.tab.native="onBlur('secondDeliveryContact', $event)" />
         </div>
         <!-- <button @click="setSecondDeliveryContact('CHECK')">
           <font-awesome-icon icon="fa-light fa-money-check" />
@@ -145,7 +150,7 @@
       </div>
       <div @click="setEditable('dateFiled')">
         <EditableDate v-model="dateFiled" placeholder="Date Filed" type="date" :is-editable="isEditable('dateFiled')"
-          @blur="onBlur('dateFiled')" />
+          @blur="onBlur('dateFiled')" @keyup.tab.native="onBlur('dateFiled', $event)" />
       </div>
     </div>
   </div>
@@ -164,7 +169,7 @@ const items = [
   'statusDate',
   'memo',
   // 'includeInRefund',
-  'currency',
+  // 'currency',
   'owes',
   'paid',
   // 'includeFee',
@@ -720,7 +725,7 @@ export default {
         (oldValueStr === "null" && newValueStr === "undefined" || newValueStr === "") ||
         (oldValueStr === "undefined" && newValueStr === "null" || newValueStr === "")
       ) {
-        if (event?.key === 'Enter') {
+        if (event?.key === 'Enter' || event?.key === 'Tab') {
           this.goToNextItem();
           return
         }

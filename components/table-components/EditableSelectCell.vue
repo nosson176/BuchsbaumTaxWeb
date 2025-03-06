@@ -143,14 +143,11 @@ export default {
       //   this.init = true;
       //   return;
       // }
-      console.log("click")
       if (this.isInitiallyOpen) {
-        console.log("first")
         this.isInitiallyOpen = false;  // עדכון משתנה חדש במקום ה-prop
         return;
       }
       if (!this.$refs.el.contains(event.target)) {
-        console.log("outelmeny")
         this.showOptions = false;
         this.$emit(events.blur, false);
         this.init = false;

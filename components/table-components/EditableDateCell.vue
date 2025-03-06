@@ -2,9 +2,9 @@
   <div ref="datePickerWrapper" tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
     <date-picker v-if="isEditable" ref="input" v-model="computedValue" tabindex="0" :value-type="valueType"
       :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus">
-      <template #header="{ emit }">
+      <template #header>
         <button class="w-full flex items-center justify-center mx-btn mx-btn-text"
-          @click.stop="(event) => handleTodayClick(emit, event)">
+          @click.stop="(event) => handleTodayClick(event)">
           Today
         </button>
       </template>
@@ -41,8 +41,8 @@ export default {
   data() {
     return {
       showPicker: false,
-      isSettingToday: false
-    }
+      isSettingToday: false,
+    };
   },
 
   computed: {
@@ -51,6 +51,7 @@ export default {
         return this.value ? new Date(this.value) : null;
       },
       set(newVal) {
+        console.log(newVal);
         const unixTimestamp = newVal ? newVal.getTime() : null;
         this.$emit('input', unixTimestamp);
         if (!this.isSettingToday) {
@@ -63,12 +64,10 @@ export default {
       return this.isTypeDate ? 'date' : 'time';
     },
     isTypeDate() {
-      return this.type === 'date'
+      return this.type === 'date';
     },
     displayedValue() {
-      return this.isTypeDate && this.value
-        ? formatUnixTimestamp(this.value)
-        : this.value;
+      return this.isTypeDate && this.value ? formatUnixTimestamp(this.value) : this.value;
     },
   },
 
@@ -95,50 +94,59 @@ export default {
         this.$nextTick(() => {
           this.$refs.datePickerWrapper?.addEventListener('keydown', this.handleKeydown);
           document.addEventListener('mousedown', this.handleClickOutside);
+
+          const innerInput = this.$refs.datePickerWrapper?.querySelector('input');
+          if (innerInput) {
+            innerInput.focus();
+            innerInput.select();
+          }
         });
       } else {
         this.$refs.datePickerWrapper?.removeEventListener('keydown', this.handleKeydown);
         this.$refs.datePickerWrapper.removeEventListener('keydown', this.handleClickOutside);
       }
-    }
+    },
   },
-
 
   methods: {
     handleClickOutside(event) {
       if (!this.isEditable) return;
-      const isDatePickerElement = event.target.closest(".mx-datepicker-body");
-      const isTodayButton = event.target.closest(".mx-btn-text");
+      const isDatePickerElement = event.target.closest('.mx-datepicker-body');
+      const isTodayButton = event.target.closest('.mx-btn-text');
 
       if (!isDatePickerElement && !isTodayButton) {
         this.onBlur();
       }
     },
     handleKeydown(event) {
-      console.log(event)
       if (event.key === 'Enter') {
-        if (this.isSettingToday) return; // Prevent double blur
+        if (this.isSettingToday) return;
 
-        this.handleTodayClick((date) => {
-          console.log(date)
-          this.$emit('input', date);
-          this.isSettingToday = true;
-          // this.$emit(events.blur);
-
-          setTimeout(() => {
-            this.isSettingToday = false;
-          }, 100);
-        });
+        this.handleTodayClick(event); // Pass the event directly
       }
+      if (event.key === 'Tab') {
+        console.log('Tab key pressed', event.target.value);
+        this.computedValue = this.convertDateStringToUnix(event.target.value);
+        // this.onBlur();
+      }
+
+    },
+    convertDateStringToUnix(dateString) {
+      // מחלקים את התאריך לחלקים
+      const [month, day, year] = dateString.split("/");
+
+      // יוצרים אובייקט Date ב-JavaScript
+      const date = new Date(year, month - 1, day); // חודש ב-JavaScript מתחיל מ-0
+      return date
     },
 
-    handleTodayClick(emit, event) {  // Add event parameter
+    handleTodayClick(event) {
       this.isSettingToday = true;
       this.$emit('input', getStartDayInUnixTime());
-      event.stopPropagation(); // Stop the blur event from bubbling up
+      event.stopPropagation();
 
       setTimeout(() => {
-        this.onBlur(); // Keep the internal blur logic if needed
+        this.onBlur();
         this.isSettingToday = false;
       }, 100);
     },
@@ -151,7 +159,7 @@ export default {
       this.$emit(events.blur);
     },
   },
-}
+};
 </script>
 
 <style scoped>

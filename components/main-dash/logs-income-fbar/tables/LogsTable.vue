@@ -201,7 +201,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { isToday, isPast, intervalToDuration, parse, startOfDay } from 'date-fns'
+import { intervalToDuration } from 'date-fns'
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { models, mutations, tableGroups } from '~/shared/constants'
@@ -241,6 +241,7 @@ export default {
       activeTooltipIndex: null,
       tooltipTimer: null,
       forceCloseTooltip: false, // Controls tooltip visibility
+      dateFieldsInProgress: new Set()
     }
   },
   computed: {
@@ -656,7 +657,6 @@ export default {
 
 
     async saveUpdatAndNewLogs() {
-      console.log(this.updatAndNewLogs)
       if (this.updatAndNewLogs.length === 0) return
       try {
         const logsToSave = this.updatAndNewLogs.map(log => ({
@@ -664,7 +664,6 @@ export default {
           alarmTime: convertToUnixTimestamp(log.alarmTime),
           historyLogJson: JSON.stringify(log.historyLogJson)
         }));
-        console.log(logsToSave)
         await this.$api.updateLogs(this.headers, logsToSave);
       } catch (error) {
         console.error('Error saving logs:', error);
@@ -773,12 +772,42 @@ export default {
       }, 100);
     },
     onBlur(val, field, event = null) {
-      console.log(val)
       if (event?.shiftKey && event?.key === "Tab") return;
       // }
 
       if (field === 'years' && !this.forceCloseTooltip) {
         this.hideToolTip(); // Controls tooltip visibility
+      }
+      // Special handling for date fields
+      if (field === 'logDate') {
+        // If this field is already being processed, skip
+        if (this.dateFieldsInProgress.has(field)) {
+          return;
+        }
+
+
+        // Mark this field as being processed
+        this.dateFieldsInProgress.add(field);
+
+        // Use setTimeout to allow the date picker to complete its update
+        setTimeout(() => {
+          const oldValueStr = JSON.stringify(this.oldValue);
+
+
+          // Only proceed with update if values are different
+          if (oldValueStr !== val) {
+            this.handleUpdate();
+            this.goToNextColumn();
+          } else {
+            // If no changes, still move to next item
+            this.goToNextColumn();
+          }
+
+          // Remove field from processing set
+          this.dateFieldsInProgress.delete(field);
+        }, 100);
+
+        return;
       }
       if (event === false) {
         this.handleUpdate(val, field);
@@ -816,14 +845,29 @@ export default {
       this.activeTooltipIndex = null
     },
 
-    isTodayOrPast(date) {
-      // Parse the date using your expected format
-      const parsedDate = parse(date, 'MM-dd-yyyy HH:mm', new Date());
+    isTodayOrPast(timestamp) {
+      if (!timestamp) return false;
+      try {
+        // Get current date at start of day for comparison
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      // Normalize the date to ignore the time portion for comparison
-      const normalizedDate = startOfDay(parsedDate); // Removes time part of the date
-      // Check if it's today or in the past
-      return isToday(normalizedDate) || isPast(normalizedDate);
+        // Handle Unix timestamp in milliseconds
+        if (typeof timestamp === 'number') {
+          const date = new Date(timestamp);
+          return date <= today;
+        }
+
+        // Handle string timestamp (keeping this for flexibility)
+        // Parse using built-in Date object instead of dayjs
+        const parsedDate = new Date(timestamp);
+        if (isNaN(parsedDate.getTime())) return false;
+
+        return parsedDate <= today;
+      } catch (error) {
+        console.error('Error checking date:', error);
+        return false;
+      }
     },
     toggleComplete(log) {
       if (!this.isTodayOrPast(log.alarmTime) && !log.alarmComplete) {

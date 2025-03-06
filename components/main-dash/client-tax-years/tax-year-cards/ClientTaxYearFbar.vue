@@ -1,5 +1,5 @@
 <template>
-  <div class="fbar max-w-xs" @keydown.tab.prevent @keyup.tab.exact="goToNextItem" @keyup.shift.tab.exact="goToPrevItem">
+  <div class="fbar max-w-xs" @keydown.tab.prevent @keyup.shift.tab.exact="goToPrevItem">
     <DeleteButton class="mx-1" small @click="emitDelete" />
     <div class="fbar-i">
       <div v-if="!isEditable('fileType')" @click.stop="setEditable('fileType')">
@@ -9,10 +9,11 @@
       <div v-else>
         <EditableSelectCell v-model="formModel.fileType" class="font-bold ml-2 whitespace-nowrap "
           :options="fileTypeOptions" :is-editable="true" placeholder="Type"
-          @blur="onBlur(formModel.fileType, 'fileType')" initiallyOpen=true />
+          @blur="onBlur(formModel.fileType, 'fileType', $event)"
+          @keyup.tab.native="onBlur(formModel.fileType, 'fileType', $event)" initiallyOpen=true />
       </div>
     </div>
-    <div class="fbar-i">
+    <div class="fbar-i max-w-full">
       <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
           :is-editable="false" placeholder="Status" initiallyOpen=true />
@@ -20,10 +21,10 @@
       <div v-else>
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap "
           :is-editable="true" placeholder="Status" @blur="onBlur(formModel.status.value, 'status', $event)"
-          initiallyOpen=true />
+          @keyup.tab.native="onBlur(formModel.status.value, 'status', $event)" initiallyOpen=true />
       </div>
     </div>
-    <div class="fbar-i">
+    <div class="fbar-i max-w-full">
       <div v-if="!isEditable('statusDetail')" @click.stop="setEditable('statusDetail')">
         <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
           class="whitespace-nowrap" :is-editable="false" placeholder="Detail" initiallyOpen=true />
@@ -31,20 +32,26 @@
       <div v-else>
         <EditableSelectCell v-model="formModel.statusDetail.value" class="whitespace-nowrap "
           :options="statusDetailOptions" :is-editable="true" placeholder="Detail"
-          @blur="onBlur(formModel.statusDetail.value, 'statusDetail')" initiallyOpen=true />
+          @blur="onBlur(formModel.statusDetail.value, 'statusDetail')"
+          @keyup.tab.native="onBlur(formModel.statusDetail.value, 'statusDetail', $event)" initiallyOpen=true />
       </div>
     </div>
     <div class="fbar-i" @click.stop="setEditable('statusDate')">
       <EditableDate v-model="formModel.statusDate" placeholder="Date" type="date"
-        :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate')" />
-      <!-- </div> -->
+        :is-editable="isEditable('statusDate')" @blur="onBlur(formModel.statusDate, 'statusDate', $event)" />
     </div>
-    <div v-if="!isEditable('memo')" class="cursor-pointer mb-1 relative h-20"
-      :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
-      @mouseenter="!isEditable(`${idx}-memo`) && showTooltip(idx)" @mouseleave="hideTooltip"
-      style="max-height: 5rem; max-width: 5rem; " @click.stop="setEditable('memo')">
+
+    <div v-if="isEditable('memo')">
+      <EditableTextAreaCell v-model="formModel.memo" ref="memoInput" :position="false" :is-editable="true"
+        placeholder="memo" @blur="onBlur(formModel.memo, 'memo')"
+        @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)"
+        @keyup.tab.native="onBlur(formModel.memo, 'memo', $event)" class="w-full" style="min-height: 5rem;" />
+    </div>
+    <div v-else class="cursor-pointer mb-1 relative h-20" :class="isOverflow ? 'overflow-visible' : 'overflow-auto'"
+      @mouseenter="!isEditable('memo') && showTooltip(idx)" @mouseleave="hideTooltip"
+      style="max-height: 5rem; max-width: 5rem; " @click="setEditable('memo')">
       <EditableTextAreaCell v-model="formModel.memo" :prevent-enter="false" show-overflow placeholder="Memo"
-        :is-editable="isEditable('memo')" :over="false" @blur="onBlur" @keyup.tab.native="onBlur" class="h-full" />
+        :is-editable="false" :over="false" class="h-full" />
       <!-- Custom Tooltip -->
       <div v-show="activeTooltipIndex === idx && !isEditable(`${idx}-memo`)"
         class="absolute z-50 bg-gray-800 text-white p-2 rounded-md shadow-lg max-w-md whitespace-normal break-words overflow-visible"
@@ -53,15 +60,11 @@
         {{ formModel.memo }}
       </div>
     </div>
-    <div v-else>
-      <EditableTextAreaCell v-model="formModel.memo" :position="false" :is-editable="true" placeholder="memo"
-        @blur="onBlur(formModel.memo, 'memo')" @keyup.esc.native="onBlur(formModel.memo, 'memo', $event)" class="w-full"
-        style="min-height: 5rem;" />
-    </div>
     <div class="flex items-center gap-2">
       <div @click="setEditable('includeInRefund')">
         <EditableCheckBoxCell v-model="formModel.includeInRefund" :is-editable="isEditable('includeInRefund')"
-          @click="onBlur(formModel.includeInRefund, 'includeInRefund')" />
+          @click="onBlur(formModel.includeInRefund, 'includeInRefund')"
+          @keyup.tab.native="onBlur(formModel.includeInRefund, 'includeInRefund', $event)" />
       </div>
       <div class="flex flex-col">
         <div class="flex items-baseline" @click="setEditable('owes')">
@@ -70,7 +73,8 @@
           <EditableInput v-model="formModel.owes" placeholder="Owes" currency :is-editable="isEditable('owes')"
             @blur="onBlur(formModel.owes, 'owes', $event)" @click="onBlur(formModel.owes, 'owes', $event)"
             @keyup.enter.native="onBlur(formModel.owes, 'owes', $event)"
-            @keyup.esc.native="onBlur(formModel.owes, 'owes', $event)" />
+            @keyup.esc.native="onBlur(formModel.owes, 'owes', $event)"
+            @keyup.tab.native="onBlur(formModel.owes, 'owes', $event)" />
         </div>
         <div class="flex items-baseline " @click="setEditable('paid')">
           <HeaderSelectOption style="margin: -5px; margin-top: 0;" v-if="formModel.paid" v-model="formModel.currency"
@@ -78,14 +82,16 @@
           <EditableInput v-model="formModel.paid" placeholder="Paid" currency :is-editable="isEditable('paid')"
             @blur="onBlur(formModel, 'paid', $event)" @click="onBlur(formModel, 'paid', $event)"
             @keyup.enter.native="onBlur(formModel, 'paid', $event)"
-            @keyup.esc.native="onBlur(formModel, 'paid', $event)" />
+            @keyup.esc.native="onBlur(formModel, 'paid', $event)"
+            @keyup.tab.native="onBlur(formModel, 'paid', $event)" />
         </div>
       </div>
     </div>
     <!-- <div class="mt-85"> -->
     <div class="fbar-i mt-16" @click.stop="setEditable('dateFiled')">
       <EditableDate v-model="formModel.dateFiled" placeholder="Date Filed" type="date"
-        :is-editable="isEditable('dateFiled')" @blur="onBlur(formModel.dateFiled, 'dateFiled')" />
+        :is-editable="isEditable('dateFiled')" @blur="onBlur(formModel.dateFiled, 'dateFiled')"
+        @keyup.tab.native="onBlur(formModel.dateFiled, 'dateFiled', $event)" />
     </div>
   </div>
 </template>
@@ -121,6 +127,7 @@ export default {
       isOverflow: false,
       oldValue: '',
       newFlag: true,
+      dateFieldsInProgress: new Set(), // Track date fields currently being processed
     }
   },
 
@@ -206,6 +213,13 @@ export default {
 
       this.editable = editable;
 
+      this.$nextTick(() => {
+        if (editable === 'memo' && this.$refs.memoInput) {
+          this.$refs.memoInput.focus();  // Assuming EditableTextAreaCell has a focus method.
+        }
+      });
+
+
       if (editable === "status" || editable === "statusDetail") {
         this.oldValue = this.formModel[editable]?.value || null;
       } else {
@@ -218,21 +232,60 @@ export default {
     isEditable(value) {
       return this.editable === value
     },
-    onBlur(val, field, event = null) {
+
+    async onBlur(val, field, event = null) {
+      // console.log('onBlur', val, field, event)
       if (field === 'memo') this.activeTooltipIndex = null;
-      // if (this.newFlag) {
-      //   this.newFlag = false
-      //   return
-      // }
+
+      if (field === 'statusDate') {
+        // If this field is already being processed, skip
+        if (this.dateFieldsInProgress.has(field)) {
+          return;
+        }
+
+
+        // Mark this field as being processed
+        this.dateFieldsInProgress.add(field);
+
+        // Use setTimeout to allow the date picker to complete its update
+        setTimeout(() => {
+          const oldValueStr = JSON.stringify(this.oldValue);
+
+          // Only proceed with update if values are different
+          if (oldValueStr !== val) {
+            this.handleUpdate(field, event);
+            this.goToNextItem();
+          } else {
+            // If no changes, still move to next item
+            this.goToNextItem();
+          }
+
+          // Remove field from processing set
+          this.dateFieldsInProgress.delete(field);
+        }, 100);
+
+        return;
+      }
+
       if (this.oldValue !== val && event !== false) {
+        console.log('onBlur111')
         this.handleUpdate(field, event)
+        this.goToNextItem()
         return
       }
+
+      if (event?.key === 'Tab') {
+        console.log('Tab', val)
+        event.stopPropagation();
+        await this.handleUpdate(field, event)
+        this.goToNextItem()
+        return
+      }
+      console.log(field)
       this.setEditable('')
     },
-    // handleUpdate() {
-    //   this.$api.updateFiling(this.headers, { clientId: this.selectedClient.id, filingId: this.fbar.id }, this.formModel)
-    // },
+
+
     handleUpdate(field, event = null) {
       if (['owes', 'paid', 'includeInRefund', 'currency'].includes(field)) {
         const filing = {
@@ -281,8 +334,7 @@ export default {
           return
         }
         if (field === 'includeInRefund') return this.setEditable('')
-
-        this.goToNextItem();
+        // this.goToNextItem();
       } catch (error) {
         console.error('Error in handleLocalUpdate:', error);
       }
@@ -295,6 +347,7 @@ export default {
       const itemIndex = items.findIndex((col) => col === currentCell)
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
+        console.log(nextCell)
         this.setEditable(nextCell)
       } else this.setEditable('')
     },
@@ -324,11 +377,6 @@ export default {
 }
 
 
-.fbar-i {
-  /* position: relative; */
-
-  /* transform: rotate(90deg); */
-}
 
 
 .select-cell {
