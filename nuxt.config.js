@@ -53,7 +53,6 @@ export default {
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
     // https://github.com/nuxt-community/fontawesome-module
-    '@nuxtjs/fontawesome',
     '@nuxt/postcss8',
   ],
   postcss: {
