@@ -65,9 +65,9 @@
         <div :id="`${idx}-dateOfBirth`" class="table-col sm"
           @click="toggleEditable(`${idx}-dateOfBirth`, personal.id, personal.dateOfBirth)">
           <EditableDateCell v-model="personal.dateOfBirth" :is-editable="isEditable(`${idx}-dateOfBirth`)"
-            @blur="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)"
-            @keyup.tab.native="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)"
-            @keyup.enter.native="onBlur(personal.dateOfBirth, 'dateOfBirth', $event)" />
+            @blur="onBlurDate(personal.dateOfBirth, 'dateOfBirth', $event)"
+            @keyup.tab.native="onBlurDate(personal.dateOfBirth, 'dateOfBirth', $event)"
+            @keyup.enter.native="onBlurDate(personal.dateOfBirth, 'dateOfBirth', $event)" />
         </div>
         <div :id="`${idx}-ssn`" class="normal table-col"
           @click="toggleEditable(`${idx}-ssn`, personal.id, personal.ssn)">
@@ -145,7 +145,8 @@ export default {
       trackedPersonalId: null, // Add this to track the personal being edited
       showDeleteModal: false,
       deleteTypeLabel: 'Tax personal',
-      deletePersonalId: null
+      deletePersonalId: null,
+      dateFieldsInProgress: new Set()
     }
   },
   computed: {
@@ -461,6 +462,42 @@ export default {
         this.toggleEditable(prevCell, this.editablePersonalId)
       }
     },
+
+    onBlurDate(val, field, event = null) {
+      if (field === 'dateOfBirth') {
+        // If this field is already being processed, skip
+        if (this.dateFieldsInProgress.has(field)) {
+          return;
+        }
+
+
+        // Mark this field as being processed
+        this.dateFieldsInProgress.add(field);
+
+        // Use setTimeout to allow the date picker to complete its update
+        setTimeout(() => {
+          const oldValueStr = JSON.stringify(this.oldValue);
+
+
+          // Only proceed with update if values are different
+          if (oldValueStr !== val) {
+            this.handleUpdate();
+            this.goToNextColumn();
+          } else {
+            // If no changes, still move to next item
+            this.goToNextColumn();
+          }
+
+          // Remove field from processing set
+          this.dateFieldsInProgress.delete(field);
+        }, 100);
+
+        return;
+      }
+      // this.handleUpdate(field)
+      this.goToNextColumn()
+    },
+
     onBlur(val, field, event = null) {
       if (event && event.shiftKey && event.key === "Tab") return;
       if (this.oldValue !== val) {
@@ -469,13 +506,6 @@ export default {
           this.goToNextColumn()
           return
         }
-      }
-      console.log('blur', field, event)
-      if (field === 'dateOfBirth' && (event?.key === 'Tab' || event?.key === 'Enter')) {
-        console.log('tab', val)
-        this.handleUpdate(field)
-        this.goToNextColumn()
-        return
       }
       if (event?.key === 'Tab' || event?.key === 'Enter') {
         this.goToNextColumn()

@@ -233,6 +233,95 @@ const mutations = {
     }
   },
 
+  // updateContactOrder(state, { item, oldSortOrder }) {
+  //   console.log(item)
+  //   const index = state[models.selectedClient].contacts.findIndex((contact) => contact.id === item.id)
+  //   if (index !== -1) {
+  //     state[models.selectedClient].contacts.forEach((contact) => {
+  //       if (contact.overrideSortOrder && contact.sortOrder === item.sortOrder) {
+  //         contact.sortOrder = item.sortOrder + 1
+  //       }
+  //     })
+  //     state[models.selectedClient].contacts[index] = item
+  //   }
+  //   console.log(state[models.selectedClient].contacts)
+  // },
+
+  updateContactOrder(state, { item, oldSortOrder }) {
+    console.log(1, state[models.selectedClient].contacts)
+    // Find the index of the current item
+    const index = state[models.selectedClient].contacts.findIndex((contact) => contact.id === item.id)
+
+    if (index !== -1) {
+      // Get all manually positioned contacts
+      const manuallyPositionedContacts = state[models.selectedClient].contacts.filter(
+        (contact) => contact.overrideSortOrder && contact.id !== item.id
+      )
+
+      // Find any contacts with the same sortOrder
+      const conflictingContacts = manuallyPositionedContacts.filter((contact) => contact.sortOrder >= item.sortOrder)
+      console.log('conflictingContacts', conflictingContacts)
+      // Sort them by their sortOrder to ensure we update in the right sequence
+      conflictingContacts.sort((a, b) => a.sortOrder - b.sortOrder)
+      console.log('conflictingContacts2', conflictingContacts)
+
+      // Shift all conflicting contacts up by 1 position
+      let currentSortOrder = item.sortOrder
+      conflictingContacts.forEach((contact) => {
+        if (contact.sortOrder === currentSortOrder) {
+          contact.sortOrder += 1
+          currentSortOrder = contact.sortOrder
+        }
+      })
+
+      // Now update our target item
+      state[models.selectedClient].contacts[index] = item
+
+      // Validate that no contacts have the same sortOrder
+      const sortOrders = new Set()
+      const duplicates = []
+
+      state[models.selectedClient].contacts
+        .filter((contact) => contact.overrideSortOrder)
+        .forEach((contact) => {
+          if (sortOrders.has(contact.sortOrder)) {
+            duplicates.push(contact.id)
+          } else {
+            sortOrders.add(contact.sortOrder)
+          }
+        })
+
+      // If we still have duplicates (unlikely but possible), fix them
+      console.log('Duplicates found:', duplicates)
+      if (duplicates.length > 0) {
+        console.log('Duplicates found:', duplicates)
+        // Find the maximum sort order currently in use
+        const maxSortOrder = Math.max(...Array.from(sortOrders.values()))
+        let newSortOrder = maxSortOrder + 1
+
+        // Assign unique sort orders to any duplicates
+        state[models.selectedClient].contacts.forEach((contact) => {
+          if (duplicates.includes(contact.id)) {
+            contact.sortOrder = newSortOrder++
+          }
+        })
+      }
+      console.log(2, state[models.selectedClient].contacts)
+    }
+  },
+
+  removeContactOverrideSort(state, { contact }) {
+    const index = state[models.selectedClient].contacts.findIndex((con) => con.id === contact.id)
+    console.log(index)
+    if (index !== -1) {
+      const updatedContact = {
+        ...state[models.selectedClient].contacts[index],
+        overrideSortOrder: false, // or `overrideSortOrder: false` if you want to match the backend
+      }
+      state[models.selectedClient].contacts.splice(index, 1, updatedContact) // This keeps reactivity intact
+    }
+  },
+
   updateClientStatusDate(state, clientId) {
     const index = Object.values(state.clients).findIndex((c) => c.id === clientId)
     if (index !== -1) {

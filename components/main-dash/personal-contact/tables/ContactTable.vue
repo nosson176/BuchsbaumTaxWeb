@@ -23,6 +23,8 @@
             :selected="isSelected(contact.id)" :class="{ disabled: !contact.enabled }">
             <div class="table-col bg-gray-200 mr-1">
               <ClickCell @click="toggleSelected(contact)">{{ idx + 1 }}</ClickCell>
+
+
             </div>
             <div :id="`${idx}-disabled`" class="table-col xs" @click="toggleEditable(`${idx}-disabled`, contact.id)">
               <EditableCheckBoxCell v-model="contact.enabled" :is-editable="isEditable(`${idx}-disabled`)"
@@ -75,6 +77,9 @@
             </div>
             <div :id="`${idx}-delete`" class="table-col xs">
               <DeleteButton small @click="onDeleteClick(contact)" />
+              <span v-if="contact.overrideSortOrder"
+                class="w-2 h-2 bg-blue-500 rounded-full inline-block ml-1 cursor-pointer"
+                @click="removeOverride(contact)"></span>
             </div>
           </TableRow>
         </transition-group>
@@ -123,20 +128,40 @@ export default {
   },
   computed: {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
+    // In the computed section
     displayedContacts() {
-      const contacts = this.filteredContacts?.map(contact => ({
-        enabled: !contact.disabled,
-        ...contact,
-      })) || [];
+      console.log('displayedContacts', this.filteredContacts)
+      const contacts = this.filteredContacts?.map(contact => {
+        const processedContact = {
+          enabled: !contact.disabled,
+          ...contact,
+        };
+        console.log('Processing contact:', processedContact);
+        console.log('Processing22 contact:', contact);
+        return processedContact;
+      }) || [];
 
-      return searchArrOfObjs(contacts, this.searchInput)
+      console.log('Total filtered contacts:', contacts.length);
+      console.log('Contacts before search filter:', contacts);
 
+      const searchFilteredContacts = searchArrOfObjs(contacts, this.searchInput);
+
+      console.log('Contacts after search filter:', searchFilteredContacts);
+      console.log('Total search filtered contacts:', searchFilteredContacts.length);
+
+      return searchFilteredContacts;
     },
+
     filteredContacts() {
       if (this.contacts) {
-        return this.contacts.filter((contact) => this.showArchived === contact.archived)
+        const filteredContacts = this.contacts.filter((contact) => this.showArchived === contact.archived);
+        console.log('Raw contacts:', this.contacts);
+        console.log('Filtered contacts:', filteredContacts);
+        console.log('Total filtered contacts:', filteredContacts.length);
+        console.log('showArchived:', this.showArchived);
+        return filteredContacts;
       } else {
-        return null
+        return null;
       }
     },
     contactTypeOptions() {
@@ -152,6 +177,7 @@ export default {
     },
     contacts() {
       if (this.selectedClient.contacts) {
+        console.log('contacts', JSON.parse(JSON.stringify(this.selectedClient.contacts)))
         return JSON.parse(JSON.stringify(this.selectedClient.contacts))
       } else {
         return null
@@ -183,9 +209,20 @@ export default {
     },
   },
   mounted() {
-
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   },
+
+  created() {
+    console.log('created', this.displayedContacts)
+    this.sortContactsByType()
+  },
+
+  // watch: {
+  //   displayedContacts() {
+  //     console.log('watch', this.displayedContacts)
+  //     this.sortContactsByType()
+  //   }
+  // },
 
   beforeDestroy() {
     if (this.updateData.length > 0) {
@@ -300,44 +337,45 @@ export default {
         }
       }
       this.$store.dispatch('updateContactAction', { contact });
-      if (field === 'type') this.sortContactsByType()
+      this.sortContactsByType()
       // this.editableId = ""
     },
 
-    sortContactsByType() {
-      const sortedContacts = [...this.displayedContacts].sort((a, b) => {
-        if (a.contactType == null && b.contactType == null) return 0;
-        if (a.contactType == null) return -1;
-        if (b.contactType == null) return 1;
+    // sortContactsByType() {
+    //   console.log('sort', this.displayedContacts)
+    //   const sortedContacts = [...this.displayedContacts].sort((a, b) => {
+    //     if (a.contactType == null && b.contactType == null) return 0;
+    //     if (a.contactType == null) return -1;
+    //     if (b.contactType == null) return 1;
 
-        const contactTypeOrder = this.contactTypeOptions
-          .filter(type => type.show)
-          .map(type => type.value);
+    //     const contactTypeOrder = this.contactTypeOptions
+    //       .filter(type => type.show)
+    //       .map(type => type.value);
 
-        const aIndex = contactTypeOrder.indexOf(a.contactType);
-        const bIndex = contactTypeOrder.indexOf(b.contactType);
+    //     const aIndex = contactTypeOrder.indexOf(a.contactType);
+    //     const bIndex = contactTypeOrder.indexOf(b.contactType);
 
-        if (aIndex === -1 && bIndex === -1) return 0;
-        if (aIndex === -1) return 1;
-        if (bIndex === -1) return -1;
+    //     if (aIndex === -1 && bIndex === -1) return 0;
+    //     if (aIndex === -1) return 1;
+    //     if (bIndex === -1) return -1;
 
-        return aIndex - bIndex;
-      });
+    //     return aIndex - bIndex;
+    //   });
 
-      // Directly mutate the array to trigger reactivity
-      this.displayedContacts.splice(0, this.displayedContacts.length, ...sortedContacts);
+    //   // Directly mutate the array to trigger reactivity
+    //   this.displayedContacts.splice(0, this.displayedContacts.length, ...sortedContacts);
 
 
-      if (this.trackedContactId) {
-        const newIndex = this.displayedContacts.findIndex(c => c.id === this.trackedContactId);
-        if (newIndex !== -1) {
-          this.$nextTick(() => {
-            const currentColumn = this.editableId.split('-')[1];
-            this.editableId = `${newIndex}-${currentColumn}`;
-          });
-        }
-      }
-    },
+    //   if (this.trackedContactId) {
+    //     const newIndex = this.displayedContacts.findIndex(c => c.id === this.trackedContactId);
+    //     if (newIndex !== -1) {
+    //       this.$nextTick(() => {
+    //         const currentColumn = this.editableId.split('-')[1];
+    //         this.editableId = `${newIndex}-${currentColumn}`;
+    //       });
+    //     }
+    //   }
+    // },
 
 
     sendUpdateContect() {
@@ -427,7 +465,7 @@ export default {
     // },
 
 
-    onAddRowClick() {
+    async onAddRowClick() {
       if (!this.selectedClient) {
         return
       }
@@ -437,7 +475,14 @@ export default {
         sortOrder: this.isDefaultOrder ? 0 : 1,
         archived: false,
         id: generateRandomId(),
-        enabled: true
+        enabled: true,
+        zip: null,
+        state: null,
+        mainDetail: null,
+        secondaryDetail: null,
+        memo: null,
+        contactType: null,
+        overrideSortOrder: false
       }
       if (this.isCopyingContacts) {
         this.selectedContactIds.forEach((contactId, idx) => {
@@ -468,7 +513,9 @@ export default {
           });
         })
       } else {
-        const contact = Object.assign({}, defaultValues)
+        // const contact = Object.assign({}, defaultValues)
+        const contact = await this.$api.createContact(this.headers, { contact: defaultValues })
+        console.log('contact', contact)
         this.updateData.push(contact)
         this.$store.commit('pushNewContact', {
           state: this.selectedClient,
@@ -555,12 +602,207 @@ export default {
     startDrag() {
       this.dragActive = true
     },
+
+    removeOverride(contact) {
+      contact.overrideSortOrder = false;
+      this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: contact.id }, contact)
+      this.$store.commit('removeContactOverrideSort', { contact });
+      this.sortContactsByType();
+
+      const index = this.updateData.findIndex(con => con.id === contact.id)
+      if (index !== -1) {
+        this.updateData[index] = contact
+      } else {
+        this.updateData.push(contact)
+      }
+    },
+
     onDrop(evt) {
       const item = this.displayedContacts[evt.oldIndex]
       item.sortOrder = evt.newIndex + 1
+      item.overrideSortOrder = true  // Add this flag
+      console.log('onDrop', item)
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
       this.dragActive = false
+      this.displayedContacts.forEach((contact, index) => {
+        if (contact.id !== item.id) {
+          contact.sortOrder = index + 1
+        }
+      })
+      this.$store.commit('updateContactOrder', { item })
+      this.sortContactsByType('onDrop', item, evt)
+
     },
+
+    sortContactsByType(str, item, evt) {
+      console.log('sort function run');
+      console.log('Initial displayedContacts:', JSON.parse(JSON.stringify(this.displayedContacts)));
+
+      if (str === 'onDrop') {
+        console.log('onDrop', item);
+
+        const contacts = this.displayedContacts;
+        const oldIndex = evt.oldIndex;
+        const newIndex = evt.newIndex;
+
+        // Remove the moved item from its old position
+        const movedItem = contacts.splice(oldIndex, 1)[0];
+
+        // Insert the moved item at the new index
+        contacts.splice(newIndex, 0, movedItem);
+
+        // If the item moved UP (oldIndex > newIndex):
+        if (oldIndex > newIndex) {
+          // Loop from newIndex to oldIndex (inclusive) and update sortOrder
+          for (let i = newIndex; i <= oldIndex; i++) {
+            contacts[i].sortOrder = i + 1; // 1-based sortOrder
+          }
+        }
+        // Else if the item moved DOWN (oldIndex < newIndex):
+        else if (oldIndex < newIndex) {
+          // Loop from oldIndex to newIndex (inclusive) and update sortOrder
+          for (let i = oldIndex; i <= newIndex; i++) {
+            contacts[i].sortOrder = i + 1;
+          }
+        }
+
+        // console.log('Updated displayedContacts:', JSON.parse(JSON.stringify(contacts)));
+        this.displayedContacts = contacts;
+
+        console.log('moveditem', movedItem)
+        const index = this.updateData.findIndex(con => con.id === movedItem.id)
+        if (index !== -1) {
+          this.updateData[index] = movedItem
+        } else {
+          this.updateData.push(movedItem)
+        }
+        return
+      }
+
+
+      // בדיקה אם קיימים פריטים שנגררו ידנית
+      const hasManuallyPositioned = this.displayedContacts.some(contact => contact.overrideSortOrder);
+
+      if (hasManuallyPositioned) {
+        // console.log('Manually positioned items found');
+        // הפרדת פריטים שנגררו ידנית מהאוטומטיים
+        const manuallyPositioned = this.displayedContacts.filter(contact => contact.overrideSortOrder);
+        const autoPositioned = this.displayedContacts.filter(contact => !contact.overrideSortOrder);
+
+        // console.log('Manually positioned:', manuallyPositioned);
+        // console.log('Auto positioned:', autoPositioned);
+
+        // מיון הפריטים האוטומטיים לפי contactType לפי הסדר המוגדר ב־contactTypeOptions
+        const sortedAutoPositioned = [...autoPositioned].sort((a, b) => {
+          if (a.contactType == null && b.contactType == null) return 0;
+          if (a.contactType == null) return -1;
+          if (b.contactType == null) return 1;
+
+          const contactTypeOrder = this.contactTypeOptions
+            .filter(type => type.show)
+            .map(type => type.value);
+
+          const aIndex = contactTypeOrder.indexOf(a.contactType);
+          const bIndex = contactTypeOrder.indexOf(b.contactType);
+
+          if (aIndex === -1 && bIndex === -1) return 0;
+          if (aIndex === -1) return 1;
+          if (bIndex === -1) return -1;
+
+          return aIndex - bIndex;
+        });
+
+        // מיון הפריטים שנגררו ידנית לפי sortOrder
+        const sortedManuallyPositioned = [...manuallyPositioned].sort((a, b) => {
+          return (a.sortOrder || 0) - (b.sortOrder || 0);
+        });
+        // console.log('sortedManuallyPositioned', sortedManuallyPositioned);
+
+        // יצירת מערך חדש עם אורך התואם למספר הפריטים המקורי
+        const finalContacts = new Array(this.displayedContacts.length);
+
+        // הצבת הפריטים שנגררו ידנית במערך עם הלוגיקה המעודכנת
+        sortedManuallyPositioned.forEach(contact => {
+          // חישוב המיקום הרצוי (נניח ש־sortOrder הוא בספירה של 1)
+          let target = contact.sortOrder > 0 ? contact.sortOrder - 1 : 0;
+          // אם המיקום הרצוי מחוץ לגבולות המערך, מצרפים לסוף
+          if (target >= finalContacts.length) {
+            finalContacts.push(contact);
+            // console.log('Placed manually positioned contact with id', contact.id, 'at appended position', finalContacts.length - 1);
+          } else {
+            // אם המיקום הרצוי תפוס, מחפשים את המיקום הפנוי הבא
+            while (target < finalContacts.length && finalContacts[target] !== undefined) {
+              target++;
+            }
+            if (target < finalContacts.length) {
+              finalContacts[target] = contact;
+              // console.log('Placed manually positioned contact with id', contact.id, 'at position', target);
+            } else {
+              finalContacts.push(contact);
+              // console.log('Placed manually positioned contact with id', contact.id, 'at appended position', finalContacts.length - 1);
+            }
+          }
+        });
+
+        // מילוי הפערים בפריטים האוטומטיים
+        let autoIndex = 0;
+        for (let i = 0; i < finalContacts.length; i++) {
+          if (finalContacts[i] === undefined && autoIndex < sortedAutoPositioned.length) {
+            // console.log('Adding auto-positioned item at index', i, 'with id', sortedAutoPositioned[autoIndex].id);
+            finalContacts[i] = sortedAutoPositioned[autoIndex++];
+          }
+        }
+        // הוספת פריטים אוטומטיים שנותרו
+        while (autoIndex < sortedAutoPositioned.length) {
+          finalContacts.push(sortedAutoPositioned[autoIndex++]);
+        }
+        // console.log("finalContacts", finalContacts);
+
+        // הסרת ערכים undefined (אם יש)
+        const cleanedFinalContacts = finalContacts.filter(c => c !== undefined);
+        // console.log('cleanedFinalContacts', cleanedFinalContacts);
+        // console.log('Final contacts before update:', JSON.parse(JSON.stringify(cleanedFinalContacts)));
+
+        // עדכון רשימת הפריטים המוצגת
+        this.displayedContacts.splice(0, this.displayedContacts.length, ...cleanedFinalContacts);
+      } else {
+        // הלוגיקה הקיימת עבור פריטים שאינם נגררו ידנית
+        const sortedContacts = [...this.displayedContacts].sort((a, b) => {
+          if (a.contactType == null && b.contactType == null) return 0;
+          if (a.contactType == null) return -1;
+          if (b.contactType == null) return 1;
+
+          const contactTypeOrder = this.contactTypeOptions
+            .filter(type => type.show)
+            .map(type => type.value);
+
+          const aIndex = contactTypeOrder.indexOf(a.contactType);
+          const bIndex = contactTypeOrder.indexOf(b.contactType);
+
+          if (aIndex === -1 && bIndex === -1) return 0;
+          if (aIndex === -1) return 1;
+          if (bIndex === -1) return -1;
+
+          return aIndex - bIndex;
+        });
+        this.displayedContacts.splice(0, this.displayedContacts.length, ...sortedContacts);
+      }
+
+      // console.log('After sort:', JSON.parse(JSON.stringify(this.displayedContacts)));
+
+      // שמירה על הפוקוס בעורך אם נדרש
+      if (this.trackedContactId) {
+        const newIndex = this.displayedContacts.findIndex(c => c.id === this.trackedContactId);
+        if (newIndex !== -1) {
+          this.$nextTick(() => {
+            const currentColumn = this.editableId.split('-')[1];
+            this.editableId = `${newIndex}-${currentColumn}`;
+          });
+        }
+      }
+    },
+
+
     resetOrder() {
       const item = this.displayedContacts[0]
       item.sortOrder = 0
@@ -576,5 +818,3 @@ export default {
   },
 }
 </script>
-
-<style scoped></style>

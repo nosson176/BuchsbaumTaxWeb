@@ -270,7 +270,13 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios.post('/personals', personal, { headers }).catch(() => $toast.error('Error creating tax personal'))
 
   const createContact = (headers, { contact }) =>
-    $axios.post('/contacts', contact, { headers }).catch(() => $toast.error('Error creating contact'))
+    $axios
+      .post('/contacts', contact, { headers })
+      .then((res) => {
+        console.log('res', res)
+        return res
+      })
+      .catch(() => $toast.error('Error creating contact'))
 
   const createIncome = (headers, { income }) =>
     $axios.post('/incomes', income, { headers }).catch(() => $toast.error('Error creating income'))

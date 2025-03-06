@@ -241,6 +241,7 @@ export default {
       activeTooltipIndex: null,
       tooltipTimer: null,
       forceCloseTooltip: false, // Controls tooltip visibility
+      dateFieldsInProgress: new Set()
     }
   },
   computed: {
@@ -776,6 +777,37 @@ export default {
 
       if (field === 'years' && !this.forceCloseTooltip) {
         this.hideToolTip(); // Controls tooltip visibility
+      }
+      // Special handling for date fields
+      if (field === 'logDate') {
+        // If this field is already being processed, skip
+        if (this.dateFieldsInProgress.has(field)) {
+          return;
+        }
+
+
+        // Mark this field as being processed
+        this.dateFieldsInProgress.add(field);
+
+        // Use setTimeout to allow the date picker to complete its update
+        setTimeout(() => {
+          const oldValueStr = JSON.stringify(this.oldValue);
+
+
+          // Only proceed with update if values are different
+          if (oldValueStr !== val) {
+            this.handleUpdate();
+            this.goToNextColumn();
+          } else {
+            // If no changes, still move to next item
+            this.goToNextColumn();
+          }
+
+          // Remove field from processing set
+          this.dateFieldsInProgress.delete(field);
+        }, 100);
+
+        return;
       }
       if (event === false) {
         this.handleUpdate(val, field);

@@ -51,6 +51,7 @@ export default {
         return this.value ? new Date(this.value) : null;
       },
       set(newVal) {
+        console.log(newVal);
         const unixTimestamp = newVal ? newVal.getTime() : null;
         this.$emit('input', unixTimestamp);
         if (!this.isSettingToday) {
@@ -124,9 +125,19 @@ export default {
         this.handleTodayClick(event); // Pass the event directly
       }
       if (event.key === 'Tab') {
-        this.onBlur();
+        console.log('Tab key pressed', event.target.value);
+        this.computedValue = this.convertDateStringToUnix(event.target.value);
+        // this.onBlur();
       }
 
+    },
+    convertDateStringToUnix(dateString) {
+      // מחלקים את התאריך לחלקים
+      const [month, day, year] = dateString.split("/");
+
+      // יוצרים אובייקט Date ב-JavaScript
+      const date = new Date(year, month - 1, day); // חודש ב-JavaScript מתחיל מ-0
+      return date
     },
 
     handleTodayClick(event) {

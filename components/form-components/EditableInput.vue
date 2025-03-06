@@ -3,7 +3,7 @@
     <div v-if="showEditMode" class="fixed w-screen h-screen top-0 left-0 z-10" @click.stop>
       <div class="h-full" @click="onBlur" />
     </div>
-    <input v-if="showEditMode" ref="input" v-model="computedValue" autofocus type="text"
+    <input v-if="showEditMode" ref="input" v-model="computedValue" autofocus @focus="onFocus" type="text"
       class="block w-full shadow-sm m-0 border-transparent outline-none border focus:border-indigo-500 text-xs p-0 pl-px min-h-full"
       tabindex="0" :placeholder="placeholder" @keydown.enter="onEnter" @blur="onBlur" />
     <span v-else class="cursor-pointer" :class="computedValue ? '' : 'text-gray-400 italic'">
@@ -39,6 +39,10 @@ export default {
       type: String,
       default: '',
     },
+    selectOnFocus: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     computedValue: {
@@ -99,6 +103,11 @@ export default {
     onEnter() {
       this.$emit('enter') // Custom event for Enter key
     },
+    onFocus() {
+      if (this.selectOnFocus) {
+        this.$refs.input?.select();
+      }
+    }
   },
 }
 </script>

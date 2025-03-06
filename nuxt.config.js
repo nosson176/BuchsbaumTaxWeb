@@ -54,11 +54,19 @@ export default {
     '@nuxtjs/tailwindcss',
     // https://github.com/nuxt-community/fontawesome-module
     '@nuxtjs/fontawesome',
+    '@nuxt/postcss8',
   ],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/tailwindcss',
     // Doc: https://github.com/Maronato/vue-toastification/tree/main
     'vue-toastification/nuxt',
   ],

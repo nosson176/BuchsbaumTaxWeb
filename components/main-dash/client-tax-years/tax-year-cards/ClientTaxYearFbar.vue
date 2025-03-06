@@ -13,7 +13,7 @@
           @keyup.tab.native="onBlur(formModel.fileType, 'fileType', $event)" initiallyOpen=true />
       </div>
     </div>
-    <div class="fbar-i">
+    <div class="fbar-i max-w-full">
       <div v-if="!isEditable('status')" @click.stop="setEditable('status')">
         <EditableSelectCell v-model="formModel.status.value" :options="statusOptions" class="whitespace-nowrap"
           :is-editable="false" placeholder="Status" initiallyOpen=true />
@@ -24,7 +24,7 @@
           @keyup.tab.native="onBlur(formModel.status.value, 'status', $event)" initiallyOpen=true />
       </div>
     </div>
-    <div class="fbar-i">
+    <div class="fbar-i max-w-full">
       <div v-if="!isEditable('statusDetail')" @click.stop="setEditable('statusDetail')">
         <EditableSelectCell v-model="formModel.statusDetail.value" :options="statusDetailOptions"
           class="whitespace-nowrap" :is-editable="false" placeholder="Detail" initiallyOpen=true />
@@ -377,11 +377,6 @@ export default {
 }
 
 
-.fbar-i {
-  /* position: relative; */
-
-  /* transform: rotate(90deg); */
-}
 
 
 .select-cell {

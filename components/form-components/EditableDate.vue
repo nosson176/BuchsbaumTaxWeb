@@ -111,6 +111,13 @@ export default {
   },
 
   watch: {
+    // showPicker(val) {
+    //   console.log(val)
+    //   // If the picker is closed manually, exit edit mode
+    //   if (!val && this.isEditable) {
+    //     this.$emit(events.blur);
+    //   }
+    // },
     isEditable(val) {
       if (val) {
         window.addEventListener('keydown', this.handleKeyDown)
@@ -126,6 +133,11 @@ export default {
     }
   },
   methods: {
+    handleOutsideClick(event) {
+      console.log(8, event)
+      event.stopPropagation();
+      this.onBlur();
+    },
     onFocus() {
       console.log(8)
       this.showPicker = true;
