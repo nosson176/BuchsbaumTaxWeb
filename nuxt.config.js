@@ -104,6 +104,7 @@ export default {
         },
       },
       plugins: {
+        'postcss-custom-properties': false,
         'tailwindcss/nesting': {},
         tailwindcss: {},
         autoprefixer: {},
