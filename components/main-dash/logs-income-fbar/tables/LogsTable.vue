@@ -155,7 +155,7 @@
             @keyup.tab.native="onBlur(log.alarmTime, 'alarmTime', $event)"
             @keyup.esc.native="onBlur(log.alarmTime, 'alarmTime', $event)" />
         </div>
-        <div :id="`${idx}-alarmComplete`" class="table-col xxs" @click="toggleComplete(log)">
+        <div :id="`${idx}-alarmComplete`" class="table-col xxs" @click="toggleComplete(log, 'alarmComplete')">
           <CheckIcon v-if="log.alarmTime" class="h-5 w-5 cursor-pointer"
             :class="log.alarmComplete ? 'text-green-500' : 'text-gray-400'" />
         </div>
@@ -599,19 +599,16 @@ export default {
       }
 
       if (field === 'note') updatedLog.noteDate = Date.now()
-
       // Dispatch update action
       this.$store.dispatch('updateLogAction', { log: updatedLog });
 
       // Update logs in parent component
       this.updateUpdatAndNewLogs(updatedLog, val, field);
-    }
-    ,
+    },
 
     updateUpdatAndNewLogs(updatedLog, val, field) {
       // Find the index of the log to update
       const index = this.updatAndNewLogs.findIndex(log => log.id === updatedLog.id);
-
       // Define the history entry to log changes
       const historyEntry = {
         userName: this.currentUser.username,
@@ -846,6 +843,7 @@ export default {
     },
 
     isTodayOrPast(timestamp) {
+
       if (!timestamp) return false;
       try {
         // Get current date at start of day for comparison
@@ -869,7 +867,7 @@ export default {
         return false;
       }
     },
-    toggleComplete(log) {
+    toggleComplete(log, field) {
       if (!this.isTodayOrPast(log.alarmTime) && !log.alarmComplete) {
         return
       } else if (log.alarmComplete) {
@@ -878,7 +876,7 @@ export default {
         log.alarmComplete = true
       }
       this.editableLogId = log.id
-      this.handleUpdate()
+      this.handleUpdate(log.alarmComplete, field)
     },
     filterLogs(log) {
       const hasAlarm = log.alarmDate

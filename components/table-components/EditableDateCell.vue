@@ -51,7 +51,6 @@ export default {
         return this.value ? new Date(this.value) : null;
       },
       set(newVal) {
-        console.log(newVal);
         const unixTimestamp = newVal ? newVal.getTime() : null;
         this.$emit('input', unixTimestamp);
         if (!this.isSettingToday) {
@@ -125,7 +124,6 @@ export default {
         this.handleTodayClick(event); // Pass the event directly
       }
       if (event.key === 'Tab') {
-        console.log('Tab key pressed', event.target.value);
         this.computedValue = this.convertDateStringToUnix(event.target.value);
         // this.onBlur();
       }

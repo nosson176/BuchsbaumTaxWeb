@@ -234,7 +234,7 @@ const formatUnixTimestamp = (timestamp) => {
 
 // Helper function to convert 'MM-DD-YYYY HH:mm' format to Unix timestamp in milliseconds
 const convertToUnixTimestamp = (dateString) => {
-  if (!dateString || typeof dateString === 'number') return
+  if (!dateString || typeof dateString === 'number') return dateString
   // Split the date and time from the string
   const [date, time] = dateString.split(' ')
 

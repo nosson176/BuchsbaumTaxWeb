@@ -273,7 +273,6 @@ export default ({ $axios, store, $toast, redirect }, inject) => {
     $axios
       .post('/contacts', contact, { headers })
       .then((res) => {
-        console.log('res', res)
         return res
       })
       .catch(() => $toast.error('Error creating contact'))
