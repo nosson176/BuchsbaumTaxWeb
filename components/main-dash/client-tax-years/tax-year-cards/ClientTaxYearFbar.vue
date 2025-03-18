@@ -268,20 +268,17 @@ export default {
       }
 
       if (this.oldValue !== val && event !== false) {
-        console.log('onBlur111')
         this.handleUpdate(field, event)
         this.goToNextItem()
         return
       }
 
       if (event?.key === 'Tab') {
-        console.log('Tab', val)
         event.stopPropagation();
         await this.handleUpdate(field, event)
         this.goToNextItem()
         return
       }
-      console.log(field)
       this.setEditable('')
     },
 
@@ -347,7 +344,6 @@ export default {
       const itemIndex = items.findIndex((col) => col === currentCell)
       if (itemIndex < items.length - 1) {
         const nextCell = items[itemIndex + 1]
-        console.log(nextCell)
         this.setEditable(nextCell)
       } else this.setEditable('')
     },

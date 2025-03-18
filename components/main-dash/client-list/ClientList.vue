@@ -98,13 +98,10 @@ export default {
   computed: {
     ...mapState([models.clients, models.loading, models.selectedClient, models.selectedSmartview, models.currentUser, models.secondsNeededToDisplayModal1, models.spinner]),
     displayedClients() {
-      console.log('displayedClients')
       // Explicitly use loading in the computed property to create a dependency
       return this.spinner ? [] : this.sortedClients;
     },
     sortedClients() {
-      console.log(this.clients)
-
       const clients = Object.values(this.clients)
       switch (this.sortBy) {
         case 'A-Z':

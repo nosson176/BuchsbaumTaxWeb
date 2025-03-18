@@ -11,9 +11,6 @@
     "lint:style": "stylelint \"**/*.{vue,css}\" --ignore-path .gitignore",
     "lint": "yarn lint:js && yarn lint:style"
   },
-  "resolutions": {
-    "postcss-nesting": "^8.0.1"
-  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
     "@fortawesome/pro-duotone-svg-icons": "^6.1.2",

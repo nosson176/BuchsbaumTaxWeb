@@ -62,23 +62,23 @@ export default {
           eventToPass = newVal.event;
           newVal = newVal.value; // חילוץ הערך
         }
-        console.log(newVal)
-        console.log(1)
+        // console.log(newVal)
+        // console.log(1)
         if (newVal) {
-          console.log(2)
+          // console.log(2)
           if (typeof newVal === 'number') {
-            console.log(3)
+            // console.log(3)
             this.$emit('input', newVal);
           } else {
-            console.log(3.11)
+            // console.log(3.11)
             this.$emit('input', newVal.getTime())
           }
-          console.log(4)
+          // console.log(4)
           this.$emit(events.blur, eventToPass);
         } else {
-          console.log(5)
+          // console.log(5)
           this.$emit('input', null);
-          console.log(6)
+          // console.log(6)
           this.$emit(events.blur, eventToPass);
         }
       },
@@ -90,7 +90,7 @@ export default {
       return this.type === 'date';
     },
     displayedValue() {
-      console.log(7)
+      // console.log(7)
       return this.value ? formatUnixTimestamp(this.value) : '';
     },
   },
@@ -112,7 +112,7 @@ export default {
 
   watch: {
     // showPicker(val) {
-    //   console.log(val)
+    //  console.log(val)
     //   // If the picker is closed manually, exit edit mode
     //   if (!val && this.isEditable) {
     //     this.$emit(events.blur);
@@ -120,37 +120,40 @@ export default {
     // },
     isEditable(val) {
       if (val) {
-        window.addEventListener('keydown', this.handleKeyDown)
-        // Select input value when entering edit mode
-        const innerInput = this.$refs.datePickerWrapper?.querySelector('input');
-        if (innerInput) {
-          innerInput.focus();
-          innerInput.select();
-        }
-      }
-      else window.removeEventListener('keydown', this.handleKeyDown)
+        window.addEventListener('keydown', this.handleKeyDown);
 
+        // Wait for the next tick to ensure the component has rendered
+        this.$nextTick(() => {
+          const innerInput = this.$refs.input?.$el?.querySelector('input');
+          if (innerInput) {
+            innerInput.focus();
+            innerInput.select();
+          }
+        });
+      } else {
+        window.removeEventListener('keydown', this.handleKeyDown);
+      }
     }
   },
   methods: {
     handleOutsideClick(event) {
-      console.log(8, event)
+      // console.log(8, event)
       event.stopPropagation();
       this.onBlur();
     },
     onFocus() {
-      console.log(8)
+      // console.log(8)
       this.showPicker = true;
     },
     onBlur() {
-      console.log(9)
+      // console.log(9)
       this.$emit(events.blur);
     },
     handleKeyDown(event) {
-      console.log(10)
+      // console.log(10)
       // Handle the Enter key
       if (event.key === 'Enter' && this.showPicker) {
-        console.log(11)
+        // console.log(11)
         event.preventDefault();
         this.setToday();
       }
@@ -161,9 +164,9 @@ export default {
         event.preventDefault();
         event.stopPropagation();
 
-        console.log(12, event.target.value)
+        // console.log(12, event.target.value)
         const unixtime = this.convertDateStringToUnix(event.target.value);
-        console.log(13, unixtime)
+        // console.log(13, unixtime)
         if (unixtime) {
           // Send both value and original event for proper handling
           this.computedValue = { value: unixtime, event };
@@ -175,11 +178,11 @@ export default {
       }
     },
     setToday() {
-      console.log(14)
+      // console.log(14)
       // const today = new Date();
       const today = getStartDayInUnixTime();
       this.computedValue = today;
-      console.log(15)
+      // console.log(15)
       // this.showPicker = false;
     },
     convertDateStringToUnix(dateString) {

@@ -130,24 +130,24 @@ export default {
     ...mapState([models.selectedClient, models.valueTypes, models.search, models.cmdPressed]),
     // In the computed section
     displayedContacts() {
-      console.log('displayedContacts', this.filteredContacts)
+      // console.log('displayedContacts', this.filteredContacts)
       const contacts = this.filteredContacts?.map(contact => {
         const processedContact = {
           enabled: !contact.disabled,
           ...contact,
         };
-        console.log('Processing contact:', processedContact);
-        console.log('Processing22 contact:', contact);
+        // console.log('Processing contact:', processedContact);
+        // console.log('Processing22 contact:', contact);
         return processedContact;
       }) || [];
 
-      console.log('Total filtered contacts:', contacts.length);
-      console.log('Contacts before search filter:', contacts);
+      // console.log('Total filtered contacts:', contacts.length);
+      // console.log('Contacts before search filter:', contacts);
 
       const searchFilteredContacts = searchArrOfObjs(contacts, this.searchInput);
 
-      console.log('Contacts after search filter:', searchFilteredContacts);
-      console.log('Total search filtered contacts:', searchFilteredContacts.length);
+      // console.log('Contacts after search filter:', searchFilteredContacts);
+      // console.log('Total search filtered contacts:', searchFilteredContacts.length);
 
       return searchFilteredContacts;
     },
@@ -155,10 +155,10 @@ export default {
     filteredContacts() {
       if (this.contacts) {
         const filteredContacts = this.contacts.filter((contact) => this.showArchived === contact.archived);
-        console.log('Raw contacts:', this.contacts);
-        console.log('Filtered contacts:', filteredContacts);
-        console.log('Total filtered contacts:', filteredContacts.length);
-        console.log('showArchived:', this.showArchived);
+        // console.log('Raw contacts:', this.contacts);
+        // console.log('Filtered contacts:', filteredContacts);
+        // console.log('Total filtered contacts:', filteredContacts.length);
+        // console.log('showArchived:', this.showArchived);
         return filteredContacts;
       } else {
         return null;
@@ -177,7 +177,7 @@ export default {
     },
     contacts() {
       if (this.selectedClient.contacts) {
-        console.log('contacts', JSON.parse(JSON.stringify(this.selectedClient.contacts)))
+        // console.log('contacts', JSON.parse(JSON.stringify(this.selectedClient.contacts)))
         return JSON.parse(JSON.stringify(this.selectedClient.contacts))
       } else {
         return null
@@ -213,13 +213,13 @@ export default {
   },
 
   created() {
-    console.log('created', this.displayedContacts)
+    // console.log('created', this.displayedContacts)
     this.sortContactsByType()
   },
 
   // watch: {
   //   displayedContacts() {
-  //     console.log('watch', this.displayedContacts)
+  //    console.log('watch', this.displayedContacts)
   //     this.sortContactsByType()
   //   }
   // },
@@ -342,7 +342,7 @@ export default {
     },
 
     // sortContactsByType() {
-    //   console.log('sort', this.displayedContacts)
+    //  console.log('sort', this.displayedContacts)
     //   const sortedContacts = [...this.displayedContacts].sort((a, b) => {
     //     if (a.contactType == null && b.contactType == null) return 0;
     //     if (a.contactType == null) return -1;
@@ -515,7 +515,7 @@ export default {
       } else {
         // const contact = Object.assign({}, defaultValues)
         const contact = await this.$api.createContact(this.headers, { contact: defaultValues })
-        console.log('contact', contact)
+        // console.log('contact', contact)
         this.updateData.push(contact)
         this.$store.commit('pushNewContact', {
           state: this.selectedClient,
@@ -554,7 +554,7 @@ export default {
       }
     },
     // goToPrevColumn() {
-    //   console.log("goprev", this.editableId)
+    //  console.log("goprev", this.editableId)
     //   const currentCell = this.editableId
     //   const idArr = currentCell.split('-')
     //   const columnIndex = columns.findIndex((col) => col === idArr[1])
@@ -562,11 +562,11 @@ export default {
     //   if (columnIndex === 0 && currentRow > 0) {
     //     const prevRow = currentRow - 1
     //     const prevCell = `${prevRow}-${columns[columns.length - 1]}`
-    //     console.log(prevCell)
+    //    console.log(prevCell)
     //     this.toggleEditable(prevCell, this.editableContactId)
     //   } else if (columnIndex > 0) {
     //     const prevCell = `${currentRow}-${columns[columnIndex - 1]}`
-    //     console.log(prevCell)
+    //    console.log(prevCell)
     //     this.toggleEditable(prevCell, this.editableContactId)
     //   }
     // },
@@ -621,7 +621,7 @@ export default {
       const item = this.displayedContacts[evt.oldIndex]
       item.sortOrder = evt.newIndex + 1
       item.overrideSortOrder = true  // Add this flag
-      console.log('onDrop', item)
+      // console.log('onDrop', item)
       this.$api.updateContact(this.headers, { clientId: this.clientId, contactId: item.id }, item)
       this.dragActive = false
       this.displayedContacts.forEach((contact, index) => {
@@ -635,11 +635,11 @@ export default {
     },
 
     sortContactsByType(str, item, evt) {
-      console.log('sort function run');
-      console.log('Initial displayedContacts:', JSON.parse(JSON.stringify(this.displayedContacts)));
+      // console.log('sort function run');
+      // console.log('Initial displayedContacts:', JSON.parse(JSON.stringify(this.displayedContacts)));
 
       if (str === 'onDrop') {
-        console.log('onDrop', item);
+        // console.log('onDrop', item);
 
         const contacts = this.displayedContacts;
         const oldIndex = evt.oldIndex;
@@ -666,10 +666,10 @@ export default {
           }
         }
 
-        // console.log('Updated displayedContacts:', JSON.parse(JSON.stringify(contacts)));
+        console.log('Updated displayedContacts:', JSON.parse(JSON.stringify(contacts)));
         this.displayedContacts = contacts;
 
-        console.log('moveditem', movedItem)
+        // console.log('moveditem', movedItem)
         const index = this.updateData.findIndex(con => con.id === movedItem.id)
         if (index !== -1) {
           this.updateData[index] = movedItem

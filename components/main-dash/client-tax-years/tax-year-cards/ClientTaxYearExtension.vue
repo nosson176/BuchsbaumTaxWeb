@@ -213,7 +213,6 @@ export default {
       return this.editable === value
     },
     onBlur(val) {
-      console.log('onBlur', val)
       if (this.newFlag) {
         this.newFlag = false
         return
