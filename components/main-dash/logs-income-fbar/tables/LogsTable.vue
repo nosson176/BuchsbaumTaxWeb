@@ -260,8 +260,17 @@ export default {
     ]),
     displayedLogs() {
       const logs = this.shownLogs?.filter((log) => this.filterLogs(log))
+      console.log("displayedLogs", logs[0])
       if (!logs || logs.length === 0) return []
-      const mappedLogs = logs?.map((log) => {
+
+      // Sort logs by logDate in descending order
+      const sortedLogs = [...logs].sort((a, b) => {
+        const dateA = a.logDate || 0;
+        const dateB = b.logDate || 0;
+        return dateB - dateA;
+      });
+
+      const mappedLogs = sortedLogs?.map((log) => {
         if (log.alarmUserId && !log.alarmUserName) {
           log.alarmUserName = this.usersArray[log.alarmUserId].username
         }
@@ -269,6 +278,7 @@ export default {
         log.timeSpent = this.getTimeSpentOnClient(log)
         return log
       })
+
       if (
         this.clientSearchOption === "logs::note" &&
         this.clientSearchValue.length > 0 &&
@@ -337,9 +347,34 @@ export default {
     isClientSelected() {
       return !Array.isArray(this.selectedClient) || this.selectedClient.length > 0
     },
+    // filteredYearOptions() {
+    //   console.log("years options ", this.yearOptions)
+    //   console.log("shownLogs ", this.shownLogs)
+    //   const options = this.yearOptions?.filter((yearName) => this.shownLogs?.find((log) => log.years === yearName.value))
+    //   return options
+    // },
     filteredYearOptions() {
-      const options = this.yearOptions?.filter((yearName) => this.shownLogs?.find((log) => log.years === yearName.value))
-      return options
+      const options = this.yearOptions?.filter((yearName) => {
+        return this.shownLogs?.find((log) => {
+          if (!log.years) return false;
+
+          // Clean the years string by removing all \n characters
+          const cleanYears = log.years.replace(/\n/g, '')
+
+          // Check if there's more than one \n in the original string
+          const newlineCount = (log.years.match(/\n/g) || []).length;
+
+          if (newlineCount > 1) {
+            // If more than one \n, match with MULTI value
+            return yearName.value === 'MULTI';
+          } else {
+            // Single year - match the cleaned year with the option value
+            return cleanYears === yearName.value;
+          }
+        });
+      });
+
+      return options;
     },
     filteredUserOptions() {
       const options = this.userOptions.filter((user) => this.shownLogs?.find((log) => log.alarmUserName === user.value))
@@ -551,13 +586,38 @@ export default {
       const logIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
       if (logIndex === -1) return;
 
-
       const updatedLog = { ...this.displayedLogs[logIndex] };
+
+      // Store current edit state for logDate updates
+      const wasEditing = this.editableId;
+      const currentField = wasEditing ? wasEditing.split('-')[1] : null;
+
       if (field === 'years') {
         if (!val.startsWith('\n')) {
           val = '\n' + val;
         }
         updatedLog.years = val
+      }
+
+      // Handle logDate field update with re-sorting logic
+      if (field === 'logDate') {
+        updatedLog.logDate = val;
+
+        // Update the log first
+        this.$store.dispatch('updateLogAction', { log: updatedLog });
+        this.updateUpdatAndNewLogs(updatedLog, val, field);
+
+        // Wait for Vue to re-render with new sorted order
+        this.$nextTick(() => {
+          // Find the new index of the edited log after sorting
+          const newLogIndex = this.displayedLogs.findIndex((log) => log.id === this.editableLogId);
+
+          if (newLogIndex !== -1 && currentField) {
+            // Update editableId with new row index
+            this.editableId = `${newLogIndex}-${currentField}`;
+          }
+        });
+        return;
       }
 
       // Helper function to validate and send alarm
@@ -587,10 +647,9 @@ export default {
             validateAndSendAlarm(updatedLog, alarmTime);
           }
         }
-
       }
+
       if (field === 'alarmUserName') {
-        // אם הערך ריק, נאפס גם את ה-ID
         const user = val ? Object.values(this.users).find(user => user.username === val) : null;
         updatedLog.alarmUserId = user ? user.id : null;
         dayjs.extend(customParseFormat);
@@ -599,6 +658,7 @@ export default {
       }
 
       if (field === 'note') updatedLog.noteDate = Date.now()
+
       // Dispatch update action
       this.$store.dispatch('updateLogAction', { log: updatedLog });
 
@@ -770,18 +830,17 @@ export default {
     },
     onBlur(val, field, event = null) {
       if (event?.shiftKey && event?.key === "Tab") return;
-      // }
 
       if (field === 'years' && !this.forceCloseTooltip) {
-        this.hideToolTip(); // Controls tooltip visibility
+        this.hideToolTip();
       }
+
       // Special handling for date fields
       if (field === 'logDate') {
         // If this field is already being processed, skip
         if (this.dateFieldsInProgress.has(field)) {
           return;
         }
-
 
         // Mark this field as being processed
         this.dateFieldsInProgress.add(field);
@@ -790,15 +849,13 @@ export default {
         setTimeout(() => {
           const oldValueStr = JSON.stringify(this.oldValue);
 
-
           // Only proceed with update if values are different
           if (oldValueStr !== val) {
-            this.handleUpdate();
-            this.goToNextColumn();
-          } else {
-            // If no changes, still move to next item
-            this.goToNextColumn();
+            this.handleUpdate(val, field);
           }
+
+          // Always move to next column after date selection
+          this.goToNextColumn();
 
           // Remove field from processing set
           this.dateFieldsInProgress.delete(field);
@@ -806,6 +863,7 @@ export default {
 
         return;
       }
+
       if (event === false) {
         this.handleUpdate(val, field);
         this.editableId = "";
@@ -824,6 +882,7 @@ export default {
           return;
         }
       }
+
       // For existing logs, only handle if value changed
       if (this.oldValue !== val && this.oldValue !== undefined && !(this.oldValue === '' && val === '')) {
         this.handleUpdate(val, field)
@@ -834,21 +893,22 @@ export default {
         this.editableId = ""
         return
       }
+
       if (event?.key === 'Tab' || event?.key === 'Enter') {
         this.goToNextColumn()
         return
       }
+
       this.editableId = ""
       this.activeTooltipIndex = null
     },
 
     isTodayOrPast(timestamp) {
-
       if (!timestamp) return false;
       try {
         // Get current date at start of day for comparison
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // today.setHours(0, 0, 0, 0);
 
         // Handle Unix timestamp in milliseconds
         if (typeof timestamp === 'number') {
@@ -879,14 +939,41 @@ export default {
       this.handleUpdate(log.alarmComplete, field)
     },
     filterLogs(log) {
-      const hasAlarm = log.alarmDate
-      let returnValue = true
-      returnValue = this.filterByYear ? log.years === this.yearFilterValue && returnValue : returnValue
-      returnValue = this.filterByEmployee ? log.alarmUserName === this.employeeFilterValue && returnValue : returnValue
+      const hasAlarm = log.alarmDate;
+      let returnValue = true;
+
+      // Year filtering with \n handling
+      if (this.filterByYear) {
+        if (!log.years) {
+          returnValue = false;
+        } else {
+          // Clean the years string by removing all \n characters
+          const cleanYears = log.years.replace(/\n/g, '')
+
+          // Check if there's more than one \n in the original string
+          const newlineCount = (log.years.match(/\n/g) || []).length;
+
+          if (this.yearFilterValue === 'MULTI') {
+            // If filter is MULTI, check if log has more than one year (more than 1 \n)
+            returnValue = newlineCount > 1 && returnValue;
+          } else {
+            // If filter is specific year, check if log has single year and matches
+            returnValue = newlineCount <= 1 && cleanYears === this.yearFilterValue && returnValue;
+          }
+        }
+      }
+
+      // Employee filtering
+      returnValue = this.filterByEmployee
+        ? log.alarmUserName === this.employeeFilterValue && returnValue
+        : returnValue;
+
+      // Alarm status filtering
       returnValue = this.filterByAlarmStatus
         ? log.alarmComplete === this.filterByAlarmStatusValue && hasAlarm && returnValue
-        : returnValue
-      return returnValue
+        : returnValue;
+
+      return returnValue;
     },
     toggleSelected(log) {
       this.selectedItems[log.id] = !this.selectedItems[log.id]
@@ -896,6 +983,12 @@ export default {
       return this.selectedItems[logId]
     },
 
+    getCurrentRowIndex(logId) {
+      return this.displayedLogs.findIndex(log => log.id === logId);
+    },
+
+    // Update your goToNextColumn method to be more robust:
+
     goToNextColumn(field) {
       if (!this.editableId) {
         console.warn('No editable ID found');
@@ -904,9 +997,17 @@ export default {
 
       const currentCell = this.editableId
       const idArr = currentCell.split('-')
-      if (idArr[1] === 'years' && !this.forceCloseTooltip) this.hideToolTip()// Controls tooltip visibility
+
+      if (idArr[1] === 'years' && !this.forceCloseTooltip) this.hideToolTip()
+
       const columnIndex = columns.findIndex((col) => col === idArr[1])
-      const currentRow = Number(idArr[0])
+      let currentRow = Number(idArr[0])
+
+      // Verify the current row is still valid (in case of re-sorting)
+      const actualRowIndex = this.getCurrentRowIndex(this.editableLogId);
+      if (actualRowIndex !== -1 && actualRowIndex !== currentRow) {
+        currentRow = actualRowIndex;
+      }
 
       // Handle special case for alarmUserName to alarmTime transition
       if (idArr[1] === 'alarmUserName') {
@@ -930,6 +1031,7 @@ export default {
           this.toggleEditable(nextCell, this.editableLogId)
         })
       } else this.editableId = ''
+
       this.activeTooltipIndex = null
     },
 

@@ -561,7 +561,8 @@ export default {
       }
 
       // Sort if year changes
-      if (field === 'years' || field === 'job' || field === 'category' || field === 'currency') this.sortIncomes();
+      // if (field === 'years' || field === 'job' || field === 'category' || field === 'currency') 
+      this.sortIncomes();
     },
     // sortIncomes() {
     //   this.displayedIncomes.sort((a, b) => {
@@ -619,60 +620,78 @@ export default {
     //   }
     // },
     sortIncomes() {
-      const yearRegex = /^\d{4}/; // Match the first 4 digits (year)
-
-      const categoryOrder = { PRI: 1, SEC: 2, DEP: 3 };
+      console.log('Sorting incomes...');
+      const yearRegex = /^\d{4}/;
+      const categoryOrder = {
+        'PRI': 1, 'PRI.': 1,
+        'SEC': 2, 'SEC.': 2,
+        'DEP': 3, 'DEP.': 3
+      };
 
       this.displayedIncomes.sort((a, b) => {
-        // Handle missing years first
-        if (!a.years && !b.years) {
-          if (!a.createdTime && b.createdTime) return -1;
-          if (a.createdTime && !b.createdTime) return 1;
+        // רשומות חדשות (ללא שנה ובלי נתונים) - תמיד בראש
+        const aIsNew = this.isNewRecord(a);
+        const bIsNew = this.isNewRecord(b);
+
+        if (aIsNew && !bIsNew) return -1; // a הוא חדש - יעלה למעלה
+        if (!aIsNew && bIsNew) return 1;  // b הוא חדש - יעלה למעלה
+        if (aIsNew && bIsNew) {
+          // שתי רשומות חדשות - לפי זמן יצירה (החדש יותר ראשון)
+          if (a.createdTime && b.createdTime) {
+            return new Date(b.createdTime) - new Date(a.createdTime);
+          }
           return 0;
         }
-        if (!a.years && !a.createdTime) return -1;
-        if (!b.years && !b.createdTime) return 1;
-        if (!a.years) return 1;
-        if (!b.years) return -1;
 
-        // Extract years
-        const aYearMatch = a.years.match(yearRegex);
-        const bYearMatch = b.years.match(yearRegex);
+        // שאר הלוגיקה הרגילה לרשומות עם נתונים
+        const aYearMatch = a.years ? a.years.match(yearRegex) : null;
+        const bYearMatch = b.years ? b.years.match(yearRegex) : null;
 
-        if (aYearMatch && bYearMatch) {
-          const aYear = parseInt(aYearMatch[0]);
-          const bYear = parseInt(bYearMatch[0]);
+        const aYear = aYearMatch ? parseInt(aYearMatch[0]) : null;
+        const bYear = bYearMatch ? parseInt(bYearMatch[0]) : null;
 
-          // Sort by year in descending order
-          if (aYear !== bYear) return bYear - aYear;
-
-          // Sort by category (PRI > SEC > DEP)
-          const aCategory = categoryOrder[a.category] || 999;
-          const bCategory = categoryOrder[b.category] || 999;
-          if (aCategory !== bCategory) return aCategory - bCategory;
-
-          // Sort by job (JOB1 > JOB2 > ... > JOB10)
-          const jobRegex = /^JOB(\d+)$/;
-          const aJobMatch = a.job?.match(jobRegex);
-          const bJobMatch = b.job?.match(jobRegex);
-
-          if (aJobMatch && bJobMatch) {
-            return parseInt(aJobMatch[1]) - parseInt(bJobMatch[1]);
+        // Handle missing years (but not new records)
+        if (aYear === null && bYear === null) {
+          if (a.createdTime && b.createdTime) {
+            return new Date(b.createdTime) - new Date(a.createdTime);
           }
-
-          // If one has a job and the other doesn't, prioritize the one with a job
-          if (aJobMatch) return -1;
-          if (bJobMatch) return 1;
-
-          // Sort by remaining string in years (if applicable)
-          return a.years.localeCompare(b.years);
+          if (a.createdTime && !b.createdTime) return -1;
+          if (!a.createdTime && b.createdTime) return 1;
+          return 0;
         }
 
-        // If one has a year and the other doesn't, place the one with the year first
-        if (aYearMatch) return -1;
-        if (bYearMatch) return 1;
+        if (aYear === null) return 1;
+        if (bYear === null) return -1;
 
-        return a.years.localeCompare(b.years);
+        // Sort by year descending
+        if (aYear !== bYear) {
+          return bYear - aYear;
+        }
+
+        // Sort by category
+        const aCategory = a.category ? (categoryOrder[a.category.trim()] || 999) : 999;
+        const bCategory = b.category ? (categoryOrder[b.category.trim()] || 999) : 999;
+
+        if (aCategory !== bCategory) {
+          return aCategory - bCategory;
+        }
+
+        // Sort by job
+        const jobRegex = /^JOB(\d+)$/;
+        const aJobMatch = a.job ? a.job.match(jobRegex) : null;
+        const bJobMatch = b.job ? b.job.match(jobRegex) : null;
+
+        if (aJobMatch && bJobMatch) {
+          return parseInt(aJobMatch[1]) - parseInt(bJobMatch[1]);
+        }
+
+        if (aJobMatch && !bJobMatch) return -1;
+        if (!aJobMatch && bJobMatch) return 1;
+
+        // Sort by years string
+        const aYearsStr = a.years || '';
+        const bYearsStr = b.years || '';
+        return aYearsStr.localeCompare(bYearsStr);
       });
 
       // Maintain trackedIncomeId if exists
@@ -685,8 +704,34 @@ export default {
           });
         }
       }
-    }
-    ,
+    },
+
+    // פונקציה לזיהוי רשומה חדשה
+    isNewRecord(record) {
+      // רשומה נחשבת חדשה אם:
+      // 1. אין לה שנה (או השנה ריקה)
+      // 2. אין לה קטגוריה (או הקטגוריה ריקה)
+      // 3. אין לה עבודה (או העבודה ריקה)
+      // 4. נוצרה לאחרונה (פחות מ-5 דקות)
+
+      const hasYear = record.years && record.years.trim() && /^\d{4}/.test(record.years);
+      const hasCategory = record.category && record.category.trim();
+      // const hasJob = record.job && record.job.trim();
+
+      // אם אין שנה ואין קטגוריה - זה כנראה רשומה חדשה
+      if (!hasYear && !hasCategory) return true;
+
+      // בדיקה נוספת - אם נוצר לאחרונה
+      if (record.createdTime) {
+        const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+        const recordTime = new Date(record.createdTime).getTime();
+        if (recordTime > fiveMinutesAgo && !hasYear && !hasCategory) {
+          return true;
+        }
+      }
+
+      return false;
+    },
     sendIncomesToServer() {
       this.$api.updateIncomes(this.headers, this.updateIncomes)
     },
