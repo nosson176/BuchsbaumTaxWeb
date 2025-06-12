@@ -50,14 +50,24 @@ export default {
       get() {
         return this.value ? new Date(this.value) : null;
       },
+      // set(newVal) {
+      //   console.log('Setting new value:', newVal);
+      //   const unixTimestamp = newVal ? newVal.getTime() : null;
+      //   this.$emit('input', unixTimestamp);
+      //   if (!this.isSettingToday) {
+      //     this.$emit(events.blur);
+      //   }
+      //   this.isSettingToday = false;
+      // },
       set(newVal) {
-        const unixTimestamp = newVal ? newVal.getTime() : null;
+        const unixTimestamp = newVal instanceof Date ? newVal.getTime() : newVal;
         this.$emit('input', unixTimestamp);
+
         if (!this.isSettingToday) {
           this.$emit(events.blur);
         }
         this.isSettingToday = false;
-      },
+      }
     },
     valueType() {
       return this.isTypeDate ? 'date' : 'time';
@@ -129,14 +139,42 @@ export default {
       }
 
     },
-    convertDateStringToUnix(dateString) {
-      // מחלקים את התאריך לחלקים
-      const [month, day, year] = dateString.split("/");
+    // convertDateStringToUnix(dateString) {
+    //   console.log('Converting date string to Unix:', dateString);
+    //   // מחלקים את התאריך לחלקים
+    //   const [month, day, year] = dateString.split("/");
 
-      // יוצרים אובייקט Date ב-JavaScript
-      const date = new Date(year, month - 1, day); // חודש ב-JavaScript מתחיל מ-0
-      return date
+    //   // יוצרים אובייקט Date ב-JavaScript
+    //   const date = new Date(year, month - 1, day); // חודש ב-JavaScript מתחיל מ-0
+    //   return date
+    // },
+    convertDateStringToUnix(dateString) {
+
+      let date;
+
+      if (dateString.includes('/')) {
+        // Format: MM/DD/YYYY
+        const [month, day, year] = dateString.split('/');
+        date = new Date(year, month - 1, day);
+      } else if (dateString.includes('.')) {
+        // Format: DD.MM.YY or DD.MM.YYYY
+        const [month, day, rawYear] = dateString.split('.');
+        let year = rawYear;
+
+        // Handle two-digit years
+        if (year.length === 2) {
+          const yearNum = parseInt(year, 10);
+          year = yearNum < 50 ? `20${year}` : `19${year}`;
+        }
+
+        date = new Date(year, month - 1, day);
+      } else {
+        throw new Error('Unknown date format');
+      }
+      return date.getTime(); // return Unix timestamp in milliseconds
     },
+
+
 
     handleTodayClick(event) {
       this.isSettingToday = true;

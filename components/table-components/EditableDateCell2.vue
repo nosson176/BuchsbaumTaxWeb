@@ -1,8 +1,8 @@
 <template>
     <div ref="el" tabindex="-1" :class="isEditable ? 'edit-mode' : 'read-mode'">
         <date-picker v-if="isEditable" ref="input" v-model="internalValue" tabindex="0" :value-type="valueType"
-            :format="format" autofocus :type="type" :open.sync="showPicker" @focus="onFocus" @select="handleSelect"
-            @change="handleChange">
+            :format="format" autofocus :editable="true" :type="type" :open.sync="showPicker" @focus="onFocus"
+            @select="handleSelect" @change="handleChange" @input="handleChange">
             <template #header="{ emit }">
                 <button class="w-full flex items-center justify-center mx-btn mx-btn-text" @click.stop="setToday(emit)">
                     Today
@@ -50,60 +50,101 @@ export default {
         value: {
             immediate: true,
             handler(newVal) {
-                this.internalValue = newVal;
+                // Convert the value to the appropriate format for the date picker
+                this.internalValue = this.convertValueForPicker(newVal);
                 this.init = false;
                 setTimeout(() => {
                     this.init = true;
                 }, 100);
             },
         },
-        isEditable(newVal) {
-            if (newVal) {
-                this.$nextTick(() => {
-                    this.$refs.el?.addEventListener('keydown', this.handleKeydown);
-                    document.addEventListener('mousedown', this.handleClickOutside);
-                });
-            } else {
-                document.addEventListener("mousedown", this.handleClickOutside);
-                this.$refs.el.removeEventListener('keydown', this.handleKeydown);
+        isEditable: {
+            handler(newVal) {
+                if (newVal) {
+                    this.internalValue = this.convertValueForPicker(this.value);
+                    this.$nextTick(() => {
+                        this.$refs.el?.addEventListener('keydown', this.handleKeydown);
+                        document.addEventListener('mousedown', this.handleClickOutside);
+
+                        const inputEl = this.$refs.input?.$el?.querySelector('input');
+                        if (inputEl) {
+                            inputEl.addEventListener('input', this.manualInputListener);
+                        }
+
+                        if (this.$refs.input) {
+                            this.$refs.input.focus();
+                        }
+                    });
+                } else {
+                    document.removeEventListener("mousedown", this.handleClickOutside);
+                    this.$refs.el?.removeEventListener('keydown', this.handleKeydown);
+
+                    const inputEl = this.$refs.input?.$el?.querySelector('input');
+                    if (inputEl) {
+                        inputEl.removeEventListener('input', this.manualInputListener);
+                    }
+                }
             }
         }
     },
     computed: {
         valueType() {
-            return this.isTypeDate ? 'MM-DD-YYYY HH:mm' : 'HH:mm:ss'
+            return this.isTypeDate ? 'format' : 'format' // Use 'format' to maintain string format
         },
         isTypeDate() {
             return this.type === 'datetime'
         },
         displayedValue() {
-            return this.isTypeDate && this.internalValue ? formatUnixTimestamp(this.internalValue) : this.internalValue
+            return this.isTypeDate && this.value ? formatUnixTimestamp(this.value) : this.value
         },
     },
     updated() {
-        if (this.isEditable) {
-            this.$refs.input?.focus()
+        if (this.isEditable && this.$refs.input) {
+            this.$refs.input.focus();
         }
     },
     mounted() {
         if (this.isEditable) {
             document.addEventListener("mousedown", this.handleClickOutside);
-            this.$refs.el.addEventListener('keydown', this.handleKeydown);
+            this.$refs.el?.addEventListener('keydown', this.handleKeydown);
         }
     },
     beforeDestroy() {
         document.removeEventListener("mousedown", this.handleClickOutside);
-        this.$refs.el.removeEventListener('keydown', this.handleKeydown);
+        this.$refs.el?.removeEventListener('keydown', this.handleKeydown);
     },
     methods: {
+        convertValueForPicker(value) {
+            if (!value) return null;
+
+            // If value is already in the correct format (MM-DD-YYYY HH:mm), return it
+            if (typeof value === 'string' && value.match(/^\d{2}-\d{2}-\d{4} \d{2}:\d{2}$/)) {
+                return value;
+            }
+
+            // If value is a Unix timestamp (number), convert it to the required format
+            if (typeof value === 'number') {
+                const date = new Date(value);
+                return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+            }
+
+            // If value is a string that might be in a different format, try to parse it
+            if (typeof value === 'string') {
+                const date = new Date(value);
+                if (!isNaN(date.getTime())) {
+                    return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                }
+            }
+
+            return value;
+        },
         handleKeydown(event) {
             if (event.key === 'Enter') {
-                if (this.shouldEmitBlur) return; // Prevent double blur1
+                if (this.shouldEmitBlur) return; // Prevent double blur
 
                 this.setToday((date) => {
                     this.$emit('input', date);
                     this.shouldEmitBlur = true;
-                    // this.$emit(events.blur);
 
                     setTimeout(() => {
                         this.shouldEmitBlur = false;
@@ -112,10 +153,6 @@ export default {
             }
         },
         handleClickOutside(event) {
-            // if (this.init === false) {
-            //     this.init = true
-            //     return
-            // }
             if (!this.isEditable) return
             const el = this.$refs.el;
             const datePicker = this.$refs.input?.$el;
@@ -173,16 +210,19 @@ export default {
             // Store the formatted date in internalValue
             this.internalValue = today;
 
-            // Emit the Unix timestamp in milliseconds
-            const unixTimestampMillis = now.getTime();
-            emit(unixTimestampMillis);
+            // Emit the formatted date string (or Unix timestamp if needed)
+            emit(today); // Changed from unixTimestampMillis to today
 
             // Use setTimeout to ensure the value is set before emitting blur
             setTimeout(() => {
-                this.$emit('input', today); // Emit the formatted date string
-                this.$emit(events.blur); // Trigger the blur event
+                this.$emit('input', today);
+                this.$emit(events.blur);
             }, 0);
-        }
+        },
+        manualInputListener(event) {
+            const value = event.target.value;
+            this.handleChange(value); // Reuse your existing logic
+        },
     },
 }
 </script>

@@ -15,7 +15,7 @@
         @blur="onBlur(formModel.status.value, 'status')" :class="rotationClass('status')" initiallyOpen=true />
     </div>
 
-    <div @click.stop="setEditable('includeTax')">
+    <!-- <div @click.stop="setEditable('includeTax')">
       <EditableCheckBoxCell class="transform" v-model="formModel.includeTax" :is-editable="isEditable('includeTax')"
         @click="handleUpdate('includeTax')" :class="rotationClass('includeTax')" />
     </div>
@@ -25,7 +25,7 @@
         :is-editable="isEditable('tax')" @blur="onBlur(formModel.taxEstimated, 'tax')"
         @keyup.enter.native="onBlur('tax')" @keyup.esc.native="onBlur(formModel.taxEstimated, 'tax', $event)"
         :class="rotationClass('tax')" />
-    </div>
+    </div> -->
 
     <div class="col-span-2 flex gap-2 px-2 items-center mb-1 transform" style="min-width: 80px;"
       :class="[sumClassObj, rotationClass('sum')]">
@@ -59,7 +59,9 @@ import ClickOutside from 'vue-click-outside'
 import { events, models } from '~/shared/constants'
 import { formatAsNumber } from '~/shared/utility';
 
-const items = ['taxForm', 'status', 'tax', 'refund', 'statusDate']
+const items = ['taxForm', 'status',
+  // 'tax'
+  'refund', 'statusDate']
 
 export default {
   name: 'ClientTaxYearExtension',
